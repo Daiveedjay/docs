@@ -87,5 +87,9 @@
     "body": {
       "family": "IBM Plex Sans"
     }
+  },
+  "logo": {
+    "light": "/iris-logo.svg",
+    "dark": "/iris-logo.svg"
   }
 }
