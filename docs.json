@@ -3,7 +3,9 @@
   "name": "Iris",
   "theme": "luma",
   "colors": {
-    "primary": "#040404"
+    "primary": "#DF5F34",
+    "light": "#DF5F34",
+    "dark": "#DF5F34"
   },
   "favicon": "https://media.brand.dev/57a1eaad-2cf8-4bc6-b540-d4597142d2df.png",
   "navigation": {
@@ -76,6 +78,14 @@
       "type": "button",
       "label": "Install Free",
       "href": "https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "IBM Plex Sans"
+    },
+    "body": {
+      "family": "IBM Plex Sans"
     }
   }
 }

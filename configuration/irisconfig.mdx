@@ -164,6 +164,8 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | Key | Tier | What it controls |
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
+| `gateBaselineMode` | Pro | Gates existing files against their locked baseline score instead of `minHealthScore` — new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
+| `trendRegressionThreshold` | Pro | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris calls out as a notable regression. |
 | `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide — set to `0` to require a clean workspace |
 | `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
 | `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |

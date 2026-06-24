@@ -46,9 +46,15 @@ Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum accepta
 }
 ```
 
+Pro users can also enable `"gateBaselineMode": true` so existing files are judged against their locked baseline score instead of only the absolute minimum. New files still use `minHealthScore` — useful for older codebases that want to stop regressions without requiring a full cleanup upfront.
+
 <Tip>
   The hook chains safely with any existing pre-push hook content. Iris appends its block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, leaving anything already in the file untouched.
 </Tip>
+
+## Insights tracking
+
+Every git hook run is logged in your account Insights as a pass or fail, so you can track enforcement activity over time without digging through terminal history. View the breakdown at [iriscode.co/account/insights](https://iriscode.co/account/insights).
 
 ## Uninstalling
 
