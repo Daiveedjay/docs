@@ -1,0 +1,79 @@
+---
+title: "File Analysis: Health Scores, Smells, and Secrets"
+sidebarTitle: "File Analysis"
+description: "Iris analyses every supported file on open and save. Get a 0–100 health score, complexity rating, function list, code smells, TypeScript metrics, and secrets detection."
+---
+
+Iris analyses every supported file automatically as you open or save it. The **File tab** in the Iris sidebar gives you an instant, line-level picture of that file's health — from an overall score and complexity rating down to individual code smells, TypeScript-specific quality signals, and detected secrets — so you know exactly what needs attention before you push.
+
+## The File Tab
+
+The File tab opens with an **enforcement snapshot**: a top-of-file readiness summary that shows the score, any blockers, the hook posture, and the trend direction at a glance. Below that you'll find the full breakdown:
+
+| Panel element | What it shows |
+|---|---|
+| **Health score** | A 0–100 composite score penalising warnings, secrets, deep nesting, long functions, and debug prints |
+| **Trend signal** | Score movement (↑/↓) versus the previous snapshot, once trend history exists |
+| **Language badge** | Go / TypeScript / JavaScript / Python badge in the file header |
+| **Line counts** | Total lines, blank lines, and code lines |
+| **Complexity score** | A 1–10 score based on function density, nesting depth, control flow, and import count |
+| **Function list** | Every detected function with its line number — click any entry to jump straight to that line in the editor |
+| **Code smells** | TODOs, unused code, magic numbers, debug prints, and long parameter lists grouped in one section |
+| **Coverage signal** | Whether a matching test file was detected (configurable via `testConvention` in `.irisconfig.json`) |
+
+## TypeScript Metrics
+
+Iris surfaces four TypeScript-specific quality signals when you are working in a `.ts` or `.tsx` (or `.js`/`.jsx`) file. These metrics are **hidden automatically for Go and Python** — they only appear when the active file is TypeScript or JavaScript.
+
+| Metric | What it tracks |
+|---|---|
+| `any` usages | Counts explicit `: any` and `as any` — each occurrence is clickable to jump to the line |
+| `@ts-ignore` | Count of TypeScript suppression comments in the file |
+| Non-null assertions | Count of `!` (non-null assertion) usages |
+| Missing return types | Exported functions without an explicit return type annotation |
+
+## Code Smells
+
+Iris detects several code smell patterns across all supported languages. Every finding is clickable to jump to the exact line.
+
+| Smell | Detected in | Toggle setting |
+|---|---|---|
+| Debug prints — `console.log`, `console.warn`, `console.error` | JavaScript / TypeScript | `enableConsoleLogWarnings` |
+| Debug prints — `fmt.Print*`, `log.Print*`, `log.Fatal*`, `log.Panic*` | Go | `enableConsoleLogWarnings` |
+| Debug prints — `print()` | Python | `enableConsoleLogWarnings` |
+| Magic numbers — raw numeric literals (excluding `0` and `1`) used inline without a named binding | All supported languages | `enableMagicNumberDetection` |
+| TODOs / FIXMEs / HACKs — from `//` comments (JS/TS, Go) and `#` comments (Python) | All supported languages | `enableTodoDetection` |
+| Long parameter lists — functions with more parameters than the configured threshold | All supported languages | `enableLongParamDetection` |
+| Unused variables — declared but never referenced elsewhere in the file | All supported languages | `enableUnusedDetection` |
+| Unused functions — defined but never called within the file and not exported | All supported languages | `enableUnusedDetection` |
+
+<Tip>
+  Disabling a toggle hides both the stat counter and the detail section from
+  the sidebar entirely — useful for reducing visual clutter when a particular
+  smell isn't relevant to your project.
+</Tip>
+
+## Warnings
+
+Iris raises five warning types when a file crosses a configured threshold. You can set each threshold in `.irisconfig.json` and override the severity independently.
+
+| Type | Default severity | Triggers at |
+|---|---|---|
+| `file-too-long` | error / warning | \> threshold (error) or \> ⅔ of threshold (warning) |
+| `function-too-long` | error / warning | \> 2× threshold (error) or \> threshold (warning) |
+| `too-many-functions` | warning | \> `maxFunctionsPerFile` |
+| `too-many-imports` | warning | \> `maxImportsPerFile` |
+| `no-exports` | info | No exported identifier found in the file |
+
+<Tip>
+  Override the severity for any individual warning type using the
+  `severityOverrides` key in `.irisconfig.json`. For example, you can promote
+  `no-exports` from `info` to `warning` or demote `file-too-long` from `error`
+  to `warning` for a specific project.
+</Tip>
+
+<Note>
+  Unused import detection is **TypeScript and JavaScript only**. Go and Python
+  handle unused imports at the compiler or runtime level, so Iris does not
+  surface them as code smells in those languages.
+</Note>

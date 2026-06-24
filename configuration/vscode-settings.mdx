@@ -1,0 +1,50 @@
+---
+title: "Iris VS Code Settings Reference"
+sidebarTitle: "VS Code Settings"
+description: "All iris.* settings available in VS Code's settings UI (Ctrl+,). Configure thresholds, detection toggles, and display options per machine."
+---
+
+VS Code settings (`Ctrl+,` → search **"Iris"**) configure Iris on a per-machine basis. These settings apply only to your local setup — to share thresholds across your whole team, use a `.irisconfig.json` at the project root instead. When both exist, `.irisconfig.json` takes priority over VS Code settings for any key it defines.
+
+## Settings reference
+
+### Thresholds
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `iris.functionLengthThreshold` | `40` | Lines before a function is flagged |
+| `iris.fileLengthThreshold` | `300` | Lines before a file is flagged |
+| `iris.maxFunctionsPerFile` | `10` | Max functions before flagging |
+| `iris.maxImportsPerFile` | `8` | Max third-party imports before flagging |
+| `iris.maxParameterCount` | `5` | Max parameters before flagging a function |
+| `iris.complexityThreshold` | `7` | Complexity score that triggers status bar warning |
+
+### Detection toggles
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `iris.enableConsoleLogWarnings` | `true` | Flag `console.log` / `print()` / `fmt.Print*` statements |
+| `iris.enableMagicNumberDetection` | `true` | Flag raw numeric literals used without a named binding |
+| `iris.enableTodoDetection` | `true` | Flag `TODO` / `FIXME` / `HACK` comments |
+| `iris.enableLongParamDetection` | `true` | Flag functions with too many parameters |
+| `iris.enableUnusedDetection` | `true` | Flag unused variables and functions |
+| `iris.enableMissingReturnTypeWarnings` | `true` | Flag exported functions missing return types (TS/JS only) |
+
+### Display
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `iris.enableCodeLens` | `true` | Show inline Code Lens hints |
+| `iris.enableStatusBar` | `true` | Show the Iris item in the status bar |
+
+### Ignore and override rules
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `iris.severityOverrides` | `{}` | Override severity per warning type |
+| `iris.ignoreFiles` | `["**/*.test.ts", ...]` | Glob patterns for files to skip in workspace analysis |
+| `iris.ignoreFunctions` | `[]` | Function names Iris should never flag |
+
+<Tip>
+  For team-wide settings, use `.irisconfig.json` instead — VS Code settings only apply to your machine. See [Configure Iris with .irisconfig.json](/configuration/irisconfig) for the full reference.
+</Tip>

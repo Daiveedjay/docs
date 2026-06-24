@@ -1,0 +1,57 @@
+---
+title: "Dependents Table: Audit Dependencies for Outdated Versions and CVEs"
+sidebarTitle: "Dependents Table"
+description: "Open the Dependents Table in VS Code to audit every third-party package for outdated versions and CVEs from the GitHub Advisory Database. Requires Iris Pro."
+---
+
+The Dependents Table audits all of your project's third-party packages in a single panel, checking each one for outdated versions and known security vulnerabilities sourced from the GitHub Advisory Database. Instead of running separate audit tools for each package ecosystem, you get a unified view covering npm, Go modules, and Python packages side by side.
+
+<Note>
+  The Dependents Table requires **Iris Pro**.
+</Note>
+
+## How to open it
+
+Run **Iris: Open Dependents Table** from the command palette.
+
+## Supported package sources
+
+- **npm** — `package.json`
+- **Go modules** — `go.mod`
+- **Python** — `requirements.txt` and `pyproject.toml`
+
+## What the table shows
+
+For each package, the table displays the installed version, the latest available version, and any known CVEs from the GitHub Advisory Database:
+
+| Package | Installed → Latest | Advisories |
+| --- | --- | --- |
+| `next` | 14.1.0 → 15.3.2 | — |
+| `express` | 4.18.2 → 4.21.2 | CVE-2024-29041 |
+| `jsonwebtoken` | 8.5.1 → 9.0.2 | CVE-2022-23529, CVE-2022-23540 |
+
+## Caching
+
+Results are cached locally for 24 hours at `.iris-cache/dependents.json`. Re-opening the panel is instant without a new network round-trip. Iris automatically adds `.iris-cache/` to your `.gitignore` on the first write.
+
+## GitHub PAT (optional)
+
+The unauthenticated GitHub Advisory API rate limit is 60 requests per hour. Store a personal access token via the in-panel token button to raise that limit to 5,000 requests per hour. The token is stored in VS Code's `SecretStorage` and never leaves your machine.
+
+To generate a token:
+
+<Steps>
+  <Step title="Open GitHub Settings">
+    Go to [GitHub Settings](https://github.com/settings/profile) → [Developer settings](https://github.com/settings/apps) → [Personal access tokens → Tokens (classic)](https://github.com/settings/tokens).
+  </Step>
+  <Step title="Generate a new token">
+    Click **Generate new token (classic)**. No scopes are required — leave all permission boxes unchecked.
+  </Step>
+  <Step title="Store the token in Iris">
+    Click the token button in the Dependents Table panel and paste in your new token.
+  </Step>
+</Steps>
+
+<Tip>
+  Advisory API errors return empty CVE lists silently — the table still loads with version data even when the advisory API is unavailable or rate-limited.
+</Tip>

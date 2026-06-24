@@ -1,72 +1,81 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Iris",
+  "theme": "luma",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#040404"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/57a1eaad-2cf8-4bc6-b540-d4597142d2df.png",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation",
+              "pro"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/file-analysis",
+              "features/workspace-analysis",
+              "features/editor-integration",
+              "features/language-support"
+            ]
+          },
+          {
+            "group": "Enforcement",
+            "pages": [
+              "enforcement/gate-preview",
+              "enforcement/git-hook",
+              "enforcement/build-gate",
+              "enforcement/github-actions",
+              "enforcement/hardcoded-secrets",
+              "enforcement/inline-diagnostics",
+              "enforcement/dependents-table"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/irisconfig",
+              "configuration/config-studio",
+              "configuration/scoring-weights",
+              "configuration/vscode-settings"
+            ]
+          },
+          {
+            "group": "CLI",
+            "pages": [
+              "cli/overview",
+              "cli/auth",
+              "cli/commands",
+              "cli/ci"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/scoring",
+              "reference/commands",
+              "changelog"
+            ]
+          }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
     ]
   },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Install Free",
+      "href": "https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code"
     }
   }
 }

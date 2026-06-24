@@ -1,0 +1,69 @@
+---
+title: "Build Gate: Block Builds That Fall Below Your Threshold"
+sidebarTitle: "Build Gate"
+description: "Install the Iris build hook to run a health check before every pnpm build, npm run build, or make build. Builds that fail the threshold are stopped before compilation."
+---
+
+The Iris build gate runs a health check before the compiler ever starts. Install it once from the command palette and every `pnpm build`, `npm run build`, or `make build` will first verify that all files in your workspace meet your configured threshold — builds that fail are stopped before compilation begins.
+
+<Note>
+  The build gate requires **Iris Pro**.
+</Note>
+
+## Installing
+
+Run **Iris: Install Build Hook** from the command palette. Iris detects your project type and writes the hook automatically — no manual edits to config files are required.
+
+## What the hook does
+
+<Steps>
+  <Step title="Detect the project type">
+    Iris looks for `package.json` (Node), `go.mod` (Go), or `pyproject.toml` / `requirements.txt` (Python) to determine how to install the hook.
+  </Step>
+  <Step title="Write the hook">
+    - **Node** — appends an Iris `prebuild` entry to `package.json`. Chains safely before any existing `prebuild` command.
+    - **Go / Python** — writes an `iris-check` Makefile target and wires it as a prerequisite of the `build` or `all` target.
+  </Step>
+  <Step title="Run on every build">
+    If any file falls below `minHealthScore`, the build exits with code `1` and lists all offending files. If all files pass, the build proceeds normally.
+  </Step>
+</Steps>
+
+Here is an example build session with two failing files:
+
+```bash
+$ pnpm build
+> iris check
+Checking 5 files against threshold 70...
+✓ src/lib/utils.ts         92 / 100
+✓ src/api/client.ts        78 / 100
+✗ src/auth/session.ts      61 / 100
+  → Hardcoded token-like value (line 42)
+✗ src/cart/checkout.ts     66 / 100
+  → Function exceeds length threshold (line 118)
+Build failed — 2 files below threshold (70)
+```
+
+Each file is scored and printed inline. Files below the threshold are marked with `✗` and the primary finding is shown beneath them. The build fails after all files are checked so the full list is always shown before exit.
+
+## Configuring the threshold
+
+Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum acceptable score. The default is `70` if the key is absent.
+
+```json
+{
+  "minHealthScore": 80
+}
+```
+
+<Tip>
+  The Node hook chains safely before any existing `prebuild` script. Uninstalling removes only the Iris entry — your original command is preserved.
+</Tip>
+
+## Insights tracking
+
+Every build hook run is logged in your account Insights as a pass or fail, so you can track enforcement activity over time without digging through build logs. View the breakdown at [iriscode.co/account/insights](https://iriscode.co/account/insights).
+
+## Uninstalling
+
+Run **Iris: Uninstall Build Hook** from the command palette. Iris removes only its own entry. For Node projects, if no other `prebuild` commands remain after removal, the `prebuild` key is deleted from `package.json` entirely.

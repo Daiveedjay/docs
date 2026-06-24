@@ -1,47 +1,96 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with Iris in Under Two Minutes"
+sidebarTitle: "Quick Start"
+description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture — from zero to first scan in two minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through everything you need to get Iris running: installing the extension, reading your first file score, scanning your workspace, and previewing your enforcement posture against five built-in thresholds. By the end you'll have a clear picture of where your codebase stands — and what it would take to enforce a gate on it.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Install Iris from the VS Code Marketplace">
+    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris**, and click **Install**. The Iris icon appears in the Activity Bar as soon as the install completes — click it to open the sidebar.
 
-    ```bash
-    npm install your-package
-    ```
+    <Note>
+      Iris installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way — or you can [install the `.vsix` manually](/installation).
+    </Note>
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Open a supported file and read the File tab">
+    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris scores it automatically — no command needed.
+
+    The **File tab** in the Iris sidebar shows:
+
+    - **Enforcement snapshot** — a top-of-file readiness summary with your score, blockers, hook posture, and trend direction
+    - **Health score** — a 0–100 composite score recomputed on every save
+    - **Blockers and warnings** — findings that penalise your score, each clickable to jump to the source line
+    - **Function inventory** — every detected function with its line number, length, and complexity
+    - **Code smells** — TODOs, magic numbers, debug prints, unused variables, and long parameter lists grouped in one section
+
+    Save the file and watch the score update in real time.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+
+  <Step title="Run a workspace scan">
+    Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris: Analyse Workspace**.
+
+    Iris crawls every supported file in the project and populates:
+
+    - **Workspace Readiness** — an aggregate health score with blocker and warning counts across the whole project
+    - **Hotspot rankings** — the largest and most complex files ranked first, so you know where to focus
+    - **Unused packages** — dependencies declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` that are never imported
+    - **Issues tab** — all blocking issues and warning-level findings aggregated in one filterable list
+    - **TODOs tab** — every TODO, FIXME, and HACK comment across your project
+
+    Results are cached — navigate between tabs and come back without re-scanning.
+  </Step>
+
+  <Step title="Preview your enforcement posture">
+    Scroll to the bottom of the **File tab** and click **Preview Gate**. Iris runs a background workspace scan and renders your posture against all five built-in presets in a read-only view:
+
+    | Preset | Min score | Best for |
+    |---|---|---|
+    | **Legacy** | 60 | Large codebases with accumulated debt |
+    | **Balanced** | 70 | A typical TypeScript project — best starting point |
+    | **TypeScript** | 76 | Raises the bar on type safety |
+    | **Strict** | 82 | Greenfield code or shared libraries |
+    | **Security** | 85 | Prioritises secrets and safety |
+
+    Each card shows exactly how many files would be blocked at that threshold. When you find the right preset, click **Apply** to write `presetId` to your `.irisconfig.json` — no config editing required.
+
+    <Note>
+      Gate Preview is free for all users and always read-only. No hooks are installed and no files are blocked until you explicitly set up enforcement. Pro users can drill into the list of failing files and their scores for each preset.
+    </Note>
+  </Step>
+
+  <Step title="Install the CLI (optional)">
+    To scan files, gate CI builds, and audit dependencies from the terminal without opening VS Code, install the Iris CLI:
 
     ```bash
-    your-cli start
+    npm install -g @iris-code/cli
     ```
+
+    Verify the install:
+
+    ```bash
+    iris --version
+    ```
+
+    The CLI shares the same thresholds as the extension. Run `iris check <file>` for a single-file scan, or `iris gate` in a CI pipeline to enforce your health threshold before merging.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Next Steps
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<CardGroup cols={2}>
+  <Card title="Enforcement" icon="shield-halved" href="/enforcement">
+    Install a git pre-push hook or build hook to automatically block files below your threshold.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/configuration">
+    Commit a `.irisconfig.json` to share thresholds and custom rules across your whole team.
+  </Card>
+  <Card title="CLI" icon="terminal" href="/cli">
+    Use `iris gate`, `iris deps`, and `iris todos` in terminals and CI pipelines outside VS Code.
+  </Card>
+  <Card title="Iris Pro" icon="bolt" href="/pro">
+    Unlock workspace scans, enforcement hooks, custom weights, and Account Insights with a 14-day free trial.
+  </Card>
+</CardGroup>

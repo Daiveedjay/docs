@@ -1,0 +1,242 @@
+---
+title: "Iris CLI Command Reference"
+sidebarTitle: "Commands"
+description: "Full reference for all nine Iris CLI commands: iris check, iris secrets, iris deps, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+---
+
+The Iris CLI provides nine commands covering the full code health workflow — scanning individual files, auditing dependencies, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
+
+---
+
+### iris check
+
+Scores source files and prints health findings. Single-file scans are free; scanning a directory or using `--staged` / `--changed` requires Pro.
+
+| Flag | Description |
+|---|---|
+| `<path>` | File or directory to scan |
+| `--staged` | Scan staged git files only **(Pro)** |
+| `--changed` | Scan files changed since the last commit **(Pro)** |
+| `--threshold <n>` | Minimum health score 0–100; overrides `.irisconfig.json` |
+| `--json` | Output results as JSON |
+
+```bash
+# Score a single file (free)
+iris check src/index.ts
+
+# Score a directory with a custom threshold (Pro)
+iris check src/ --threshold 80
+
+# Score staged files only (Pro)
+iris check --staged
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | All files at or above threshold |
+| `1` | One or more files below threshold |
+| `2` | Bad arguments or config error |
+
+---
+
+### iris secrets
+
+Scans the project for hardcoded credentials, API keys, tokens, and passwords. **Free — no authentication required.**
+
+| Flag | Description |
+|---|---|
+| `--path <dir>` | Directory to scan (defaults to current directory) |
+| `--ignore <pattern>` | Glob pattern for files to skip |
+| `--json` | Output results as JSON |
+
+```bash
+# Scan the current directory
+iris secrets
+
+# Scan a specific path and output JSON
+iris secrets --path ./src --json
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | No secrets found |
+| `1` | Secrets found |
+| `2` | Bad arguments |
+
+---
+
+### iris deps
+
+**Pro.** Audits dependencies in `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs.
+
+| Flag | Description |
+|---|---|
+| `--json` | Output results as JSON |
+| `--config <path>` | Path to `.irisconfig.json` |
+
+```bash
+# Audit dependencies in the current project
+iris deps
+
+# Output results as JSON
+iris deps --json
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | All dependencies current |
+| `1` | Outdated or vulnerable packages found |
+| `2` | Bad arguments |
+
+---
+
+### iris todos
+
+**Pro.** Lists every `TODO`, `FIXME`, `HACK`, and similar comment marker found across the project.
+
+| Flag | Description |
+|---|---|
+| `--path <dir>` | Directory to scan (defaults to current directory) |
+| `--json` | Output results as JSON |
+
+```bash
+# List all TODO/FIXME comments in the project
+iris todos
+
+# Scan a specific path and output JSON
+iris todos --path ./src --json
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | No findings |
+| `1` | Findings found |
+| `2` | Bad arguments |
+
+---
+
+### iris gate
+
+**Pro.** Runs a full workspace health check and exits `1` if any file falls below the configured threshold. This is the recommended command for CI quality gates.
+
+| Flag | Description |
+|---|---|
+| `--threshold <n>` | Override the minimum health score; takes precedence over `.irisconfig.json` |
+| `--json` | Output results as JSON |
+| `--config <path>` | Path to `.irisconfig.json` |
+| `--format github` | Emit inline PR annotations in GitHub Actions format |
+
+```bash
+# Run the gate with the configured threshold
+iris gate
+
+# Run the gate with a custom threshold
+iris gate --threshold 75
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | All files pass |
+| `1` | One or more files fail |
+| `2` | Bad arguments or config error |
+
+---
+
+### iris report
+
+**Pro.** Runs a workspace scan and exports the results as a standalone HTML file. The output mirrors the export produced by the VS Code extension.
+
+| Flag | Description |
+|---|---|
+| `--output <path>` | Output file path (default: `./iris-report.html`) |
+| `--config <path>` | Path to `.irisconfig.json` |
+
+```bash
+# Export a report to the default location
+iris report
+
+# Export a report to a custom path
+iris report --output ./reports/latest.html
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Report written successfully |
+| `1` | Scan failed |
+| `2` | Bad arguments |
+
+---
+
+### iris hook
+
+**Pro** for install and uninstall; **free** for status. Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands.
+
+| Subcommand | Description |
+|---|---|
+| `install git` | Write the Iris block to `.git/hooks/pre-push` |
+| `install build` | Wire Iris into the project build command |
+| `uninstall git` | Remove the Iris block from `.git/hooks/pre-push` |
+| `uninstall build` | Remove the Iris build entry |
+
+```bash
+# Install the git pre-push hook
+iris hook install git
+
+# Remove the build hook
+iris hook uninstall build
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | Hook operation failed |
+| `2` | Bad arguments |
+
+---
+
+### iris auth
+
+Manages authentication credentials. See the [Authentication](/cli/auth) page for the full guide.
+
+| Subcommand | Description |
+|---|---|
+| `login` | Browser-based OAuth flow (interactive) |
+| `login --token <key>` | Licence token flow (non-interactive) |
+| `status` | Confirm the active session |
+| `logout` | Remove stored credentials |
+
+```bash
+# Sign in via browser
+iris auth login
+
+# Check the current session
+iris auth status
+```
+
+---
+
+### iris config
+
+Reads or writes `.irisconfig.json`. With no arguments, prints the resolved configuration. Pass `key=value` pairs to set individual settings.
+
+| Flag | Description |
+|---|---|
+| `<key>=<value>` | Set a config value (e.g. `minHealthScore=80`) |
+| `--global` | Read or write `~/.iris/config.json` instead of the project file |
+| `--path <dir>` | Project directory to resolve config from |
+
+```bash
+# Print the resolved config
+iris config
+
+# Set the minimum health score in the project config
+iris config minHealthScore=80
+
+# Read or write the global config
+iris config --global
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Success |
+| `2` | Invalid key or arguments |

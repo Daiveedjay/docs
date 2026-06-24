@@ -1,0 +1,104 @@
+{
+  "projectType": "saas",
+  "projectName": "Iris",
+  "projectDescription": "Iris is a VS Code extension and CLI tool that scores code health on every save, surfaces problems in the editor, and enforces quality thresholds via git hooks, build hooks, and CI pipelines — all running entirely on your machine with no code upload.",
+  "theme": "luma",
+  "primaryColor": "#040404",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation",
+              "pro"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/file-analysis",
+              "features/workspace-analysis",
+              "features/editor-integration",
+              "features/language-support"
+            ]
+          },
+          {
+            "group": "Enforcement",
+            "pages": [
+              "enforcement/gate-preview",
+              "enforcement/git-hook",
+              "enforcement/build-gate",
+              "enforcement/github-actions",
+              "enforcement/hardcoded-secrets",
+              "enforcement/inline-diagnostics",
+              "enforcement/dependents-table"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/irisconfig",
+              "configuration/config-studio",
+              "configuration/scoring-weights",
+              "configuration/vscode-settings"
+            ]
+          },
+          {
+            "group": "CLI",
+            "pages": [
+              "cli/overview",
+              "cli/auth",
+              "cli/commands",
+              "cli/ci"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/scoring",
+              "reference/commands",
+              "changelog"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Per-file health score (0–100) recomputed on every save",
+    "Workspace and folder-level aggregate analysis with ranked hotspots",
+    "Gate Preview — read-only enforcement posture check against 5 preset thresholds",
+    "Git pre-push hook enforcement blocking pushes below your health threshold",
+    "Build hook enforcement for Node, Go, and Python projects",
+    "GitHub Actions CI integration with inline PR annotations",
+    "Hardcoded secrets detection (two-layer: variable names + credential formats)",
+    "Inline diagnostics as editor squiggles and VS Code Problems panel entries",
+    "Dependency audit for outdated versions and CVEs (npm, Go modules, Python)",
+    "Full CLI suite (`@iris-code/cli`) for terminal and CI use without VS Code",
+    "Config presets (legacy, balanced, typescript, strict, security) shareable via `.irisconfig.json`",
+    "Config Studio — visual editor with live JSON preview and one-click sync to VS Code",
+    "Custom health score weights (Pro) to tune how findings affect the 0–100 score",
+    "Trend tracking — daily health score snapshots showing codebase improvement or regression",
+    "Supports TypeScript, JavaScript, Go, and Python"
+  ],
+  "publicApiSurface": [
+    "iris check <path> [--staged] [--changed] [--threshold <n>] [--json]",
+    "iris secrets [--path <dir>] [--ignore <pattern>] [--json]",
+    "iris gate [--threshold <n>] [--json] [--config <path>] [--format github]",
+    "iris deps [--json] [--config <path>]",
+    "iris todos [--path <dir>] [--json]",
+    "iris report [--output <path>] [--config <path>]",
+    "iris hook install|uninstall git|build",
+    "iris auth login|logout|status [--token <key>]",
+    "iris config [<key>=<value>] [--global] [--path <dir>]",
+    ".irisconfig.json: minHealthScore, presetId, functionLengthThreshold, fileLengthThreshold, gateMaxSecrets, gateMaxComplexity, gateMaxFileLength, gateMaxSmellsPerFile, healthScoreWeights, severityOverrides, ignoreFiles, inlineDiagnostics",
+    "IRIS_LICENCE_TOKEN environment variable for CI authentication"
+  ]
+}

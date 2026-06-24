@@ -1,0 +1,198 @@
+---
+title: "Configure Iris with .irisconfig.json"
+sidebarTitle: ".irisconfig.json"
+description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Supports config presets, custom thresholds, gate limits, and severity overrides."
+---
+
+Drop a `.irisconfig.json` at your project root and commit it — every developer on the team runs Iris with the same thresholds, no per-machine drift. Iris resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
+
+<Note>
+  **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
+</Note>
+
+## Config presets (Free + Pro)
+
+The fastest way to get started is a preset. Add `presetId` and commit — your whole team is aligned in one line, no threshold spreadsheet required.
+
+```json .irisconfig.json
+{
+  "presetId": "legacy"
+}
+```
+
+Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`.
+
+<Tabs>
+  <Tab title="Free">
+    Iris applies the shipped preset values as the source of truth. Local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
+  </Tab>
+  <Tab title="Pro">
+    The preset acts as a base layer. Any threshold you override locally is merged on top, giving your team a customisable baseline without starting from scratch.
+  </Tab>
+</Tabs>
+
+## Full custom config (Pro)
+
+For complete control over every rule, write out the full config. Every key is optional — include only the ones you want to override.
+
+```json .irisconfig.json
+{
+  // Thresholds — structural size limits
+  "functionLengthThreshold": 40,
+  "fileLengthThreshold": 300,
+  "maxFunctionsPerFile": 10,
+  "maxImportsPerFile": 8,
+  "maxParameterCount": 5,
+  "complexityThreshold": 7,
+
+  // Detection toggles — turn individual rule categories on or off
+  "enableConsoleLogWarnings": true,
+  "enableMagicNumberDetection": true,
+  "enableTodoDetection": true,
+  "enableLongParamDetection": true,
+  "enableUnusedDetection": true,
+  "enableMissingReturnTypeWarnings": true,
+  "enableSecretsDetection": true,
+
+  // Display — UI and sidebar options
+  "enableCodeLens": true,
+  "enableStatusBar": true,
+  "enableInlineDiagnostics": true,
+  "inlineDiagnostics": {
+    "hardcodedSecrets": true,
+    "errorWarnings": false,
+    "warningLevelWarnings": false,
+    "tsIgnore": true,
+    "unusedFunctions": true,
+    "anyUsage": true,
+    "consoleLogs": false,
+    "magicNumbers": false,
+    "longParamLists": false,
+    "unusedVars": false,
+    "todos": false
+  },
+  "sidebarFontSize": 14,
+
+  // Gate thresholds — used by the CLI and git pre-push hook
+  "minHealthScore": 70,
+  "gateMaxSecrets": 0,         // Pro — max hardcoded secrets workspace-wide
+  "gateMaxComplexity": 12,     // Pro — max complexity score per file
+  "gateMaxFileLength": 500,    // Pro — max line count per file
+  "gateMaxSmellsPerFile": 8,   // Pro — max total smells in a single file
+
+  // Ignore rules — skip files or functions from analysis
+  "ignoreFiles": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/generated/**"
+  ],
+  "ignoreFunctions": [
+    "main",
+    "handler"
+  ],
+  "testConvention": "colocated",
+
+  // Severity overrides — change the severity level per rule
+  "severityOverrides": {
+    "file-too-long": "warning",
+    "function-too-long": "warning",
+    "too-many-functions": "warning",
+    "too-many-imports": "warning",
+    "no-exports": "warning"
+  },
+
+  // Scoring weights (Pro) — points deducted per finding type
+  "healthScoreWeights": {
+    "hardcodedSecret": 10,
+    "errorWarning": 5,
+    "warningWarning": 3,
+    "anyUsage": 2,
+    "tsIgnore": 3,
+    "consoleLog": 1,
+    "deepNesting": 2,
+    "longParamList": 1,
+    "unusedVar": 1,
+    "unusedFunction": 2
+  }
+}
+```
+
+### Thresholds
+
+These keys set the structural size limits that trigger warnings in the editor and sidebar.
+
+| Key | Default | What it controls |
+|-----|---------|-----------------|
+| `functionLengthThreshold` | `40` | Lines before a function is flagged |
+| `fileLengthThreshold` | `300` | Lines before a file is flagged |
+| `maxFunctionsPerFile` | `10` | Max functions before the file is flagged |
+| `maxImportsPerFile` | `8` | Max third-party imports before flagging |
+| `maxParameterCount` | `5` | Max parameters before a function is flagged |
+| `complexityThreshold` | `7` | Complexity score that triggers a status bar warning |
+
+### Detection toggles
+
+Turn individual detection categories on or off without removing findings from the sidebar entirely.
+
+| Key | Default | What it controls |
+|-----|---------|-----------------|
+| `enableConsoleLogWarnings` | `true` | Flag `console.log` / `print()` / `fmt.Print*` |
+| `enableMagicNumberDetection` | `true` | Flag raw numeric literals without a named binding |
+| `enableTodoDetection` | `true` | Flag `TODO` / `FIXME` / `HACK` comments |
+| `enableLongParamDetection` | `true` | Flag functions with too many parameters |
+| `enableUnusedDetection` | `true` | Flag unused variables and functions |
+| `enableMissingReturnTypeWarnings` | `true` | Flag exported functions missing return types (TS/JS only) |
+| `enableSecretsDetection` | `true` | Enable two-layer hardcoded credential scanning (JS/TS, Go, Python) |
+
+### Display
+
+Control what Iris renders in the editor UI.
+
+| Key | Default | What it controls |
+|-----|---------|-----------------|
+| `enableCodeLens` | `true` | Show inline Code Lens hints |
+| `enableStatusBar` | `true` | Show the Iris item in the status bar |
+| `enableInlineDiagnostics` | `true` | Master toggle for squiggles and Problems panel entries |
+| `sidebarFontSize` | `14` | Base font size in pixels (10–20) for the Iris sidebar and detached panel |
+
+The `inlineDiagnostics` object lets you opt individual categories in or out once `enableInlineDiagnostics` is `true`.
+
+### Gate thresholds
+
+Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspaces that exceed a gate limit fail the check.
+
+| Key | Tier | What it controls |
+|-----|------|-----------------|
+| `minHealthScore` | Free + Pro | Files below this score are considered failures |
+| `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide — set to `0` to require a clean workspace |
+| `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
+| `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
+| `gateMaxSmellsPerFile` | Pro | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
+
+### Ignore rules
+
+| Key | What it controls |
+|-----|-----------------|
+| `ignoreFiles` | Glob patterns for files to skip entirely in workspace analysis |
+| `ignoreFunctions` | Function names Iris should never flag, regardless of length or complexity |
+| `testConvention` | Where Iris looks for test files: `"colocated"` (default), `"dedicated"`, or `"both"` |
+
+### Scoring weights
+
+`healthScoreWeights` is a Pro key that lets you override how many points each finding type subtracts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights) for the full reference and examples.
+
+## Severity overrides
+
+Override the severity of any warning type on a per-project basis using the `severityOverrides` object. Each key accepts `"error"`, `"warning"`, or `"info"`.
+
+| Warning key | Valid severities |
+|-------------|-----------------|
+| `file-too-long` | `error` · `warning` · `info` |
+| `function-too-long` | `error` · `warning` · `info` |
+| `too-many-functions` | `error` · `warning` · `info` |
+| `too-many-imports` | `error` · `warning` · `info` |
+| `no-exports` | `error` · `warning` · `info` |
+
+<Tip>
+  Only include keys you want to override — anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
+</Tip>

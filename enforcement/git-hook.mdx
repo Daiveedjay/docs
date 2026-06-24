@@ -1,0 +1,55 @@
+---
+title: "Git Pre-Push Hook: Block Weak Code Before It Leaves Your Machine"
+sidebarTitle: "Git Hook"
+description: "Install Iris's git pre-push hook to automatically block any push where a file scores below your configured health threshold. Requires Iris Pro."
+---
+
+The Iris git pre-push hook intercepts every `git push` before it leaves your machine. If any file in your workspace scores below your configured health threshold, the push is blocked and the offending files are listed — so broken code never reaches your remote.
+
+<Note>
+  The git pre-push hook requires **Iris Pro**.
+</Note>
+
+## Installing
+
+Run **Iris: Install Git Hook** from the command palette. Iris writes the hook to `.git/hooks/pre-push` and makes it executable automatically. On first activation in a git repo, Iris offers to install the hook for you — if you dismiss the prompt, that decision is stored per-workspace and you won't be prompted again.
+
+## What the hook does
+
+Each time you run `git push`, the hook:
+
+- Resolves the workspace root via `git rev-parse --show-toplevel`
+- Runs `iris check` against your workspace using the bundled CLI
+- Blocks the push and lists offending files if any file score falls below `minHealthScore`
+- Exits cleanly and allows the push to proceed if all files pass
+
+Here is an example terminal session with one failing file:
+
+```bash
+$ git push origin main
+Running pre-push hook (iris)...
+Checking workspace against threshold 70...
+✓ src/lib/utils.ts         92 / 100
+✓ src/api/client.ts        78 / 100
+✗ src/auth/session.ts      61 / 100
+  → Hardcoded token-like value (line 42)
+Push blocked — 1 file below threshold (70)
+```
+
+## Configuring the threshold
+
+Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum acceptable score. The default is `70` if the key is absent.
+
+```json
+{
+  "minHealthScore": 80
+}
+```
+
+<Tip>
+  The hook chains safely with any existing pre-push hook content. Iris appends its block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, leaving anything already in the file untouched.
+</Tip>
+
+## Uninstalling
+
+Run **Iris: Uninstall Git Hook** from the command palette. Iris removes only its own block between the markers. If removing the block leaves only a shebang line, the hook file is deleted entirely.

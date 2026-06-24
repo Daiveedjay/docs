@@ -1,0 +1,50 @@
+---
+title: "Supported Languages: TypeScript, JavaScript, Go, Python"
+sidebarTitle: "Language Support"
+description: "Iris natively parses and scores TypeScript, JavaScript (.js/.jsx/.ts/.tsx), Go, and Python with language-specific function detection, import tracking, and debug-print flagging."
+---
+
+Iris supports four languages with native parsers and language-aware rules. Rather than applying a generic analysis to every file, Iris routes each file through a dedicated parser that understands the idioms of that language — how functions are declared, what constitutes a third-party import, which debug-print patterns to flag, and how to detect unused packages. The result is a health score and set of findings that are meaningful in context, not just a count of lines and tokens.
+
+<Note>
+  Health scores are **not directly comparable across languages**. TypeScript
+  files carry TypeScript-specific deductions (for `any` usage, `@ts-ignore`
+  suppressions, missing return types, and non-null assertions) that do not
+  apply to Go or Python. A score of 80 in a Go file and a score of 80 in a
+  TypeScript file reflect different things.
+</Note>
+
+<Tabs>
+  <Tab title="TypeScript & JavaScript">
+    Iris scans `.js`, `.jsx`, `.ts`, and `.tsx` files with a single TS/JS parser. All four extensions are treated as the same language family and share the same rule set.
+
+    **TypeScript / JavaScript-specific features:**
+
+    - **Unused import detection** — named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. This detection is **TS/JS only** — Go and Python handle unused imports at the compiler or runtime level.
+    - **TypeScript quality metrics** — `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript Metrics](/features/file-analysis#typescript-metrics) for the full breakdown.
+    - **Debug prints** — `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
+  </Tab>
+
+  <Tab title="Go">
+    Iris parses `.go` files with a Go-specific analyser. Language-aware behaviours include:
+
+    - **Function detection** — both top-level functions (`func Name(`) and methods (`func (r *T) Name(`) are detected and listed with line numbers
+    - **Third-party imports** — packages are identified as third-party when their root path segment contains a dot (e.g. `golang.org/x/...`, `pkg.example.com/...`)
+    - **Debug prints** — `fmt.Print*`, `log.Print*`, `log.Fatal*`, and `log.Panic*` calls are flagged in Code Lens and in the Code Smells section; controlled by the `enableConsoleLogWarnings` toggle
+    - **No-exports warning** — Iris raises a warning if no capitalised (exported) function names are found in the file
+    - **Unused Go modules** — a workspace scan reads `go.mod` and flags any declared module that is never imported across `.go` files in the project
+    - **`vendor/` directory** — skipped automatically during workspace and folder scans
+  </Tab>
+
+  <Tab title="Python">
+    Iris parses `.py` files with a Python-specific analyser. Language-aware behaviours include:
+
+    - **Function detection** — all `def` declarations are detected, including top-level functions and class methods, each listed with its line number
+    - **Third-party imports** — `import pkg` and `from pkg import ...` are evaluated; stdlib modules are excluded automatically so only genuine third-party packages appear
+    - **Debug prints** — `print()` calls are flagged in Code Lens and in the Code Smells section; controlled by the `enableConsoleLogWarnings` toggle
+    - **No public functions warning** — Iris raises a warning if every function in the file starts with `_` (private by convention), indicating no public API is exposed
+    - **Unused Python packages** — a workspace scan reads `requirements.txt` and `pyproject.toml` and flags any declared package that is never imported across `.py` files in the project
+    - **Auto-skipped directories** — `__pycache__`, `.venv`, and `venv` directories are skipped automatically during workspace and folder scans
+    - **Parameter counting** — `self` and `cls` are excluded from the parameter count when evaluating long parameter list warnings
+  </Tab>
+</Tabs>

@@ -1,0 +1,83 @@
+---
+title: "Iris CLI: Code Health Enforcement from the Terminal"
+sidebarTitle: "Overview"
+description: "The @iris-code/cli package brings Iris health analysis to any terminal, build script, or CI pipeline. Nine commands cover scanning, gating, secrets, deps, and hooks."
+---
+
+The Iris CLI runs the same health analysis as the VS Code extension from any terminal, build script, or CI pipeline — no editor required. Install it once, point it at any file or directory, and get the same scores and findings you see inline in your editor.
+
+## How it differs from the extension
+
+The VS Code extension is **interactive**: it scores files as you work and surfaces findings inline while you type. The CLI is **non-interactive**: it scans, prints results, and exits with a code you can act on. Use the CLI wherever there is no editor — pre-commit hooks, build pipelines, and CI workflows.
+
+## Installing
+
+Install the CLI globally with npm:
+
+```bash
+npm install -g @iris-code/cli
+```
+
+<Note>
+  Node 18 or later is required. Run `iris --version` after installation to confirm the package is on your PATH.
+</Note>
+
+## Quick start
+
+<Steps>
+  <Step title="Install the CLI">
+    ```bash
+    npm install -g @iris-code/cli
+    ```
+  </Step>
+  <Step title="Authenticate (opens browser)">
+    ```bash
+    iris auth login
+    ```
+    A browser window opens for OAuth sign-in. Your credentials are saved to `~/.iris/credentials` for subsequent commands.
+  </Step>
+  <Step title="Scan the current directory">
+    ```bash
+    iris check .
+    ```
+    Iris scores every source file in the working directory and prints a summary to stdout, then exits with code `0` (all pass) or `1` (one or more files below threshold).
+  </Step>
+</Steps>
+
+## Free commands
+
+These commands are available without an Iris Pro licence:
+
+- **`iris check <file>`** — single-file health scan; scores and prints findings for one source file
+- **`iris secrets`** — scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
+- **`iris config`** — view the resolved `.irisconfig.json` or write individual settings
+- **`iris report`** — export a standalone HTML health report for the workspace
+
+## Pro commands
+
+These commands require an active Iris Pro licence:
+
+- **`iris check <dir>`** — scan an entire directory tree and score every source file
+- **`iris check --staged`** — scan only files currently staged in git
+- **`iris check --changed`** — scan only files changed since the last commit
+- **`iris deps`** — audit `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs
+- **`iris todos`** — list every `TODO`, `FIXME`, and `HACK` comment across the project
+- **`iris gate`** — CI quality gate; exits `1` if any file falls below the configured health threshold
+- **`iris hook`** — install or remove git pre-push and build hooks
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/cli/auth">
+    Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
+  </Card>
+  <Card title="Commands" icon="terminal" href="/cli/commands">
+    Full reference for all nine Iris CLI commands, flags, and exit codes.
+  </Card>
+  <Card title="CI Integration" icon="gear" href="/cli/ci">
+    Use `iris gate` as a quality gate in GitHub Actions, GitLab CI, or any shell pipeline.
+  </Card>
+  <Card title="GitHub Actions" icon="github" href="/enforcement/github-actions">
+    Full workflow guide including branch protection rules and threshold configuration.
+  </Card>
+</CardGroup>

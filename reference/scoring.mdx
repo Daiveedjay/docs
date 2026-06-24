@@ -1,0 +1,73 @@
+---
+title: "Health Score and Complexity: How Iris Scores Your Code"
+sidebarTitle: "Scoring & Metrics"
+description: "Iris calculates a 0–100 health score per file by starting at 100 and deducting points per finding. Complexity is a separate 1–10 scale for cognitive difficulty."
+---
+
+Iris calculates two scores per file — a **health score** (0–100) and a **complexity score** (1–10). Both scores are fully deterministic: the same code always produces the same result, regardless of when or where you run the analysis.
+
+## Health score
+
+The health score is a per-file composite measure of code quality. It starts at 100 and deductions are applied based on findings. The floor is 0 — scores never go negative. Use the health score to answer the question: *is this code problematic?*
+
+| Finding | Default deduction | Weight key (Pro) |
+|---|---|---|
+| Hardcoded secret | −10 each | `hardcodedSecret` |
+| Error-level warning | −5 each | `errorWarning` |
+| Warning-level warning | −3 each | `warningWarning` |
+| `@ts-ignore` | −3 each | `tsIgnore` |
+| `any` usage | −2 each | `anyUsage` |
+| Deep nesting (per function) | −2 each | `deepNesting` |
+| Unused function | −2 each | `unusedFunction` |
+| `console.log` | −1 each | `consoleLog` |
+| Long parameter list (per function) | −1 each | `longParamList` |
+| Unused variable | −1 each | `unusedVar` |
+
+<Note>
+  `@ts-ignore` carries a heavier penalty than `console.log` because it is an active decision to suppress the type system — it doesn't just add noise, it removes a safety net. A `console.log` is clutter; a `@ts-ignore` is a deliberate override of a type error.
+</Note>
+
+<Note>
+  Unused functions carry a heavier penalty than unused variables because a dead function is a maintenance trap. Someone will eventually spend time tracing it and find it does nothing. An unused variable is easier to spot and cheaper to remove.
+</Note>
+
+<Note>
+  Error-level warnings cost more than warning-level warnings, which cost more than info-level findings. This means a file with one long function is flagged but not cratered — the deduction ladder reflects the actual severity of each finding type.
+</Note>
+
+## Complexity score
+
+The complexity score is a separate 1–10 scale that answers a different question from health: not *"is this code problematic?"* but *"how hard is this code to reason about?"* The score starts at 1 and caps at 10. Each factor has a cap on its contribution — no single factor can max out the score alone.
+
+| Factor | What it measures |
+|---|---|
+| Function density | Number of functions relative to file size. Reflects how much is packed into one place. |
+| Max indentation depth | Proxy for nesting complexity. Deeply indented code usually means deeply nested logic. |
+| Control flow count | Every `if`, `for`, `while`, `switch`, `catch`, and ternary is a decision point that multiplies paths through the code. |
+| Third-party import volume | A file pulling in many external dependencies tends to be doing many things. |
+
+## Workspace health score
+
+The workspace health score is the average of all per-file health scores across your scanned project. One very unhealthy file will pull the average down but won't dominate the score unfairly — the average distributes the signal across every file Iris has analysed.
+
+## Language differences
+
+<Warning>
+  TypeScript-specific deductions — `any` usage, `@ts-ignore`, non-null assertions, and missing return types — only apply to JS/TS files and are automatically zeroed out for Go and Python. Health scores are not directly comparable across languages: a Go file and a TypeScript file with identical structure may score differently.
+</Warning>
+
+## Configurable thresholds
+
+The thresholds that feed into the health score are all configurable. You can adjust them via VS Code settings or a `.irisconfig.json` file at your project root. Because two projects can have different thresholds, the same file may produce different health scores in different repositories.
+
+Configurable thresholds include:
+
+- **Function length** — maximum number of lines per function before a deduction applies
+- **File length** — maximum number of lines per file
+- **Max functions per file** — ceiling on the number of functions in a single file
+- **Max imports per file** — ceiling on external import count
+- **Max parameter count** — maximum number of parameters per function before `longParamList` fires
+
+<Tip>
+  Pro users can override any deduction weight via `healthScoreWeights` in `.irisconfig.json`. Setting a weight to `0` removes that finding's contribution to the score entirely without disabling detection — the finding still appears in results, it just doesn't affect the number. See [Scoring Weights](/configuration/scoring-weights) for the full reference.
+</Tip>

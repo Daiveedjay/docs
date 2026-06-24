@@ -1,0 +1,103 @@
+---
+title: "GitHub Actions: Block Merges With Iris CI Enforcement"
+sidebarTitle: "GitHub Actions"
+description: "Add Iris health checks to GitHub Actions to block merges when files fall below your threshold. Get inline PR annotations at failing lines. Requires Iris Pro."
+---
+
+Add Iris to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners — your code never leaves your infrastructure.
+
+## What the workflow does
+
+- Installs the Iris CLI via `npm install -g @iris-code/cli`
+- Runs `iris gate .` against your workspace using your configured threshold
+- Renders inline annotations on the pull request diff at the exact failing lines
+- Exits with code `1` if the gate fails, blocking the merge
+- Writes a pass/fail summary table to the workflow run's job summary
+
+## Full workflow
+
+Copy the following into `.github/workflows/iris.yml` in your repository:
+
+```yaml
+name: Iris
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  iris:
+    name: iris
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Install Iris CLI
+        run: npm install -g @iris-code/cli
+
+      - name: Run Iris enforcement gate
+        run: iris gate . --format github
+        env:
+          IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+<Tip>
+  Add `IRIS_LICENCE_TOKEN` to your repository secrets under **Settings → Secrets and variables → Actions**. Directory scans require a Pro licence — the workflow runs as Free and skips the directory check if no token is provided.
+</Tip>
+
+## Setting a threshold
+
+Control the minimum health score by adding a `.irisconfig.json` at your project root:
+
+```json
+{
+  "minHealthScore": 75,
+  "ignoreFiles": ["**/*.test.ts", "**/generated/**"]
+}
+```
+
+If no config file is present, the default threshold of `70` is used.
+
+## Inline annotations
+
+The `--format github` flag emits GitHub workflow commands so each broken gate rule renders as a red annotation on the relevant file and line in the PR diff — no extra parsing step required. The flag also writes a pass/fail summary table to the run's job summary. It works on both `iris gate` and `iris check`.
+
+## Keeping a JSON report
+
+To capture a machine-readable report as a build artifact — regardless of whether the gate passes or fails — add these two steps after the enforcement step:
+
+```yaml
+      - name: Save JSON report
+        if: always()
+        run: iris gate . --format json --output iris-report.json
+        env:
+          IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: iris-report
+          path: iris-report.json
+```
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Gate passed — workflow continues |
+| `1` | Gate failed — workflow blocked |
+| `2` | Invalid arguments or config error |
+
+<Note>
+  Generate this workflow directly from VS Code with **Iris: Add GitHub Actions Workflow**. Use **Iris: Add CI Pipeline Snippet** to get a ready-made snippet for GitLab CI, Bitbucket Pipelines, an npm/pnpm/yarn script, or a generic shell step instead.
+</Note>

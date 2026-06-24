@@ -1,0 +1,89 @@
+---
+title: "Use Iris in CI Pipelines: GitHub Actions, GitLab, and Shell"
+sidebarTitle: "CI Integration"
+description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
+---
+
+The Iris CLI is designed for non-interactive pipelines — install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
+
+## Exit codes
+
+Use exit codes to control pipeline behaviour. `iris gate` follows the same conventions as all other Iris commands:
+
+| Exit code | Meaning | Pipeline action |
+|---|---|---|
+| `0` | All files pass the threshold | Pipeline continues |
+| `1` | One or more files below threshold | Fail the build |
+| `2` | Bad arguments or invalid config | Fix the workflow step |
+
+## Setting IRIS_LICENCE_TOKEN
+
+Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
+
+<Note>
+  `iris secrets` runs without any authentication at all. Use it for a free CI scan that requires no licence — it works on any runner regardless of `IRIS_LICENCE_TOKEN`.
+</Note>
+
+## GitHub Actions
+
+The example below shows a minimal `iris gate` step. For the full workflow including branch protection rules and threshold configuration, see the [GitHub Actions](/enforcement/github-actions) guide.
+
+```yaml
+name: Iris health check
+on: [push, pull_request]
+
+jobs:
+  iris:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm install -g @iris-code/cli
+      - name: Gate check
+        run: iris gate
+        env:
+          IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+<Note>
+  For inline PR annotations, use `iris gate . --format github`. See the full guide at [/enforcement/github-actions](/enforcement/github-actions).
+</Note>
+
+To add a free secrets scan that needs no licence, include this step independently:
+
+```yaml
+      - name: Secrets scan (free, no licence)
+        run: |
+          npm install -g @iris-code/cli
+          iris secrets
+```
+
+## GitLab CI
+
+```yaml
+iris-gate:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g @iris-code/cli
+    - iris gate
+  variables:
+    IRIS_LICENCE_TOKEN: $IRIS_LICENCE_TOKEN
+```
+
+## Generic shell
+
+For any CI environment that runs arbitrary shell scripts:
+
+```bash
+#!/bin/sh
+set -e
+npm install -g @iris-code/cli
+iris gate --threshold 80
+```
+
+<Tip>
+  Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage — gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
+</Tip>

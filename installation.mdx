@@ -1,0 +1,107 @@
+---
+title: "Install Iris in VS Code and Compatible Editors"
+sidebarTitle: "Installation"
+description: "Install Iris Code from the VS Code Marketplace or as a .vsix file in Cursor, Windsurf, or VSCodium. CLI available via npm."
+---
+
+Iris installs in three ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, or as a global npm package for terminal and CI use. Most users should start with the Marketplace — it handles updates automatically and requires no extra steps. If your editor isn't connected to the Marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
+
+## VS Code Marketplace (Preferred)
+
+The Marketplace install gives you automatic updates and the simplest setup path.
+
+<Steps>
+  <Step title="Open the Extensions panel">
+    Press `Ctrl+Shift+X` on Windows/Linux or `Cmd+Shift+X` on macOS to open the Extensions panel in VS Code.
+  </Step>
+  <Step title="Search for Iris">
+    Type **Iris** in the search box. Look for the extension published by **davidjaja**.
+  </Step>
+  <Step title="Install the extension">
+    Click **Install**. VS Code downloads and activates the extension immediately — no restart required.
+  </Step>
+  <Step title="Confirm the install">
+    The Iris icon appears in the Activity Bar. Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file — the Iris sidebar populates instantly with no configuration required.
+  </Step>
+</Steps>
+
+## Manual VSIX Install
+
+Download the `.vsix` file and install it yourself when you need to use Cursor, Windsurf, or VSCodium, or when your environment doesn't have Marketplace access.
+
+**Download URL:** [`https://www.iriscode.co/downloads/iris-code.vsix`](https://www.iriscode.co/downloads/iris-code.vsix)
+
+Once you have the file, install it using your editor's GUI or the command line:
+
+**Via the GUI (works in all editors):**
+
+1. Open the Extensions panel (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+2. Click the **⋯** menu at the top right of the panel
+3. Select **Install from VSIX...** and choose the downloaded file
+
+**Via the command line:**
+
+<Tabs>
+  <Tab title="VS Code">
+    ```bash
+    code --install-extension iris-code.vsix
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    ```bash
+    cursor --install-extension iris-code.vsix
+    ```
+  </Tab>
+  <Tab title="Windsurf">
+    ```bash
+    windsurf --install-extension iris-code.vsix
+    ```
+  </Tab>
+  <Tab title="VSCodium">
+    ```bash
+    codium --install-extension iris-code.vsix
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  Manual VSIX installs do not auto-update. When a new version of Iris is released, you need to re-download the `.vsix` file from `iriscode.co/downloads/iris-code.vsix` and re-install it using the same steps above.
+</Warning>
+
+## CLI Install
+
+The Iris CLI lets you scan files, run enforcement gates, audit dependencies, and aggregate TODOs from any terminal or CI pipeline — no VS Code required.
+
+Install it globally with npm:
+
+```bash
+npm install -g @iris-code/cli
+```
+
+Verify the installation:
+
+```bash
+iris --version
+```
+
+<Note>
+  The CLI requires **Node.js 18 or later**. Run `node --version` to check. If you need to upgrade Node, visit [nodejs.org](https://nodejs.org) or use a version manager like `nvm`.
+</Note>
+
+## System Requirements
+
+| Component | Requirement |
+|---|---|
+| **VS Code** | Version 1.85 or later |
+| **Compatible editors** | Cursor, Windsurf, VSCodium (any VS Code-compatible editor) |
+| **Node.js (CLI only)** | Version 18 or later |
+| **Operating system** | Windows, macOS, Linux |
+
+**Supported languages:**
+
+- TypeScript — `.ts`, `.tsx`
+- JavaScript — `.js`, `.jsx`
+- Go — `.go`
+- Python — `.py`
+
+No additional language servers, compilers, or runtimes are required for the extension. Iris analyses your files in-process using its own static analysis engine.

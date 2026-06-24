@@ -1,0 +1,264 @@
+---
+title: "Iris Changelog: Extension and CLI Release Notes"
+sidebarTitle: "Changelog"
+description: "Release notes for the Iris VS Code extension and @iris-code/cli. Updates ship automatically through the VS Code Marketplace."
+---
+
+These are the release notes for the Iris VS Code extension and the `@iris-code/cli` npm package. Updates to the extension ship automatically through the VS Code Marketplace — you do not need to reinstall to receive new versions.
+
+---
+
+## v1.6.1 — 17 Jun 2026
+
+<Note>**fix** — Python analysis correctness</Note>
+
+### Python analysis fixes: multi-line signatures and test-file secrets
+
+Two Python correctness fixes. Files using multi-line (Black-formatted) function or block signatures are no longer misreported as syntax errors, and test files no longer have their score penalised for fixture credentials.
+
+- **Fixed:** a Python `def`/`class`/`if`/`for`/`with` header that wraps across multiple lines (e.g. a long Black-formatted signature) was being flagged as a syntax error, scoring the file 0 and skipping all analysis. These files now analyse normally.
+- **Fixed:** the suspicious-name secret heuristic no longer fires in test files (`test_*.py`, `*_test.go`, `*.test.ts`, `tests/`, `__tests__/`, `conftest.py`, and similar), so fixture credentials like `password="secret123"` no longer reduce the score. Real provider token formats (AWS, Stripe, GitHub, and more) are still detected everywhere, including tests.
+
+---
+
+## v1.6.0 — 16 Jun 2026
+
+<Note>**feature** — CI enforcement</Note>
+
+### CI enforcement: GitHub Actions, inline PR annotations, and multi-CI snippets
+
+Iris 1.6.0 takes the same health gate you run locally and enforces it in CI. Run `iris gate . --format github` on every pull request to block merges and annotate the exact failing lines inline on the diff. Everything runs on your own runners — your code never leaves your infrastructure.
+
+- **Added** `--format github` to `iris check` and `iris gate`: emits GitHub Actions workflow commands so failing rules render as inline annotations on the pull request diff, and writes a pass/fail summary table to the run's job summary.
+- **Added** the `Iris: Add GitHub Actions Workflow` command (Pro): generates a ready-to-commit `.github/workflows/iris.yml` in your repo, pre-filled with your configured threshold.
+- **Added** the `Iris: Add CI Pipeline Snippet` command (Pro): generates an Iris step for GitLab CI, Bitbucket Pipelines, an npm/pnpm/yarn script, or a generic shell script.
+- **Added** a versioned JSON schema: all `--format json` output now carries a `schemaVersion` field (currently `1`) so scripts can depend on the payload shape.
+- **Changed** CI behaviour when no licence is present: Pro-only steps now skip and exit `0` instead of failing the build, with a non-blocking warning annotation inside GitHub runners, so a missing token does not turn the pipeline red with noise.
+- **Added** an `iris-alpine-amd64` binary for musl-based (Alpine) containers. The `npm install -g @iris-code/cli` route was already musl-safe and works unchanged.
+- **Published** `@iris-code/cli` 1.1.0 with the new `--format github` support, and bumped the example workflows to `actions/checkout@v5` and `actions/setup-node@v5` (Node 24).
+
+---
+
+## v1.5.0 — 10 Jun 2026
+
+<Note>**feature** — analytics and reliability</Note>
+
+### Analytics batching, push-blocked counter, and reliability improvements
+
+Iris 1.5.0 ships reliable background analytics, a Pro push-blocked counter, CLI event tracking, and reliability improvements across the extension and backend.
+
+- **Added** analytics batching: the extension buffers usage events in memory and flushes every 60 seconds. `push_blocked` events flush immediately. The buffer survives extension crashes via crash-safe persistence to `globalState`.
+- **Added** exponential backoff on consecutive analytics flush failures, with a clean flush on extension deactivate so no events are dropped on VS Code quit.
+- **Added** CLI analytics: `iris check`, `iris gate`, and `iris secrets` runs now emit a fire-and-forget event so hook-triggered runs appear in the Iris dashboard alongside extension activity.
+- **Added** push-blocked counter: the Pro sidebar now shows monthly pushes blocked, total pushes blocked, and the health score delta since Pro was activated. Resets the monthly count automatically on month rollover.
+- **Improved** reliability and hardening across the extension, backend, and web surfaces.
+
+---
+
+## v1.4.2 — 5 Jun 2026
+
+<Note>**fix** — documentation</Note>
+
+### Documentation and CLI reference updates
+
+Documentation clarity improvements and expanded CLI command reference across the extension and landing site.
+
+- **Improved** command reference documentation for the full CLI suite with clearer descriptions and examples.
+- **Updated** landing site copy to reflect the published `@iris-code/cli` npm package.
+
+---
+
+## v1.4.1 — 4 Jun 2026
+
+<Note>**fix** — welcome page</Note>
+
+### Welcome page improvements
+
+Enhanced welcome page layout with updated feature highlights and clearer onboarding paths.
+
+- **Refreshed** the VS Code welcome page with a new feature section layout and updated quick-start links.
+
+---
+
+## v1.4.0 — 3 Jun 2026
+
+<Note>**feature** — full CLI command suite</Note>
+
+### Full CLI command suite and npm package
+
+Iris 1.4.0 ships a complete command-line tool — available via `npm install -g @iris-code/cli`. Scan any project from your terminal, manage enforcement hooks without opening VS Code, audit dependencies for CVEs, and authenticate once with a persistent credentials file. No VS Code installation required.
+
+- **Added** `iris auth`: sign in via browser or licence token, store credentials in `~/.iris/credentials` (chmod 600). Subcommands: `iris auth login`, `iris auth logout`, and `iris auth status`. Credentials are read from the `IRIS_LICENCE_TOKEN` environment variable first, then the credentials file.
+- **Added** `iris secrets`: free hardcoded secret scanner across JS/TS/Go/Python. Two-layer detection — suspicious variable names and known token formats. Exits `1` if any findings. No licence required.
+- **Added** `iris deps`: audit all dependencies (`package.json`, `go.mod`, `requirements.txt`) for outdated versions and CVEs via the GitHub Advisory API. Results are cached for 24 hours. Store a GitHub PAT via `iris auth login` for higher rate limits.
+- **Added** `iris todos`: aggregate all `TODO`/`FIXME`/`HACK` comments across your codebase. Pro feature.
+- **Added** `iris gate`: run the full enforcement gate and show each configured rule's threshold vs actual value with per-rule PASS/FAIL. Pro feature.
+- **Added** `iris report`: generate a standalone dark-themed HTML scan report. Free. Defaults to `iris-report.html` in the current directory.
+- **Added** `iris hook`: manage pre-push and pre-build hooks from the terminal without VS Code. `iris hook git|build install|uninstall|status`. Install/uninstall is Pro; status is free.
+- **Added** `iris config`: `iris config init` generates a `.irisconfig.json` with interactive preset selection. `iris config validate` reports any problems in an existing config.
+- **Updated** `iris check`: file scans remain free. Directory scans, `--staged`, and `--changed` now require Pro — consistent with workspace analysis in the extension.
+- **Published** `@iris-code/cli` to npm with Linux and Windows self-contained binaries on each GitHub Release.
+- **Added** GitHub Actions docs page at `iriscode.co/docs/enforcement/github-actions` covering the full CI workflow, gate variant, exit codes, and threshold configuration.
+- **Improved** hook install messages in the extension to inform users to run `iris auth login` or set `IRIS_LICENCE_TOKEN` so the hook can validate at push or build time.
+
+---
+
+## v1.3.0 — 28 May 2026
+
+<Note>**feature** — Gate Preview and custom scoring weights</Note>
+
+### Gate Preview, preset cycling, and custom scoring weights
+
+Iris 1.3.0 ships Gate Preview — a free, read-only view of how your workspace scores against all five preset thresholds. Cycle through presets with prev/next controls or jump directly from the chip strip, drill into failing files (Pro), and apply the chosen preset in one click. Also ships custom health score weights and four new gate enforcement config fields for Pro users.
+
+- **Added** Gate Preview: open it from the bottom of the File tab. It runs a full workspace scan and shows pass/fail counts for each of the five preset thresholds (`legacy`, `balanced`, `typescript`, `strict`, `security`) with proportion bars, a threshold card, and a recommendation for the next enforcement step. Always read-only — no files are blocked and no config is written.
+- **Added** preset cycling: use prev/next arrows or click any chip in the preset strip to jump between presets. The focused preset shows a full drilldown and an Apply button so you can lock in a threshold in one click without leaving the surface.
+- **Added** per-file drilldown for Pro users: expand any preset row to see the exact files that would be blocked, their health scores, and the warning pills driving the failure.
+- **Added** custom health score weights for Pro users: set `healthScoreWeights` in `.irisconfig.json` to change how many points each finding type deducts from the base 100. Supported keys: `hardcodedSecret`, `errorWarning`, `warningWarning`, `anyUsage`, `tsIgnore`, `consoleLog`, `deepNesting`, `longParamList`, `unusedVar`, `unusedFunction`.
+- **Added** four gate enforcement config fields for Pro users: `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, and `gateMaxSmellsPerFile`. Set these in `.irisconfig.json` and the CLI enforces them on every push alongside `minHealthScore`.
+- **Improved** licence reliability: server errors (5xx) and network timeouts now apply an offline grace period instead of revoking Pro. Activation skips the network call if your licence was validated within the last 24 hours.
+
+---
+
+## v1.2.1 — 27 May 2026
+
+<Note>**fix** — sidebar UX</Note>
+
+### Collapsible Pro card
+
+A small follow-up to 1.2.0 that adds a collapsible Pro-status card in the sidebar and detached panel.
+
+- **Added** a collapsible Pro-status card in the sidebar and detached panel. Once signed in, the card collapses to a compact chip so it stays out of the way while still showing plan status at a glance.
+
+---
+
+## v1.2.0 — 20 May 2026
+
+<Note>**feature** — config presets and billing</Note>
+
+### Config presets, dashboard sync, and bank transfer billing
+
+Iris 1.2.0 ships a complete config management flow — pick from five presets, tune on the dashboard, and push to VS Code in one click. Nigerian users can now also pay with a bank transfer instead of a card.
+
+- **Added** preset configs: set `presetId` in `.irisconfig.json` to snap your whole team to a known baseline (`strict`, `balanced`, `legacy`, `security`, or `typescript`). Preset configs are free for all users.
+- **Added** config enforcement for Free users: if a free user edits preset threshold values locally, those edits are ignored and marked with a yellow warning in the editor pointing to the preset as the source of truth.
+- Pro users can start from any preset and override individual values — the preset acts as a baseline, not a lock.
+- **Added** a Config page in the account dashboard for generating and customising Iris configs with a live preview.
+- **Added** dashboard-to-VS Code sync: generate a config on the dashboard, click Sync to VS Code, review a diff preview in the editor, and confirm the write — no copy-pasting.
+- **Added** Paystack bank transfer checkout for Nigerian users: choose a one-time transfer checkout from the billing page, pay to the transaction-specific account shown, and Pro activates on confirmation. A fresh checkout is opened each renewal cycle.
+- **Fixed** config sync diff preview leaving behind unsaved Untitled files after confirmation.
+
+---
+
+## v1.1.0 — 18 May 2026
+
+<Note>**feature** — onboarding and account setup</Note>
+
+### Onboarding, docs, and account setup flow
+
+Iris 1.1.0 turns the first-run experience into a complete product flow across the extension and the web account surfaces, with guided onboarding, embedded docs, and clearer setup follow-through.
+
+- **Added** a guided first-run onboarding flow inside the extension sidebar, including skip, resume, restart, and a 15-step spotlight walkthrough across the live tabs.
+- **Added** an in-flow docs surface inside Iris so setup help now lives in the extension instead of forcing users out to separate pages first.
+- **Added** public and dashboard-nested getting-started flows covering install, first scan, sign-in, configuration, and enforcement setup.
+- **Added** an account dashboard welcome banner and contextual driver.js tour to help new users land on billing, license, and quick-start actions faster.
+- **Improved** onboarding state handling so returning users with existing config do not get dropped back into the first-run path unnecessarily.
+- **Added** a free-user config nudge and clearer Pro gating cues so workspace scans, issue navigation, and setup boundaries are easier to understand.
+
+---
+
+## v1.0.9 — 11 May 2026
+
+<Note>**fix** — VS Code fork compatibility</Note>
+
+### Trae, Cursor, Windsurf and all VS Code forks
+
+Sign-in now works correctly in Trae IDE and any other VS Code fork. The sidebar has also been rebuilt internally for better reliability.
+
+- **Fixed** sign-in redirect failing in Trae IDE and other VS Code forks — the extension now auto-detects the correct URI scheme for any editor without needing manual updates.
+- **Fixed** an inaccurate notification shown in the detached panel when a free user clicks a Pro-only feature.
+- **Rebuilt** the sidebar and detached panel internals using React — the experience is identical but the foundation is now typed and maintainable.
+
+---
+
+## v1.0.0 — 30 Apr 2026
+
+<Note>**feature** — build hook enforcement</Note>
+
+### Build hook enforcement
+
+Iris can now run a health check before your project builds, not just before you push. Failing files block the build early, before the language toolchain runs.
+
+- **Added** pre-build health check for Node projects via the npm `prebuild` lifecycle script — runs automatically before `pnpm build`, `npm run build`, and `yarn build`.
+- **Added** Makefile-based pre-build check for Go and Python projects, wired as a prerequisite on the `build` or `all` target.
+- Iris creates a Makefile with sensible defaults if none exists in Go or Python projects.
+- Build hook status appears alongside the existing Git Hook section in the sidebar File tab.
+- Both install and uninstall are safe: markers guard the injected block and original hook content is preserved on removal.
+
+---
+
+## v1.0.0 — 29 Apr 2026
+
+<Note>**major release** — Enforcement Update</Note>
+
+### Enforcement Update
+
+Version 1.0.0 brings Iris together as a fuller code-health workflow inside VS Code, with stronger checks before code leaves your machine.
+
+- **Added** pre-push enforcement so teams can catch failing code before it is pushed.
+- **Improved** in-editor issue visibility with clearer diagnostics while you work.
+- **Expanded** project-wide analysis and dependency review in the extension.
+- **Included** a more complete release focused on enforcement, scanning, and review flows.
+
+---
+
+## v1.0.0 — 25 Apr 2026
+
+<Note>**improvements** — stability and polish</Note>
+
+### Stability and polish
+
+A follow-up update focused on smoothing rough edges after the main 1.0 rollout.
+
+- **Improved** default configuration behavior for day-to-day use.
+- **Fixed** smaller workflow issues and tightened overall stability.
+- **Polished** supporting parts of the product for a cleaner experience.
+
+---
+
+## v0.2.0 — 13 Apr 2026
+
+<Note>**version update**</Note>
+
+### Version 0.2.0
+
+Version 0.2.0 continued the early Iris rollout with another round of product polish and refinement.
+
+- **Improved** the overall extension experience.
+- **Shipped** another round of fixes and polish in the 0.x cycle.
+
+---
+
+## v0.1.x — 6 Apr 2026
+
+<Note>**feature update**</Note>
+
+### Panel and history improvements
+
+This update expanded how results could be reviewed during longer coding sessions.
+
+- **Added** a wider panel view for reviewing analysis results.
+- **Improved** how scan history and progress were presented.
+
+---
+
+## v0.1.x — 12 Mar 2026
+
+<Note>**project start** — initial release</Note>
+
+### Initial rollout
+
+The first Iris release introduced the foundation for local code-health analysis inside VS Code.
+
+- **Launched** the first version of the Iris extension experience.
+- **Introduced** the early scoring and analysis workflow.
