@@ -1,7 +1,7 @@
 ---
 title: "Supported Languages: TypeScript, JavaScript, Go, Python"
 sidebarTitle: "Language Support"
-description: "Iris natively parses and scores TypeScript, JavaScript (.js/.jsx/.ts/.tsx), Go, and Python with language-specific function detection, import tracking, and debug-print flagging."
+description: "Iris natively parses and scores TypeScript, JavaScript, Go, and Python with per-language function detection, import tracking, and debug-print flagging."
 ---
 
 Iris supports four languages with native parsers and language-aware rules. Rather than applying a generic analysis to every file, Iris routes each file through a dedicated parser that understands the idioms of that language — how functions are declared, what constitutes a third-party import, which debug-print patterns to flag, and how to detect unused packages. The result is a health score and set of findings that are meaningful in context, not just a count of lines and tokens.

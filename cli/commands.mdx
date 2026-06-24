@@ -124,7 +124,7 @@ iris todos --path ./src --json
 | `--threshold <n>` | Override the minimum health score; takes precedence over `.irisconfig.json` |
 | `--json` | Output results as JSON |
 | `--config <path>` | Path to `.irisconfig.json` |
-| `--format github` | Emit inline PR annotations in GitHub Actions format |
+| `--format github` | Emit inline PR annotations in GitHub Actions format *(added in v1.6.0)* |
 
 ```bash
 # Run the gate with the configured threshold
@@ -169,16 +169,20 @@ iris report --output ./reports/latest.html
 
 ### iris hook
 
-**Pro** for install and uninstall; **free** for status. Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands.
+Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands. The `status` subcommand is **free**; `install` and `uninstall` require **Pro**.
 
 | Subcommand | Description |
 |---|---|
-| `install git` | Write the Iris block to `.git/hooks/pre-push` |
-| `install build` | Wire Iris into the project build command |
-| `uninstall git` | Remove the Iris block from `.git/hooks/pre-push` |
-| `uninstall build` | Remove the Iris build entry |
+| `status` | Show whether the git and build hooks are currently installed **(free)** |
+| `install git` | Write the Iris block to `.git/hooks/pre-push` **(Pro)** |
+| `install build` | Wire Iris into the project build command **(Pro)** |
+| `uninstall git` | Remove the Iris block from `.git/hooks/pre-push` **(Pro)** |
+| `uninstall build` | Remove the Iris build entry **(Pro)** |
 
 ```bash
+# Check current hook status (free)
+iris hook status
+
 # Install the git pre-push hook
 iris hook install git
 

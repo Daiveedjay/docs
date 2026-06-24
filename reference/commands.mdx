@@ -1,5 +1,5 @@
 ---
-title: "Iris VS Code Command Palette Reference"
+title: "Iris VS Code Command Palette and Context Menu Reference"
 sidebarTitle: "VS Code Commands"
 description: "All Iris commands available via the VS Code command palette (Ctrl+Shift+P) and right-click context menus in the Explorer and editor."
 ---
@@ -21,9 +21,9 @@ Use these commands to trigger analysis, manage hooks, export reports, and open I
 | `Iris: Export Scan Report as HTML` | Save the current analysis as a standalone HTML report |
 | `Iris: Install Git Hook` | Install the pre-push hook into `.git/hooks/pre-push` |
 | `Iris: Uninstall Git Hook` | Remove the Iris block from the pre-push hook |
-| `Iris: Install Build Hook` | Wire Iris health checks into the project build |
-| `Iris: Uninstall Build Hook` | Remove the Iris build hook, leaving other build steps intact |
-| `Iris: Open Dependents Table` | Open the dependency audit panel — versions + CVEs |
+| `Iris: Install Build Hook` | Wire Iris health checks into the project build — `prebuild` for Node, Makefile target for Go/Python |
+| `Iris: Uninstall Build Hook` | Remove the Iris build hook, leaving any other build steps intact |
+| `Iris: Open Dependents Table` | Open the dependency audit panel (versions + CVEs) |
 | `Iris: Show Welcome Page` | Open the Getting Started welcome page |
 
 ## Context menus

@@ -1,7 +1,7 @@
 ---
-title: "Configure Iris with .irisconfig.json"
+title: "Configure Iris with .irisconfig.json — Presets and Rules"
 sidebarTitle: ".irisconfig.json"
-description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Supports config presets, custom thresholds, gate limits, and severity overrides."
+description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
 ---
 
 Drop a `.irisconfig.json` at your project root and commit it — every developer on the team runs Iris with the same thresholds, no per-machine drift. Iris resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
@@ -152,7 +152,7 @@ Control what Iris renders in the editor UI.
 |-----|---------|-----------------|
 | `enableCodeLens` | `true` | Show inline Code Lens hints |
 | `enableStatusBar` | `true` | Show the Iris item in the status bar |
-| `enableInlineDiagnostics` | `true` | Master toggle for squiggles and Problems panel entries |
+| `enableInlineDiagnostics` | `false` | Master toggle for squiggles and Problems panel entries |
 | `sidebarFontSize` | `14` | Base font size in pixels (10–20) for the Iris sidebar and detached panel |
 
 The `inlineDiagnostics` object lets you opt individual categories in or out once `enableInlineDiagnostics` is `true`.

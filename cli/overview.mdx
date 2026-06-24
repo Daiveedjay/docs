@@ -51,7 +51,7 @@ These commands are available without an Iris Pro licence:
 - **`iris check <file>`** — single-file health scan; scores and prints findings for one source file
 - **`iris secrets`** — scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
 - **`iris config`** — view the resolved `.irisconfig.json` or write individual settings
-- **`iris report`** — export a standalone HTML health report for the workspace
+- **`iris hook status`** — show whether the git pre-push hook and build hook are currently installed
 
 ## Pro commands
 
@@ -63,7 +63,8 @@ These commands require an active Iris Pro licence:
 - **`iris deps`** — audit `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs
 - **`iris todos`** — list every `TODO`, `FIXME`, and `HACK` comment across the project
 - **`iris gate`** — CI quality gate; exits `1` if any file falls below the configured health threshold
-- **`iris hook`** — install or remove git pre-push and build hooks
+- **`iris hook install|uninstall`** — install or remove git pre-push and build hooks
+- **`iris report`** — export a standalone HTML health report for the workspace
 
 ## Next steps
 

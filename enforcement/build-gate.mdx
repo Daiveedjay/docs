@@ -1,7 +1,7 @@
 ---
 title: "Build Gate: Block Builds That Fall Below Your Threshold"
 sidebarTitle: "Build Gate"
-description: "Install the Iris build hook to run a health check before every pnpm build, npm run build, or make build. Builds that fail the threshold are stopped before compilation."
+description: "Install the Iris build hook to run a health check before every build. Builds that fall below your configured threshold are stopped before compilation."
 ---
 
 The Iris build gate runs a health check before the compiler ever starts. Install it once from the command palette and every `pnpm build`, `npm run build`, or `make build` will first verify that all files in your workspace meet your configured threshold — builds that fail are stopped before compilation begins.
