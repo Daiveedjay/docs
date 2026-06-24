@@ -89,7 +89,7 @@
     }
   },
   "logo": {
-    "light": "/iris-logo.svg",
-    "dark": "/iris-logo.svg"
+    "light": "/logo/iris-logo-light.svg",
+    "dark": "/logo/iris-logo-dark.svg"
   }
 }
