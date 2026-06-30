@@ -25,7 +25,7 @@
           {
             "group": "Features",
             "pages": [
-              { "page": "features/file-analysis", "badge": "Updated" },
+              "features/file-analysis",
               "features/workspace-analysis",
               "features/editor-integration",
               "features/language-support"
@@ -39,8 +39,8 @@
               "enforcement/build-gate",
               "enforcement/github-actions",
               "enforcement/hardcoded-secrets",
-              { "page": "enforcement/security-smells", "badge": "New" },
-              { "page": "enforcement/inline-diagnostics", "badge": "Updated" },
+              "enforcement/security-smells",
+              "enforcement/inline-diagnostics",
               "enforcement/dependents-table"
             ]
           },
@@ -65,7 +65,7 @@
           {
             "group": "Reference",
             "pages": [
-              { "page": "reference/scoring", "badge": "Updated" },
+              "reference/scoring",
               "reference/commands",
               "changelog"
             ]
