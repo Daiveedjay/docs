@@ -33,6 +33,7 @@
           },
           {
             "group": "Enforcement",
+            "tag": "New",
             "pages": [
               "enforcement/gate-preview",
               "enforcement/git-hook",
