@@ -25,7 +25,7 @@
           {
             "group": "Features",
             "pages": [
-              "features/file-analysis",
+              { "page": "features/file-analysis", "badge": "Updated" },
               "features/workspace-analysis",
               "features/editor-integration",
               "features/language-support"
@@ -39,7 +39,8 @@
               "enforcement/build-gate",
               "enforcement/github-actions",
               "enforcement/hardcoded-secrets",
-              "enforcement/inline-diagnostics",
+              { "page": "enforcement/security-smells", "badge": "New" },
+              { "page": "enforcement/inline-diagnostics", "badge": "Updated" },
               "enforcement/dependents-table"
             ]
           },
@@ -64,7 +65,7 @@
           {
             "group": "Reference",
             "pages": [
-              "reference/scoring",
+              { "page": "reference/scoring", "badge": "Updated" },
               "reference/commands",
               "changelog"
             ]
@@ -90,6 +91,7 @@
   },
   "logo": {
     "light": "/logo/iris-logo-light.svg",
-    "dark": "/logo/iris-logo-dark.svg"
+    "dark": "/logo/iris-logo-dark.svg",
+    "href": "https://iriscode.co"
   }
 }

@@ -12,7 +12,7 @@ The File tab opens with an **enforcement snapshot**: a top-of-file readiness sum
 
 | Panel element | What it shows |
 |---|---|
-| **Health score** | A 0–100 composite score penalising warnings, secrets, deep nesting, long functions, and debug prints |
+| **Health score** | A 0–100 composite score penalising warnings, secrets, security smells, deep nesting, long functions, and debug prints |
 | **Trend signal** | Score movement (↑/↓) versus the previous snapshot, once trend history exists |
 | **Language badge** | Go / TypeScript / JavaScript / Python badge in the file header |
 | **Line counts** | Total lines, blank lines, and code lines |
@@ -51,6 +51,26 @@ Iris detects several code smell patterns across all supported languages. Every f
   Disabling a toggle hides both the stat counter and the detail section from
   the sidebar entirely — useful for reducing visual clutter when a particular
   smell isn't relevant to your project.
+</Tip>
+
+## Security Smells
+
+Iris detects nine security anti-patterns across all supported languages. Each finding counts toward **Blockers** — the same category as hardcoded secrets — and is clickable to jump to the exact line.
+
+| Pattern | What it detects | Toggle |
+|---|---|---|
+| `evalUsage` | `eval()` in JS/TS; `exec()` in Python and Go | `enableSecuritySmells` |
+| `sqlConcatenation` | SQL queries built by string concatenation or template literals | `enableSecuritySmells` |
+| `insecureRandom` | `Math.random()`, `rand.Intn()`, `random.random()` in security-sensitive paths | `enableSecuritySmells` |
+| `unsafeRegex` | Regex patterns with nested quantifiers — potential ReDoS | `enableSecuritySmells` |
+| `hardcodedLocalhost` | `http://localhost` or `http://127.0.0.1` in production code | `enableSecuritySmells` |
+| `disabledTlsVerification` | `rejectUnauthorized: false`, `InsecureSkipVerify: true`, `verify=False` | `enableSecuritySmells` |
+| `debugFlagsEnabled` | `debug: true` in config objects (test files excluded) | `enableSecuritySmells` |
+| `weakHashing` | MD5 or SHA-1 in hashing calls | `enableSecuritySmells` |
+| `openRedirect` | Redirect to unvalidated user input | `enableSecuritySmells` |
+
+<Tip>
+  Set `"enableSecuritySmells": false` in `.irisconfig.json` to disable the group entirely. To keep scoring active but suppress squiggles, set `inlineDiagnostics.securitySmells` to `false` instead. See [Security Smells](/enforcement/security-smells) for pattern details.
 </Tip>
 
 ## Warnings

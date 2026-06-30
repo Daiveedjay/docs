@@ -22,6 +22,15 @@ The health score is a per-file composite measure of code quality. It starts at 1
 | `console.log` | −1 each | `consoleLog` |
 | Long parameter list (per function) | −1 each | `longParamList` |
 | Unused variable | −1 each | `unusedVar` |
+| Open redirect | −7 each | `openRedirect` |
+| TLS verification disabled | −7 each | `disabledTlsVerification` |
+| eval() / exec() | −5 each | `evalUsage` |
+| SQL concatenation | −5 each | `sqlConcatenation` |
+| Weak hashing (MD5 / SHA-1) | −5 each | `weakHashing` |
+| Insecure RNG | −3 each | `insecureRandom` |
+| ReDoS-risk regex | −3 each | `unsafeRegex` |
+| Debug flag in production | −2 each | `debugFlagsEnabled` |
+| Hardcoded localhost URL | −1 each | `hardcodedLocalhost` |
 
 <Note>
   `@ts-ignore` carries a heavier penalty than `console.log` because it is an active decision to suppress the type system — it doesn't just add noise, it removes a safety net. A `console.log` is clutter; a `@ts-ignore` is a deliberate override of a type error.

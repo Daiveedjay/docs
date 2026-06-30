@@ -8,11 +8,12 @@ Inline diagnostics surface selected Iris findings as squiggles directly in the e
 
 ## Per-category toggles
 
-Secrets, `@ts-ignore`, unused functions, and `any` usage are enabled when inline diagnostics are turned on. Structural warnings like file length default off so the Problems panel does not read like a compiler error list for routine Iris findings.
+Secrets, security smells, `@ts-ignore`, unused functions, and `any` usage are enabled when inline diagnostics are turned on. Structural warnings like file length default off so the Problems panel does not read like a compiler error list for routine Iris findings.
 
 | Category | Default | What it shows |
 | --- | --- | --- |
 | `hardcodedSecrets` | `true` | Secrets findings |
+| `securitySmells` | `true` | All nine security smell patterns — eval, SQL injection, insecure RNG, ReDoS regex, disabled TLS, weak hashing, open redirects, debug flags, localhost URLs |
 | `errorWarnings` | `false` | Error-severity structural warnings |
 | `warningLevelWarnings` | `false` | Warning/info structural warnings |
 | `tsIgnore` | `true` | `@ts-ignore` usage |

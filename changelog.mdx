@@ -8,6 +8,47 @@ These are the release notes for the Iris VS Code extension and the `@iris-code/c
 
 ---
 
+## v1.8.0 — 30 Jun 2026
+
+<Note>**feature** — security smell detection</Note>
+
+### Security smell detection: nine patterns, every file, free
+
+Iris 1.8.0 adds a second static-analysis tier below hardcoded secrets: security smells. Nine patterns catch the most common security anti-patterns before they reach production. The feature is on by default, free for all users, and emits Warning-severity squiggles in the editor when inline diagnostics are enabled.
+
+- **Added** nine security smell detectors across TypeScript, JavaScript, Go, and Python:
+  - **Eval / exec calls** — dynamic code execution via `eval()`, `exec()`, or similar constructs
+  - **SQL built by string concatenation** — query strings assembled with `+` or template literals instead of parameterised queries
+  - **Insecure random number generation** — `Math.random()`, `rand.Intn()`, `random.random()`, and other non-cryptographic RNG in a security-sensitive context
+  - **ReDoS-prone regexes** — nested quantifiers in patterns that can cause catastrophic backtracking
+  - **Disabled TLS verification** — `rejectUnauthorized: false`, `InsecureSkipVerify: true`, or `verify=False`
+  - **Weak hashing** — MD5 or SHA-1 in contexts that suggest security use (passwords, tokens, signatures)
+  - **Open redirects** — `res.redirect()` or equivalent called with unvalidated user-controlled input
+  - **Debug flags in production** — `debug: true` flag objects left in non-test code
+  - **Hardcoded localhost URLs** — `http://localhost` or `http://127.0.0.1` in production code paths (skipped in test files)
+- **Added** `enableSecuritySmells` toggle in `.irisconfig.json` and VS Code settings (`iris.enableSecuritySmells`, default on). Turning it off suppresses all nine patterns.
+- **Added** inline diagnostics support: when `enableInlineDiagnostics` is on, security smell findings appear as Warning squiggles in the editor and entries in the Problems panel. Controlled per-category via `inlineDiagnostics.securitySmells`.
+- **Added** custom scoring weights for each of the nine patterns for Pro users — adjust the health-score penalty per pattern in `healthScoreWeights` (keys: `evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`).
+
+---
+
+## v1.7.0 — 25 Jun 2026
+
+<Note>**feature** — trend tracking and baseline enforcement</Note>
+
+### Trend tracking, baseline enforcement, and dashboard redesign
+
+Iris 1.7.0 ships health score history, a dedicated Trends panel with per-file comparison, and baseline-mode gate enforcement so existing debt never blocks your team.
+
+- **Added** trend tracking: Iris automatically snapshots your workspace health score on every scan, stored in `.iris-snapshots/` (gitignored, 2 MB cap, same-day dedup, corrupt-entry hardening).
+- **Added** Trends panel: compare any two snapshots with a sortable, filterable per-file score table. Click any row to jump directly to the file. Free tier: rolling 2-snapshot window. Pro: unlimited history.
+- **Added** inline trend summary in the Workspace tab showing regressed files, recovered files, and net score change between the two most recent snapshots.
+- **Added** baseline mode: lock a baseline with `iris.lockTrendBaseline`. Iris writes `.iris-baseline.json` to the workspace root (committable, diffable). Set `gateBaselineMode: true` and the gate only blocks new regressions above the accepted baseline.
+- **Added** `iris.clearTrendHistory` command to remove all snapshots and the baseline file.
+- **Added** trial plan type: the extension now surfaces `trial` as a distinct plan with an Iris Pro Trial badge and trial-end date. Trial users get full Pro access.
+
+---
+
 ## v1.6.1 — 17 Jun 2026
 
 <Note>**fix** — Python analysis correctness</Note>

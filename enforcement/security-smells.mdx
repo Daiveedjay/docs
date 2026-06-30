@@ -1,0 +1,169 @@
+---
+title: "Security Smell Detection: Nine Patterns Across TS, JS, Go, and Python"
+sidebarTitle: "Security Smells"
+description: "Iris detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
+---
+
+Security smells are code patterns that are not immediately broken but carry a measurable risk of leading to a vulnerability. Unlike structural warnings (file too long, too many functions), security smells contribute to the **Blockers** count in the enforcement snapshot — the same bucket as hardcoded secrets and error-level structural warnings.
+
+All nine patterns are detected across TypeScript, JavaScript, Go, and Python where applicable. Enable or disable the entire group with `enableSecuritySmells`.
+
+## Patterns
+
+### eval() / exec() — `evalUsage`
+
+Detects calls to `eval()` in JavaScript and TypeScript, and `exec()` in Python and Go. These functions execute arbitrary strings as code, making them a direct code injection vector if the input is ever user-controlled.
+
+| Language | Detected form |
+|---|---|
+| TypeScript / JavaScript | `eval(...)` |
+| Python | `exec(...)` |
+| Go | `exec.Command(...)` |
+
+<Warning>
+  Even when the argument is a literal string today, `eval` creates a maintenance surface where a future change can introduce injection. Prefer safer alternatives: `new Function`, structured dispatch tables, or a purpose-built expression parser.
+</Warning>
+
+---
+
+### SQL concatenation — `sqlConcatenation`
+
+Detects SQL queries assembled by string concatenation or interpolation — the root cause of SQL injection vulnerabilities.
+
+| Language | Detected form |
+|---|---|
+| TypeScript / JavaScript | `"SELECT … " + variable` |
+| TypeScript / JavaScript | `` `SELECT … ${variable}` `` |
+| Go | `"SELECT … " + variable` |
+| Go | `fmt.Sprintf("SELECT … %s", variable)` |
+| Python | `"SELECT … " + variable` |
+| Python | `f"SELECT … {variable}"` |
+
+<Note>
+  Iris matches uppercase SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `DROP`) only. Error message strings that happen to contain the word "delete" in lowercase are not flagged. Use parameterised queries or a query builder that handles escaping for you.
+</Note>
+
+---
+
+### Insecure RNG — `insecureRandom`
+
+Detects use of non-cryptographic random number generators in contexts where cryptographic randomness is expected — session tokens, CSRF nonces, password reset links.
+
+| Language | Detected form |
+|---|---|
+| TypeScript / JavaScript | `Math.random()` |
+| Go | `rand.Intn(...)`, `rand.Float64()` |
+| Python | `random.random()`, `random.randint(...)` |
+
+Prefer `crypto.randomBytes` (Node.js), `crypto/rand` (Go), or `secrets` (Python) for anything security-sensitive.
+
+---
+
+### ReDoS-risk regex — `unsafeRegex`
+
+Detects regular expressions with nested quantifiers (`(a+)+`, `(a|aa)+`) that can cause catastrophic backtracking on pathological input — a denial-of-service vector when the regex is applied to untrusted strings.
+
+Applies to all four supported languages. Iris flags the literal regex pattern; move to a linear-time regex engine or rewrite the pattern to eliminate nested quantifiers.
+
+---
+
+### Hardcoded localhost URL — `hardcodedLocalhost`
+
+Detects `http://localhost` or `http://127.0.0.1` URL literals committed into production code. Development URLs in shipped code mean the application silently calls back to the developer's machine in production, leaking intent and sometimes crashing.
+
+<Note>
+  Iris automatically skips test files for this pattern. A `localhost` URL in a `*.test.ts` or `*_test.go` file is not flagged.
+</Note>
+
+---
+
+### TLS verification disabled — `disabledTlsVerification`
+
+Detects configuration that bypasses TLS certificate validation — accepting any certificate, including self-signed and expired ones. This makes HTTPS connections equivalent to plain HTTP against a man-in-the-middle attacker.
+
+| Language | Detected form |
+|---|---|
+| TypeScript / JavaScript | `rejectUnauthorized: false` |
+| Go | `InsecureSkipVerify: true` |
+| Python | `verify=False` |
+
+---
+
+### Debug flag enabled — `debugFlagsEnabled`
+
+Detects `debug: true` flags in configuration objects committed to production code. Debug modes often increase verbosity, disable security controls, or expose internal state through error messages.
+
+<Note>
+  Iris skips test files for this pattern — `debug: true` in a test setup file is intentional.
+</Note>
+
+---
+
+### Weak hashing — `weakHashing`
+
+Detects use of MD5 and SHA-1 in hashing calls. Both algorithms are cryptographically broken and should not be used for password hashing, integrity verification, or any security-sensitive purpose.
+
+| Language | Detected form |
+|---|---|
+| TypeScript / JavaScript | `crypto.createHash('md5')`, `createHash('sha1')` |
+| Go | `md5.New()`, `sha1.New()` |
+| Python | `hashlib.md5(...)`, `hashlib.sha1(...)` |
+
+Prefer SHA-256 or stronger for integrity checks, and `bcrypt`/`argon2` for password storage.
+
+---
+
+### Open redirect — `openRedirect`
+
+Detects redirect calls that forward to a URL derived from user input without validation. An attacker can craft a link to your domain that immediately redirects to a phishing site.
+
+Detected when a redirect call (e.g. `res.redirect(...)` in Express, `http.Redirect(...)` in Go) receives a value that came directly from a request parameter.
+
+---
+
+## Configuration
+
+Security smells are enabled by default. Disable the entire group:
+
+```json
+{
+  "enableSecuritySmells": false
+}
+```
+
+To suppress squiggles and Problems panel entries while keeping the sidebar findings and scoring:
+
+```json
+{
+  "enableInlineDiagnostics": true,
+  "inlineDiagnostics": {
+    "securitySmells": false
+  }
+}
+```
+
+## Scoring
+
+Each security smell type has its own configurable weight under `healthScoreWeights` (Pro). Defaults:
+
+| Pattern | Weight key | Default deduction |
+|---|---|---|
+| eval() / exec() | `evalUsage` | −8 each |
+| SQL concatenation | `sqlConcatenation` | −8 each |
+| Insecure RNG | `insecureRandom` | −5 each |
+| ReDoS regex | `unsafeRegex` | −5 each |
+| Hardcoded localhost | `hardcodedLocalhost` | −3 each |
+| TLS disabled | `disabledTlsVerification` | −7 each |
+| Debug flag | `debugFlagsEnabled` | −3 each |
+| Weak hashing | `weakHashing` | −5 each |
+| Open redirect | `openRedirect` | −7 each |
+
+Security smells count toward **Blockers** in the enforcement snapshot, not Warnings. A file with any security smell is treated the same as a file with a leaked secret when evaluating gate readiness.
+
+## Inline diagnostics
+
+When `enableInlineDiagnostics` is on and `inlineDiagnostics.securitySmells` is `true` (the default), every security smell finding gets a Warning-severity squiggle directly in the editor and a Problems panel entry. Each entry includes the pattern name and a one-line explanation of the risk.
+
+<Tip>
+  Use `severityOverrides` to promote specific patterns to `error` severity if your team treats them as hard blockers rather than warnings. For example, to treat SQL injection as an error: `"severityOverrides": { "security-sqlConcatenation": "error" }`.
+</Tip>
