@@ -122,6 +122,19 @@ Detected when a redirect call (e.g. `res.redirect(...)` in Express, `http.Redire
 
 ---
 
+## CLI scanning
+
+Run `iris security` as a standalone scan — it is free and requires no authentication:
+
+```bash
+iris security
+iris security ./src --format json
+```
+
+<Tip>
+  Run `iris security` as a free CI step even without a Pro licence — it catches these nine patterns on every push regardless of licence status, independent of a full `iris check` run.
+</Tip>
+
 ## Configuration
 
 Security smells are enabled by default. Disable the entire group:
@@ -149,22 +162,40 @@ Each security smell type has its own configurable weight under `healthScoreWeigh
 
 | Pattern | Weight key | Default deduction |
 |---|---|---|
-| eval() / exec() | `evalUsage` | −8 each |
-| SQL concatenation | `sqlConcatenation` | −8 each |
-| Insecure RNG | `insecureRandom` | −5 each |
-| ReDoS regex | `unsafeRegex` | −5 each |
-| Hardcoded localhost | `hardcodedLocalhost` | −3 each |
+| eval() / exec() | `evalUsage` | −5 each |
+| SQL concatenation | `sqlConcatenation` | −5 each |
+| Insecure RNG | `insecureRandom` | −2 each |
+| ReDoS regex | `unsafeRegex` | −3 each |
+| Hardcoded localhost | `hardcodedLocalhost` | −1 each |
 | TLS disabled | `disabledTlsVerification` | −7 each |
-| Debug flag | `debugFlagsEnabled` | −3 each |
+| Debug flag | `debugFlagsEnabled` | −2 each |
 | Weak hashing | `weakHashing` | −5 each |
 | Open redirect | `openRedirect` | −7 each |
 
+<Note>
+  These are the global defaults. The `security` preset raises several of them — `evalUsage` and `sqlConcatenation` to `8`, `disabledTlsVerification` and `openRedirect` to `12`, `weakHashing` to `8`, `debugFlagsEnabled` to `4`, `insecureRandom` to `3`, and `hardcodedLocalhost` to `2` — see [Scoring Weights](/configuration/scoring-weights) for the full picture.
+</Note>
+
 Security smells count toward **Blockers** in the enforcement snapshot, not Warnings. A file with any security smell is treated the same as a file with a leaked secret when evaluating gate readiness.
+
+## Enforcement (Pro)
+
+Set `gateMaxSecuritySmells` in `.irisconfig.json` to fail the gate when the total number of security smells across the workspace exceeds a threshold — enforced by the CLI, the git pre-push hook, and the build hook, the same way `gateMaxSecrets` enforces a ceiling on hardcoded secrets.
+
+```json
+{
+  "gateMaxSecuritySmells": 0
+}
+```
+
+<Tip>
+  Set it to `0` to require a clean workspace, or leave it unset for no limit while you work through an existing backlog. See [Gate Limits](/configuration/irisconfig#gate-thresholds) for the full list of gate fields.
+</Tip>
 
 ## Inline diagnostics
 
 When `enableInlineDiagnostics` is on and `inlineDiagnostics.securitySmells` is `true` (the default), every security smell finding gets a Warning-severity squiggle directly in the editor and a Problems panel entry. Each entry includes the pattern name and a one-line explanation of the risk.
 
 <Tip>
-  Use `severityOverrides` to promote specific patterns to `error` severity if your team treats them as hard blockers rather than warnings. For example, to treat SQL injection as an error: `"severityOverrides": { "security-sqlConcatenation": "error" }`.
+  Use `severityOverrides` to promote all nine security smell patterns to `error` severity at once if your team treats them as hard blockers rather than warnings: `"severityOverrides": { "security-smell": "error" }`. The override applies to the whole category — there is currently no way to override a single pattern (e.g. just SQL injection) independently of the other eight.
 </Tip>

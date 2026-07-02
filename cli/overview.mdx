@@ -1,7 +1,7 @@
 ---
 title: "Iris CLI: Code Health Enforcement from the Terminal"
 sidebarTitle: "Overview"
-description: "The @iris-code/cli package brings Iris health analysis to any terminal, build script, or CI pipeline. Nine commands cover scanning, gating, secrets, deps, and hooks."
+description: "The @iris-code/cli package brings Iris health analysis to any terminal, build script, or CI pipeline. Ten commands cover scanning, gating, secrets, security smells, deps, and hooks."
 ---
 
 The Iris CLI runs the same health analysis as the VS Code extension from any terminal, build script, or CI pipeline — no editor required. Install it once, point it at any file or directory, and get the same scores and findings you see inline in your editor.
@@ -50,7 +50,9 @@ These commands are available without an Iris Pro licence:
 
 - **`iris check <file>`** — single-file health scan; scores and prints findings for one source file
 - **`iris secrets`** — scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
-- **`iris config`** — view the resolved `.irisconfig.json` or write individual settings
+- **`iris security`** — scans the whole project for security smells (eval usage, SQL injection, insecure RNG, weak hashing, and more); no authentication required
+- **`iris report`** — export a standalone HTML health report for the workspace
+- **`iris config init` / `iris config validate`** — interactively generate `.irisconfig.json` from a preset, or validate an existing one
 - **`iris hook status`** — show whether the git pre-push hook and build hook are currently installed
 
 ## Pro commands
@@ -62,9 +64,8 @@ These commands require an active Iris Pro licence:
 - **`iris check --changed`** — scan only files changed since the last commit
 - **`iris deps`** — audit `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs
 - **`iris todos`** — list every `TODO`, `FIXME`, and `HACK` comment across the project
-- **`iris gate`** — CI quality gate; exits `1` if any file falls below the configured health threshold
+- **`iris gate`** — CI quality gate; exits `1` if any configured rule fails (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`)
 - **`iris hook install|uninstall`** — install or remove git pre-push and build hooks
-- **`iris report`** — export a standalone HTML health report for the workspace
 
 ## Next steps
 
@@ -73,7 +74,7 @@ These commands require an active Iris Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all nine Iris CLI commands, flags, and exit codes.
+    Full reference for all ten Iris CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as a quality gate in GitHub Actions, GitLab CI, or any shell pipeline.

@@ -17,15 +17,28 @@ These are the values every preset starts from. Omitting a key falls back to the 
 | Key | Default | What it penalises |
 |-----|---------|-------------------|
 | `hardcodedSecret` | `10` | Per hardcoded secret found — largest single deduction |
+| `disabledTlsVerification` | `7` | Per disabled-TLS-verification finding |
+| `openRedirect` | `7` | Per open-redirect finding |
 | `errorWarning` | `5` | Per error-severity structural warning |
+| `evalUsage` | `5` | Per eval() / exec() finding |
+| `sqlConcatenation` | `5` | Per SQL-built-by-concatenation finding |
+| `weakHashing` | `5` | Per weak-hashing (MD5/SHA-1) finding |
 | `warningWarning` | `3` | Per warning-severity structural warning |
 | `tsIgnore` | `3` | Per `@ts-ignore` comment (TS/JS only) |
+| `unsafeRegex` | `3` | Per ReDoS-prone regex finding |
 | `anyUsage` | `2` | Per explicit `any` type (TS/JS only) |
 | `deepNesting` | `2` | Multiplier applied to deep nesting score per function |
 | `unusedFunction` | `2` | Per unused function definition |
+| `insecureRandom` | `2` | Per insecure-RNG finding |
+| `debugFlagsEnabled` | `2` | Per debug-flag-enabled finding |
 | `consoleLog` | `1` | Per console/debug print statement |
 | `longParamList` | `1` | Per long parameter list finding |
 | `unusedVar` | `1` | Per unused variable |
+| `hardcodedLocalhost` | `1` | Per hardcoded-localhost-URL finding |
+
+<Note>
+  The nine security smell keys (`evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`) were added alongside [Security Smells](/enforcement/security-smells) detection.
+</Note>
 
 ## When to customise weights
 

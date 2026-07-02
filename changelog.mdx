@@ -8,6 +8,21 @@ These are the release notes for the Iris VS Code extension and the `@iris-code/c
 
 ---
 
+## v1.9.0 — 2 Jul 2026
+
+<Note>**feature** — security smell enforcement</Note>
+
+### Security smell enforcement: gate on it, scan for it from the CLI
+
+Iris 1.9.0 closes the loop on 1.8.0's security smell detection: a new gate rule blocks pushes and CI runs on security smell count, and a dedicated CLI command scans for them independently of a full health check.
+
+- **Added** `gateMaxSecuritySmells` to `.irisconfig.json` — the gate fails when the total number of security smells (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine 1.8.0 patterns) across the workspace exceeds this value. Enforced by the CLI, the git hook, and the build hook alongside `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, and `gateMaxSmellsPerFile`.
+- **Added** `iris security [path]` — a free CLI command that scans JS/TS/Go/Python for the same nine security smell categories as the sidebar, independent of a full `iris check` run. Supports `--format pretty|json` and `--output`; exits 1 if any smell is found.
+- **Added** a Security Posture section to the Workspace and Folder tabs in the VS Code sidebar — a collapsible count-by-category breakdown of security smells found in the current scan.
+- **Added** the `gateMaxSecuritySmells` field to the Config Studio's Gate limits editor for Pro users.
+
+---
+
 ## v1.8.0 — 30 Jun 2026
 
 <Note>**feature** — security smell detection</Note>

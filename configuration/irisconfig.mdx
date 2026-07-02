@@ -79,6 +79,7 @@ For complete control over every rule, write out the full config. Every key is op
   "gateMaxComplexity": 12,     // Pro — max complexity score per file
   "gateMaxFileLength": 500,    // Pro — max line count per file
   "gateMaxSmellsPerFile": 8,   // Pro — max total smells in a single file
+  "gateMaxSecuritySmells": 0,  // Pro — max security smells workspace-wide
 
   // Ignore rules — skip files or functions from analysis
   "ignoreFiles": [
@@ -170,6 +171,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
 | `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
 | `gateMaxSmellsPerFile` | Pro | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
+| `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) — set to `0` to require a clean workspace |
 
 ### Ignore rules
 

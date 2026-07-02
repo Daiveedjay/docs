@@ -1,10 +1,10 @@
 ---
 title: "Iris CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all nine Iris CLI commands: iris check, iris secrets, iris deps, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all ten Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
 ---
 
-The Iris CLI provides nine commands covering the full code health workflow — scanning individual files, auditing dependencies, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
+The Iris CLI provides ten commands covering the full code health workflow — scanning individual files, auditing dependencies, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
 
 ---
 
@@ -14,18 +14,21 @@ Scores source files and prints health findings. Single-file scans are free; scan
 
 | Flag | Description |
 |---|---|
-| `<path>` | File or directory to scan |
+| `[path]` | File or directory to scan (defaults to current directory) |
 | `--staged` | Scan staged git files only **(Pro)** |
 | `--changed` | Scan files changed since the last commit **(Pro)** |
-| `--threshold <n>` | Minimum health score 0–100; overrides `.irisconfig.json` |
-| `--json` | Output results as JSON |
+| `--min-score <n>` | Minimum health score 0–100; overrides `.irisconfig.json` |
+| `--config <path>` | Use a specific `.irisconfig.json` |
+| `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
+| `--verbose` | Show individual findings per file |
 
 ```bash
 # Score a single file (free)
 iris check src/index.ts
 
 # Score a directory with a custom threshold (Pro)
-iris check src/ --threshold 80
+iris check src/ --min-score 80
 
 # Score staged files only (Pro)
 iris check --staged
@@ -45,16 +48,16 @@ Scans the project for hardcoded credentials, API keys, tokens, and passwords. **
 
 | Flag | Description |
 |---|---|
-| `--path <dir>` | Directory to scan (defaults to current directory) |
-| `--ignore <pattern>` | Glob pattern for files to skip |
-| `--json` | Output results as JSON |
+| `[path]` | File or directory to scan (defaults to current directory) |
+| `--format <fmt>` | Output format: `pretty` (default) or `json` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
 
 ```bash
 # Scan the current directory
 iris secrets
 
 # Scan a specific path and output JSON
-iris secrets --path ./src --json
+iris secrets ./src --format json
 ```
 
 | Exit code | Meaning |
@@ -65,91 +68,124 @@ iris secrets --path ./src --json
 
 ---
 
-### iris deps
+### iris security
 
-**Pro.** Audits dependencies in `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs.
+Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/enforcement/security-smells) for the full pattern reference. **Free — no authentication required.**
 
 | Flag | Description |
 |---|---|
-| `--json` | Output results as JSON |
-| `--config <path>` | Path to `.irisconfig.json` |
+| `[path]` | File or directory to scan (defaults to current directory) |
+| `--format <fmt>` | Output format: `pretty` (default) or `json` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
+
+```bash
+# Scan the current directory
+iris security
+
+# Scan a specific path and output JSON
+iris security ./src --format json
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | No security smells found |
+| `1` | Security smells found |
+| `2` | Bad arguments |
+
+---
+
+### iris deps
+
+**Pro.** Audits dependencies in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs via the GitHub Advisory Database.
+
+| Flag | Description |
+|---|---|
+| `[path]` | Directory to scan (defaults to current directory) |
+| `--no-cache` | Skip the 24-hour local cache and re-fetch |
+| `--verbose` | Show individual CVE titles and URLs |
+| `--format <fmt>` | Output format: `pretty` (default) or `json` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
 
 ```bash
 # Audit dependencies in the current project
 iris deps
 
-# Output results as JSON
-iris deps --json
+# Bypass the cache and output JSON
+iris deps --no-cache --format json
 ```
+
+Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth login` to store a GitHub PAT, or set `GITHUB_TOKEN`, to raise it to 5,000 req/hr.
 
 | Exit code | Meaning |
 |---|---|
-| `0` | All dependencies current |
-| `1` | Outdated or vulnerable packages found |
-| `2` | Bad arguments |
+| `0` | No vulnerabilities found |
+| `1` | One or more vulnerabilities detected |
+| `2` | Invalid arguments or no manifest found |
 
 ---
 
 ### iris todos
 
-**Pro.** Lists every `TODO`, `FIXME`, `HACK`, and similar comment marker found across the project.
+**Pro.** Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. This command is informational — it does not fail the run based on findings.
 
 | Flag | Description |
 |---|---|
-| `--path <dir>` | Directory to scan (defaults to current directory) |
-| `--json` | Output results as JSON |
+| `[path]` | File or directory to scan (defaults to current directory) |
+| `--format <fmt>` | Output format: `pretty` (default) or `json` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
 
 ```bash
-# List all TODO/FIXME comments in the project
+# List all TODO/FIXME/HACK comments in the project
 iris todos
 
 # Scan a specific path and output JSON
-iris todos --path ./src --json
+iris todos ./src --format json
 ```
 
 | Exit code | Meaning |
 |---|---|
-| `0` | No findings |
-| `1` | Findings found |
+| `0` | Success (regardless of findings) |
 | `2` | Bad arguments |
 
 ---
 
 ### iris gate
 
-**Pro.** Runs a full workspace health check and exits `1` if any file falls below the configured threshold. This is the recommended command for CI quality gates.
+**Pro.** Runs the full enforcement gate — every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) — and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
 
 | Flag | Description |
 |---|---|
-| `--threshold <n>` | Override the minimum health score; takes precedence over `.irisconfig.json` |
-| `--json` | Output results as JSON |
-| `--config <path>` | Path to `.irisconfig.json` |
-| `--format github` | Emit inline PR annotations in GitHub Actions format *(added in v1.6.0)* |
+| `[path]` | File or directory to scan (defaults to current directory) |
+| `--config <path>` | Use a specific `.irisconfig.json` |
+| `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
 
 ```bash
-# Run the gate with the configured threshold
+# Run the gate against the configured rules
 iris gate
 
-# Run the gate with a custom threshold
-iris gate --threshold 75
+# Emit inline PR annotations in GitHub Actions format
+iris gate . --format github
 ```
 
 | Exit code | Meaning |
 |---|---|
-| `0` | All files pass |
-| `1` | One or more files fail |
+| `0` | All rules pass |
+| `1` | One or more rules fail |
 | `2` | Bad arguments or config error |
 
 ---
 
 ### iris report
 
-**Pro.** Runs a workspace scan and exports the results as a standalone HTML file. The output mirrors the export produced by the VS Code extension.
+Runs a workspace scan and exports the results as a standalone HTML file. The output mirrors the export produced by the VS Code extension. **Free.**
 
 | Flag | Description |
 |---|---|
+| `[path]` | File or directory to scan (defaults to current directory) |
 | `--output <path>` | Output file path (default: `./iris-report.html`) |
-| `--config <path>` | Path to `.irisconfig.json` |
+| `--config <path>` | Use a specific `.irisconfig.json` |
+| `--min-score <n>` | Health score threshold 0–100 |
 
 ```bash
 # Export a report to the default location
@@ -162,55 +198,53 @@ iris report --output ./reports/latest.html
 | Exit code | Meaning |
 |---|---|
 | `0` | Report written successfully |
-| `1` | Scan failed |
-| `2` | Bad arguments |
+| `2` | Bad arguments or could not write the file |
 
 ---
 
 ### iris hook
 
-Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands. The `status` subcommand is **free**; `install` and `uninstall` require **Pro**.
+Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` is **free**; `install` and `uninstall` require **Pro**.
 
 | Subcommand | Description |
 |---|---|
-| `status` | Show whether the git and build hooks are currently installed **(free)** |
-| `install git` | Write the Iris block to `.git/hooks/pre-push` **(Pro)** |
-| `install build` | Wire Iris into the project build command **(Pro)** |
-| `uninstall git` | Remove the Iris block from `.git/hooks/pre-push` **(Pro)** |
-| `uninstall build` | Remove the Iris build entry **(Pro)** |
+| `iris hook git status [path]` | Show whether the git pre-push hook is installed **(free)** |
+| `iris hook git install [path]` | Write the Iris block to `.git/hooks/pre-push` **(Pro)** |
+| `iris hook git uninstall [path]` | Remove the Iris block from `.git/hooks/pre-push` **(Pro)** |
+| `iris hook build status [path]` | Show whether the build hook is installed **(free)** |
+| `iris hook build install [path]` | Wire Iris into the project build command **(Pro)** |
+| `iris hook build uninstall [path]` | Remove the Iris build entry **(Pro)** |
 
 ```bash
 # Check current hook status (free)
-iris hook status
+iris hook git status
 
 # Install the git pre-push hook
-iris hook install git
+iris hook git install
 
 # Remove the build hook
-iris hook uninstall build
+iris hook build uninstall
 ```
 
 | Exit code | Meaning |
 |---|---|
 | `0` | Success |
-| `1` | Hook operation failed |
-| `2` | Bad arguments |
+| `2` | Bad arguments, not a git repository, or no project manifest found |
 
 ---
 
 ### iris auth
 
-Manages authentication credentials. See the [Authentication](/cli/auth) page for the full guide.
+Manages authentication credentials. Every subcommand is fully interactive — there is no non-interactive flag to pass a token directly on the command line; use the `IRIS_LICENCE_TOKEN` environment variable instead for CI runners. See the [Authentication](/cli/auth) page for the full guide.
 
 | Subcommand | Description |
 |---|---|
-| `login` | Browser-based OAuth flow (interactive) |
-| `login --token <key>` | Licence token flow (non-interactive) |
-| `status` | Confirm the active session |
+| `login` | Interactive prompt: browser-based sign-in or paste a licence token. Requires a TTY. |
+| `status` | Show the current authentication and GitHub token state |
 | `logout` | Remove stored credentials |
 
 ```bash
-# Sign in via browser
+# Sign in interactively
 iris auth login
 
 # Check the current session
@@ -221,26 +255,23 @@ iris auth status
 
 ### iris config
 
-Reads or writes `.irisconfig.json`. With no arguments, prints the resolved configuration. Pass `key=value` pairs to set individual settings.
+Generates or validates `.irisconfig.json`.
 
-| Flag | Description |
-|---|---|
-| `<key>=<value>` | Set a config value (e.g. `minHealthScore=80`) |
-| `--global` | Read or write `~/.iris/config.json` instead of the project file |
-| `--path <dir>` | Project directory to resolve config from |
+| Subcommand | Flag | Description |
+|---|---|---|
+| `init [path]` | — | Interactively pick a preset (`legacy`, `balanced`, `strict`) and write `.irisconfig.json`. Pro users are also prompted for gate limits. Falls back to a non-interactive `balanced` default when stdin is not a TTY (e.g. in CI). |
+| `validate [path]` | — | Validate an existing `.irisconfig.json` and print any schema or value problems |
 
 ```bash
-# Print the resolved config
-iris config
+# Interactively generate a config
+iris config init
 
-# Set the minimum health score in the project config
-iris config minHealthScore=80
-
-# Read or write the global config
-iris config --global
+# Validate an existing config
+iris config validate
 ```
 
 | Exit code | Meaning |
 |---|---|
-| `0` | Success |
-| `2` | Invalid key or arguments |
+| `0` | Success / no validation issues |
+| `1` | `validate` found error-severity problems |
+| `2` | Bad arguments, or `init` found an existing file with no TTY to confirm overwrite |

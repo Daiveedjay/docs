@@ -21,7 +21,7 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
 
 <Note>
-  `iris secrets` runs without any authentication at all. Use it for a free CI scan that requires no licence — it works on any runner regardless of `IRIS_LICENCE_TOKEN`.
+  `iris secrets` and `iris security` both run without any authentication at all. Use them for a free CI scan that requires no licence — they work on any runner regardless of `IRIS_LICENCE_TOKEN`.
 </Note>
 
 ## GitHub Actions
@@ -51,13 +51,18 @@ jobs:
   For inline PR annotations, use `iris gate . --format github` (added in v1.6.0). See the full guide at [/enforcement/github-actions](/enforcement/github-actions).
 </Note>
 
-To add a free secrets scan that needs no licence, include this step independently:
+To add free secrets and security smell scans that need no licence, include these steps independently:
 
 ```yaml
       - name: Secrets scan (free, no licence)
         run: |
           npm install -g @iris-code/cli
           iris secrets
+
+      - name: Security smell scan (free, no licence)
+        run: |
+          npm install -g @iris-code/cli
+          iris security
 ```
 
 ## GitLab CI
@@ -81,8 +86,12 @@ For any CI environment that runs arbitrary shell scripts:
 #!/bin/sh
 set -e
 npm install -g @iris-code/cli
-iris gate --threshold 80
+iris gate
 ```
+
+<Note>
+  `iris gate` has no threshold flag — set `minHealthScore` (and any `gateMax*` limits) in `.irisconfig.json` instead. See [.irisconfig.json](/configuration/irisconfig) for the full reference.
+</Note>
 
 <Tip>
   Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage — gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
