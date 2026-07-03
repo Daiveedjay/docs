@@ -16,7 +16,7 @@
           {
             "group": "Get Started",
             "pages": [
-              "introduction",
+              "index",
               "quickstart",
               "installation",
               "pro"
@@ -94,5 +94,11 @@
     "light": "/logo/iris-logo-light.svg",
     "dark": "/logo/iris-logo-dark.svg",
     "href": "https://iriscode.co"
-  }
+  },
+  "redirects": [
+    {
+      "source": "/introduction",
+      "destination": "/"
+    }
+  ]
 }
