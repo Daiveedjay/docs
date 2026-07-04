@@ -55,3 +55,7 @@ To generate a token:
 <Tip>
   Advisory API errors return empty CVE lists silently — the table still loads with version data even when the advisory API is unavailable or rate-limited.
 </Tip>
+
+## Exporting an SBOM
+
+For a standard, machine-readable export of the same dependency data (for supply-chain compliance or procurement), use [`iris sbom`](/cli/commands#iris-sbom) from the CLI. It generates a CycloneDX 1.5 document fully offline, and folds in known vulnerabilities from a cached `iris deps` scan if one exists.

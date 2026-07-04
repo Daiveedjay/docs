@@ -63,6 +63,7 @@ These commands require an active Iris Pro licence:
 - **`iris check --staged`** — scan only files currently staged in git
 - **`iris check --changed`** — scan only files changed since the last commit
 - **`iris deps`** — audit `package.json`, `go.mod`, or `requirements.txt` for outdated versions and known CVEs
+- **`iris sbom`** — export a CycloneDX 1.5 SBOM (software bill of materials), offline, for supply-chain compliance
 - **`iris todos`** — list every `TODO`, `FIXME`, and `HACK` comment across the project
 - **`iris gate`** — CI quality gate; exits `1` if any configured rule fails (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`)
 - **`iris hook install|uninstall`** — install or remove git pre-push and build hooks
@@ -74,7 +75,7 @@ These commands require an active Iris Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all ten Iris CLI commands, flags, and exit codes.
+    Full reference for all eleven Iris CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as a quality gate in GitHub Actions, GitLab CI, or any shell pipeline.

@@ -1,10 +1,10 @@
 ---
 title: "Iris CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all ten Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all eleven Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris sbom, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
 ---
 
-The Iris CLI provides ten commands covering the full code health workflow — scanning individual files, auditing dependencies, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
+The Iris CLI provides eleven commands covering the full code health workflow — scanning individual files, auditing dependencies, exporting a software bill of materials, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
 
 ---
 
@@ -120,6 +120,36 @@ Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth log
 |---|---|
 | `0` | No vulnerabilities found |
 | `1` | One or more vulnerabilities detected |
+| `2` | Invalid arguments or no manifest found |
+
+---
+
+### iris sbom
+
+**Pro.** Exports a [CycloneDX](https://cyclonedx.org/) 1.5 Software Bill of Materials (SBOM) for the workspace — a standard, machine-readable dependency manifest increasingly required for supply-chain compliance and procurement. Generation is fully offline: it reads `package.json`, `go.mod`, `requirements.txt`, `pyproject.toml`, and lockfiles, and never makes a network call itself.
+
+| Flag | Description |
+|---|---|
+| `[path]` | Directory to scan (defaults to current directory) |
+| `--output <file>` | Write to a specific path (default: `iris-sbom.json` in the workspace) |
+| `--stdout` | Print the SBOM to stdout instead of writing a file |
+
+```bash
+# Write iris-sbom.json in the current directory
+iris sbom
+
+# Write to a specific path
+iris sbom --output sbom.json
+
+# Print to stdout
+iris sbom --stdout
+```
+
+Each component in the output includes its name, version, [package URL](https://github.com/package-url/purl-spec) (`purl`), and a `required`/`optional` scope marking direct vs. dev dependencies. If a cached [`iris deps`](#iris-deps) scan exists, its known-vulnerability findings are folded in as CycloneDX `vulnerabilities` entries, cross-referenced to the affected component. Run `iris deps` first if you want vulnerability data included — without it, the SBOM still generates, just without vulnerabilities.
+
+| Exit code | Meaning |
+|---|---|
+| `0` | SBOM written successfully |
 | `2` | Invalid arguments or no manifest found |
 
 ---
