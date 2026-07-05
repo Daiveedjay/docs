@@ -4,52 +4,70 @@ sidebarTitle: "Changelog"
 description: "Full release notes for the Iris VS Code extension and @iris-code/cli npm package. Updates ship automatically through the VS Code Marketplace."
 ---
 
-These are the release notes for the Iris VS Code extension and the `@iris-code/cli` npm package. Updates to the extension ship automatically through the VS Code Marketplace — you do not need to reinstall to receive new versions.
+These are the release notes for the Iris VS Code extension and the `@iris-code/cli` npm package. Updates to the extension ship automatically through the VS Code Marketplace - you do not need to reinstall to receive new versions.
 
 ---
 
-## v1.9.0 — 2 Jul 2026
+## v1.10.0 - 5 Jul 2026
 
-<Note>**feature** — security smell enforcement</Note>
+<Note>**feature** - dependency intelligence: CVE gate, SBOM export, lockfile-aware audits</Note>
+
+### CVE severity gate, CycloneDX SBOM export, and lockfile-aware dependency audits
+
+Iris 1.10.0 turns the dependency scanner into a full supply-chain toolkit: gate CI on advisory severity with `iris cve`, export a CycloneDX SBOM with `iris sbom`, and get audits that reflect what is actually installed thanks to lockfile resolution and monorepo workspace discovery. Ships alongside `@iris-code/cli` 1.3.0.
+
+- **Added** `iris cve [path]` (Pro): runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when an advisory at or above the `--severity` threshold (`low`, `medium`, `high`, `critical`; default `high`) is found. Built for CI gates: block on critical or high advisories without failing the pipeline on low-severity noise.
+- **Added** `iris sbom [path]` (Pro): exports a CycloneDX 1.5 software bill of materials across npm, Go, and Python manifests. Fully offline: no network requests, no consent prompt. Components carry the name, exact installed version, `purl`, and a required/optional scope (direct vs dev). If a cached `iris deps` scan exists, known vulnerabilities fold in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`. Writes `iris-sbom.json` by default; `--stdout` prints instead.
+- **Improved** `iris deps`: installed versions are now resolved from lockfiles (`package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `poetry.lock`, `Pipfile.lock`) instead of manifest ranges, and advisories are filtered to the installed version.
+- **Improved** monorepo support in the dependency scanner: npm and yarn workspaces plus `pnpm-workspace.yaml` members are discovered and deduplicated, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
+- **Added** network consent for dependency lookups: the first lookup asks permission and discloses exactly what is sent (package names and versions, nothing else), persisted in `~/.iris/preferences.json`. `--revoke-network` disables lookups; `--allow-network` re-enables them. Cached results now print their age.
+- **Added** a CVE summary badge (Pro) to the Dependencies section of the Workspace tab: a green "no known CVEs" pill, or the vulnerable package count plus the highest severity from the last cached scan. Cache-only: the badge never triggers a network request itself.
+- **Added** a scope indicator to the Issues and TODOs tabs: each tab now labels which scan it is showing (for example, "Showing: folder · src") with a one-click **Show workspace** switch.
+
+---
+
+## v1.9.0 - 2 Jul 2026
+
+<Note>**feature** - security smell enforcement</Note>
 
 ### Security smell enforcement: gate on it, scan for it from the CLI
 
 Iris 1.9.0 closes the loop on 1.8.0's security smell detection: a new gate rule blocks pushes and CI runs on security smell count, and a dedicated CLI command scans for them independently of a full health check.
 
-- **Added** `gateMaxSecuritySmells` to `.irisconfig.json` — the gate fails when the total number of security smells (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine 1.8.0 patterns) across the workspace exceeds this value. Enforced by the CLI, the git hook, and the build hook alongside `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, and `gateMaxSmellsPerFile`.
-- **Added** `iris security [path]` — a free CLI command that scans JS/TS/Go/Python for the same nine security smell categories as the sidebar, independent of a full `iris check` run. Supports `--format pretty|json` and `--output`; exits 1 if any smell is found.
-- **Added** a Security Posture section to the Workspace and Folder tabs in the VS Code sidebar — a collapsible count-by-category breakdown of security smells found in the current scan.
+- **Added** `gateMaxSecuritySmells` to `.irisconfig.json` - the gate fails when the total number of security smells (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine 1.8.0 patterns) across the workspace exceeds this value. Enforced by the CLI, the git hook, and the build hook alongside `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, and `gateMaxSmellsPerFile`.
+- **Added** `iris security [path]` - a free CLI command that scans JS/TS/Go/Python for the same nine security smell categories as the sidebar, independent of a full `iris check` run. Supports `--format pretty|json` and `--output`; exits 1 if any smell is found.
+- **Added** a Security Posture section to the Workspace and Folder tabs in the VS Code sidebar - a collapsible count-by-category breakdown of security smells found in the current scan.
 - **Added** the `gateMaxSecuritySmells` field to the Config Studio's Gate limits editor for Pro users.
 
 ---
 
-## v1.8.0 — 30 Jun 2026
+## v1.8.0 - 30 Jun 2026
 
-<Note>**feature** — security smell detection</Note>
+<Note>**feature** - security smell detection</Note>
 
 ### Security smell detection: nine patterns, every file, free
 
 Iris 1.8.0 adds a second static-analysis tier below hardcoded secrets: security smells. Nine patterns catch the most common security anti-patterns before they reach production. The feature is on by default, free for all users, and emits Warning-severity squiggles in the editor when inline diagnostics are enabled.
 
 - **Added** nine security smell detectors across TypeScript, JavaScript, Go, and Python:
-  - **Eval / exec calls** — dynamic code execution via `eval()`, `exec()`, or similar constructs
-  - **SQL built by string concatenation** — query strings assembled with `+` or template literals instead of parameterised queries
-  - **Insecure random number generation** — `Math.random()`, `rand.Intn()`, `random.random()`, and other non-cryptographic RNG in a security-sensitive context
-  - **ReDoS-prone regexes** — nested quantifiers in patterns that can cause catastrophic backtracking
-  - **Disabled TLS verification** — `rejectUnauthorized: false`, `InsecureSkipVerify: true`, or `verify=False`
-  - **Weak hashing** — MD5 or SHA-1 in contexts that suggest security use (passwords, tokens, signatures)
-  - **Open redirects** — `res.redirect()` or equivalent called with unvalidated user-controlled input
-  - **Debug flags in production** — `debug: true` flag objects left in non-test code
-  - **Hardcoded localhost URLs** — `http://localhost` or `http://127.0.0.1` in production code paths (skipped in test files)
+  - **Eval / exec calls** - dynamic code execution via `eval()`, `exec()`, or similar constructs
+  - **SQL built by string concatenation** - query strings assembled with `+` or template literals instead of parameterised queries
+  - **Insecure random number generation** - `Math.random()`, `rand.Intn()`, `random.random()`, and other non-cryptographic RNG in a security-sensitive context
+  - **ReDoS-prone regexes** - nested quantifiers in patterns that can cause catastrophic backtracking
+  - **Disabled TLS verification** - `rejectUnauthorized: false`, `InsecureSkipVerify: true`, or `verify=False`
+  - **Weak hashing** - MD5 or SHA-1 in contexts that suggest security use (passwords, tokens, signatures)
+  - **Open redirects** - `res.redirect()` or equivalent called with unvalidated user-controlled input
+  - **Debug flags in production** - `debug: true` flag objects left in non-test code
+  - **Hardcoded localhost URLs** - `http://localhost` or `http://127.0.0.1` in production code paths (skipped in test files)
 - **Added** `enableSecuritySmells` toggle in `.irisconfig.json` and VS Code settings (`iris.enableSecuritySmells`, default on). Turning it off suppresses all nine patterns.
 - **Added** inline diagnostics support: when `enableInlineDiagnostics` is on, security smell findings appear as Warning squiggles in the editor and entries in the Problems panel. Controlled per-category via `inlineDiagnostics.securitySmells`.
-- **Added** custom scoring weights for each of the nine patterns for Pro users — adjust the health-score penalty per pattern in `healthScoreWeights` (keys: `evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`).
+- **Added** custom scoring weights for each of the nine patterns for Pro users - adjust the health-score penalty per pattern in `healthScoreWeights` (keys: `evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`).
 
 ---
 
-## v1.7.0 — 25 Jun 2026
+## v1.7.0 - 25 Jun 2026
 
-<Note>**feature** — trend tracking and baseline enforcement</Note>
+<Note>**feature** - trend tracking and baseline enforcement</Note>
 
 ### Trend tracking, baseline enforcement, and dashboard redesign
 
@@ -64,9 +82,9 @@ Iris 1.7.0 ships health score history, a dedicated Trends panel with per-file co
 
 ---
 
-## v1.6.1 — 17 Jun 2026
+## v1.6.1 - 17 Jun 2026
 
-<Note>**fix** — Python analysis correctness</Note>
+<Note>**fix** - Python analysis correctness</Note>
 
 ### Python analysis fixes: multi-line signatures and test-file secrets
 
@@ -77,13 +95,13 @@ Two Python correctness fixes. Files using multi-line (Black-formatted) function 
 
 ---
 
-## v1.6.0 — 16 Jun 2026
+## v1.6.0 - 16 Jun 2026
 
-<Note>**feature** — CI enforcement</Note>
+<Note>**feature** - CI enforcement</Note>
 
 ### CI enforcement: GitHub Actions, inline PR annotations, and multi-CI snippets
 
-Iris 1.6.0 takes the same health gate you run locally and enforces it in CI. Run `iris gate . --format github` on every pull request to block merges and annotate the exact failing lines inline on the diff. Everything runs on your own runners — your code never leaves your infrastructure.
+Iris 1.6.0 takes the same health gate you run locally and enforces it in CI. Run `iris gate . --format github` on every pull request to block merges and annotate the exact failing lines inline on the diff. Everything runs on your own runners - your code never leaves your infrastructure.
 
 - **Added** `--format github` to `iris check` and `iris gate`: emits GitHub Actions workflow commands so failing rules render as inline annotations on the pull request diff, and writes a pass/fail summary table to the run's job summary.
 - **Added** the `Iris: Add GitHub Actions Workflow` command (Pro): generates a ready-to-commit `.github/workflows/iris.yml` in your repo, pre-filled with your configured threshold.
@@ -95,9 +113,9 @@ Iris 1.6.0 takes the same health gate you run locally and enforces it in CI. Run
 
 ---
 
-## v1.5.0 — 10 Jun 2026
+## v1.5.0 - 10 Jun 2026
 
-<Note>**feature** — analytics and reliability</Note>
+<Note>**feature** - analytics and reliability</Note>
 
 ### Analytics batching, push-blocked counter, and reliability improvements
 
@@ -111,9 +129,9 @@ Iris 1.5.0 ships reliable background analytics, a Pro push-blocked counter, CLI 
 
 ---
 
-## v1.4.2 — 5 Jun 2026
+## v1.4.2 - 5 Jun 2026
 
-<Note>**fix** — documentation</Note>
+<Note>**fix** - documentation</Note>
 
 ### Documentation and CLI reference updates
 
@@ -124,9 +142,9 @@ Documentation clarity improvements and expanded CLI command reference across the
 
 ---
 
-## v1.4.1 — 4 Jun 2026
+## v1.4.1 - 4 Jun 2026
 
-<Note>**fix** — welcome page</Note>
+<Note>**fix** - welcome page</Note>
 
 ### Welcome page improvements
 
@@ -136,38 +154,38 @@ Enhanced welcome page layout with updated feature highlights and clearer onboard
 
 ---
 
-## v1.4.0 — 3 Jun 2026
+## v1.4.0 - 3 Jun 2026
 
-<Note>**feature** — full CLI command suite</Note>
+<Note>**feature** - full CLI command suite</Note>
 
 ### Full CLI command suite and npm package
 
-Iris 1.4.0 ships a complete command-line tool — available via `npm install -g @iris-code/cli`. Scan any project from your terminal, manage enforcement hooks without opening VS Code, audit dependencies for CVEs, and authenticate once with a persistent credentials file. No VS Code installation required.
+Iris 1.4.0 ships a complete command-line tool - available via `npm install -g @iris-code/cli`. Scan any project from your terminal, manage enforcement hooks without opening VS Code, audit dependencies for CVEs, and authenticate once with a persistent credentials file. No VS Code installation required.
 
 - **Added** `iris auth`: sign in via browser or licence token, store credentials in `~/.iris/credentials` (chmod 600). Subcommands: `iris auth login`, `iris auth logout`, and `iris auth status`. Credentials are read from the `IRIS_LICENCE_TOKEN` environment variable first, then the credentials file.
-- **Added** `iris secrets`: free hardcoded secret scanner across JS/TS/Go/Python. Two-layer detection — suspicious variable names and known token formats. Exits `1` if any findings. No licence required.
+- **Added** `iris secrets`: free hardcoded secret scanner across JS/TS/Go/Python. Two-layer detection - suspicious variable names and known token formats. Exits `1` if any findings. No licence required.
 - **Added** `iris deps`: audit all dependencies (`package.json`, `go.mod`, `requirements.txt`) for outdated versions and CVEs via the GitHub Advisory API. Results are cached for 24 hours. Store a GitHub PAT via `iris auth login` for higher rate limits.
 - **Added** `iris todos`: aggregate all `TODO`/`FIXME`/`HACK` comments across your codebase. Pro feature.
 - **Added** `iris gate`: run the full enforcement gate and show each configured rule's threshold vs actual value with per-rule PASS/FAIL. Pro feature.
 - **Added** `iris report`: generate a standalone dark-themed HTML scan report. Free. Defaults to `iris-report.html` in the current directory.
 - **Added** `iris hook`: manage pre-push and pre-build hooks from the terminal without VS Code. `iris hook git|build install|uninstall|status`. Install/uninstall is Pro; status is free.
 - **Added** `iris config`: `iris config init` generates a `.irisconfig.json` with interactive preset selection. `iris config validate` reports any problems in an existing config.
-- **Updated** `iris check`: file scans remain free. Directory scans, `--staged`, and `--changed` now require Pro — consistent with workspace analysis in the extension.
+- **Updated** `iris check`: file scans remain free. Directory scans, `--staged`, and `--changed` now require Pro - consistent with workspace analysis in the extension.
 - **Published** `@iris-code/cli` to npm with Linux and Windows self-contained binaries on each GitHub Release.
 - **Added** GitHub Actions docs page at `iriscode.co/docs/enforcement/github-actions` covering the full CI workflow, gate variant, exit codes, and threshold configuration.
 - **Improved** hook install messages in the extension to inform users to run `iris auth login` or set `IRIS_LICENCE_TOKEN` so the hook can validate at push or build time.
 
 ---
 
-## v1.3.0 — 28 May 2026
+## v1.3.0 - 28 May 2026
 
-<Note>**feature** — Gate Preview and custom scoring weights</Note>
+<Note>**feature** - Gate Preview and custom scoring weights</Note>
 
 ### Gate Preview, preset cycling, and custom scoring weights
 
-Iris 1.3.0 ships Gate Preview — a free, read-only view of how your workspace scores against all five preset thresholds. Cycle through presets with prev/next controls or jump directly from the chip strip, drill into failing files (Pro), and apply the chosen preset in one click. Also ships custom health score weights and four new gate enforcement config fields for Pro users.
+Iris 1.3.0 ships Gate Preview - a free, read-only view of how your workspace scores against all five preset thresholds. Cycle through presets with prev/next controls or jump directly from the chip strip, drill into failing files (Pro), and apply the chosen preset in one click. Also ships custom health score weights and four new gate enforcement config fields for Pro users.
 
-- **Added** Gate Preview: open it from the bottom of the File tab. It runs a full workspace scan and shows pass/fail counts for each of the five preset thresholds (`legacy`, `balanced`, `typescript`, `strict`, `security`) with proportion bars, a threshold card, and a recommendation for the next enforcement step. Always read-only — no files are blocked and no config is written.
+- **Added** Gate Preview: open it from the bottom of the File tab. It runs a full workspace scan and shows pass/fail counts for each of the five preset thresholds (`legacy`, `balanced`, `typescript`, `strict`, `security`) with proportion bars, a threshold card, and a recommendation for the next enforcement step. Always read-only - no files are blocked and no config is written.
 - **Added** preset cycling: use prev/next arrows or click any chip in the preset strip to jump between presets. The focused preset shows a full drilldown and an Apply button so you can lock in a threshold in one click without leaving the surface.
 - **Added** per-file drilldown for Pro users: expand any preset row to see the exact files that would be blocked, their health scores, and the warning pills driving the failure.
 - **Added** custom health score weights for Pro users: set `healthScoreWeights` in `.irisconfig.json` to change how many points each finding type deducts from the base 100. Supported keys: `hardcodedSecret`, `errorWarning`, `warningWarning`, `anyUsage`, `tsIgnore`, `consoleLog`, `deepNesting`, `longParamList`, `unusedVar`, `unusedFunction`.
@@ -176,9 +194,9 @@ Iris 1.3.0 ships Gate Preview — a free, read-only view of how your workspace s
 
 ---
 
-## v1.2.1 — 27 May 2026
+## v1.2.1 - 27 May 2026
 
-<Note>**fix** — sidebar UX</Note>
+<Note>**fix** - sidebar UX</Note>
 
 ### Collapsible Pro card
 
@@ -188,27 +206,27 @@ A small follow-up to 1.2.0 that adds a collapsible Pro-status card in the sideba
 
 ---
 
-## v1.2.0 — 20 May 2026
+## v1.2.0 - 20 May 2026
 
-<Note>**feature** — config presets and billing</Note>
+<Note>**feature** - config presets and billing</Note>
 
 ### Config presets, dashboard sync, and bank transfer billing
 
-Iris 1.2.0 ships a complete config management flow — pick from five presets, tune on the dashboard, and push to VS Code in one click. Nigerian users can now also pay with a bank transfer instead of a card.
+Iris 1.2.0 ships a complete config management flow - pick from five presets, tune on the dashboard, and push to VS Code in one click. Nigerian users can now also pay with a bank transfer instead of a card.
 
 - **Added** preset configs: set `presetId` in `.irisconfig.json` to snap your whole team to a known baseline (`strict`, `balanced`, `legacy`, `security`, or `typescript`). Preset configs are free for all users.
 - **Added** config enforcement for Free users: if a free user edits preset threshold values locally, those edits are ignored and marked with a yellow warning in the editor pointing to the preset as the source of truth.
-- Pro users can start from any preset and override individual values — the preset acts as a baseline, not a lock.
+- Pro users can start from any preset and override individual values - the preset acts as a baseline, not a lock.
 - **Added** a Config page in the account dashboard for generating and customising Iris configs with a live preview.
-- **Added** dashboard-to-VS Code sync: generate a config on the dashboard, click Sync to VS Code, review a diff preview in the editor, and confirm the write — no copy-pasting.
+- **Added** dashboard-to-VS Code sync: generate a config on the dashboard, click Sync to VS Code, review a diff preview in the editor, and confirm the write - no copy-pasting.
 - **Added** Paystack bank transfer checkout for Nigerian users: choose a one-time transfer checkout from the billing page, pay to the transaction-specific account shown, and Pro activates on confirmation. A fresh checkout is opened each renewal cycle.
 - **Fixed** config sync diff preview leaving behind unsaved Untitled files after confirmation.
 
 ---
 
-## v1.1.0 — 18 May 2026
+## v1.1.0 - 18 May 2026
 
-<Note>**feature** — onboarding and account setup</Note>
+<Note>**feature** - onboarding and account setup</Note>
 
 ### Onboarding, docs, and account setup flow
 
@@ -223,41 +241,33 @@ Iris 1.1.0 turns the first-run experience into a complete product flow across th
 
 ---
 
-## v1.0.9 — 11 May 2026
+## v1.0.9 - 11 May 2026
 
-<Note>**fix** — VS Code fork compatibility</Note>
+<Note>**fix** - VS Code fork compatibility</Note>
 
 ### Trae, Cursor, Windsurf and all VS Code forks
 
 Sign-in now works correctly in Trae IDE and any other VS Code fork. The sidebar has also been rebuilt internally for better reliability.
 
-- **Fixed** sign-in redirect failing in Trae IDE and other VS Code forks — the extension now auto-detects the correct URI scheme for any editor without needing manual updates.
+- **Fixed** sign-in redirect failing in Trae IDE and other VS Code forks - the extension now auto-detects the correct URI scheme for any editor without needing manual updates.
 - **Fixed** an inaccurate notification shown in the detached panel when a free user clicks a Pro-only feature.
-- **Rebuilt** the sidebar and detached panel internals using React — the experience is identical but the foundation is now typed and maintainable.
+- **Rebuilt** the sidebar and detached panel internals using React - the experience is identical but the foundation is now typed and maintainable.
 
 ---
 
-## v1.0.0 — 30 Apr 2026
+## v1.0.x - Apr 2026
 
-<Note>**feature** — build hook enforcement</Note>
+<Note>**major release** - Enforcement Update, build hook enforcement, stability and polish</Note>
 
-### Build hook enforcement
+### Stability and polish (25 Apr)
 
-Iris can now run a health check before your project builds, not just before you push. Failing files block the build early, before the language toolchain runs.
+A follow-up update focused on smoothing rough edges after the main 1.0 rollout.
 
-- **Added** pre-build health check for Node projects via the npm `prebuild` lifecycle script — runs automatically before `pnpm build`, `npm run build`, and `yarn build`.
-- **Added** Makefile-based pre-build check for Go and Python projects, wired as a prerequisite on the `build` or `all` target.
-- Iris creates a Makefile with sensible defaults if none exists in Go or Python projects.
-- Build hook status appears alongside the existing Git Hook section in the sidebar File tab.
-- Both install and uninstall are safe: markers guard the injected block and original hook content is preserved on removal.
+- **Improved** default configuration behavior for day-to-day use.
+- **Fixed** smaller workflow issues and tightened overall stability.
+- **Polished** supporting parts of the product for a cleaner experience.
 
----
-
-## v1.0.0 — 29 Apr 2026
-
-<Note>**major release** — Enforcement Update</Note>
-
-### Enforcement Update
+### Enforcement Update (29 Apr)
 
 Version 1.0.0 brings Iris together as a fuller code-health workflow inside VS Code, with stronger checks before code leaves your machine.
 
@@ -266,23 +276,19 @@ Version 1.0.0 brings Iris together as a fuller code-health workflow inside VS Co
 - **Expanded** project-wide analysis and dependency review in the extension.
 - **Included** a more complete release focused on enforcement, scanning, and review flows.
 
----
+### Build hook enforcement (30 Apr)
 
-## v1.0.0 — 25 Apr 2026
+Iris can now run a health check before your project builds, not just before you push. Failing files block the build early, before the language toolchain runs.
 
-<Note>**improvements** — stability and polish</Note>
-
-### Stability and polish
-
-A follow-up update focused on smoothing rough edges after the main 1.0 rollout.
-
-- **Improved** default configuration behavior for day-to-day use.
-- **Fixed** smaller workflow issues and tightened overall stability.
-- **Polished** supporting parts of the product for a cleaner experience.
+- **Added** pre-build health check for Node projects via the npm `prebuild` lifecycle script - runs automatically before `pnpm build`, `npm run build`, and `yarn build`.
+- **Added** Makefile-based pre-build check for Go and Python projects, wired as a prerequisite on the `build` or `all` target.
+- Iris creates a Makefile with sensible defaults if none exists in Go or Python projects.
+- Build hook status appears alongside the existing Git Hook section in the sidebar File tab.
+- Both install and uninstall are safe: markers guard the injected block and original hook content is preserved on removal.
 
 ---
 
-## v0.2.0 — 13 Apr 2026
+## v0.2.0 - 13 Apr 2026
 
 <Note>**version update**</Note>
 
@@ -295,7 +301,7 @@ Version 0.2.0 continued the early Iris rollout with another round of product pol
 
 ---
 
-## v0.1.x — 6 Apr 2026
+## v0.1.x - 6 Apr 2026
 
 <Note>**feature update**</Note>
 
@@ -308,9 +314,9 @@ This update expanded how results could be reviewed during longer coding sessions
 
 ---
 
-## v0.1.x — 12 Mar 2026
+## v0.1.x - 12 Mar 2026
 
-<Note>**project start** — initial release</Note>
+<Note>**project start** - initial release</Note>
 
 ### Initial rollout
 

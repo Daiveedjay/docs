@@ -1,30 +1,30 @@
 ---
 title: "Quick Start: Install Iris, Scan Files, and Preview Gates"
 sidebarTitle: "Quick Start"
-description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture — from zero to first scan in two minutes."
+description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture - from zero to first scan in two minutes."
 ---
 
-This guide walks you through everything you need to get Iris running: installing the extension, reading your first file score, scanning your workspace, and previewing your enforcement posture against five built-in thresholds. By the end you'll have a clear picture of where your codebase stands — and what it would take to enforce a gate on it.
+This guide walks you through everything you need to get Iris running: installing the extension, reading your first file score, scanning your workspace, and previewing your enforcement posture against five built-in thresholds. By the end you'll have a clear picture of where your codebase stands - and what it would take to enforce a gate on it.
 
 <Steps>
   <Step title="Install Iris from the VS Code Marketplace">
-    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris**, and click **Install**. The Iris icon appears in the Activity Bar as soon as the install completes — click it to open the sidebar.
+    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris**, and click **Install**. The Iris icon appears in the Activity Bar as soon as the install completes - click it to open the sidebar.
 
     <Note>
-      Iris installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way — or you can [install the `.vsix` manually](/installation).
+      Iris installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way - or you can [install the `.vsix` manually](/installation).
     </Note>
   </Step>
 
   <Step title="Open a supported file and read the File tab">
-    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris scores it automatically — no command needed.
+    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris scores it automatically - no command needed.
 
     The **File tab** in the Iris sidebar shows:
 
-    - **Enforcement snapshot** — a top-of-file readiness summary with your score, blockers, hook posture, and trend direction
-    - **Health score** — a 0–100 composite score recomputed on every save
-    - **Blockers and warnings** — findings that penalise your score, each clickable to jump to the source line
-    - **Function inventory** — every detected function with its line number, length, and complexity
-    - **Code smells** — TODOs, magic numbers, debug prints, unused variables, and long parameter lists grouped in one section
+    - **Enforcement snapshot** - a top-of-file readiness summary with your score, blockers, hook posture, and trend direction
+    - **Health score** - a 0–100 composite score recomputed on every save
+    - **Blockers and warnings** - findings that penalise your score, each clickable to jump to the source line
+    - **Function inventory** - every detected function with its line number, length, and complexity
+    - **Code smells** - TODOs, magic numbers, debug prints, unused variables, and long parameter lists grouped in one section
 
     Save the file and watch the score update in real time.
   </Step>
@@ -34,13 +34,13 @@ This guide walks you through everything you need to get Iris running: installing
 
     Iris crawls every supported file in the project and populates:
 
-    - **Workspace Readiness** — an aggregate health score with blocker and warning counts across the whole project
-    - **Hotspot rankings** — the largest and most complex files ranked first, so you know where to focus
-    - **Unused packages** — dependencies declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` that are never imported
-    - **Issues tab** — all blocking issues and warning-level findings aggregated in one filterable list
-    - **TODOs tab** — every TODO, FIXME, and HACK comment across your project
+    - **Workspace Readiness** - an aggregate health score with blocker and warning counts across the whole project
+    - **Hotspot rankings** - the largest and most complex files ranked first, so you know where to focus
+    - **Unused packages** - dependencies declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` that are never imported
+    - **Issues tab** - all blocking issues and warning-level findings aggregated in one filterable list
+    - **TODOs tab** - every TODO, FIXME, and HACK comment across your project
 
-    Results are cached — navigate between tabs and come back without re-scanning.
+    Results are cached - navigate between tabs and come back without re-scanning.
   </Step>
 
   <Step title="Preview your enforcement posture">
@@ -49,12 +49,12 @@ This guide walks you through everything you need to get Iris running: installing
     | Preset | Min score | Best for |
     |---|---|---|
     | **Legacy** | 60 | Large codebases with accumulated debt |
-    | **Balanced** | 70 | A typical TypeScript project — best starting point |
+    | **Balanced** | 70 | A typical TypeScript project - best starting point |
     | **TypeScript** | 76 | Raises the bar on type safety |
     | **Strict** | 82 | Greenfield code or shared libraries |
     | **Security** | 85 | Prioritises secrets and safety |
 
-    Each card shows exactly how many files would be blocked at that threshold. When you find the right preset, click **Apply** to write `presetId` to your `.irisconfig.json` — no config editing required.
+    Each card shows exactly how many files would be blocked at that threshold. When you find the right preset, click **Apply** to write `presetId` to your `.irisconfig.json` - no config editing required.
 
     <Note>
       Gate Preview is free for all users and always read-only. No hooks are installed and no files are blocked until you explicitly set up enforcement. Pro users can drill into the list of failing files and their scores for each preset.

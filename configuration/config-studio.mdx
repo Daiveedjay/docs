@@ -4,22 +4,22 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code with a diff preview."
 ---
 
-Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) — pick a preset, tune thresholds and detection toggles, then sync the resulting `.irisconfig.json` directly to VS Code without touching a file manually. Free users can pick a preset and sync it in one click. Pro users get the full studio with custom thresholds, gate limits, severity overrides, and custom scoring weights.
+Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, tune thresholds and detection toggles, then sync the resulting `.irisconfig.json` directly to VS Code without touching a file manually. Free users can pick a preset and sync it in one click. Pro users get the full studio with custom thresholds, gate limits, severity overrides, and custom scoring weights.
 
 ## What the studio contains
 
 Config Studio surfaces every configuration option in one place, with a live JSON preview updating as you make changes:
 
-- **Preset selector** — choose from Balanced, Strict, Legacy, Security, TypeScript, or switch to Custom mode to edit every value individually.
-- **Detection matrix** — see at a glance which rule categories are on or off for the selected preset.
-- **minHealthScore bar** — the gate threshold used by the CLI and hooks is always visible at the top of the card.
-- **Gate limits** (Pro, Custom mode) — hard caps on secrets count, max file length, max complexity, and smells per file. Leave a field empty to impose no workspace-wide limit.
-- **Custom scoring** (Pro, Custom mode) — control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
-- **Live JSON preview** — the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
+- **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, or switch to Custom mode to edit every value individually.
+- **Detection matrix** - see at a glance which rule categories are on or off for the selected preset.
+- **minHealthScore bar** - the gate threshold used by the CLI and hooks is always visible at the top of the card.
+- **Gate limits** (Pro, Custom mode) - hard caps on secrets count, max file length, max complexity, and smells per file. Leave a field empty to impose no workspace-wide limit.
+- **Custom scoring** (Pro, Custom mode) - control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
+- **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
 
 ## Syncing to VS Code
 
-The sync flow is designed to never write silently — every sync opens a diff in VS Code first so you can review the exact changes before anything is committed to disk.
+The sync flow is designed to never write silently - every sync opens a diff in VS Code first so you can review the exact changes before anything is committed to disk.
 
 <Steps>
   <Step title="Open Account → Config in the browser">
@@ -35,7 +35,7 @@ The sync flow is designed to never write silently — every sync opens a diff in
     VS Code opens and shows a diff preview of the exact changes that will be made to your `.irisconfig.json`.
   </Step>
   <Step title="Confirm or cancel">
-    Confirm the write to apply the changes — or cancel to leave your config exactly as it was. Nothing is written silently.
+    Confirm the write to apply the changes - or cancel to leave your config exactly as it was. Nothing is written silently.
   </Step>
 </Steps>
 
@@ -49,7 +49,7 @@ When you click **Sync to VS Code**, choose where the config is written:
 
 <CardGroup cols={2}>
   <Card title="Workspace" icon="folder">
-    Writes `.irisconfig.json` to the project root. Available to all users — Free and Pro. Commit it and the whole team runs the same config automatically.
+    Writes `.irisconfig.json` to the project root. Available to all users - Free and Pro. Commit it and the whole team runs the same config automatically.
   </Card>
   <Card title="Global default" icon="user" color="#f59e0b">
     **Pro only.** Writes to your personal default config path so every new project on your machine starts with the same settings. Useful for personal standards you maintain across repositories.
@@ -57,7 +57,7 @@ When you click **Sync to VS Code**, choose where the config is written:
 </CardGroup>
 
 <Tip>
-  For monorepos, sync a **Workspace** config to each package root that needs different thresholds. The extension resolves config by walking up the directory tree — the nearest `.irisconfig.json` wins.
+  For monorepos, sync a **Workspace** config to each package root that needs different thresholds. The extension resolves config by walking up the directory tree - the nearest `.irisconfig.json` wins.
 </Tip>
 
 ## Using a preset without Config Studio
@@ -78,7 +78,7 @@ All five preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
 
-    The preset values are fixed and cannot be overridden locally — editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
+    The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
   </Tab>
   <Tab title="Pro">
     - Start from any preset and switch to **Custom mode** for full control

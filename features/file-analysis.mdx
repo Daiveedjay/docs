@@ -4,7 +4,7 @@ sidebarTitle: "File Analysis"
 description: "Iris analyses every file on open and save: 0–100 health score, complexity, function list, code smells, TypeScript metrics, and secrets detection."
 ---
 
-Iris analyses every supported file automatically as you open or save it. The **File tab** in the Iris sidebar gives you an instant, line-level picture of that file's health — from an overall score and complexity rating down to individual code smells, TypeScript-specific quality signals, and detected secrets — so you know exactly what needs attention before you push.
+Iris analyses every supported file automatically as you open or save it. The **File tab** in the Iris sidebar gives you an instant, line-level picture of that file's health - from an overall score and complexity rating down to individual code smells, TypeScript-specific quality signals, and detected secrets - so you know exactly what needs attention before you push.
 
 ## The File Tab
 
@@ -17,17 +17,17 @@ The File tab opens with an **enforcement snapshot**: a top-of-file readiness sum
 | **Language badge** | Go / TypeScript / JavaScript / Python badge in the file header |
 | **Line counts** | Total lines, blank lines, and code lines |
 | **Complexity score** | A 1–10 score based on function density, nesting depth, control flow, and import count |
-| **Function list** | Every detected function with its line number — click any entry to jump straight to that line in the editor |
+| **Function list** | Every detected function with its line number - click any entry to jump straight to that line in the editor |
 | **Code smells** | TODOs, unused code, magic numbers, debug prints, and long parameter lists grouped in one section |
 | **Coverage signal** | Whether a matching test file was detected (configurable via `testConvention` in `.irisconfig.json`) |
 
 ## TypeScript Metrics
 
-Iris surfaces four TypeScript-specific quality signals when you are working in a `.ts` or `.tsx` (or `.js`/`.jsx`) file. These metrics are **hidden automatically for Go and Python** — they only appear when the active file is TypeScript or JavaScript.
+Iris surfaces four TypeScript-specific quality signals when you are working in a `.ts` or `.tsx` (or `.js`/`.jsx`) file. These metrics are **hidden automatically for Go and Python** - they only appear when the active file is TypeScript or JavaScript.
 
 | Metric | What it tracks |
 |---|---|
-| `any` usages | Counts explicit `: any` and `as any` — each occurrence is clickable to jump to the line |
+| `any` usages | Counts explicit `: any` and `as any` - each occurrence is clickable to jump to the line |
 | `@ts-ignore` | Count of TypeScript suppression comments in the file |
 | Non-null assertions | Count of `!` (non-null assertion) usages |
 | Missing return types | Exported functions without an explicit return type annotation |
@@ -38,31 +38,31 @@ Iris detects several code smell patterns across all supported languages. Every f
 
 | Smell | Detected in | Toggle setting |
 |---|---|---|
-| Debug prints — `console.log`, `console.warn`, `console.error` | JavaScript / TypeScript | `enableConsoleLogWarnings` |
-| Debug prints — `fmt.Print*`, `log.Print*`, `log.Fatal*`, `log.Panic*` | Go | `enableConsoleLogWarnings` |
-| Debug prints — `print()` | Python | `enableConsoleLogWarnings` |
-| Magic numbers — raw numeric literals (excluding `0` and `1`) used inline without a named binding | All supported languages | `enableMagicNumberDetection` |
-| TODOs / FIXMEs / HACKs — from `//` comments (JS/TS, Go) and `#` comments (Python) | All supported languages | `enableTodoDetection` |
-| Long parameter lists — functions with more parameters than the configured threshold | All supported languages | `enableLongParamDetection` |
-| Unused variables — declared but never referenced elsewhere in the file | All supported languages | `enableUnusedDetection` |
-| Unused functions — defined but never called within the file and not exported | All supported languages | `enableUnusedDetection` |
+| Debug prints - `console.log`, `console.warn`, `console.error` | JavaScript / TypeScript | `enableConsoleLogWarnings` |
+| Debug prints - `fmt.Print*`, `log.Print*`, `log.Fatal*`, `log.Panic*` | Go | `enableConsoleLogWarnings` |
+| Debug prints - `print()` | Python | `enableConsoleLogWarnings` |
+| Magic numbers - raw numeric literals (excluding `0` and `1`) used inline without a named binding | All supported languages | `enableMagicNumberDetection` |
+| TODOs / FIXMEs / HACKs - from `//` comments (JS/TS, Go) and `#` comments (Python) | All supported languages | `enableTodoDetection` |
+| Long parameter lists - functions with more parameters than the configured threshold | All supported languages | `enableLongParamDetection` |
+| Unused variables - declared but never referenced elsewhere in the file | All supported languages | `enableUnusedDetection` |
+| Unused functions - defined but never called within the file and not exported | All supported languages | `enableUnusedDetection` |
 
 <Tip>
   Disabling a toggle hides both the stat counter and the detail section from
-  the sidebar entirely — useful for reducing visual clutter when a particular
+  the sidebar entirely - useful for reducing visual clutter when a particular
   smell isn't relevant to your project.
 </Tip>
 
 ## Security Smells
 
-Iris detects nine security anti-patterns across all supported languages. Each finding counts toward **Blockers** — the same category as hardcoded secrets — and is clickable to jump to the exact line.
+Iris detects nine security anti-patterns across all supported languages. Each finding counts toward **Blockers** - the same category as hardcoded secrets - and is clickable to jump to the exact line.
 
 | Pattern | What it detects | Toggle |
 |---|---|---|
 | `evalUsage` | `eval()` in JS/TS; `exec()` in Python and Go | `enableSecuritySmells` |
 | `sqlConcatenation` | SQL queries built by string concatenation or template literals | `enableSecuritySmells` |
 | `insecureRandom` | `Math.random()`, `rand.Intn()`, `random.random()` in security-sensitive paths | `enableSecuritySmells` |
-| `unsafeRegex` | Regex patterns with nested quantifiers — potential ReDoS | `enableSecuritySmells` |
+| `unsafeRegex` | Regex patterns with nested quantifiers - potential ReDoS | `enableSecuritySmells` |
 | `hardcodedLocalhost` | `http://localhost` or `http://127.0.0.1` in production code | `enableSecuritySmells` |
 | `disabledTlsVerification` | `rejectUnauthorized: false`, `InsecureSkipVerify: true`, `verify=False` | `enableSecuritySmells` |
 | `debugFlagsEnabled` | `debug: true` in config objects (test files excluded) | `enableSecuritySmells` |

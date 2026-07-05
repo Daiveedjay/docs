@@ -16,9 +16,24 @@ Run **Iris: Open Dependents Table** from the command palette.
 
 ## Supported package sources
 
-- **npm** — `package.json`
-- **Go modules** — `go.mod`
-- **Python** — `requirements.txt` and `pyproject.toml`
+- **npm** - `package.json`
+- **Go modules** - `go.mod`
+- **Python** - `requirements.txt` and `pyproject.toml`
+
+## Lockfile-aware versions
+
+When a lockfile is present, installed versions are resolved from it rather than from the manifest's version range, so the audit reflects what is actually installed. Supported lockfiles:
+
+- **npm** - `package-lock.json` (v1-v3)
+- **pnpm** - `pnpm-lock.yaml`
+- **yarn** - `yarn.lock` (classic and Berry)
+- **Python** - `poetry.lock` and `Pipfile.lock`
+
+Advisories are filtered to the installed version: a CVE that only affects versions you do not have installed will not be reported.
+
+## Monorepo support
+
+Workspace members declared via npm or yarn workspaces, or in `pnpm-workspace.yaml`, are discovered automatically and their dependencies deduplicated into a single view. Internal `workspace:` / `file:` / `link:` dependencies are excluded from the audit, so only real third-party packages appear.
 
 ## What the table shows
 
@@ -29,6 +44,10 @@ For each package, the table displays the installed version, the latest available
 | `next` | 14.1.0 → 15.3.2 | — |
 | `express` | 4.18.2 → 4.21.2 | CVE-2024-29041 |
 | `jsonwebtoken` | 8.5.1 → 9.0.2 | CVE-2022-23529, CVE-2022-23540 |
+
+## CVE badge in the sidebar
+
+The Dependencies section of the Workspace tab shows a summary pill of the last cached dependency scan: a green "no known CVEs" badge when the scan came back clean, or the number of vulnerable packages plus the highest severity found. The badge reads only from the local cache - it never triggers a network lookup itself. Run a scan from the Dependents Table (or `iris deps` in the terminal) to refresh it.
 
 ## Caching
 
@@ -45,7 +64,7 @@ To generate a token:
     Go to [GitHub Settings](https://github.com/settings/profile) → [Developer settings](https://github.com/settings/apps) → [Personal access tokens → Tokens (classic)](https://github.com/settings/tokens).
   </Step>
   <Step title="Generate a new token">
-    Click **Generate new token (classic)**. No scopes are required — leave all permission boxes unchecked.
+    Click **Generate new token (classic)**. No scopes are required - leave all permission boxes unchecked.
   </Step>
   <Step title="Store the token in Iris">
     Click the token button in the Dependents Table panel and paste in your new token.
@@ -53,5 +72,5 @@ To generate a token:
 </Steps>
 
 <Tip>
-  Advisory API errors return empty CVE lists silently — the table still loads with version data even when the advisory API is unavailable or rate-limited.
+  Advisory API errors return empty CVE lists silently - the table still loads with version data even when the advisory API is unavailable or rate-limited.
 </Tip>

@@ -4,7 +4,7 @@ sidebarTitle: "Gate Preview"
 description: "Gate Preview runs a read-only workspace scan against all five built-in presets so you can see how many files would be blocked before enabling any hook."
 ---
 
-Gate Preview runs a full workspace scan and shows how your codebase scores against all five built-in preset thresholds in a single, read-only view. Before you install a single hook, you can see exactly how many files would be blocked at each threshold, which preset is realistic today, and what it would take to reach the next level — all without writing any config or triggering any enforcement.
+Gate Preview runs a full workspace scan and shows how your codebase scores against all five built-in preset thresholds in a single, read-only view. Before you install a single hook, you can see exactly how many files would be blocked at each threshold, which preset is realistic today, and what it would take to reach the next level - all without writing any config or triggering any enforcement.
 
 ## How to open it
 
@@ -26,16 +26,16 @@ Gate Preview tests your workspace against all five built-in presets simultaneous
 
 After the scan completes, the Gate Preview surface renders several components:
 
-- **Workspace average** — a single 0–100 health score across every scanned file.
-- **Files analysed** — the total number of JS/TS/Go/Python files included in the scan.
-- **Threshold card** — which presets you already pass and what the next failing threshold is.
-- **Recommendation card** — the highest preset you can lock in today with zero files blocked, plus the next goal.
-- **Focus card** — the currently selected preset shown large, with prev/next cycling controls, a chip strip for direct jumps, and an **Apply** button to lock it in.
-- **Preset overview grid** — all five presets at a glance. Click any card to jump the focus card to that preset.
+- **Workspace average** - a single 0–100 health score across every scanned file.
+- **Files analysed** - the total number of JS/TS/Go/Python files included in the scan.
+- **Threshold card** - which presets you already pass and what the next failing threshold is.
+- **Recommendation card** - the highest preset you can lock in today with zero files blocked, plus the next goal.
+- **Focus card** - the currently selected preset shown large, with prev/next cycling controls, a chip strip for direct jumps, and an **Apply** button to lock it in.
+- **Preset overview grid** - all five presets at a glance. Click any card to jump the focus card to that preset.
 
 ## Preset cycling
 
-The focus card shows one preset at a time in detail. Use the **prev/next arrows** to step through all five presets in order, or click any chip in the strip — **Legacy**, **Balanced**, **TypeScript**, **Strict**, **Security** — to jump directly. The chip for your currently active preset is labelled _Current_.
+The focus card shows one preset at a time in detail. Use the **prev/next arrows** to step through all five presets in order, or click any chip in the strip - **Legacy**, **Balanced**, **TypeScript**, **Strict**, **Security** - to jump directly. The chip for your currently active preset is labelled _Current_.
 
 The focus card displays the preset name, its minimum score, the fail count for your workspace, and an expanded per-file drilldown (Pro). When you have found the right threshold, click **Apply** to write the `presetId` to your workspace `.irisconfig.json` immediately, without leaving the surface. **Customize in Docs** opens the configuration reference for that preset.
 
@@ -54,11 +54,11 @@ Gate Preview is free for all users. The per-file drilldown and actual enforcemen
 
 Once Gate Preview confirms which threshold is realistic for your codebase, you have two paths:
 
-- **Free path** — add `"presetId": "balanced"` (or whichever preset you chose) to `.irisconfig.json`. This aligns the whole team's local analysis thresholds without blocking any pushes or builds. No enforcement is active yet.
-- **Pro path** — install the git hook or build hook to start blocking files that fall below your chosen threshold. See the [Git Hook](/enforcement/git-hook) and [Build Gate](/enforcement/build-gate) pages for the full setup.
+- **Free path** - add `"presetId": "balanced"` (or whichever preset you chose) to `.irisconfig.json`. This aligns the whole team's local analysis thresholds without blocking any pushes or builds. No enforcement is active yet.
+- **Pro path** - install the git hook or build hook to start blocking files that fall below your chosen threshold. See the [Git Hook](/enforcement/git-hook) and [Build Gate](/enforcement/build-gate) pages for the full setup.
 
 If the preview shows a large number of failing files, start with `legacy` or `balanced` and work up incrementally over time.
 
 <Note>
-  Gate Preview is always read-only — no files are blocked, no config is written, and no enforcement is enabled.
+  Gate Preview is always read-only - no files are blocked, no config is written, and no enforcement is enabled.
 </Note>

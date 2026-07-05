@@ -4,7 +4,7 @@ sidebarTitle: "CI Integration"
 description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
 ---
 
-The Iris CLI is designed for non-interactive pipelines — install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
+The Iris CLI is designed for non-interactive pipelines - install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
 
 ## Exit codes
 
@@ -12,8 +12,8 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 
 | Exit code | Meaning | Pipeline action |
 |---|---|---|
-| `0` | All files pass the threshold | Pipeline continues |
-| `1` | One or more files below threshold | Fail the build |
+| `0` | All gate rules pass | Pipeline continues |
+| `1` | One or more gate rules failed: the `minHealthScore` threshold or any configured `gateMax*` limit (`gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) | Fail the build |
 | `2` | Bad arguments or invalid config | Fix the workflow step |
 
 ## Setting IRIS_LICENCE_TOKEN
@@ -21,7 +21,7 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
 
 <Note>
-  `iris secrets` and `iris security` both run without any authentication at all. Use them for a free CI scan that requires no licence — they work on any runner regardless of `IRIS_LICENCE_TOKEN`.
+  `iris secrets` and `iris security` both run without any authentication at all. Use them for a free CI scan that requires no licence - they work on any runner regardless of `IRIS_LICENCE_TOKEN`.
 </Note>
 
 ## GitHub Actions
@@ -65,6 +65,19 @@ To add free secrets and security smell scans that need no licence, include these
           iris security
 ```
 
+## Gating on dependency CVEs
+
+Use `iris cve` (Pro) as a separate dependency gate. It runs the same scan as `iris deps` but exits `1` only when an advisory at or above the chosen severity is found, so low-severity noise never turns the pipeline red:
+
+```yaml
+      - name: CVE gate
+        run: iris cve --severity high
+        env:
+          IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+See the [command reference](/cli/commands#iris-cve) for severity levels and exit codes.
+
 ## GitLab CI
 
 ```yaml
@@ -90,9 +103,9 @@ iris gate
 ```
 
 <Note>
-  `iris gate` has no threshold flag — set `minHealthScore` (and any `gateMax*` limits) in `.irisconfig.json` instead. See [.irisconfig.json](/configuration/irisconfig) for the full reference.
+  `iris gate` has no threshold flag - set `minHealthScore` (and any `gateMax*` limits) in `.irisconfig.json` instead. See [.irisconfig.json](/configuration/irisconfig) for the full reference.
 </Note>
 
 <Tip>
-  Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage — gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
+  Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage - gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
 </Tip>

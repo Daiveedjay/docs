@@ -4,7 +4,7 @@ sidebarTitle: "Scoring Weights"
 description: "Control how much each finding deducts from the health score via healthScoreWeights in .irisconfig.json. Amplify secrets, zero out noise. Requires Iris Pro."
 ---
 
-By default, Iris deducts a fixed number of points per finding — secrets cost 10, a warning-level finding costs 3, and so on. With `healthScoreWeights` you can change exactly how much each finding type dents the base 100 score, so the health metric reflects what matters most to your team.
+By default, Iris deducts a fixed number of points per finding - secrets cost 10, a warning-level finding costs 3, and so on. With `healthScoreWeights` you can change exactly how much each finding type dents the base 100 score, so the health metric reflects what matters most to your team.
 
 <Note>
   Custom scoring weights require Iris Pro. Set the `healthScoreWeights` key in `.irisconfig.json` or configure it visually in [Config Studio](/configuration/config-studio) under Custom Scoring.
@@ -16,7 +16,7 @@ These are the values every preset starts from. Omitting a key falls back to the 
 
 | Key | Default | What it penalises |
 |-----|---------|-------------------|
-| `hardcodedSecret` | `10` | Per hardcoded secret found — largest single deduction |
+| `hardcodedSecret` | `10` | Per hardcoded secret found - largest single deduction |
 | `disabledTlsVerification` | `7` | Per disabled-TLS-verification finding |
 | `openRedirect` | `7` | Per open-redirect finding |
 | `errorWarning` | `5` | Per error-severity structural warning |
@@ -42,10 +42,10 @@ These are the values every preset starts from. Omitting a key falls back to the 
 
 ## When to customise weights
 
-- Your team ships to a **regulated environment** and wants secrets to cost twice the default — set `"hardcodedSecret": 18`.
-- Your codebase is a **prototype** and left-in console logs are not a blocker — set `"consoleLog": 0`.
-- **TypeScript safety** is the team's top concern — bump `anyUsage` and `tsIgnore` above their preset values.
-- You want the health score to reflect only the findings you actually act on — **zero out the noise**.
+- Your team ships to a **regulated environment** and wants secrets to cost twice the default - set `"hardcodedSecret": 18`.
+- Your codebase is a **prototype** and left-in console logs are not a blocker - set `"consoleLog": 0`.
+- **TypeScript safety** is the team's top concern - bump `anyUsage` and `tsIgnore` above their preset values.
+- You want the health score to reflect only the findings you actually act on - **zero out the noise**.
 
 ## Security-focused example
 
@@ -78,13 +78,13 @@ Zero out findings your team has accepted as-is so the health score reflects only
 ```
 
 <Warning>
-  Setting a weight to `0` means that finding type does **not** affect the health score at all — it still shows in the sidebar and still fires inline diagnostics if enabled, but it contributes nothing to the 0–100 number. Use this intentionally.
+  Setting a weight to `0` means that finding type does **not** affect the health score at all - it still shows in the sidebar and still fires inline diagnostics if enabled, but it contributes nothing to the 0–100 number. Use this intentionally.
 </Warning>
 
 ## Interaction with presets
 
-When a `presetId` is active, the preset's own weight values are the base. Any key you specify in `healthScoreWeights` overrides only that key — omitted keys inherit the preset's value. If you have no preset and no custom weights, the global defaults in the table above apply.
+When a `presetId` is active, the preset's own weight values are the base. Any key you specify in `healthScoreWeights` overrides only that key - omitted keys inherit the preset's value. If you have no preset and no custom weights, the global defaults in the table above apply.
 
 ## Configuring via Config Studio
 
-Open [Account → Config](https://www.iriscode.co/account/config), switch to **Custom** mode, then expand the **Custom scoring** accordion. Each weight field shows the current preset default next to the input — you only need to touch the keys you want to change. Click **Sync to VS Code** when done; only the non-default keys are written to the config file.
+Open [Account → Config](https://www.iriscode.co/account/config), switch to **Custom** mode, then expand the **Custom scoring** accordion. Each weight field shows the current preset default next to the input - you only need to touch the keys you want to change. Click **Sync to VS Code** when done; only the non-default keys are written to the config file.

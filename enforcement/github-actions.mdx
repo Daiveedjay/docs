@@ -4,7 +4,7 @@ sidebarTitle: "GitHub Actions"
 description: "Add Iris to GitHub Actions to block merges when files fall below your threshold. Get inline PR annotations at failing lines. Requires Iris Pro."
 ---
 
-Add Iris to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners — your code never leaves your infrastructure.
+Add Iris to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners - your code never leaves your infrastructure.
 
 ## What the workflow does
 
@@ -52,7 +52,7 @@ jobs:
 ```
 
 <Tip>
-  Add `IRIS_LICENCE_TOKEN` to your repository secrets under **Settings → Secrets and variables → Actions**. Directory scans require a Pro licence — the workflow runs as Free and skips the directory check if no token is provided.
+  Add `IRIS_LICENCE_TOKEN` to your repository secrets under **Settings → Secrets and variables → Actions**. Directory scans require a Pro licence - the workflow runs as Free and skips the directory check if no token is provided.
 </Tip>
 
 ## Setting a threshold
@@ -70,11 +70,11 @@ If no config file is present, the default threshold of `70` is used.
 
 ## Inline annotations
 
-The `--format github` flag emits GitHub workflow commands so each broken gate rule renders as a red annotation on the relevant file and line in the PR diff — no extra parsing step required. The flag also writes a pass/fail summary table to the run's job summary. It works on both `iris gate` and `iris check`.
+The `--format github` flag emits GitHub workflow commands so each broken gate rule renders as a red annotation on the relevant file and line in the PR diff - no extra parsing step required. The flag also writes a pass/fail summary table to the run's job summary. It works on both `iris gate` and `iris check`.
 
 ## Keeping a JSON report
 
-To capture a machine-readable report as a build artifact — regardless of whether the gate passes or fails — add these two steps after the enforcement step:
+To capture a machine-readable report as a build artifact - regardless of whether the gate passes or fails - add these two steps after the enforcement step:
 
 ```yaml
       - name: Save JSON report
@@ -94,8 +94,8 @@ To capture a machine-readable report as a build artifact — regardless of wheth
 
 | Code | Meaning |
 | --- | --- |
-| `0` | Gate passed — workflow continues |
-| `1` | Gate failed — workflow blocked |
+| `0` | Gate passed - workflow continues |
+| `1` | Gate failed - workflow blocked |
 | `2` | Invalid arguments or config error |
 
 <Note>

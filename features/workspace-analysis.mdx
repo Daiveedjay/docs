@@ -4,25 +4,26 @@ sidebarTitle: "Workspace Analysis"
 description: "Scan your entire project or any folder for aggregate metrics, ranked hotspots, unused packages, blocking issues, TODO comments, and health trend tracking."
 ---
 
-Workspace and folder analysis gives you aggregate code health across your whole project — not just the file you have open. Instead of reviewing files one by one, you get a single ranked view of every hotspot, unused dependency, and blocking issue in your codebase, with trend data to show whether things are improving or regressing over time.
+Workspace and folder analysis gives you aggregate code health across your whole project - not just the file you have open. Instead of reviewing files one by one, you get a single ranked view of every hotspot, unused dependency, and blocking issue in your codebase, with trend data to show whether things are improving or regressing over time.
 
 ## Running a Workspace Scan
 
 Run **Iris: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) or click the **Scan Workspace** button in the Iris Workspace tab. Iris will walk every supported file in your project and return:
 
-- **Workspace Readiness summary** — top-level score, blocker count, warning count, TODO load, and trend posture
-- **Aggregate counts** — total files, directories, lines, and functions across the workspace
-- **File type breakdown** — a breakdown of files by language
-- **Ranked hotspots** — largest files (top 5) and most complex files (top 5)
-- **Unused packages** — packages declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` but never imported
-- **Issues tab** — blocking issues and warning-level findings aggregated in one place
-- **TODOs tab** — all TODOs, FIXMEs, and HACKs aggregated and grouped by type
-- **Interactive file tree** — all scanned files grouped by directory
-- **Trend summary** — overall score delta plus the top 3 improved and top 3 regressed files since the last snapshot
+- **Workspace Readiness summary** - top-level score, blocker count, warning count, TODO load, and trend posture
+- **Aggregate counts** - total files, directories, lines, and functions across the workspace
+- **File type breakdown** - a breakdown of files by language
+- **Ranked hotspots** - largest files (top 5) and most complex files (top 5)
+- **Unused packages** - packages declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` but never imported
+- **Dependency CVE badge** - a summary pill in the Dependencies section showing the result of the last cached dependency scan: green when no known CVEs were found, otherwise the vulnerable package count and highest severity. It reads only from the local cache and never triggers a network request itself. See the [Dependents Table](/enforcement/dependents-table) for details.
+- **Issues tab** - blocking issues and warning-level findings aggregated in one place
+- **TODOs tab** - all TODOs, FIXMEs, and HACKs aggregated and grouped by type
+- **Interactive file tree** - all scanned files grouped by directory
+- **Trend summary** - overall score delta plus the top 3 improved and top 3 regressed files since the last snapshot
 
 <Tip>
   Workspace scan results are cached. Navigate away from the Workspace tab and
-  come back without re-scanning — your previous results are still there until
+  come back without re-scanning - your previous results are still there until
   you run a new scan or click **Clear**.
 </Tip>
 
@@ -39,7 +40,7 @@ Results appear in the dedicated **Folder** tab, which activates automatically wh
 
 ## Issues & TODOs Tabs
 
-The **Issues** and **TODOs** tabs populate from the most recent folder or workspace scan.
+The **Issues** and **TODOs** tabs populate from the most recent folder or workspace scan. A scope indicator at the top of each tab labels which scan you are looking at (for example, "Showing: folder · src"), with a one-click **Show workspace** switch to jump back to workspace-wide results.
 
 Each row shows:
 - A **severity indicator** (colour-coded dot: red for errors, yellow for warnings)
@@ -59,14 +60,14 @@ Iris saves a daily health-score snapshot for each file after a workspace scan. O
 
 ### Where trends appear
 
-- **File analysis** — a ↑/↓ delta appears next to the health score, comparing the current score against the previous snapshot
-- **Workspace analysis** — after each scan you see the overall score delta, a list of the top 3 improved files, and a list of the top 3 regressed files
+- **File analysis** - a ↑/↓ delta appears next to the health score, comparing the current score against the previous snapshot
+- **Workspace analysis** - after each scan you see the overall score delta, a list of the top 3 improved files, and a list of the top 3 regressed files
 
 ### How snapshots work
 
-- Iris saves one snapshot per day — running multiple scans on the same day updates the existing snapshot rather than creating a new one
+- Iris saves one snapshot per day - running multiple scans on the same day updates the existing snapshot rather than creating a new one
 - Snapshots are stored in `.iris-snapshots/` at your workspace root
-- `.iris-snapshots/` is automatically added to your `.gitignore` — snapshots are local to each developer and are not committed
+- `.iris-snapshots/` is automatically added to your `.gitignore` - snapshots are local to each developer and are not committed
 - To reset your trend history, delete the `.iris-snapshots/` folder
 
 <Tip>
@@ -95,11 +96,11 @@ Save your current analysis as a standalone, dark-themed HTML file you can share 
   </Step>
 </Steps>
 
-The exported file is self-contained — no external assets or internet connection are needed to open it. It includes only the sections you have actually run:
+The exported file is self-contained - no external assets or internet connection are needed to open it. It includes only the sections you have actually run:
 
-- **File analysis** — health score, warnings table, and functions table for the currently analysed file
-- **Workspace analysis** — summary stats grid, top files by health score, and file type breakdown
-- **Folder analysis** — scoped results for the selected folder
+- **File analysis** - health score, warnings table, and functions table for the currently analysed file
+- **Workspace analysis** - summary stats grid, top files by health score, and file type breakdown
+- **Folder analysis** - scoped results for the selected folder
 
 You can also export a report from the CLI without opening VS Code:
 
@@ -110,7 +111,7 @@ iris report
 This generates `iris-report.html` in the current directory by default. Use `--output <path>` to save elsewhere, or pass a directory to scan (defaults to the current directory).
 
 <Note>
-  Export is available on **all plans** — no Pro subscription is required. The
+  Export is available on **all plans** - no Pro subscription is required. The
   report is a static snapshot; re-run your analysis and re-export to get
   updated data.
 </Note>

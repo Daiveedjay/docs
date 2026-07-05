@@ -1,10 +1,10 @@
 ---
-title: "Configure Iris with .irisconfig.json — Presets and Rules"
+title: "Configure Iris with .irisconfig.json - Presets and Rules"
 sidebarTitle: ".irisconfig.json"
 description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
 ---
 
-Drop a `.irisconfig.json` at your project root and commit it — every developer on the team runs Iris with the same thresholds, no per-machine drift. Iris resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
+Drop a `.irisconfig.json` at your project root and commit it - every developer on the team runs Iris with the same thresholds, no per-machine drift. Iris resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
 
 <Note>
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
@@ -12,7 +12,7 @@ Drop a `.irisconfig.json` at your project root and commit it — every developer
 
 ## Config presets (Free + Pro)
 
-The fastest way to get started is a preset. Add `presetId` and commit — your whole team is aligned in one line, no threshold spreadsheet required.
+The fastest way to get started is a preset. Add `presetId` and commit - your whole team is aligned in one line, no threshold spreadsheet required.
 
 ```json .irisconfig.json
 {
@@ -33,7 +33,7 @@ Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`.
 
 ## Full custom config (Pro)
 
-For complete control over every rule, write out the full config. Every key is optional — include only the ones you want to override.
+For complete control over every rule, write out the full config. Every key is optional - include only the ones you want to override.
 
 ```json .irisconfig.json
 {
@@ -165,13 +165,13 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | Key | Tier | What it controls |
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
-| `gateBaselineMode` | Pro | Gates existing files against their locked baseline score instead of `minHealthScore` — new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
+| `gateBaselineMode` | Pro | Gates existing files against their locked baseline score instead of `minHealthScore` - new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
 | `trendRegressionThreshold` | Pro | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris calls out as a notable regression. |
-| `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide — set to `0` to require a clean workspace |
+| `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide - set to `0` to require a clean workspace |
 | `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
 | `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
 | `gateMaxSmellsPerFile` | Pro | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
-| `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) — set to `0` to require a clean workspace |
+| `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
 
 ### Ignore rules
 
@@ -198,5 +198,5 @@ Override the severity of any warning type on a per-project basis using the `seve
 | `no-exports` | `error` · `warning` · `info` |
 
 <Tip>
-  Only include keys you want to override — anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
+  Only include keys you want to override - anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
 </Tip>

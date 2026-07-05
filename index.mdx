@@ -1,10 +1,10 @@
 ---
 title: "Iris: Code Health Scores, Smells, and Gate Enforcement"
 sidebarTitle: "Home"
-description: "Iris scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Runs entirely on your machine — no code upload, no AI, no backend."
+description: "Iris scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Runs entirely on your machine - no code upload, no AI, no backend."
 ---
 
-Iris is a VS Code extension (and CLI) that enforces code health locally — no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
+Iris is a VS Code extension (and CLI) that enforces code health locally - no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
@@ -31,38 +31,38 @@ Iris is a VS Code extension (and CLI) that enforces code health locally — no a
 
 Iris continuously monitors the files you work on and the projects you manage, giving you four interconnected layers of insight:
 
-**Health scores** — every supported file receives a 0–100 composite score on every save, penalising long functions, deep nesting, debug prints, magic numbers, and secrets. The score updates instantly; no manual trigger required.
+**Health scores** - every supported file receives a 0–100 composite score on every save, penalising long functions, deep nesting, debug prints, magic numbers, and secrets. The score updates instantly; no manual trigger required.
 
-**Code smells** — Iris detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
+**Code smells** - Iris detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
 
-**Secrets detection** — hardcoded credentials are flagged with a masked preview in the sidebar before they can ship. Secrets detection is free on all plans and works without any configuration.
+**Secrets detection** - hardcoded credentials are flagged with a masked preview in the sidebar before they can ship. Secrets detection is free on all plans and works without any configuration.
 
-**Enforcement** — Gate Preview lets you preview your enforcement posture against five preset thresholds before installing a single hook. When you're ready, a git pre-push hook or build hook blocks files that fall below your chosen minimum health score. The same threshold can also be enforced in CI via `iris gate`.
+**Enforcement** - Gate Preview lets you preview your enforcement posture against five preset thresholds before installing a single hook. When you're ready, a git pre-push hook or build hook blocks files that fall below your chosen minimum health score. The same threshold can also be enforced in CI via `iris gate`.
 
 ## How Iris works
 
 <Steps>
   <Step title="Install the extension">
-    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace — it's free. The Iris icon appears in the Activity Bar immediately.
+    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris icon appears in the Activity Bar immediately.
   </Step>
   <Step title="Open any file">
-    Open a JavaScript, TypeScript, Go, or Python file. Iris scores it instantly in the sidebar — health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
+    Open a JavaScript, TypeScript, Go, or Python file. Iris scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
   </Step>
   <Step title="Preview your enforcement posture">
     Scroll to the bottom of the File tab and click **Preview Gate**. See how your codebase scores against all five built-in presets before enabling a single hook.
   </Step>
   <Step title="Block weak code automatically">
-    Install a git pre-push hook or build hook from the command palette — or run `iris gate` in CI. Pushes and builds that fall below your threshold are blocked before they ship.
+    Install a git pre-push hook or build hook from the command palette - or run `iris gate` in CI. Pushes and builds that fall below your threshold are blocked before they ship.
   </Step>
 </Steps>
 
-Iris runs entirely on your machine. Analysis is in-process — your source code never leaves your editor to reach an analysis backend, and no AI model processes your files. The only network calls Iris makes are limited account, billing, and product-use events required for licensing.
+Iris runs entirely on your machine. Analysis is in-process - your source code never leaves your editor to reach an analysis backend, and no AI model processes your files. The only network calls Iris makes are limited account, billing, and product-use events required for licensing.
 
 This means:
 
-- **Instant feedback** — analysis runs in milliseconds on every save, with no round-trip latency
-- **Offline capable** — file analysis and CLI commands work without an internet connection
-- **Private by design** — proprietary code, secrets, and unreleased features stay on your machine
+- **Instant feedback** - analysis runs in milliseconds on every save, with no round-trip latency
+- **Offline capable** - file analysis and CLI commands work without an internet connection
+- **Private by design** - proprietary code, secrets, and unreleased features stay on your machine
 
 ## Supported Languages
 
@@ -77,10 +77,10 @@ Iris provides full analysis for four languages:
 
 ## Free vs Pro
 
-Gate Preview, file scoring, secrets detection, and preset configs are free forever. Pro turns that signal into a hard gate — adding workspace scans, git and build hooks, drilldowns, custom rules, and the full CLI suite.
+Gate Preview, file scoring, secrets detection, and preset configs are free forever. Pro turns that signal into a hard gate - adding workspace scans, git and build hooks, drilldowns, custom rules, and the full CLI suite.
 
 <CardGroup cols={2}>
-  <Card title="Free — $0/month" icon="circle-check">
+  <Card title="Free - $0/month" icon="circle-check">
     - File analysis: health score, complexity, and functions
     - TypeScript-specific metrics
     - Code smell detection
@@ -90,13 +90,13 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
     - Detached panel and HTML report export
     - Health score trend tracking (2 snapshots)
     - `.irisconfig.json` preset configs (`presetId`)
-    - Gate Preview — read-only enforcement posture check
+    - Gate Preview - read-only enforcement posture check
     - CLI: `iris check` (single file), `iris secrets`, `iris security`, `iris report`, `iris hook status`, `iris config`
   </Card>
-  <Card title="Pro — $6/month" icon="bolt">
+  <Card title="Pro - $6/month" icon="bolt">
     - Everything in Free
     - Workspace and folder analysis
-    - Gate Preview drilldown — see exactly which files fail each preset
+    - Gate Preview drilldown - see exactly which files fail each preset
     - Git pre-push hook enforcement
     - Build hook enforcement
     - Dependents table with version audit and CVE scan
@@ -104,9 +104,9 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
     - TODOs tab aggregation
     - Clickable jump-to-line on all findings
     - Custom `.irisconfig.json` threshold overrides
-    - Custom enforcement limits — block on secret count, complexity ceiling, file size, smell density, or security smell count
+    - Custom enforcement limits - block on secret count, complexity ceiling, file size, smell density, or security smell count
     - Custom scoring weights per finding type
-    - Config Studio — build, preview, and sync configs visually
+    - Config Studio - build, preview, and sync configs visually
     - Unlimited trend history
     - Full CLI suite: `iris gate`, `iris deps`, `iris todos`, `iris hook install`, and more
     - Account Insights dashboard
@@ -114,5 +114,5 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
 </CardGroup>
 
 <Tip>
-  Every new account includes a **14-day Pro trial** — no credit card required. [Start your trial →](/pro)
+  Every new account includes a **14-day Pro trial** - no credit card required. [Start your trial →](/pro)
 </Tip>

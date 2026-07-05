@@ -4,11 +4,11 @@ sidebarTitle: "Authentication"
 description: "Sign in to Iris CLI via browser OAuth for local development, or use IRIS_LICENCE_TOKEN for non-interactive CI runners. Credentials stored in ~/.iris/credentials."
 ---
 
-Most CLI commands require an active Iris Pro licence. Authenticate via the interactive `iris auth login` flow for local development, or set the `IRIS_LICENCE_TOKEN` environment variable for non-interactive CI runners — no login step needed on the runner.
+Most CLI commands require an active Iris Pro licence. Authenticate via the interactive `iris auth login` flow for local development, or set the `IRIS_LICENCE_TOKEN` environment variable for non-interactive CI runners - no login step needed on the runner.
 
 ## Authentication commands
 
-`iris auth login` is fully interactive — it prompts you to choose between a browser sign-in and pasting a licence token, then asks (optionally) for a GitHub PAT to raise CVE lookup rate limits. It requires a TTY and exits with an error in a non-interactive shell.
+`iris auth login` is fully interactive - it prompts you to choose between a browser sign-in and pasting a licence token, then asks (optionally) for a GitHub PAT to raise CVE lookup rate limits. It requires a TTY and exits with an error in a non-interactive shell.
 
 ```bash
 # Interactive sign-in (choose browser or token when prompted)
@@ -33,8 +33,8 @@ Both the browser flow and the manual token entry write to `~/.iris/credentials`.
 
 The CLI resolves credentials in this order:
 
-1. **`IRIS_LICENCE_TOKEN` environment variable** — checked first; takes precedence over the credentials file
-2. **Credentials file at `~/.iris/credentials`** — written by `iris auth login`, whichever method (browser or manual token) you choose at the prompt
+1. **`IRIS_LICENCE_TOKEN` environment variable** - checked first; takes precedence over the credentials file
+2. **Credentials file at `~/.iris/credentials`** - written by `iris auth login`, whichever method (browser or manual token) you choose at the prompt
 
 ## Using IRIS_LICENCE_TOKEN in CI
 
@@ -52,8 +52,8 @@ To use the token in a CI pipeline:
 
 1. Add your licence key as a repository secret named `IRIS_LICENCE_TOKEN` in your CI provider settings.
 2. Reference the secret as the `IRIS_LICENCE_TOKEN` environment variable in the workflow step that runs Iris.
-3. The CLI reads the env var automatically — no `iris auth login` step is required on the runner.
+3. The CLI reads the env var automatically - no `iris auth login` step is required on the runner.
 
 <Note>
-  `iris secrets` and `iris security` run without any authentication at all — both are free and require no licence. You can use either in any pipeline without setting `IRIS_LICENCE_TOKEN`.
+  `iris secrets` and `iris security` run without any authentication at all - both are free and require no licence. You can use either in any pipeline without setting `IRIS_LICENCE_TOKEN`.
 </Note>

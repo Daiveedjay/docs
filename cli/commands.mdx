@@ -1,10 +1,10 @@
 ---
 title: "Iris CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all ten Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all twelve Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
 ---
 
-The Iris CLI provides ten commands covering the full code health workflow — scanning individual files, auditing dependencies, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
+The Iris CLI provides twelve commands covering the full code health workflow - scanning individual files, auditing dependencies, gating on CVEs, exporting SBOMs, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
 
 ---
 
@@ -44,7 +44,7 @@ iris check --staged
 
 ### iris secrets
 
-Scans the project for hardcoded credentials, API keys, tokens, and passwords. **Free — no authentication required.**
+Scans the project for hardcoded credentials, API keys, tokens, and passwords. **Free - no authentication required.**
 
 | Flag | Description |
 |---|---|
@@ -70,7 +70,7 @@ iris secrets ./src --format json
 
 ### iris security
 
-Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/enforcement/security-smells) for the full pattern reference. **Free — no authentication required.**
+Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/enforcement/security-smells) for the full pattern reference. **Free - no authentication required.**
 
 | Flag | Description |
 |---|---|
@@ -98,6 +98,8 @@ iris security ./src --format json
 
 **Pro.** Audits dependencies in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs via the GitHub Advisory Database.
 
+Installed versions are resolved from your lockfile when one is present (`package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `poetry.lock`, `Pipfile.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version. Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
+
 | Flag | Description |
 |---|---|
 | `[path]` | Directory to scan (defaults to current directory) |
@@ -105,6 +107,8 @@ iris security ./src --format json
 | `--verbose` | Show individual CVE titles and URLs |
 | `--format <fmt>` | Output format: `pretty` (default) or `json` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
+| `--allow-network` | Re-enable network lookups after a revoke |
+| `--revoke-network` | Disable version and advisory lookups |
 
 ```bash
 # Audit dependencies in the current project
@@ -113,6 +117,8 @@ iris deps
 # Bypass the cache and output JSON
 iris deps --no-cache --format json
 ```
+
+The first network lookup asks for consent and discloses exactly what is sent: package names and versions, nothing else. Your choice is persisted in `~/.iris/preferences.json`. Run with `--revoke-network` to disable lookups later, or `--allow-network` to re-enable them. When results come from the 24-hour cache, the output prints the age of the cached scan.
 
 Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth login` to store a GitHub PAT, or set `GITHUB_TOKEN`, to raise it to 5,000 req/hr.
 
@@ -124,9 +130,69 @@ Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth log
 
 ---
 
+### iris cve
+
+**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found. This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise.
+
+| Flag | Description |
+|---|---|
+| `[path]` | Directory to scan (defaults to current directory) |
+| `--severity <lvl>` | Minimum severity that fails the run: `low`, `medium`, `high` (default), or `critical` |
+| `--no-cache` | Skip the 24-hour local cache and re-fetch |
+| `--format <fmt>` | Output format: `pretty` (default) or `json` |
+| `--output <path>` | Write JSON result to file (requires `--format json`) |
+| `--allow-network` | Re-enable network lookups after a revoke |
+| `--revoke-network` | Disable version and advisory lookups |
+
+```bash
+# Fail on high or critical advisories (default threshold)
+iris cve
+
+# Gate on critical advisories only
+iris cve --severity critical
+
+# Include everything, down to low severity
+iris cve --severity low
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | No CVEs at or above the threshold |
+| `1` | One or more CVEs at or above the threshold |
+| `2` | Invalid arguments or no manifest found |
+
+---
+
+### iris sbom
+
+**Pro.** Exports a CycloneDX 1.5 software bill of materials covering every npm, Go, and Python manifest in the project. The command is fully offline: no network requests are made and no consent prompt appears.
+
+Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
+
+| Flag | Description |
+|---|---|
+| `[path]` | Directory to scan (defaults to current directory) |
+| `--output <path>` | Output file path (default: `./iris-sbom.json`) |
+| `--stdout` | Print the SBOM to stdout instead of writing a file |
+
+```bash
+# Write iris-sbom.json in the current directory
+iris sbom
+
+# Print the SBOM to stdout for piping into other tools
+iris sbom --stdout
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | SBOM generated successfully |
+| `2` | Invalid arguments or no manifest found |
+
+---
+
 ### iris todos
 
-**Pro.** Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. This command is informational — it does not fail the run based on findings.
+**Pro.** Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. This command is informational - it does not fail the run based on findings.
 
 | Flag | Description |
 |---|---|
@@ -151,7 +217,7 @@ iris todos ./src --format json
 
 ### iris gate
 
-**Pro.** Runs the full enforcement gate — every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) — and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
 
 | Flag | Description |
 |---|---|
@@ -204,7 +270,7 @@ iris report --output ./reports/latest.html
 
 ### iris hook
 
-Installs and removes the git pre-push hook and the build gate hook — equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` is **free**; `install` and `uninstall` require **Pro**.
+Installs and removes the git pre-push hook and the build gate hook - equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` is **free**; `install` and `uninstall` require **Pro**.
 
 | Subcommand | Description |
 |---|---|
@@ -235,7 +301,7 @@ iris hook build uninstall
 
 ### iris auth
 
-Manages authentication credentials. Every subcommand is fully interactive — there is no non-interactive flag to pass a token directly on the command line; use the `IRIS_LICENCE_TOKEN` environment variable instead for CI runners. See the [Authentication](/cli/auth) page for the full guide.
+Manages authentication credentials. Every subcommand is fully interactive - there is no non-interactive flag to pass a token directly on the command line; use the `IRIS_LICENCE_TOKEN` environment variable instead for CI runners. See the [Authentication](/cli/auth) page for the full guide.
 
 | Subcommand | Description |
 |---|---|
