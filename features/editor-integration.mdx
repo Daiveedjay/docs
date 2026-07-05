@@ -1,14 +1,14 @@
 ---
 title: "Editor Integration: Code Lens, Status Bar, and Panel"
 sidebarTitle: "Editor Integration"
-description: "Iris integrates into VS Code with inline Code Lens hints above functions, a live health score in the status bar, and a detachable full-panel analysis view."
+description: "Iris Code integrates into VS Code with inline Code Lens hints above functions, a live health score in the status bar, and a detachable full-panel analysis view."
 ---
 
-Iris surfaces its findings directly in the editor so you never have to leave your code to understand what needs fixing. Inline Code Lens hints flag problems above the functions they affect, the status bar keeps the current file's health score always visible, and the detachable panel expands the full analysis into its own editor column when you need more room.
+Iris Code surfaces its findings directly in the editor so you never have to leave your code to understand what needs fixing. Inline Code Lens hints flag problems above the functions they affect, the status bar keeps the current file's health score always visible, and the detachable panel expands the full analysis into its own editor column when you need more room.
 
 ## Code Lens
 
-Iris adds inline hints above functions that exceed the configured length threshold, and next to specific debug-print patterns. The hints are language-aware so you only see signals that are relevant to the file you are editing.
+Iris Code adds inline hints above functions that exceed the configured length threshold, and next to specific debug-print patterns. The hints are language-aware so you only see signals that are relevant to the file you are editing.
 
 | Language | What gets flagged |
 |---|---|
@@ -23,7 +23,7 @@ Here is an example of how a Code Lens hint looks above a TypeScript function wit
 
 const stripe = new Stripe(process.env.KEY!);
 
-// Iris · console.log left in · 2 occurrences
+// Iris Code · console.log left in · 2 occurrences
 export async function processPayment(amount: number) {
   console.log("processing:", amount);
   const charge = await stripe.charges.create({
@@ -44,12 +44,12 @@ To turn off Code Lens hints, add the following to your VS Code settings:
 
 ## Status Bar
 
-The Iris status bar item appears at the bottom of the VS Code window and shows three live metrics for the active file: **health score**, **line count**, and **function count**. The item changes colour when the health score or complexity rating crosses a warning or error threshold - giving you an ambient signal that something in the current file needs attention.
+The Iris Code status bar item appears at the bottom of the VS Code window and shows three live metrics for the active file: **health score**, **line count**, and **function count**. The item changes colour when the health score or complexity rating crosses a warning or error threshold - giving you an ambient signal that something in the current file needs attention.
 
 Here is a typical status bar entry for a TypeScript file with a health score of 64:
 
 ```
-⚠ Iris 64 · 379 lines · 12 fns
+⚠ Iris Code 64 · 379 lines · 12 fns
 ```
 
 The `⚠` icon and yellow/red colouring appear automatically based on the configured thresholds. The status bar works for all supported languages.
@@ -64,23 +64,23 @@ To turn off the status bar item, add the following to your VS Code settings:
 
 ## Detached Panel
 
-Pop Iris out of the narrow sidebar and into a full editor column beside your code. The panel shows the same analysis as the sidebar but with more space - useful when you want to read a full findings breakdown without shrinking your editor.
+Pop Iris Code out of the narrow sidebar and into a full editor column beside your code. The panel shows the same analysis as the sidebar but with more space - useful when you want to read a full findings breakdown without shrinking your editor.
 
 ### How to open
 
-Click the **pop-out icon** in the Iris sidebar title bar, or run **Iris: Open in Panel** from the command palette (`Ctrl+Shift+P`). Close it the same way to restore the sidebar view.
+Click the **pop-out icon** in the Iris Code sidebar title bar, or run **Iris Code: Open in Panel** from the command palette (`Ctrl+Shift+P`). Close it the same way to restore the sidebar view.
 
 ### What the panel does
 
 - **Auto-refreshes** when you switch files or save - always showing the current file's analysis
 - **Two-column layout** at 700 px or wider: file stats on the left, findings on the right; workspace ranked lists go side by side
-- **Placeholder in sidebar** - while the panel is open, the Iris sidebar shows a placeholder so data is never duplicated across both views
+- **Placeholder in sidebar** - while the panel is open, the Iris Code sidebar shows a placeholder so data is never duplicated across both views
 - **Jump-to-line** for Pro findings - click any finding to jump straight to that line in the editor
 
 Here is a condensed example of what the panel displays for a file under analysis:
 
 ```
-Iris (Panel) — cancel-order-modal.tsx
+Iris Code (Panel) — cancel-order-modal.tsx
 
 Enforcement Snapshot
 Needs cleanup before it becomes a gate problem

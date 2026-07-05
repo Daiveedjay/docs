@@ -1,10 +1,10 @@
 ---
 title: "File Analysis: Health Scores, Code Smells, and Secrets"
 sidebarTitle: "File Analysis"
-description: "Iris analyses every file on open and save: 0–100 health score, complexity, function list, code smells, TypeScript metrics, and secrets detection."
+description: "Iris Code analyses every file on open and save: 0–100 health score, complexity, function list, code smells, TypeScript metrics, and secrets detection."
 ---
 
-Iris analyses every supported file automatically as you open or save it. The **File tab** in the Iris sidebar gives you an instant, line-level picture of that file's health - from an overall score and complexity rating down to individual code smells, TypeScript-specific quality signals, and detected secrets - so you know exactly what needs attention before you push.
+Iris Code analyses every supported file automatically as you open or save it. The **File tab** in the Iris Code sidebar gives you an instant, line-level picture of that file's health - from an overall score and complexity rating down to individual code smells, TypeScript-specific quality signals, and detected secrets - so you know exactly what needs attention before you push.
 
 ## The File Tab
 
@@ -23,7 +23,7 @@ The File tab opens with an **enforcement snapshot**: a top-of-file readiness sum
 
 ## TypeScript Metrics
 
-Iris surfaces four TypeScript-specific quality signals when you are working in a `.ts` or `.tsx` (or `.js`/`.jsx`) file. These metrics are **hidden automatically for Go and Python** - they only appear when the active file is TypeScript or JavaScript.
+Iris Code surfaces four TypeScript-specific quality signals when you are working in a `.ts` or `.tsx` (or `.js`/`.jsx`) file. These metrics are **hidden automatically for Go and Python** - they only appear when the active file is TypeScript or JavaScript.
 
 | Metric | What it tracks |
 |---|---|
@@ -34,7 +34,7 @@ Iris surfaces four TypeScript-specific quality signals when you are working in a
 
 ## Code Smells
 
-Iris detects several code smell patterns across all supported languages. Every finding is clickable to jump to the exact line.
+Iris Code detects several code smell patterns across all supported languages. Every finding is clickable to jump to the exact line.
 
 | Smell | Detected in | Toggle setting |
 |---|---|---|
@@ -55,7 +55,7 @@ Iris detects several code smell patterns across all supported languages. Every f
 
 ## Security Smells
 
-Iris detects nine security anti-patterns across all supported languages. Each finding counts toward **Blockers** - the same category as hardcoded secrets - and is clickable to jump to the exact line.
+Iris Code detects nine security anti-patterns across all supported languages. Each finding counts toward **Blockers** - the same category as hardcoded secrets - and is clickable to jump to the exact line.
 
 | Pattern | What it detects | Toggle |
 |---|---|---|
@@ -75,7 +75,7 @@ Iris detects nine security anti-patterns across all supported languages. Each fi
 
 ## Warnings
 
-Iris raises five warning types when a file crosses a configured threshold. You can set each threshold in `.irisconfig.json` and override the severity independently.
+Iris Code raises five warning types when a file crosses a configured threshold. You can set each threshold in `.irisconfig.json` and override the severity independently.
 
 | Type | Default severity | Triggers at |
 |---|---|---|
@@ -94,6 +94,6 @@ Iris raises five warning types when a file crosses a configured threshold. You c
 
 <Note>
   Unused import detection is **TypeScript and JavaScript only**. Go and Python
-  handle unused imports at the compiler or runtime level, so Iris does not
+  handle unused imports at the compiler or runtime level, so Iris Code does not
   surface them as code smells in those languages.
 </Note>

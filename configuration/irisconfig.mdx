@@ -1,10 +1,10 @@
 ---
-title: "Configure Iris with .irisconfig.json - Presets and Rules"
+title: "Configure Iris Code with .irisconfig.json - Presets and Rules"
 sidebarTitle: ".irisconfig.json"
 description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
 ---
 
-Drop a `.irisconfig.json` at your project root and commit it - every developer on the team runs Iris with the same thresholds, no per-machine drift. Iris resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
+Drop a `.irisconfig.json` at your project root and commit it - every developer on the team runs Iris Code with the same thresholds, no per-machine drift. Iris Code resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
 
 <Note>
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
@@ -24,7 +24,7 @@ Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`.
 
 <Tabs>
   <Tab title="Free">
-    Iris applies the shipped preset values as the source of truth. Local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
+    Iris Code applies the shipped preset values as the source of truth. Local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
   </Tab>
   <Tab title="Pro">
     The preset acts as a base layer. Any threshold you override locally is merged on top, giving your team a customisable baseline without starting from scratch.
@@ -147,14 +147,14 @@ Turn individual detection categories on or off without removing findings from th
 
 ### Display
 
-Control what Iris renders in the editor UI.
+Control what Iris Code renders in the editor UI.
 
 | Key | Default | What it controls |
 |-----|---------|-----------------|
 | `enableCodeLens` | `true` | Show inline Code Lens hints |
-| `enableStatusBar` | `true` | Show the Iris item in the status bar |
+| `enableStatusBar` | `true` | Show the Iris Code item in the status bar |
 | `enableInlineDiagnostics` | `false` | Master toggle for squiggles and Problems panel entries |
-| `sidebarFontSize` | `14` | Base font size in pixels (10–20) for the Iris sidebar and detached panel |
+| `sidebarFontSize` | `14` | Base font size in pixels (10–20) for the Iris Code sidebar and detached panel |
 
 The `inlineDiagnostics` object lets you opt individual categories in or out once `enableInlineDiagnostics` is `true`.
 
@@ -166,7 +166,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
 | `gateBaselineMode` | Pro | Gates existing files against their locked baseline score instead of `minHealthScore` - new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
-| `trendRegressionThreshold` | Pro | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris calls out as a notable regression. |
+| `trendRegressionThreshold` | Pro | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris Code calls out as a notable regression. |
 | `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide - set to `0` to require a clean workspace |
 | `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
 | `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
@@ -178,8 +178,8 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | Key | What it controls |
 |-----|-----------------|
 | `ignoreFiles` | Glob patterns for files to skip entirely in workspace analysis |
-| `ignoreFunctions` | Function names Iris should never flag, regardless of length or complexity |
-| `testConvention` | Where Iris looks for test files: `"colocated"` (default), `"dedicated"`, or `"both"` |
+| `ignoreFunctions` | Function names Iris Code should never flag, regardless of length or complexity |
+| `testConvention` | Where Iris Code looks for test files: `"colocated"` (default), `"dedicated"`, or `"both"` |
 
 ### Scoring weights
 

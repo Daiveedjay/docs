@@ -1,14 +1,14 @@
 ---
-title: "Use Iris in CI Pipelines: GitHub Actions, GitLab, and Shell"
+title: "Use Iris Code in CI Pipelines: GitHub Actions, GitLab, and Shell"
 sidebarTitle: "CI Integration"
 description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
 ---
 
-The Iris CLI is designed for non-interactive pipelines - install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
+The Iris Code CLI is designed for non-interactive pipelines - install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
 
 ## Exit codes
 
-Use exit codes to control pipeline behaviour. `iris gate` follows the same conventions as all other Iris commands:
+Use exit codes to control pipeline behaviour. `iris gate` follows the same conventions as all other Iris Code commands:
 
 | Exit code | Meaning | Pipeline action |
 |---|---|---|
@@ -18,7 +18,7 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 
 ## Setting IRIS_LICENCE_TOKEN
 
-Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
+Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris Code. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
 
 <Note>
   `iris secrets` and `iris security` both run without any authentication at all. Use them for a free CI scan that requires no licence - they work on any runner regardless of `IRIS_LICENCE_TOKEN`.
@@ -29,7 +29,7 @@ Add your licence key as a secret in your CI provider settings, then expose it as
 The example below shows a minimal `iris gate` step. For the full workflow including branch protection rules and threshold configuration, see the [GitHub Actions](/enforcement/github-actions) guide.
 
 ```yaml
-name: Iris health check
+name: Iris Code health check
 on: [push, pull_request]
 
 jobs:

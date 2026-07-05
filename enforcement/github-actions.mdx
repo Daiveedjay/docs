@@ -1,14 +1,14 @@
 ---
-title: "GitHub Actions: Block Merges With Iris CI Enforcement"
+title: "GitHub Actions: Block Merges With Iris Code CI Enforcement"
 sidebarTitle: "GitHub Actions"
-description: "Add Iris to GitHub Actions to block merges when files fall below your threshold. Get inline PR annotations at failing lines. Requires Iris Pro."
+description: "Add Iris Code to GitHub Actions to block merges when files fall below your threshold. Get inline PR annotations at failing lines. Requires Iris Code Pro."
 ---
 
-Add Iris to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners - your code never leaves your infrastructure.
+Add Iris Code to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners - your code never leaves your infrastructure.
 
 ## What the workflow does
 
-- Installs the Iris CLI via `npm install -g @iris-code/cli`
+- Installs the Iris Code CLI via `npm install -g @iris-code/cli`
 - Runs `iris gate .` against your workspace using your configured threshold
 - Renders inline annotations on the pull request diff at the exact failing lines
 - Exits with code `1` if the gate fails, blocking the merge
@@ -19,7 +19,7 @@ Add Iris to your GitHub Actions CI pipeline to enforce code quality on every pus
 Copy the following into `.github/workflows/iris.yml` in your repository:
 
 ```yaml
-name: Iris
+name: Iris Code
 
 on:
   push:
@@ -42,10 +42,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Iris CLI
+      - name: Install Iris Code CLI
         run: npm install -g @iris-code/cli
 
-      - name: Run Iris enforcement gate
+      - name: Run Iris Code enforcement gate
         run: iris gate . --format github
         env:
           IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
@@ -99,5 +99,5 @@ To capture a machine-readable report as a build artifact - regardless of whether
 | `2` | Invalid arguments or config error |
 
 <Note>
-  Generate this workflow directly from VS Code with **Iris: Add GitHub Actions Workflow**. Use **Iris: Add CI Pipeline Snippet** to get a ready-made snippet for GitLab CI, Bitbucket Pipelines, an npm/pnpm/yarn script, or a generic shell step instead.
+  Generate this workflow directly from VS Code with **Iris Code: Add GitHub Actions Workflow**. Use **Iris Code: Add CI Pipeline Snippet** to get a ready-made snippet for GitLab CI, Bitbucket Pipelines, an npm/pnpm/yarn script, or a generic shell step instead.
 </Note>

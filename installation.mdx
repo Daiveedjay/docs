@@ -1,10 +1,10 @@
 ---
-title: "Install Iris: VS Code Extension and CLI Setup Guide"
+title: "Install Iris Code: VS Code Extension and CLI Setup Guide"
 sidebarTitle: "Installation"
 description: "Install Iris Code from the VS Code Marketplace or as a .vsix file in Cursor, Windsurf, or VSCodium. CLI available via npm for terminal and CI use."
 ---
 
-Iris installs in three ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, or as a global npm package for terminal and CI use. Most users should start with the Marketplace - it handles updates automatically and requires no extra steps. If your editor isn't connected to the Marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
+Iris Code installs in three ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, or as a global npm package for terminal and CI use. Most users should start with the Marketplace - it handles updates automatically and requires no extra steps. If your editor isn't connected to the Marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
 
 ## VS Code Marketplace (Preferred)
 
@@ -14,14 +14,14 @@ The Marketplace install gives you automatic updates and the simplest setup path.
   <Step title="Open the Extensions panel">
     Press `Ctrl+Shift+X` on Windows/Linux or `Cmd+Shift+X` on macOS to open the Extensions panel in VS Code.
   </Step>
-  <Step title="Search for Iris">
-    Type **Iris** in the search box. Look for the extension published by **davidjaja**.
+  <Step title="Search for Iris Code">
+    Type **Iris Code** in the search box. Look for the extension published by **davidjaja**.
   </Step>
   <Step title="Install the extension">
     Click **Install**. VS Code downloads and activates the extension immediately - no restart required.
   </Step>
   <Step title="Confirm the install">
-    The Iris icon appears in the Activity Bar. Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file - the Iris sidebar populates instantly with no configuration required.
+    The Iris Code icon appears in the Activity Bar. Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file - the Iris Code sidebar populates instantly with no configuration required.
   </Step>
 </Steps>
 
@@ -65,12 +65,12 @@ Once you have the file, install it using your editor's GUI or the command line:
 </Tabs>
 
 <Warning>
-  Manual VSIX installs do not auto-update. When a new version of Iris is released, you need to re-download the `.vsix` file from `iriscode.co/downloads/iris-code.vsix` and re-install it using the same steps above.
+  Manual VSIX installs do not auto-update. When a new version of Iris Code is released, you need to re-download the `.vsix` file from `iriscode.co/downloads/iris-code.vsix` and re-install it using the same steps above.
 </Warning>
 
 ## CLI Install
 
-The Iris CLI lets you scan files, run enforcement gates, audit dependencies, and aggregate TODOs from any terminal or CI pipeline - no VS Code required.
+The Iris Code CLI lets you scan files, run enforcement gates, audit dependencies, and aggregate TODOs from any terminal or CI pipeline - no VS Code required.
 
 Install it globally with npm:
 
@@ -104,4 +104,4 @@ iris --version
 - Go - `.go`
 - Python - `.py`
 
-No additional language servers, compilers, or runtimes are required for the extension. Iris analyses your files in-process using its own static analysis engine.
+No additional language servers, compilers, or runtimes are required for the extension. Iris Code analyses your files in-process using its own static analysis engine.

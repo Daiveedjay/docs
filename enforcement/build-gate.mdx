@@ -1,27 +1,27 @@
 ---
 title: "Build Gate: Block Builds That Fall Below Your Threshold"
 sidebarTitle: "Build Gate"
-description: "Install the Iris build hook to run a health check before every build. Builds that fall below your configured threshold are stopped before compilation."
+description: "Install the Iris Code build hook to run a health check before every build. Builds that fall below your configured threshold are stopped before compilation."
 ---
 
-The Iris build gate runs a health check before the compiler ever starts. Install it once from the command palette and every `pnpm build`, `npm run build`, or `make build` will first verify that all files in your workspace meet your configured threshold - builds that fail are stopped before compilation begins.
+The Iris Code build gate runs a health check before the compiler ever starts. Install it once from the command palette and every `pnpm build`, `npm run build`, or `make build` will first verify that all files in your workspace meet your configured threshold - builds that fail are stopped before compilation begins.
 
 <Note>
-  The build gate requires **Iris Pro**.
+  The build gate requires **Iris Code Pro**.
 </Note>
 
 ## Installing
 
-Run **Iris: Install Build Hook** from the command palette. Iris detects your project type and writes the hook automatically - no manual edits to config files are required.
+Run **Iris Code: Install Build Hook** from the command palette. Iris Code detects your project type and writes the hook automatically - no manual edits to config files are required.
 
 ## What the hook does
 
 <Steps>
   <Step title="Detect the project type">
-    Iris looks for `package.json` (Node), `go.mod` (Go), or `pyproject.toml` / `requirements.txt` (Python) to determine how to install the hook.
+    Iris Code looks for `package.json` (Node), `go.mod` (Go), or `pyproject.toml` / `requirements.txt` (Python) to determine how to install the hook.
   </Step>
   <Step title="Write the hook">
-    - **Node** - appends an Iris `prebuild` entry to `package.json`. Chains safely before any existing `prebuild` command.
+    - **Node** - appends an Iris Code `prebuild` entry to `package.json`. Chains safely before any existing `prebuild` command.
     - **Go / Python** - writes an `iris-check` Makefile target and wires it as a prerequisite of the `build` or `all` target.
   </Step>
   <Step title="Run on every build">
@@ -57,7 +57,7 @@ Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum accepta
 ```
 
 <Tip>
-  The Node hook chains safely before any existing `prebuild` script. Uninstalling removes only the Iris entry - your original command is preserved.
+  The Node hook chains safely before any existing `prebuild` script. Uninstalling removes only the Iris Code entry - your original command is preserved.
 </Tip>
 
 ## Insights tracking
@@ -66,4 +66,4 @@ Every build hook run is logged in your account Insights as a pass or fail, so yo
 
 ## Uninstalling
 
-Run **Iris: Uninstall Build Hook** from the command palette. Iris removes only its own entry. For Node projects, if no other `prebuild` commands remain after removal, the `prebuild` key is deleted from `package.json` entirely.
+Run **Iris Code: Uninstall Build Hook** from the command palette. Iris Code removes only its own entry. For Node projects, if no other `prebuild` commands remain after removal, the `prebuild` key is deleted from `package.json` entirely.

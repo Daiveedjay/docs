@@ -1,18 +1,18 @@
 ---
 title: "Git Hook: Block Weak Code Before It Leaves Your Machine"
 sidebarTitle: "Git Hook"
-description: "Install Iris's git pre-push hook to automatically block any push where a file scores below your configured health threshold. Requires Iris Pro."
+description: "Install Iris Code's git pre-push hook to automatically block any push where a file scores below your configured health threshold. Requires Iris Code Pro."
 ---
 
-The Iris git pre-push hook intercepts every `git push` before it leaves your machine. If any file in your workspace scores below your configured health threshold, the push is blocked and the offending files are listed - so broken code never reaches your remote.
+The Iris Code git pre-push hook intercepts every `git push` before it leaves your machine. If any file in your workspace scores below your configured health threshold, the push is blocked and the offending files are listed - so broken code never reaches your remote.
 
 <Note>
-  The git pre-push hook requires **Iris Pro**.
+  The git pre-push hook requires **Iris Code Pro**.
 </Note>
 
 ## Installing
 
-Run **Iris: Install Git Hook** from the command palette. Iris writes the hook to `.git/hooks/pre-push` and makes it executable automatically. On first activation in a git repo, Iris offers to install the hook for you - if you dismiss the prompt, that decision is stored per-workspace and you won't be prompted again.
+Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the hook to `.git/hooks/pre-push` and makes it executable automatically. On first activation in a git repo, Iris Code offers to install the hook for you - if you dismiss the prompt, that decision is stored per-workspace and you won't be prompted again.
 
 ## What the hook does
 
@@ -49,7 +49,7 @@ Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum accepta
 Pro users can also enable `"gateBaselineMode": true` so existing files are judged against their locked baseline score instead of only the absolute minimum. New files still use `minHealthScore` - useful for older codebases that want to stop regressions without requiring a full cleanup upfront.
 
 <Tip>
-  The hook chains safely with any existing pre-push hook content. Iris appends its block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, leaving anything already in the file untouched.
+  The hook chains safely with any existing pre-push hook content. Iris Code appends its block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, leaving anything already in the file untouched.
 </Tip>
 
 ## Insights tracking
@@ -58,4 +58,4 @@ Every git hook run is logged in your account Insights as a pass or fail, so you 
 
 ## Uninstalling
 
-Run **Iris: Uninstall Git Hook** from the command palette. Iris removes only its own block between the markers. If removing the block leaves only a shebang line, the hook file is deleted entirely.
+Run **Iris Code: Uninstall Git Hook** from the command palette. Iris Code removes only its own block between the markers. If removing the block leaves only a shebang line, the hook file is deleted entirely.

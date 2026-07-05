@@ -1,7 +1,7 @@
 ---
 title: "Security Smell Detection: Nine Patterns Across TS, JS, Go, and Python"
 sidebarTitle: "Security Smells"
-description: "Iris detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
+description: "Iris Code detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
 badge: "New"
 ---
 
@@ -41,7 +41,7 @@ Detects SQL queries assembled by string concatenation or interpolation - the roo
 | Python | `f"SELECT … {variable}"` |
 
 <Note>
-  Iris matches uppercase SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `DROP`) only. Error message strings that happen to contain the word "delete" in lowercase are not flagged. Use parameterised queries or a query builder that handles escaping for you.
+  Iris Code matches uppercase SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `DROP`) only. Error message strings that happen to contain the word "delete" in lowercase are not flagged. Use parameterised queries or a query builder that handles escaping for you.
 </Note>
 
 ---
@@ -64,7 +64,7 @@ Prefer `crypto.randomBytes` (Node.js), `crypto/rand` (Go), or `secrets` (Python)
 
 Detects regular expressions with nested quantifiers (`(a+)+`, `(a|aa)+`) that can cause catastrophic backtracking on pathological input - a denial-of-service vector when the regex is applied to untrusted strings.
 
-Applies to all four supported languages. Iris flags the literal regex pattern; move to a linear-time regex engine or rewrite the pattern to eliminate nested quantifiers.
+Applies to all four supported languages. Iris Code flags the literal regex pattern; move to a linear-time regex engine or rewrite the pattern to eliminate nested quantifiers.
 
 ---
 
@@ -73,7 +73,7 @@ Applies to all four supported languages. Iris flags the literal regex pattern; m
 Detects `http://localhost` or `http://127.0.0.1` URL literals committed into production code. Development URLs in shipped code mean the application silently calls back to the developer's machine in production, leaking intent and sometimes crashing.
 
 <Note>
-  Iris automatically skips test files for this pattern. A `localhost` URL in a `*.test.ts` or `*_test.go` file is not flagged.
+  Iris Code automatically skips test files for this pattern. A `localhost` URL in a `*.test.ts` or `*_test.go` file is not flagged.
 </Note>
 
 ---
@@ -95,7 +95,7 @@ Detects configuration that bypasses TLS certificate validation - accepting any c
 Detects `debug: true` flags in configuration objects committed to production code. Debug modes often increase verbosity, disable security controls, or expose internal state through error messages.
 
 <Note>
-  Iris skips test files for this pattern - `debug: true` in a test setup file is intentional.
+  Iris Code skips test files for this pattern - `debug: true` in a test setup file is intentional.
 </Note>
 
 ---

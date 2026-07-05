@@ -1,14 +1,14 @@
 ---
-title: "Iris: Code Health Scores, Smells, and Gate Enforcement"
+title: "Iris Code: Code Health Scores, Smells, and Gate Enforcement"
 sidebarTitle: "Home"
-description: "Iris scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Runs entirely on your machine - no code upload, no AI, no backend."
+description: "Iris Code scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Runs entirely on your machine - no code upload, no AI, no backend."
 ---
 
-Iris is a VS Code extension (and CLI) that enforces code health locally - no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
+Iris Code is a VS Code extension (and CLI) that enforces code health locally - no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
-    Install Iris and run your first scan in under two minutes
+    Install Iris Code and run your first scan in under two minutes
   </Card>
   <Card title="Features" icon="sparkles" href="/features/file-analysis">
     Explore file analysis, workspace scans, and editor integration
@@ -17,36 +17,36 @@ Iris is a VS Code extension (and CLI) that enforces code health locally - no ana
     Block weak code with git hooks, build hooks, and CI gates
   </Card>
   <Card title="CLI" icon="terminal" href="/cli/overview">
-    Use Iris from the terminal and CI pipelines with <code>@iris-code/cli</code>
+    Use Iris Code from the terminal and CI pipelines with <code>@iris-code/cli</code>
   </Card>
   <Card title="Configuration" icon="sliders" href="/configuration/irisconfig">
     Share thresholds across your team with <code>.irisconfig.json</code>
   </Card>
-  <Card title="Iris Pro" icon="star" href="/pro">
+  <Card title="Iris Code Pro" icon="star" href="/pro">
     Unlock workspace scans, hooks, CVE audits, and the full CLI suite
   </Card>
 </CardGroup>
 
-## What Iris Does
+## What Iris Code Does
 
-Iris continuously monitors the files you work on and the projects you manage, giving you four interconnected layers of insight:
+Iris Code continuously monitors the files you work on and the projects you manage, giving you four interconnected layers of insight:
 
 **Health scores** - every supported file receives a 0–100 composite score on every save, penalising long functions, deep nesting, debug prints, magic numbers, and secrets. The score updates instantly; no manual trigger required.
 
-**Code smells** - Iris detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
+**Code smells** - Iris Code detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
 
 **Secrets detection** - hardcoded credentials are flagged with a masked preview in the sidebar before they can ship. Secrets detection is free on all plans and works without any configuration.
 
 **Enforcement** - Gate Preview lets you preview your enforcement posture against five preset thresholds before installing a single hook. When you're ready, a git pre-push hook or build hook blocks files that fall below your chosen minimum health score. The same threshold can also be enforced in CI via `iris gate`.
 
-## How Iris works
+## How Iris Code works
 
 <Steps>
   <Step title="Install the extension">
-    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris icon appears in the Activity Bar immediately.
+    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris Code icon appears in the Activity Bar immediately.
   </Step>
   <Step title="Open any file">
-    Open a JavaScript, TypeScript, Go, or Python file. Iris scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
+    Open a JavaScript, TypeScript, Go, or Python file. Iris Code scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
   </Step>
   <Step title="Preview your enforcement posture">
     Scroll to the bottom of the File tab and click **Preview Gate**. See how your codebase scores against all five built-in presets before enabling a single hook.
@@ -56,7 +56,7 @@ Iris continuously monitors the files you work on and the projects you manage, gi
   </Step>
 </Steps>
 
-Iris runs entirely on your machine. Analysis is in-process - your source code never leaves your editor to reach an analysis backend, and no AI model processes your files. The only network calls Iris makes are limited account, billing, and product-use events required for licensing.
+Iris Code runs entirely on your machine. Analysis is in-process - your source code never leaves your editor to reach an analysis backend, and no AI model processes your files. The only network calls Iris Code makes are limited account, billing, and product-use events required for licensing.
 
 This means:
 
@@ -66,7 +66,7 @@ This means:
 
 ## Supported Languages
 
-Iris provides full analysis for four languages:
+Iris Code provides full analysis for four languages:
 
 | Language | File extensions | Notes |
 |---|---|---|

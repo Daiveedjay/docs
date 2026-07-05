@@ -1,24 +1,24 @@
 ---
-title: "Quick Start: Install Iris, Scan Files, and Preview Gates"
+title: "Quick Start: Install Iris Code, Scan Files, and Preview Gates"
 sidebarTitle: "Quick Start"
 description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture - from zero to first scan in two minutes."
 ---
 
-This guide walks you through everything you need to get Iris running: installing the extension, reading your first file score, scanning your workspace, and previewing your enforcement posture against five built-in thresholds. By the end you'll have a clear picture of where your codebase stands - and what it would take to enforce a gate on it.
+This guide walks you through everything you need to get Iris Code running: installing the extension, reading your first file score, scanning your workspace, and previewing your enforcement posture against five built-in thresholds. By the end you'll have a clear picture of where your codebase stands - and what it would take to enforce a gate on it.
 
 <Steps>
-  <Step title="Install Iris from the VS Code Marketplace">
-    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris**, and click **Install**. The Iris icon appears in the Activity Bar as soon as the install completes - click it to open the sidebar.
+  <Step title="Install Iris Code from the VS Code Marketplace">
+    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris Code**, and click **Install**. The Iris Code icon appears in the Activity Bar as soon as the install completes - click it to open the sidebar.
 
     <Note>
-      Iris installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way - or you can [install the `.vsix` manually](/installation).
+      Iris Code installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way - or you can [install the `.vsix` manually](/installation).
     </Note>
   </Step>
 
   <Step title="Open a supported file and read the File tab">
-    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris scores it automatically - no command needed.
+    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris Code scores it automatically - no command needed.
 
-    The **File tab** in the Iris sidebar shows:
+    The **File tab** in the Iris Code sidebar shows:
 
     - **Enforcement snapshot** - a top-of-file readiness summary with your score, blockers, hook posture, and trend direction
     - **Health score** - a 0–100 composite score recomputed on every save
@@ -30,9 +30,9 @@ This guide walks you through everything you need to get Iris running: installing
   </Step>
 
   <Step title="Run a workspace scan">
-    Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris: Analyse Workspace**.
+    Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris Code: Analyse Workspace**.
 
-    Iris crawls every supported file in the project and populates:
+    Iris Code crawls every supported file in the project and populates:
 
     - **Workspace Readiness** - an aggregate health score with blocker and warning counts across the whole project
     - **Hotspot rankings** - the largest and most complex files ranked first, so you know where to focus
@@ -44,7 +44,7 @@ This guide walks you through everything you need to get Iris running: installing
   </Step>
 
   <Step title="Preview your enforcement posture">
-    Scroll to the bottom of the **File tab** and click **Preview Gate**. Iris runs a background workspace scan and renders your posture against all five built-in presets in a read-only view:
+    Scroll to the bottom of the **File tab** and click **Preview Gate**. Iris Code runs a background workspace scan and renders your posture against all five built-in presets in a read-only view:
 
     | Preset | Min score | Best for |
     |---|---|---|
@@ -62,7 +62,7 @@ This guide walks you through everything you need to get Iris running: installing
   </Step>
 
   <Step title="Install the CLI (optional)">
-    To scan files, gate CI builds, and audit dependencies from the terminal without opening VS Code, install the Iris CLI:
+    To scan files, gate CI builds, and audit dependencies from the terminal without opening VS Code, install the Iris Code CLI:
 
     ```bash
     npm install -g @iris-code/cli
@@ -90,7 +90,7 @@ This guide walks you through everything you need to get Iris running: installing
   <Card title="CLI" icon="terminal" href="/cli">
     Use `iris gate`, `iris deps`, and `iris todos` in terminals and CI pipelines outside VS Code.
   </Card>
-  <Card title="Iris Pro" icon="bolt" href="/pro">
+  <Card title="Iris Code Pro" icon="bolt" href="/pro">
     Unlock workspace scans, enforcement hooks, custom weights, and Account Insights with a 14-day free trial.
   </Card>
 </CardGroup>

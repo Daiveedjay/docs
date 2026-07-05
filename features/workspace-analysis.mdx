@@ -8,7 +8,7 @@ Workspace and folder analysis gives you aggregate code health across your whole 
 
 ## Running a Workspace Scan
 
-Run **Iris: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) or click the **Scan Workspace** button in the Iris Workspace tab. Iris will walk every supported file in your project and return:
+Run **Iris Code: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) or click the **Scan Workspace** button in the Iris Code Workspace tab. Iris Code will walk every supported file in your project and return:
 
 - **Workspace Readiness summary** - top-level score, blocker count, warning count, TODO load, and trend posture
 - **Aggregate counts** - total files, directories, lines, and functions across the workspace
@@ -29,7 +29,7 @@ Run **Iris: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) or cli
 
 ## Folder Analysis
 
-To analyse a specific part of your project, right-click any folder in the VS Code Explorer and choose **Iris: Analyse This Folder**. Alternatively, click **Scan Current Folder** in the Iris Folder tab to analyse the folder of the file you currently have open.
+To analyse a specific part of your project, right-click any folder in the VS Code Explorer and choose **Iris Code: Analyse This Folder**. Alternatively, click **Scan Current Folder** in the Iris Code Folder tab to analyse the folder of the file you currently have open.
 
 Results appear in the dedicated **Folder** tab, which activates automatically when a scan completes. The Folder tab shows the same stats, file type pie chart, ranked files, and interactive file tree as the Workspace tab, plus **Rescan** and **Clear** buttons for that folder.
 
@@ -56,7 +56,7 @@ Click any row to jump straight to that line in the editor.
 
 ## Trend Tracking
 
-Iris saves a daily health-score snapshot for each file after a workspace scan. Over time, these snapshots reveal whether your codebase is improving or regressing.
+Iris Code saves a daily health-score snapshot for each file after a workspace scan. Over time, these snapshots reveal whether your codebase is improving or regressing.
 
 ### Where trends appear
 
@@ -65,7 +65,7 @@ Iris saves a daily health-score snapshot for each file after a workspace scan. O
 
 ### How snapshots work
 
-- Iris saves one snapshot per day - running multiple scans on the same day updates the existing snapshot rather than creating a new one
+- Iris Code saves one snapshot per day - running multiple scans on the same day updates the existing snapshot rather than creating a new one
 - Snapshots are stored in `.iris-snapshots/` at your workspace root
 - `.iris-snapshots/` is automatically added to your `.gitignore` - snapshots are local to each developer and are not committed
 - To reset your trend history, delete the `.iris-snapshots/` folder
@@ -86,7 +86,7 @@ Save your current analysis as a standalone, dark-themed HTML file you can share 
     Complete a file, workspace, or folder scan so there is data to export.
   </Step>
   <Step title="Open the command palette">
-    Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) and run **Iris: Export Scan Report as HTML**.
+    Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) and run **Iris Code: Export Scan Report as HTML**.
   </Step>
   <Step title="Choose a save location">
     Pick where to save the file. The default filename is `iris-report.html` in your workspace root.

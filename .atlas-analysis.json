@@ -1,7 +1,7 @@
 {
   "projectType": "saas",
-  "projectName": "Iris",
-  "projectDescription": "Iris is a VS Code extension and CLI tool that scores code health on every save, surfaces problems in the editor, and enforces quality thresholds via git hooks, build hooks, and CI pipelines — all running entirely on your machine with no code upload.",
+  "projectName": "Iris Code",
+  "projectDescription": "Iris Code is a VS Code extension and CLI tool that scores code health on every save, surfaces problems in the editor, and enforces quality thresholds via git hooks, build hooks, and CI pipelines — all running entirely on your machine with no code upload.",
   "theme": "luma",
   "primaryColor": "#040404",
   "lightColor": null,

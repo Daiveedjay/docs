@@ -1,10 +1,10 @@
 ---
-title: "Iris CLI: Code Health Enforcement from the Terminal"
+title: "Iris Code CLI: Code Health Enforcement from the Terminal"
 sidebarTitle: "Overview"
-description: "The @iris-code/cli package brings Iris health analysis to any terminal, build script, or CI pipeline. Twelve commands cover scanning, gating, secrets, security smells, deps, CVEs, SBOMs, and hooks."
+description: "The @iris-code/cli package brings Iris Code health analysis to any terminal, build script, or CI pipeline. Twelve commands cover scanning, gating, secrets, security smells, deps, CVEs, SBOMs, and hooks."
 ---
 
-The Iris CLI runs the same health analysis as the VS Code extension from any terminal, build script, or CI pipeline - no editor required. Install it once, point it at any file or directory, and get the same scores and findings you see inline in your editor.
+The Iris Code CLI runs the same health analysis as the VS Code extension from any terminal, build script, or CI pipeline - no editor required. Install it once, point it at any file or directory, and get the same scores and findings you see inline in your editor.
 
 ## How it differs from the extension
 
@@ -40,13 +40,13 @@ npm install -g @iris-code/cli
     ```bash
     iris check .
     ```
-    Iris scores every source file in the working directory and prints a summary to stdout, then exits with code `0` (all pass) or `1` (one or more files below threshold).
+    Iris Code scores every source file in the working directory and prints a summary to stdout, then exits with code `0` (all pass) or `1` (one or more files below threshold).
   </Step>
 </Steps>
 
 ## Free commands
 
-These commands are available without an Iris Pro licence:
+These commands are available without an Iris Code Pro licence:
 
 - **`iris check <file>`** - single-file health scan; scores and prints findings for one source file
 - **`iris secrets`** - scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
@@ -57,7 +57,7 @@ These commands are available without an Iris Pro licence:
 
 ## Pro commands
 
-These commands require an active Iris Pro licence:
+These commands require an active Iris Code Pro licence:
 
 - **`iris check <dir>`** - scan an entire directory tree and score every source file
 - **`iris check --staged`** - scan only files currently staged in git
@@ -76,7 +76,7 @@ These commands require an active Iris Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all twelve Iris CLI commands, flags, and exit codes.
+    Full reference for all twelve Iris Code CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as a quality gate in GitHub Actions, GitLab CI, or any shell pipeline.

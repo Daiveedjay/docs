@@ -1,5 +1,5 @@
 ---
-title: "Config Studio: Build and Sync Your Iris Config Visually"
+title: "Config Studio: Build and Sync Your Iris Code Config Visually"
 sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code with a diff preview."
 ---
@@ -23,13 +23,13 @@ The sync flow is designed to never write silently - every sync opens a diff in V
 
 <Steps>
   <Step title="Open Account → Config in the browser">
-    Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris account.
+    Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris Code account.
   </Step>
   <Step title="Choose a preset or switch to Custom mode">
     Select one of the five presets from the selector, or switch to Custom mode to tune individual thresholds, detections, and gate limits.
   </Step>
   <Step title="Click 'Sync to VS Code'">
-    Hit the **Sync to VS Code** button. Iris generates a short-lived one-time token and opens VS Code via a deep link.
+    Hit the **Sync to VS Code** button. Iris Code generates a short-lived one-time token and opens VS Code via a deep link.
   </Step>
   <Step title="VS Code opens a diff preview">
     VS Code opens and shows a diff preview of the exact changes that will be made to your `.irisconfig.json`.
@@ -40,7 +40,7 @@ The sync flow is designed to never write silently - every sync opens a diff in V
 </Steps>
 
 <Note>
-  The sync token is short-lived and single-use. If VS Code doesn't open within a few seconds, check that the Iris extension is installed and that VS Code is running.
+  The sync token is short-lived and single-use. If VS Code doesn't open within a few seconds, check that the Iris Code extension is installed and that VS Code is running.
 </Note>
 
 ## Write targets

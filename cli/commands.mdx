@@ -1,10 +1,10 @@
 ---
-title: "Iris CLI Command Reference"
+title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all twelve Iris CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all twelve Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
 ---
 
-The Iris CLI provides twelve commands covering the full code health workflow - scanning individual files, auditing dependencies, gating on CVEs, exporting SBOMs, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Pro licence.
+The Iris Code CLI provides twelve commands covering the full code health workflow - scanning individual files, auditing dependencies, gating on CVEs, exporting SBOMs, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Code Pro licence.
 
 ---
 
@@ -275,11 +275,11 @@ Installs and removes the git pre-push hook and the build gate hook - equivalent 
 | Subcommand | Description |
 |---|---|
 | `iris hook git status [path]` | Show whether the git pre-push hook is installed **(free)** |
-| `iris hook git install [path]` | Write the Iris block to `.git/hooks/pre-push` **(Pro)** |
-| `iris hook git uninstall [path]` | Remove the Iris block from `.git/hooks/pre-push` **(Pro)** |
+| `iris hook git install [path]` | Write the Iris Code block to `.git/hooks/pre-push` **(Pro)** |
+| `iris hook git uninstall [path]` | Remove the Iris Code block from `.git/hooks/pre-push` **(Pro)** |
 | `iris hook build status [path]` | Show whether the build hook is installed **(free)** |
-| `iris hook build install [path]` | Wire Iris into the project build command **(Pro)** |
-| `iris hook build uninstall [path]` | Remove the Iris build entry **(Pro)** |
+| `iris hook build install [path]` | Wire Iris Code into the project build command **(Pro)** |
+| `iris hook build uninstall [path]` | Remove the Iris Code build entry **(Pro)** |
 
 ```bash
 # Check current hook status (free)
