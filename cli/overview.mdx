@@ -22,6 +22,17 @@ npm install -g @iris-code/cli
   Node 18 or later is required. Run `iris --version` after installation to confirm the package is on your PATH.
 </Note>
 
+## Updating
+
+`npm install -g` does not auto-update. If a command you expect is missing (`iris: unknown command: sbom`) or the CLI crashes on exit, you are almost certainly running an old global install - a new npm publish never touches whatever version is already on your PATH. Update it explicitly:
+
+```bash
+npm install -g @iris-code/cli@latest
+iris --version
+```
+
+Confirm the printed version matches the [latest CLI release](https://www.iriscode.co/changelog). If you have multiple Node versions or package managers installed, `which iris` (macOS/Linux) or `Get-Command iris` (PowerShell) shows exactly which install is on your PATH.
+
 ## Quick start
 
 <Steps>
