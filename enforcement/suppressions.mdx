@@ -1,0 +1,124 @@
+---
+title: "Inline Suppressions: Silence a Finding with a Documented Reason"
+sidebarTitle: "Inline Suppressions"
+description: "Suppress individual Iris Code findings with an iris-ignore comment. Every suppression requires a reason, stays visible in the sidebar and CLI, and can be capped or disabled by team leads."
+badge: "New"
+---
+
+Sometimes a finding is a deliberate choice: a `console.log` in a bootstrap script, a long function that reads better unsplit, an `any` at a genuinely untyped boundary. Inline suppressions let you silence a specific finding on a specific line without turning the whole rule off - and force whoever does it to write down why.
+
+Suppressions are a **free** feature. The two team-control config fields are Pro.
+
+## Syntax
+
+Place an `iris-ignore` comment on the line directly above the finding you want to suppress:
+
+```typescript
+// iris-ignore: console-log -- CLI entry point, intentional user output
+console.log(`Report written to ${outputPath}`)
+
+// iris-ignore: any-usage, long-param-list -- third-party callback shape we do not control
+function onLegacyEvent(payload: any, a: string, b: string, c: string, d: string, e: string) {
+```
+
+Python uses `#` comments:
+
+```python
+# iris-ignore: insecure-random -- shuffling a UI carousel, not security-sensitive
+index = random.randint(0, len(slides) - 1)
+```
+
+To suppress a rule across an entire file, use `iris-ignore-file` anywhere in the file:
+
+```typescript
+// iris-ignore-file: console-log -- this whole module is a debug logger
+```
+
+The format is the same in both cases:
+
+```
+// iris-ignore: <ruleId>[, <ruleId>...] -- <reason>
+```
+
+- One or more rule ids, comma-separated.
+- A `--` separator followed by a **reason**. The reason is required, not decorative.
+
+## The reason is required
+
+A directive that is missing its reason, names an unknown rule id, or names no rule at all suppresses **nothing**. Instead, it is reported as a **Bare Ignore** finding with its own health-score penalty (`healthScoreWeights.bareSuppression`, default `2`). This keeps the mechanism honest: a suppression is a documented decision, not a mute button.
+
+```typescript
+// iris-ignore: console-log            <- bare: no reason, suppresses nothing
+// iris-ignore: consol-log -- typo     <- bare: unknown rule id, suppresses nothing
+// iris-ignore: console-log -- CLI output   <- valid
+```
+
+## What can be suppressed
+
+Eighteen rule ids are suppressible - every finding that carries a line position:
+
+| Rule id | Finding |
+|---|---|
+| `console-log` | Console / debug print statement |
+| `todo` | `TODO` / `FIXME` / `HACK` comment |
+| `magic-number` | Raw numeric literal |
+| `long-param-list` | Long parameter list |
+| `unused-var` | Unused variable |
+| `unused-function` | Unused function |
+| `hardcoded-secret` | Hardcoded credential |
+| `eval-usage` | `eval()` / `exec()` call |
+| `sql-concatenation` | SQL built by string concatenation |
+| `insecure-random` | Non-cryptographic RNG |
+| `unsafe-regex` | ReDoS-prone regex |
+| `hardcoded-localhost` | Hardcoded localhost URL |
+| `disabled-tls-verification` | TLS verification disabled |
+| `debug-flags-enabled` | Debug flag in production code |
+| `weak-hashing` | MD5 / SHA-1 hashing |
+| `open-redirect` | Unvalidated redirect |
+| `any-usage` | Explicit `any` type (TS/JS) |
+| `function-too-long` | Function over the length threshold |
+
+Findings without a line position cannot be suppressed: file-level metrics (file too long, too many functions, too many imports) and parse errors always count.
+
+## Effect on the health score
+
+Suppressed findings stop costing health-score points - the score is recomputed after suppressions are applied. They are never silently invisible, though: every suppressed finding stays counted and inspectable in the sidebar and CLI output.
+
+A bare ignore works the other way: it suppresses nothing and *deducts* points (default `2` per bare directive, tunable via [Scoring Weights](/configuration/scoring-weights)).
+
+## Where suppressions surface
+
+**File tab** - a collapsible **Suppressed** section below Code Smells lists each suppressed finding with its rule, line, and reason. Bare ignores appear as a "Bare Ignores" smell row.
+
+**Workspace and Folder tabs** - a **Suppressions** section shows the suppressed and bare-ignore counts plus the top files by suppression count. The **See all** button opens a full table of every suppression in the last scan, filterable by rule and text, with click-to-open at the exact line.
+
+**CLI** - `iris check` and `iris gate` always print the suppressed count. Add `--show-suppressed` to list each suppressed finding with its reason:
+
+```bash
+iris check src/ --show-suppressed
+iris gate --show-suppressed
+```
+
+JSON reports (`--format json`) include a per-file `suppressed` array carrying the rule id, line, and reason for each suppression.
+
+## Team controls (Pro)
+
+Two `.irisconfig.json` fields let team leads keep suppressions in check:
+
+```json
+{
+  "gateMaxSuppressions": 5,
+  "ignoreSuppressions": false
+}
+```
+
+| Key | What it controls |
+|-----|-----------------|
+| `gateMaxSuppressions` | Per-file cap on suppressions. A file with more `iris-ignore` directives than this fails the gate - enforced by `iris gate`, the git pre-push hook, and the build hook. |
+| `ignoreSuppressions` | Kill-switch. Set to `true` and every `iris-ignore` directive becomes inert: suppressed findings count as live again, everywhere. Useful for audits or when suppressions are being used to dodge the gate rather than document exceptions. |
+
+The `strict` and `security` presets ship with a default cap (`gateMaxSuppressions: 5` and `3` per file) and a raised `bareSuppression` penalty (`3` and `4`). The other presets leave the cap unset, so there is no suppression limit until you configure one.
+
+<Tip>
+  Commit `.irisconfig.json` with `gateMaxSuppressions` set and the cap applies to everyone - a teammate cannot suppress their way past the gate file by file. See [Gate thresholds](/configuration/irisconfig#gate-thresholds) for the full list of gate fields.
+</Tip>

@@ -22,6 +22,9 @@ Scores source files and prints health findings. Single-file scans are free; scan
 | `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
 | `--verbose` | Show individual findings per file |
+| `--show-suppressed` | List each finding suppressed by an `iris-ignore` comment, with its reason |
+
+Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against the score, but the suppressed count always appears in the output; `--show-suppressed` lists each one individually. JSON reports include a per-file `suppressed` array.
 
 ```bash
 # Score a single file (free)
@@ -96,7 +99,7 @@ iris security ./src --format json
 
 ### iris deps
 
-**Pro.** Audits dependencies in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs via the GitHub Advisory Database.
+**Pro.** Audits dependencies in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database.
 
 Installed versions are resolved from your lockfile when one is present (`package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `poetry.lock`, `Pipfile.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version. Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
 
@@ -120,7 +123,7 @@ iris deps --no-cache --format json
 
 The first network lookup asks for consent and discloses exactly what is sent: package names and versions, nothing else. Your choice is persisted in `~/.iris/preferences.json`. Run with `--revoke-network` to disable lookups later, or `--allow-network` to re-enable them. When results come from the 24-hour cache, the output prints the age of the cached scan.
 
-Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth login` to store a GitHub PAT, or set `GITHUB_TOKEN`, to raise it to 5,000 req/hr.
+No token or rate-limit setup is needed - OSV.dev lookups are unauthenticated and only the package name, ecosystem, and version are sent. Each advisory in the output carries a confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) plus the fixed-in version where one exists. Advisories without a verifiable id or severity are never shown - they are dropped and the skip count is disclosed in the output. Dependencies whose lookup errored are marked "not checked", never assumed clean.
 
 | Exit code | Meaning |
 |---|---|
@@ -132,7 +135,7 @@ Without a GitHub token, CVE lookups are limited to 60 req/hr. Run `iris auth log
 
 ### iris cve
 
-**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found. This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise.
+**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found. This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise. Each matched advisory row shows its confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and the fixed-in version where one exists.
 
 | Flag | Description |
 |---|---|
@@ -217,7 +220,9 @@ iris todos ./src --format json
 
 ### iris gate
 
-**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`, `gateMaxSuppressions`) - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+
+Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the suppressed count always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to make all directives inert so suppressed findings count as live.
 
 | Flag | Description |
 |---|---|
@@ -225,6 +230,7 @@ iris todos ./src --format json
 | `--config <path>` | Use a specific `.irisconfig.json` |
 | `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
+| `--show-suppressed` | List each finding suppressed by an `iris-ignore` comment, with its reason |
 
 ```bash
 # Run the gate against the configured rules
@@ -306,7 +312,7 @@ Manages authentication credentials. Every subcommand is fully interactive - ther
 | Subcommand | Description |
 |---|---|
 | `login` | Interactive prompt: browser-based sign-in or paste a licence token. Requires a TTY. |
-| `status` | Show the current authentication and GitHub token state |
+| `status` | Show the current authentication state |
 | `logout` | Remove stored credentials |
 
 ```bash

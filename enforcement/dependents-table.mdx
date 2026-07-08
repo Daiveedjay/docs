@@ -1,10 +1,10 @@
 ---
 title: "Dependents Table: Audit npm, Go, and Python Packages"
 sidebarTitle: "Dependents Table"
-description: "Open the Dependents Table in VS Code to audit every package for outdated versions and CVEs from the GitHub Advisory Database. Requires Iris Code Pro."
+description: "Open the Dependents Table in VS Code to audit every package for outdated versions and CVEs from the OSV.dev database. No token or rate-limit setup. Requires Iris Code Pro."
 ---
 
-The Dependents Table audits all of your project's third-party packages in a single panel, checking each one for outdated versions and known security vulnerabilities sourced from the GitHub Advisory Database. Instead of running separate audit tools for each package ecosystem, you get a unified view covering npm, Go modules, and Python packages side by side.
+The Dependents Table audits all of your project's third-party packages in a single panel, checking each one for outdated versions and known security vulnerabilities sourced from the [OSV.dev](https://osv.dev) database. Instead of running separate audit tools for each package ecosystem, you get a unified view covering npm, Go modules, and Python packages side by side.
 
 <Note>
   The Dependents Table requires **Iris Code Pro**.
@@ -37,13 +37,32 @@ Workspace members declared via npm or yarn workspaces, or in `pnpm-workspace.yam
 
 ## What the table shows
 
-For each package, the table displays the installed version, the latest available version, and any known CVEs from the GitHub Advisory Database:
+For each package, the table displays the installed version, the latest available version, and any known CVEs from the OSV.dev database:
 
 | Package | Installed → Latest | Advisories |
 | --- | --- | --- |
 | `next` | 14.1.0 → 15.3.2 | — |
 | `express` | 4.18.2 → 4.21.2 | CVE-2024-29041 |
 | `jsonwebtoken` | 8.5.1 → 9.0.2 | CVE-2022-23529, CVE-2022-23540 |
+
+Each advisory shows a severity badge, the advisory id, a **confidence label**, and the **fixed-in version** where one exists.
+
+## Confidence labels
+
+Every advisory carries a confidence label so you know how actionable it is at a glance:
+
+| Label | Meaning |
+| --- | --- |
+| `fix-available` | A patched version exists - upgrade to the fixed-in version to resolve it |
+| `direct` | The vulnerable package is a direct dependency of your project |
+| `transitive` | The vulnerable package is pulled in indirectly by another dependency |
+| `manual-review` | The advisory could not be matched precisely to your installed version - review it yourself |
+
+## Unverifiable advisories are never shown
+
+Iris Code never displays advisory data it cannot verify. Any record that lacks a verifiable id or severity is dropped rather than shown, and the panel footer discloses how many were skipped ("N advisories skipped (unverifiable)"). Duplicate records for the same underlying advisory are collapsed into one row.
+
+If the lookup for a dependency fails (network error, registry outage), that dependency is marked **not checked** - it is never silently assumed clean.
 
 ## CVE badge in the sidebar
 
@@ -53,24 +72,10 @@ The Dependencies section of the Workspace tab shows a summary pill of the last c
 
 Results are cached locally for 24 hours at `.iris-cache/dependents.json`. Re-opening the panel is instant without a new network round-trip. Iris Code automatically adds `.iris-cache/` to your `.gitignore` on the first write.
 
-## GitHub PAT (optional)
+## No token required
 
-The unauthenticated GitHub Advisory API rate limit is 60 requests per hour. Store a personal access token via the in-panel token button to raise that limit to 5,000 requests per hour. The token is stored in VS Code's `SecretStorage` and never leaves your machine.
-
-To generate a token:
-
-<Steps>
-  <Step title="Open GitHub Settings">
-    Go to [GitHub Settings](https://github.com/settings/profile) → [Developer settings](https://github.com/settings/apps) → [Personal access tokens → Tokens (classic)](https://github.com/settings/tokens).
-  </Step>
-  <Step title="Generate a new token">
-    Click **Generate new token (classic)**. No scopes are required - leave all permission boxes unchecked.
-  </Step>
-  <Step title="Store the token in Iris Code">
-    Click the token button in the Dependents Table panel and paste in your new token.
-  </Step>
-</Steps>
+Vulnerability lookups query OSV.dev directly. There is no token to create, no rate-limit setup, and no in-panel token button - it works out of the box. Only the package name, ecosystem, and version are sent for each lookup - never your code, file paths, or project names.
 
 <Tip>
-  Advisory API errors return empty CVE lists silently - the table still loads with version data even when the advisory API is unavailable or rate-limited.
+  If the advisory lookup for a package errors, the table still loads with version data - the affected package is marked "not checked" so you know its advisory status is unknown rather than clean.
 </Tip>

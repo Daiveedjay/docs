@@ -41,6 +41,7 @@
               "enforcement/github-actions",
               "enforcement/hardcoded-secrets",
               "enforcement/security-smells",
+              "enforcement/suppressions",
               "enforcement/inline-diagnostics",
               "enforcement/dependents-table"
             ]

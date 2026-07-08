@@ -8,6 +8,26 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.11.0 - 9 Jul 2026
+
+<Note>**feature** - inline suppressions and OSV.dev vulnerability lookups</Note>
+
+### Inline suppressions with required reasons, and dependency lookups move to OSV.dev
+
+Iris Code 1.11.0 lets you silence individual findings with a documented `iris-ignore` comment, and moves all dependency vulnerability lookups to the OSV.dev database - no token, no rate-limit setup. Ships alongside `@iris-code/cli` 1.4.0.
+
+- **Added** inline suppressions (free): `// iris-ignore: <ruleId>[, <ruleId>...] -- <reason>` suppresses matching findings on the next line, and `// iris-ignore-file: ...` covers the whole file (`#` works for Python). The reason is required - a directive missing it, or naming an unknown rule, suppresses nothing and is reported as a Bare Ignore finding with its own score penalty (`healthScoreWeights.bareSuppression`, default `2`). Eighteen rule ids are suppressible; suppressed findings stop costing health-score points but stay counted and visible. See [Inline Suppressions](/enforcement/suppressions).
+- **Added** suppression surfaces in the sidebar: a Suppressed section in the File tab, and a Suppressions section in the Workspace and Folder tabs with per-file counts and a **See all** button that opens a full filterable table with click-to-open at the exact line.
+- **Added** `--show-suppressed` to `iris check` and `iris gate`: lists each suppressed finding with its reason. Suppressed counts always appear in the output, and JSON reports gain a per-file `suppressed` array (schema version unchanged).
+- **Added** two Pro team controls: `gateMaxSuppressions` (per-file cap, enforced by `iris gate`, the git hook, and the build hook) and `ignoreSuppressions: true` (kill-switch that makes every directive inert so suppressed findings count as live).
+- **Changed** the Dependents Table, `iris deps`, and `iris cve` to source vulnerability data from the [OSV.dev](https://osv.dev) database. No token or rate-limit setup is needed: the in-panel GitHub token button is gone, the `GITHUB_TOKEN` environment variable is no longer used, and `iris auth login` no longer prompts for a GitHub PAT. Only the package name, ecosystem, and version are sent - never code, file paths, or project names - and the consent flow is unchanged. Old advisory caches invalidate automatically.
+- **Added** a confidence label on every advisory (`fix-available`, `direct`, `transitive`, or `manual-review`) plus the fixed-in version where one exists, in both the panel and CLI output.
+- **Improved** advisory trustworthiness: records without a verifiable id or severity are never shown - they are dropped and the skip count is disclosed in the panel footer and CLI output - and dependencies whose lookup errored are marked "not checked" instead of being assumed clean.
+- **Fixed** debug prints quoted inside comments being flagged as live debug prints in TS/JS, Go, and Python.
+- **Fixed** `iris deps` and `iris cve` argument errors no longer risk a crash on exit on Windows.
+
+---
+
 ## v1.10.0 - 5 Jul 2026
 
 <Note>**feature** - dependency intelligence: CVE gate, SBOM export, lockfile-aware audits</Note>

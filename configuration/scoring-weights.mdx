@@ -31,13 +31,14 @@ These are the values every preset starts from. Omitting a key falls back to the 
 | `unusedFunction` | `2` | Per unused function definition |
 | `insecureRandom` | `2` | Per insecure-RNG finding |
 | `debugFlagsEnabled` | `2` | Per debug-flag-enabled finding |
+| `bareSuppression` | `2` | Per bare `iris-ignore` comment - a suppression directive missing its required reason, or naming no valid rule |
 | `consoleLog` | `1` | Per console/debug print statement |
 | `longParamList` | `1` | Per long parameter list finding |
 | `unusedVar` | `1` | Per unused variable |
 | `hardcodedLocalhost` | `1` | Per hardcoded-localhost-URL finding |
 
 <Note>
-  The nine security smell keys (`evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`) were added alongside [Security Smells](/enforcement/security-smells) detection.
+  The nine security smell keys (`evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`) were added alongside [Security Smells](/enforcement/security-smells) detection. The `bareSuppression` key was added alongside [Inline Suppressions](/enforcement/suppressions) - a valid, reasoned suppression costs nothing, but a bare one is itself a finding.
 </Note>
 
 ## When to customise weights
