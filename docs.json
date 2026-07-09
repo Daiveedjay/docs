@@ -101,5 +101,10 @@
       "source": "/introduction",
       "destination": "/"
     }
-  ]
+  ],
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.iriscode.co"
+    }
+  }
 }
