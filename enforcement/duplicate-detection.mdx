@@ -1,0 +1,74 @@
+---
+title: "Duplicate Code Detection: Find, Diff, and Gate on Copy-Paste"
+sidebarTitle: "Duplicate Code"
+description: "Iris Code finds copy-pasted blocks within and across files with normalised token-window matching - renamed identifiers and changed literals do not hide a duplicate. Diff any pair side by side and cap the total with a gate rule."
+badge: "New"
+---
+
+Copy-pasted code rarely stays identical: variables get renamed, literals change, formatting shifts. Iris Code normalises source before comparing - identifier names, string and number literals, whitespace, and comments are all ignored, while keywords and structure are kept verbatim - so two stretches of code that differ only in naming or values still match, and two different constructs never do.
+
+Duplicate detection is a **free** feature. The side-by-side diff view and the gate cap are Pro.
+
+## How matching works
+
+A match must span at least `duplicateBlockMinTokens` normalised tokens (default `40`) before it counts as a duplicate block. Consecutive matching windows merge into one maximal block, so a long copy reports once rather than as shifted fragments.
+
+Results are kept reviewable by design:
+
+- **Import headers never match.** `import` / `require` / re-export headers are excluded before comparison - two files importing the same components is not technical debt.
+- **Uniform data literals never match.** Country lists, enum tables, and similar all-data blocks are excluded.
+- **No pairwise explosion.** A block repeated many times reports as a minimal covering set of pairs, never every combination, and contained sub-matches are dropped.
+- **Markup needs more evidence.** When both sides are markup (`.jsx` / `.tsx`, or `.js` carrying JSX) the token threshold doubles - JSX is structurally repetitive.
+- **Oversized or minified-looking files are excluded** from comparison and disclosed as skipped, never silently dropped.
+
+## Where duplicates surface
+
+- **File tab** - within-file blocks appear as a "Duplicate blocks" smell with both locations. Each block deducts `healthScoreWeights.duplicateCode` points (default `3`).
+- **Workspace and Folder tabs** - a "Duplication" section shows the block count, the duplication percentage of total code lines, and the largest blocks with click-through to both locations.
+- **Issues tab** - duplicate findings are listed alongside other findings.
+- **Duplicates table** - the "See all" button opens a full table, filterable by cross-file or within-file, searchable, with both locations clickable. The table tracks live edits: line ranges update as you type and resolved pairs drop out without a rescan.
+
+## The diff view (Pro)
+
+Every duplicate row has an **Open diff** action, titled with both locations GitHub-style (`scanner.ts:10-24 ↔ parser.ts:88-102`).
+
+- **Cross-file pairs** open the two full files side by side, scrolled to their blocks, fully editable with normal saves. Deleting a duplicate is just an edit with the whole file in view - Iris Code shows a toast the moment the duplication is resolved.
+- **Same-file pairs** (where a self-diff would show nothing) open the two blocks as editable extracts. Saving a pane writes the change back into the real file, an **Open** link jumps to the full file, and the panes track or clear live as the file changes.
+
+## Gating on duplication (Pro)
+
+`gateMaxDuplicateBlocks` caps the total number of duplicate blocks across the scan - enforced by `iris check`, `iris gate`, the [git pre-push hook](/enforcement/git-hook), and the [build hook](/enforcement/build-gate). A block spanning two files counts once.
+
+```json .irisconfig.json
+{
+  "gateMaxDuplicateBlocks": 0
+}
+```
+
+`iris gate` shows a "Max duplicate blocks" rule row and lists the involved files on failure.
+
+## Configuration
+
+| Key | Default | What it controls |
+|-----|---------|-----------------|
+| `enableDuplicateDetection` | `true` | Master toggle for duplicate detection |
+| `duplicateBlockMinTokens` | `40` | Minimum normalised-token run length for a match (min `10`) |
+| `gateMaxDuplicateBlocks` | unset | Gate fails when total duplicate blocks exceed this (Pro) |
+| `healthScoreWeights.duplicateCode` | `3` | Points deducted per duplicate block (Pro to customise) |
+| `inlineDiagnostics.duplicateCode` | `false` | Squiggle within-file duplicate blocks in the editor |
+
+See the [.irisconfig.json reference](/configuration/irisconfig) for the full config surface.
+
+## Suppressing a finding
+
+`duplicate-code` is a suppressible rule id, with the usual required reason:
+
+```typescript
+// iris-ignore: duplicate-code -- intentional mirror of the v1 handler until v1 is removed
+```
+
+See [Inline Suppressions](/enforcement/suppressions) for the full syntax.
+
+## In the CLI
+
+`iris check --format json` file entries carry an additive `duplicateBlocks` array (`schemaVersion` unchanged), and files skipped from comparison are disclosed in `iris gate` output.

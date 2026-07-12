@@ -26,6 +26,8 @@ Scores source files and prints health findings. Single-file scans are free; scan
 
 Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against the score, but the suppressed count always appears in the output; `--show-suppressed` lists each one individually. JSON reports include a per-file `suppressed` array.
 
+Directory checks also find [duplicate code blocks](/enforcement/duplicate-detection) across files; JSON file entries carry an additive `duplicateBlocks` array, and files excluded from duplicate comparison (too large or minified-looking) are disclosed rather than silently skipped.
+
 ```bash
 # Score a single file (free)
 iris check src/index.ts
@@ -220,7 +222,7 @@ iris todos ./src --format json
 
 ### iris gate
 
-**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`, `gateMaxSuppressions`) - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json` (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`, `gateMaxSuppressions`, `gateMaxDuplicateBlocks`) - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
 
 Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the suppressed count always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to make all directives inert so suppressed findings count as live.
 

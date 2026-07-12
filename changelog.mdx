@@ -8,6 +8,25 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.12.0 - 13 Jul 2026
+
+<Note>**feature** - duplicate code detection with a live diff view and gate rule</Note>
+
+### Duplicate code detection: find the copy-paste, diff it, gate on it
+
+Iris Code 1.12.0 finds copy-pasted blocks within and across files using normalised token-window matching - renamed identifiers, changed literals, reformatted whitespace, and comments do not hide a duplicate. Free for everyone, with a Pro side-by-side diff view and a new gate rule. Ships alongside `@iris-code/cli` 1.5.0. See [Duplicate Code Detection](/enforcement/duplicate-detection).
+
+- **Added** duplicate code detection (free): source is normalised before comparison (identifiers, literals, whitespace, and comments ignored; keywords kept verbatim), so two stretches of code that differ only in naming or values still match. Within-file blocks appear as a Duplicate blocks smell on the File tab and deduct `healthScoreWeights.duplicateCode` points (default `3`); cross-file blocks power a new Duplication section on the Workspace and Folder tabs with block count, the duplication percentage of total code lines, and the largest blocks with click-through to both locations.
+- **Added** noise guards so results stay reviewable: import/require headers never match, uniform data literals (country lists, enum tables) are excluded, a block repeated many times reports as a minimal set of pairs instead of every combination, JSX-heavy files need twice the token evidence, and oversized or minified-looking files are excluded and disclosed as skipped.
+- **Added** a full Duplicates table - filterable by cross-file or within-file, searchable, both locations clickable - that tracks live edits: line ranges update as you type and resolved pairs drop out without a rescan.
+- **Added** an **Open diff** action on every duplicate (Pro), titled with both locations GitHub-style. Cross-file pairs open the two full files side by side, editable with normal saves; same-file pairs open the two blocks as editable extracts that write back to the real file. Iris Code toasts the moment the duplication is resolved.
+- **Added** `gateMaxDuplicateBlocks` (Pro): caps the total duplicate blocks across the scan, enforced by `iris check`, `iris gate`, the git hook, and the build hook - a block spanning two files counts once. New config keys: `enableDuplicateDetection` (default on), `duplicateBlockMinTokens` (default `40`), the `duplicateCode` scoring weight, and an optional `inlineDiagnostics.duplicateCode` squiggle toggle.
+- **Added** `duplicate-code` as a suppressible rule id: `// iris-ignore: duplicate-code -- <reason>`.
+- **Added** `duplicateBlocks` arrays to `iris check --format json` file entries (additive; schema version unchanged) and a "Max duplicate blocks" rule row to `iris gate`.
+- **Fixed** `.mjs` and `.cjs` files being skipped entirely - they are now analysed everywhere `.js` is: workspace scans, folder scans, and CLI directory checks.
+
+---
+
 ## v1.11.0 - 9 Jul 2026
 
 <Note>**feature** - inline suppressions and OSV.dev vulnerability lookups</Note>

@@ -53,6 +53,9 @@ For complete control over every rule, write out the full config. Every key is op
   "enableUnusedDetection": true,
   "enableMissingReturnTypeWarnings": true,
   "enableSecretsDetection": true,
+  "enableSecuritySmells": true,
+  "enableDuplicateDetection": true,
+  "duplicateBlockMinTokens": 40,
 
   // Display — UI and sidebar options
   "enableCodeLens": true,
@@ -81,6 +84,7 @@ For complete control over every rule, write out the full config. Every key is op
   "gateMaxSmellsPerFile": 8,   // Pro — max total smells in a single file
   "gateMaxSecuritySmells": 0,  // Pro — max security smells workspace-wide
   "gateMaxSuppressions": 5,    // Pro — max iris-ignore suppressions per file
+  "gateMaxDuplicateBlocks": 0, // Pro — max duplicate code blocks across the scan
   "ignoreSuppressions": false, // Pro — treat all iris-ignore directives as inert
 
   // Ignore rules — skip files or functions from analysis
@@ -146,6 +150,9 @@ Turn individual detection categories on or off without removing findings from th
 | `enableUnusedDetection` | `true` | Flag unused variables and functions |
 | `enableMissingReturnTypeWarnings` | `true` | Flag exported functions missing return types (TS/JS only) |
 | `enableSecretsDetection` | `true` | Enable two-layer hardcoded credential scanning (JS/TS, Go, Python) |
+| `enableSecuritySmells` | `true` | Enable the nine [security smell](/enforcement/security-smells) patterns (eval usage, SQL concatenation, insecure RNG, and the rest) |
+| `enableDuplicateDetection` | `true` | Detect duplicated code blocks within and across files via normalised token-window matching |
+| `duplicateBlockMinTokens` | `40` | Minimum normalised-token run length before two stretches of code count as a duplicate block (min `10`) |
 
 ### Display
 
@@ -175,6 +182,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | `gateMaxSmellsPerFile` | Pro | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
 | `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
 | `gateMaxSuppressions` | Pro | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
+| `gateMaxDuplicateBlocks` | Pro | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
 | `ignoreSuppressions` | Pro | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
 
 ### Ignore rules
