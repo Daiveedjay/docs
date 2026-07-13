@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -c \"Get-ChildItem 'c:\\\\Users\\\\Jajad\\\\Desktop\\\\IRIS\\\\Iris-landing\\\\public'\")",
+      "Bash(powershell -c \"Get-ChildItem 'c:\\\\Users\\\\Jajad\\\\Desktop\\\\IRIS\\\\Iris-landing\\\\public\\\\downloads'\")",
+      "Bash(powershell -c \"\\(Get-Content 'c:\\\\Users\\\\Jajad\\\\Desktop\\\\IRIS\\\\Iris-landing\\\\public\\\\logo-light.svg' -Raw\\) -replace 'fill=\\\\\"#333333\\\\\">Iris Code</text>', 'fill=\\\\\"#E9EBED\\\\\">Iris Code</text>' | Set-Content -Encoding utf8 'c:\\\\Users\\\\Jajad\\\\Desktop\\\\IRIS\\\\Iris-landing\\\\public\\\\logo-dark.svg'\")"
+    ]
+  }
+}
