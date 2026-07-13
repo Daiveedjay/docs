@@ -29,18 +29,21 @@ Keep AI-assisted code up to your standards. This guide gets Iris Code's determin
     Save the file and watch the score update in real time.
   </Step>
 
-  <Step title="Run a workspace scan">
+  <Step title="Run your free Project Review">
     Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris Code: Analyse Workspace**.
 
     Iris Code crawls every supported file in the project and populates:
 
     - **Workspace Readiness** - an aggregate health score with blocker and warning counts across the whole project
     - **Hotspot rankings** - the largest and most complex files ranked first, so you know where to focus
-    - **Unused packages** - dependencies declared in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` that are never imported
     - **Issues tab** - all blocking issues and warning-level findings aggregated in one filterable list
     - **TODOs tab** - every TODO, FIXME, and HACK comment across your project
 
-    Results are cached - navigate between tabs and come back without re-scanning.
+    Your first complete Project Review is free, local, and requires no account. Iris saves it for that workspace, so you can reopen its files, issues, TODOs, security findings, and duplicate evidence without re-scanning.
+
+    <Note>
+      The free result is a fixed snapshot. It does not claim unused-package, dependency-audit, or trend conclusions. **Refresh With Pro** runs a fresh whole-project review; folder scans, hooks, builds, CI, and dependency audits also remain Pro.
+    </Note>
   </Step>
 
   <Step title="Preview your enforcement posture">

@@ -6,6 +6,8 @@ description: "Scan your entire project or any folder for aggregate metrics, rank
 
 Workspace and folder analysis gives you aggregate code health across your whole project - not just the file you have open. Instead of reviewing files one by one, you get a single ranked view of every hotspot, unused dependency, and blocking issue in your codebase, with trend data to show whether things are improving or regressing over time.
 
+Every signed-out user can run one complete **Project Review** free. Iris saves that local snapshot for the first reviewed workspace, including project-wide rankings, Issues, TODOs, security findings, duplicate evidence, and the file tree. Pro unlocks fresh whole-project reviews, folder scans, dependency conclusions, and trend snapshots.
+
 ## Running a Workspace Scan
 
 Run **Iris Code: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) or click the **Scan Workspace** button in the Iris Code Workspace tab. Iris Code will walk every supported file in your project and return:
@@ -21,10 +23,14 @@ Run **Iris Code: Analyse Workspace** from the command palette (`Ctrl+Shift+P`) o
 - **Interactive file tree** - all scanned files grouped by directory
 - **Trend summary** - overall score delta plus the top 3 improved and top 3 regressed files since the last snapshot
 
+<Note>
+  The first free Project Review omits unused-package, dependency, and trend conclusions. Those sections depend on a fresh full-project scan and remain available with Pro. After the free review completes, **Refresh With Pro** replaces the rescan action while the saved evidence remains clickable and viewable.
+</Note>
+
 <Tip>
   Workspace scan results are cached. Navigate away from the Workspace tab and
-  come back without re-scanning - your previous results are still there until
-  you run a new scan or click **Clear**.
+  come back without re-scanning. A free Project Review remains as a fixed local
+  snapshot; Pro users can run a new scan or clear the current result.
 </Tip>
 
 ## Folder Analysis
@@ -34,8 +40,9 @@ To analyse a specific part of your project, right-click any folder in the VS Cod
 Results appear in the dedicated **Folder** tab, which activates automatically when a scan completes. The Folder tab shows the same stats, file type pie chart, ranked files, and interactive file tree as the Workspace tab, plus **Rescan** and **Clear** buttons for that folder.
 
 <Note>
-  **Workspace Analysis and Folder Analysis require a Pro subscription.** File
-  analysis and single-file scoring are available on the Free plan.
+  One complete Project Review is available on the Free plan without an account.
+  Fresh workspace reviews and all folder scans require Pro. File reviews and
+  jump-to-line navigation remain free.
 </Note>
 
 ## Issues & TODOs Tabs

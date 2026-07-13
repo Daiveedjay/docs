@@ -27,7 +27,7 @@ Keep AI-assisted code up to your standards. Iris Code catches secrets, duplicate
     Share thresholds across your team with <code>.irisconfig.json</code>
   </Card>
   <Card title="Iris Code Pro" icon="star" href="/pro">
-    Unlock workspace scans, hooks, CVE audits, and the full CLI suite
+    Unlock fresh project reviews, hooks, CVE audits, and the full CLI suite
   </Card>
 </CardGroup>
 
@@ -81,11 +81,13 @@ Iris Code provides full analysis for four languages:
 
 ## Free vs Pro
 
-Gate Preview, file scoring, secrets detection, and preset configs are free forever. Pro turns that signal into a hard gate - adding workspace scans, git and build hooks, drilldowns, custom rules, and the full CLI suite.
+Unlimited file reviews, one saved Project Review, Gate Preview, secrets detection, and preset configs are free forever. Pro keeps project-wide evidence current and turns that signal into a hard gate.
 
 <CardGroup cols={2}>
   <Card title="Free - $0/month" icon="circle-check">
+    - One complete Project Review saved locally for the first reviewed workspace
     - File analysis: health score, complexity, and functions
+    - Clickable findings that open the affected source line
     - TypeScript-specific metrics
     - Code smell detection
     - Hardcoded secrets detection
@@ -99,14 +101,13 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
   </Card>
   <Card title="Pro - $6/month" icon="bolt">
     - Everything in Free
-    - Workspace and folder analysis
+    - Fresh workspace reviews and folder analysis
     - Gate Preview drilldown - see exactly which files fail each preset
     - Git pre-push hook enforcement
     - Build hook enforcement
     - Dependents table with version audit and CVE scan
     - Issues tab with blocker and warning filters
     - TODOs tab aggregation
-    - Clickable jump-to-line on all findings
     - Custom `.irisconfig.json` threshold overrides
     - Custom enforcement limits - block on secret count, complexity ceiling, file size, smell density, or security smell count
     - Custom scoring weights per finding type
