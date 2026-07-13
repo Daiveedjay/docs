@@ -1,7 +1,7 @@
 ---
 title: "Iris Code: Code Health Scores, Smells, and Gate Enforcement"
 sidebarTitle: "Home"
-description: "Iris Code scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Runs entirely on your machine - no code upload, no AI, no backend."
+description: "Iris Code scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Local analysis with no source upload, AI, or analysis backend."
 ---
 
 Iris Code is a VS Code extension (and CLI) that enforces code health locally - no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
@@ -56,7 +56,7 @@ Iris Code continuously monitors the files you work on and the projects you manag
   </Step>
 </Steps>
 
-Iris Code runs entirely on your machine. Analysis is in-process - your source code never leaves your editor to reach an analysis backend, and no AI model processes your files. The only network calls Iris Code makes are limited account, billing, and product-use events required for licensing.
+Iris Code performs source analysis in-process on your machine. Your source code never reaches an analysis backend, and no AI model processes your files. Network requests are limited to account and licensing operations, dependency and advisory lookups, and product-use events. These requests never include source code, file contents, or project structure; you can disable optional product-use events in your account settings.
 
 This means:
 
@@ -71,7 +71,7 @@ Iris Code provides full analysis for four languages:
 | Language | File extensions | Notes |
 |---|---|---|
 | **TypeScript** | `.ts`, `.tsx` | Includes `any` usage, `@ts-ignore`, non-null assertions, and missing return types |
-| **JavaScript** | `.js`, `.jsx` | Full smell and complexity analysis; unused import detection included |
+| **JavaScript** | `.js`, `.jsx`, `.mjs`, `.cjs` | Full smell and complexity analysis; unused import detection included |
 | **Go** | `.go` | Method and function detection, `go.mod` unused package audit, `vendor/` skipped automatically |
 | **Python** | `.py` | `def` declarations, `requirements.txt` / `pyproject.toml` package audit, `.venv` skipped automatically |
 
@@ -114,5 +114,5 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
 </CardGroup>
 
 <Tip>
-  Every new account includes a **14-day Pro trial** - no credit card required. [Start your trial →](/pro)
+  You can request a **14-day Pro trial** - no credit card required. [See how trial requests work →](/pro)
 </Tip>
