@@ -1,10 +1,10 @@
 ---
-title: "Quick Start: Install Iris Code, Scan Files, and Preview Gates"
+title: "Quick Start: Install Iris Code and Review Your Changes"
 sidebarTitle: "Quick Start"
-description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture - from zero to first scan in two minutes."
+description: "Install Iris Code in VS Code and review staged, unstaged, and untracked code before human review."
 ---
 
-Keep AI-assisted code up to your standards. This guide gets Iris Code's deterministic, local-first checks between a code change and human review: install the extension, read your first file score, scan your workspace, and preview five built-in enforcement thresholds.
+Keep AI-assisted code up to your standards. This guide gets Iris Code's deterministic, local-first checks between a code change and human review in under two minutes.
 
 <Steps>
   <Step title="Install Iris Code from the VS Code Marketplace">
@@ -15,7 +15,21 @@ Keep AI-assisted code up to your standards. This guide gets Iris Code's determin
     </Note>
   </Step>
 
-  <Step title="Open a supported file and read the File tab">
+  <Step title="Review your changes">
+    Open a Git project with at least one changed JavaScript, TypeScript, Go, or Python file. Iris Code shows **Git-changed files detected** above the five sidebar tabs. Select it to open the dedicated Change Review table.
+
+    Iris Code checks staged, unstaged, and untracked supported files and opens a focused change review with:
+
+    - blockers that should be resolved before handoff
+    - warnings worth reviewing
+    - changed-code health across the reviewed files
+    - Issues and TODOs limited to the current changes
+    - the exact changed files included in the review
+
+    Interactive change reviews are free and require no account. They do not alter full-workspace trend history or claim unused dependency results from a partial scan.
+  </Step>
+
+  <Step title="Inspect a supported file in detail">
     Open any `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.go`, or `.py` file. Iris Code scores it automatically - no command needed.
 
     The **File tab** in the Iris Code sidebar shows:
@@ -29,7 +43,7 @@ Keep AI-assisted code up to your standards. This guide gets Iris Code's determin
     Save the file and watch the score update in real time.
   </Step>
 
-  <Step title="Run a workspace scan">
+  <Step title="Run a full workspace scan (Pro)">
     Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris Code: Analyse Workspace**.
 
     Iris Code crawls every supported file in the project and populates:

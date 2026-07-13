@@ -12,6 +12,7 @@ Use these commands to trigger analysis, manage hooks, export reports, and open I
 
 | Command | Description |
 |---|---|
+| `Iris Code: Review My Changes` | Open a dedicated review table for staged, unstaged, and untracked supported files |
 | `Iris Code: Analyse Current File` | Manually re-analyse the active file |
 | `Iris Code: Analyse Workspace` | Analyse all JS/TS/Go/Python files in the workspace |
 | `Iris Code: Analyse This File` | Right-click a file in Explorer to analyse it |
@@ -36,6 +37,7 @@ Right-clicking inside the Explorer panel exposes file- and folder-scoped command
 
 - Right-click a **JS/TS/Go/Python file** → **Iris Code: Analyse This File**
 - Right-click a **folder** → **Iris Code: Analyse This Folder**
+- Right-click **anywhere** in the Explorer → **Iris Code: Review My Changes**
 - Right-click **anywhere** in the Explorer → **Iris Code: Analyse Workspace**
 
 ### Editor (inside a file)
@@ -43,5 +45,6 @@ Right-clicking inside the Explorer panel exposes file- and folder-scoped command
 Right-clicking inside an open file gives you analysis commands scoped to the current file or its containing folder:
 
 - **Iris Code: Analyse Current File** - re-run analysis on the file you are editing
+- **Iris Code: Review My Changes** - review the supported files changed in the current Git worktree
 - **Iris Code: Analyse Current Folder** - analyse all supported files in the same folder
 - **Iris Code: Analyse Workspace** - run a full workspace scan from the editor context menu

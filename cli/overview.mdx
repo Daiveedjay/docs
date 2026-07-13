@@ -72,7 +72,7 @@ These commands require an active Iris Code Pro licence:
 
 - **`iris check <dir>`** - scan an entire directory tree and score every source file
 - **`iris check --staged`** - scan only files currently staged in git
-- **`iris check --changed`** - scan only files changed since the last commit
+- **`iris check --changed`** - scan staged, unstaged, and untracked files that are not Git-ignored
 - **`iris deps`** - audit `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs, with installed versions resolved from your lockfile
 - **`iris cve`** - CVE severity gate for CI; exits `1` only when an advisory at or above a chosen severity is found
 - **`iris sbom`** - export a CycloneDX 1.5 software bill of materials, fully offline

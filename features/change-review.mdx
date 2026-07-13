@@ -1,0 +1,53 @@
+---
+title: "Review My Changes"
+sidebarTitle: "Review My Changes"
+description: "Check staged, unstaged, and untracked code for blockers and warnings before it reaches human review."
+---
+
+**Review my changes** is the primary Iris Code workflow. It checks the supported source files currently changed in your Git worktree and presents one focused review before another person sees the code.
+
+<Note>
+  Interactive change reviews are free and require no account. Automated changed-file checks with `iris check --changed`, hooks, and CI remain part of Pro.
+</Note>
+
+## Run a change review
+
+1. Open a Git project in VS Code.
+2. Open the Iris Code sidebar.
+3. When Iris Code reports **Git-changed files detected** above the five sidebar tabs, select that strip.
+
+Iris only shows the strip when Git reports staged, unstaged, or untracked files, so its reason for appearing is explicit. You can also run **Iris Code: Review My Changes** from the Command Palette or use the Git-compare action in the Iris Code view title.
+
+## What gets reviewed
+
+Iris Code includes supported files that are:
+
+- staged for commit
+- modified but not staged
+- new and untracked, unless Git ignores them
+
+JavaScript, TypeScript, Go, and Python source files are supported. Deleted files, generated files excluded by Git, unsupported file types, and paths matched by `ignoreFiles` are not analysed.
+
+## What the review shows
+
+The result opens in a dedicated **Iris Code - Change Review** editor tab:
+
+- **Blockers** - hardcoded secrets and error-level security or quality findings
+- **Warnings** - maintainability findings worth resolving before handoff
+- **Changed code health** - the average health score of supported changed files
+- **Findings table** - severity, explanation, file, and line, with search and blocker/warning filters
+- **Changed files table** - every supported reviewed file with its health score and finding count
+
+Select a finding to open its source file at the reported line. Select a changed-file row to open that file.
+
+A change review does not create a workspace trend snapshot and does not report unused dependencies. Those conclusions require a full-project scan and would be misleading from a partial set of files.
+
+## Interactive review versus enforcement
+
+| Workflow | Plan | Behaviour |
+|---|---|---|
+| **Review my changes** in VS Code | Free | Interactive review of the current Git worktree |
+| `iris check --changed` or `--staged` | Pro | Scriptable changed-file checks in the terminal |
+| Pre-push, build, and CI gates | Pro | Automatically block changes that violate the configured standard |
+
+Use the interactive review while writing code. Add Pro enforcement when the same standard needs to run automatically for every contributor.

@@ -12,7 +12,10 @@ Keep AI-assisted code up to your standards. Iris Code catches secrets, duplicate
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
-    Install Iris Code and run your first scan in under two minutes
+    Install Iris Code and review your changed files in under two minutes
+  </Card>
+  <Card title="Review My Changes" icon="code-compare" href="/features/change-review">
+    Check staged, unstaged, and untracked code before human review
   </Card>
   <Card title="Features" icon="sparkles" href="/features/file-analysis">
     Explore file analysis, workspace scans, and editor integration
@@ -35,6 +38,8 @@ Keep AI-assisted code up to your standards. Iris Code catches secrets, duplicate
 
 Iris Code continuously monitors the files you work on and the projects you manage, giving you four interconnected layers of insight:
 
+**Change reviews** - **Review my changes** checks staged, unstaged, and untracked supported files, then separates blockers from warnings before the code reaches human review. Interactive reviews are free.
+
 **Health scores** - every supported file receives a 0–100 composite score on every save, penalising long functions, deep nesting, debug prints, magic numbers, and secrets. The score updates instantly; no manual trigger required.
 
 **Code smells** - Iris Code detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
@@ -49,8 +54,8 @@ Iris Code continuously monitors the files you work on and the projects you manag
   <Step title="Install the extension">
     Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris Code icon appears in the Activity Bar immediately.
   </Step>
-  <Step title="Open any file">
-    Open a JavaScript, TypeScript, Go, or Python file. Iris Code scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
+  <Step title="Review your changes">
+    When Git changes are present, select the **Git-changed files detected** strip above the sidebar tabs. Iris Code checks supported staged, unstaged, and untracked files, then opens a dedicated editor table with their blockers, warnings, changed-code health, files, and source locations.
   </Step>
   <Step title="Preview your enforcement posture">
     Scroll to the bottom of the File tab and click **Preview Gate**. See how your codebase scores against all five built-in presets before enabling a single hook.
@@ -81,10 +86,12 @@ Iris Code provides full analysis for four languages:
 
 ## Free vs Pro
 
-Gate Preview, file scoring, secrets detection, and preset configs are free forever. Pro turns that signal into a hard gate - adding workspace scans, git and build hooks, drilldowns, custom rules, and the full CLI suite.
+Interactive change reviews, Gate Preview, file scoring, secrets detection, and preset configs are free forever. Pro turns that signal into a hard gate - adding workspace scans, git and build hooks, automation, custom rules, and the full CLI suite.
 
 <CardGroup cols={2}>
   <Card title="Free - $0/month" icon="circle-check">
+    - Review my changes: staged, unstaged, and untracked supported files
+    - Issues and TODO evidence from the current change review
     - File analysis: health score, complexity, and functions
     - TypeScript-specific metrics
     - Code smell detection
@@ -104,8 +111,8 @@ Gate Preview, file scoring, secrets detection, and preset configs are free forev
     - Git pre-push hook enforcement
     - Build hook enforcement
     - Dependents table with version audit and CVE scan
-    - Issues tab with blocker and warning filters
-    - TODOs tab aggregation
+    - Full-workspace Issues tab with blocker and warning filters
+    - Full-workspace TODOs aggregation
     - Clickable jump-to-line on all findings
     - Custom `.irisconfig.json` threshold overrides
     - Custom enforcement limits - block on secret count, complexity ceiling, file size, smell density, or security smell count

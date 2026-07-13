@@ -25,6 +25,7 @@
           {
             "group": "Features",
             "pages": [
+              "features/change-review",
               "features/file-analysis",
               "features/workspace-analysis",
               "features/editor-integration",

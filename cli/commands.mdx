@@ -16,7 +16,7 @@ Scores source files and prints health findings. Single-file scans are free; scan
 |---|---|
 | `[path]` | File or directory to scan (defaults to current directory) |
 | `--staged` | Scan staged git files only **(Pro)** |
-| `--changed` | Scan files changed since the last commit **(Pro)** |
+| `--changed` | Scan staged, unstaged, and untracked files that are not Git-ignored **(Pro)** |
 | `--min-score <n>` | Minimum health score 0–100; overrides `.irisconfig.json` |
 | `--config <path>` | Use a specific `.irisconfig.json` |
 | `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
