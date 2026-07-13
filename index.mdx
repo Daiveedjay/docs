@@ -1,10 +1,14 @@
 ---
-title: "Iris Code: Code Health Scores, Smells, and Gate Enforcement"
+title: "Iris Code: Keep AI-Assisted Code Up to Your Standards"
 sidebarTitle: "Home"
-description: "Iris Code scores every file on save, surfaces problems in the editor, and blocks pushes that fall below your threshold. Local analysis with no source upload, AI, or analysis backend."
+description: "Keep AI-assisted code up to your standards with deterministic, local-first checks that catch concrete regressions before human review."
 ---
 
-Iris Code is a VS Code extension (and CLI) that enforces code health locally - no analysis backend, no AI, and no source-code upload. It scores every file from 0–100 on each save, flags secrets, complexity, and code smells in the sidebar, and gives you one-click enforcement through git hooks, build hooks, and CI pipelines.
+Keep AI-assisted code up to your standards. Iris Code catches secrets, duplicate code, security smells, and maintainability regressions before they reach human review. Source analysis runs locally, and the same deterministic rules run in VS Code, the `iris` CLI, hooks, and CI.
+
+<Note>
+  Iris Code does not try to identify AI-generated code. It independently checks the result with explicit rules, whether a person, an AI assistant, or both wrote it. Your source is not uploaded to an AI model or analysis backend.
+</Note>
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
