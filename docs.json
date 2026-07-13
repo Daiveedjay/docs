@@ -70,6 +70,7 @@
             "pages": [
               "reference/scoring",
               "reference/commands",
+              "trust/security-and-support",
               "changelog"
             ]
           }

@@ -1,0 +1,63 @@
+---
+title: "Iris Code Security, Privacy, and Support"
+description: "Understand Iris Code's local-analysis boundary, network requests, workspace writes, credential storage, and private vulnerability-reporting process."
+---
+
+Iris Code is built and maintained by [David Jaja](https://iriscode.co/about). The product and public brand are **Iris Code**; the shorter `iris` name is used only for technical identifiers such as the CLI command, settings, and config files.
+
+## Source analysis stays local
+
+Iris Code analyses source code on your machine. Source files, file contents, project names, and workspace structure are not uploaded to an Iris Code analysis service or an AI model.
+
+The extension reads supported files in the open workspace to calculate health scores, find duplicate code and security smells, and provide editor diagnostics. The CLI applies the same local analysis engine.
+
+## Network requests
+
+Iris Code makes bounded network requests for:
+
+- sign-in, licence validation, billing, and configuration sync
+- limited product-use events, controlled from account settings
+- dependency version and advisory lookups after consent
+
+Dependency lookups send only the package ecosystem, name, and version to package registries and [OSV.dev](https://osv.dev). They do not include source code, file paths, project names, or organisation names.
+
+The CLI asks before its first dependency lookup and remembers the choice in `~/.iris/preferences.json`. Revoke consent at any time:
+
+```bash
+iris deps --revoke-network
+```
+
+## Workspace writes
+
+Iris Code writes project files only after an explicit user action, such as:
+
+- generating or syncing `.irisconfig.json`
+- exporting an HTML report or CycloneDX SBOM
+- generating a CI workflow
+- locking a trend baseline
+- installing a pre-push or build hook
+
+Trend snapshots and dependency caches stay local to the workspace.
+
+## Credentials
+
+The VS Code extension stores licence credentials with VS Code's secret-storage API. The standalone CLI can store credentials under the user's home directory and also accepts `IRIS_LICENCE_TOKEN` for non-interactive CI.
+
+Never commit a licence token to `.irisconfig.json`, a workflow file, or source control. Store CI tokens in your CI provider's secret manager.
+
+## Report a vulnerability privately
+
+Email [hello@iriscode.co](mailto:hello@iriscode.co?subject=%5BSecurity%5D%20Iris%20Code%20report) with **[Security]** in the subject. Include:
+
+- the affected surface and version
+- clear reproduction steps
+- the likely impact
+- a safe proof of concept, if available
+
+Do not include live credentials, customer data, or source code you do not own. Reports are reviewed privately before public disclosure. Iris Code does not currently operate a paid bug-bounty programme.
+
+## General support
+
+For bugs, account questions, billing, or help using Iris Code, visit [iriscode.co/support](https://iriscode.co/support) or email [hello@iriscode.co](mailto:hello@iriscode.co).
+
+Read the [Privacy Policy](https://iriscode.co/privacy) for personal-data handling and the [Terms of Service](https://iriscode.co/terms) for service terms.
