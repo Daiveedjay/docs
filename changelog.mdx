@@ -8,6 +8,24 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.13.0 - 15 Jul 2026
+
+<Note>**feature** - interactive change review and a git history secrets scan</Note>
+
+### Review my changes, and secrets that history still remembers
+
+Iris Code 1.13.0 makes reviewing your own Git changes the primary workflow - free, interactive, and scoped to exactly what you touched - and adds a **git history secrets scan** that finds credentials which were committed and later removed. Ships alongside `@iris-code/cli` 1.6.0. See [Review My Changes](/features/change-review) and [Git History Secrets Scan](/enforcement/git-history-secrets).
+
+- **Added** Review my changes (free): when Git reports local changes, a count-aware strip appears above the sidebar tabs. Running it checks every supported staged, unstaged, and untracked file and opens a dedicated review - blockers first, severity filters, search, changed-file health, and click-to-open findings. The Issues and TODOs tabs show the review's evidence on Free.
+- **Added** the git history secrets scan (Pro): walks past commits - committed `.env` files included - through the same two-layer secrets detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, commit and file counts, and whether the secret is still in HEAD. Merge-commit content is covered; depth, size-cap, and shallow-clone limits are always disclosed. Runs entirely against local git.
+- **Added** `iris secrets --history [--depth N]` (Pro): the same scan in the terminal, with JSON output for automation; exits `1` when any secret is found in the scanned range.
+- **Changed** change reviews to stay honest about scope: they never create a workspace trend snapshot and never report unused dependencies, because that conclusion requires a full-project scan. The changed-file count only counts files the review will actually analyse.
+- **Changed** git-aware discovery to include untracked files not excluded by `.gitignore`, and to scope to the workspace when it sits inside a larger repository.
+- **Fixed** predictability in unusual environments: repositories with very large untracked sets no longer fail discovery, a missing Git installation is reported as exactly that, and the history panel shows distinct loading, error, and empty states.
+- **Fixed** CLI exit-code reliability on Windows so free users and unlicensed CI runs stay green as documented.
+
+---
+
 ## v1.12.0 - 13 Jul 2026
 
 <Note>**feature** - duplicate code detection with a live diff view and gate rule</Note>

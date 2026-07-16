@@ -1,0 +1,35 @@
+---
+title: "Review My Changes: Check Your Git Changes Before Anyone Else Does"
+sidebarTitle: "Review My Changes"
+description: "Iris Code's free interactive change review checks every staged, unstaged, and untracked Git file and opens a change-scoped readiness view with blockers first and click-to-open findings."
+---
+
+Review my changes is the primary Iris Code workflow, and it is **free**. Before your changes reach a teammate - or a pull request - Iris Code checks every supported staged, unstaged, and untracked Git file and shows you exactly what a reviewer would flag: blockers first, then warnings, with every finding one click from its source line.
+
+## Running a review
+
+When Git reports local changes, Iris Code shows a **Git-changed files detected** strip above the sidebar tabs - the count only includes files the review will actually analyse (JavaScript, TypeScript, Go, and Python). Select the strip, or run *Iris Code: Review My Changes* from the Command Palette.
+
+The review opens in a dedicated editor tab with:
+
+- a readiness summary ("Your changes are ready for review" / "need attention") with blockers first
+- severity filters and search across every finding
+- per-file health for each changed file
+- click-to-open on every finding, straight to the affected line
+
+The sidebar's Workspace tab switches to a **Change Review** view for the same result, and the Issues and TODOs tabs show the review's evidence - on Free.
+
+## Scoped honestly
+
+A partial scan must not pretend to be a full one:
+
+- A change review never creates a workspace trend snapshot.
+- It never reports unused dependencies - that conclusion requires scanning the whole project.
+- Untracked files are included only when `.gitignore` does not exclude them.
+- A workspace opened inside a larger repository (a monorepo package, for example) reviews only the workspace's own changes - never sibling changes elsewhere in the repo.
+
+Full workspace analysis, folder scans, automated `iris check --staged` / `--changed` in CI, and hook enforcement remain [Pro](/pro).
+
+## Works where real repos live
+
+No git repository? The strip stays hidden and the command explains. Git not installed? Iris Code says exactly that. Brand-new repo with no commits yet? Staged and untracked files are still reviewed. Repositories with enormous untracked folders, paths with spaces or unicode, and merge-in-progress states are all handled deliberately.

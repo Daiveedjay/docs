@@ -54,6 +54,8 @@ Scans the project for hardcoded credentials, API keys, tokens, and passwords. **
 | Flag | Description |
 |---|---|
 | `[path]` | File or directory to scan (defaults to current directory) |
+| `--history` | Scan the git commit history instead of the working tree (**Pro**) |
+| `--depth <n>` | With `--history`: commits to walk (default `50`; `0` = full history) |
 | `--format <fmt>` | Output format: `pretty` (default) or `json` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
 
@@ -63,12 +65,20 @@ iris secrets
 
 # Scan a specific path and output JSON
 iris secrets ./src --format json
+
+# Scan the last 50 commits of git history (Pro)
+iris secrets --history
+
+# Scan the full history
+iris secrets --history --depth 0
 ```
+
+`--history` finds secrets that were committed and later removed: every file version introduced by each commit (committed `.env` files included) runs through the same two-layer detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, the commits and files involved, and whether the secret is still in HEAD. Merge-commit content is covered, and coverage limits - depth, size caps, shallow clones - are always disclosed rather than implying a clean full history. Everything runs against local git; nothing leaves the machine. Rotation is the real fix: a secret that reached history should be rotated even if it was removed later.
 
 | Exit code | Meaning |
 |---|---|
 | `0` | No secrets found |
-| `1` | Secrets found |
+| `1` | Secrets found (working tree, or anywhere in the scanned history range) |
 | `2` | Bad arguments |
 
 ---

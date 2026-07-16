@@ -26,6 +26,7 @@
             "group": "Features",
             "pages": [
               "features/file-analysis",
+              "features/change-review",
               "features/workspace-analysis",
               "features/editor-integration",
               "features/language-support"
@@ -40,6 +41,7 @@
               "enforcement/build-gate",
               "enforcement/github-actions",
               "enforcement/hardcoded-secrets",
+              "enforcement/git-history-secrets",
               "enforcement/security-smells",
               "enforcement/suppressions",
               "enforcement/duplicate-detection",
