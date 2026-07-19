@@ -8,6 +8,22 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.14.0 - 19 Jul 2026
+
+<Note>**feature** - per-language config overrides, six more secret formats, and a bounded hook timeout</Note>
+
+### One config, honest thresholds for every language in the repo
+
+Iris Code 1.14.0 lets mixed-language repos stop compromising: a `languages` block in `.irisconfig.json` overrides per-file thresholds for TypeScript, JavaScript, Go, and Python independently, applied identically by the sidebar, CLI, hooks, and CI. Ships alongside `@iris-code/cli` 1.7.0. See [Per-language overrides](/configuration/irisconfig#per-language-overrides-pro-1-14-0).
+
+- **Added** per-language config overrides (Pro): per-file thresholds, `healthScoreWeights`, `severityOverrides`, and the per-file gate caps can differ per language; anything unstated falls back to the base config. Scan-total gates and toggles are rejected inside a block with a clear warning, and unknown language keys warn instead of breaking older installs. The file tab shows the applied override next to the config source, and `iris gate` prints the limit that actually governed each failing file.
+- **Added** six more secret formats: Stripe live/restricted keys (`sk_live_`/`rk_live_`), GitHub fine-grained PATs, GitLab PATs, npm access tokens, SendGrid API keys, and PEM private-key headers - masked in output, as always.
+- **Added** a bounded timeout to the installed pre-push hook: a hung analysis is stopped after 120 seconds (`IRIS_HOOK_TIMEOUT` to adjust) instead of blocking `git push` indefinitely. The push still fails closed with a bypass hint, so enforcement is never silently skipped. Reinstall the hook to pick this up.
+- **Fixed** function-length measurement for functions with destructured parameters - which includes essentially every React component. Component-heavy files may score lower after updating: that is the analyser finally seeing them, not a scoring change.
+- **Fixed** `--allow-network` so it reliably re-enables dependency lookups after `--revoke-network`, and hardened the remaining CLI commands (`report`, `sbom`, `config`, `auth`, `hook`, `todos`) against a Windows-only crash on exit.
+
+---
+
 ## v1.13.0 - 15 Jul 2026
 
 <Note>**feature** - interactive change review and a git history secrets scan</Note>

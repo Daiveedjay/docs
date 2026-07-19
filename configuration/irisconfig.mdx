@@ -197,6 +197,27 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 `healthScoreWeights` is a Pro key that lets you override how many points each finding type subtracts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights) for the full reference and examples.
 
+### Per-language overrides (Pro, 1.14.0+)
+
+Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, and `python` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript.
+
+```jsonc
+{
+  "fileLengthThreshold": 300,
+  "languages": {
+    "python": { "fileLengthThreshold": 500 },
+    "typescript": { "functionLengthThreshold": 35 },
+    "go": { "functionLengthThreshold": 60, "gateMaxSmellsPerFile": 3 }
+  }
+}
+```
+
+A language block may set only per-file fields: the six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and the per-file gate caps `gateMaxSmellsPerFile` / `gateMaxSuppressions`. Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`), `presetId`, and `enable*` toggles are rejected inside a block with a validation warning - they have no per-language meaning.
+
+Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
+
+Unknown language keys (say, a `ruby` block written for a newer Iris Code) produce a warning and are skipped, so a forward-looking config never breaks an older install. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
+
 ## Severity overrides
 
 Override the severity of any warning type on a per-project basis using the `severityOverrides` object. Each key accepts `"error"`, `"warning"`, or `"info"`.
