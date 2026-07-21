@@ -8,6 +8,20 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.15.0 - 20 Jul 2026
+
+<Note>**feature** - per-rule accuracy benchmark and one-click finding feedback</Note>
+
+### Accuracy you can check, and rate
+
+Iris Code 1.15.0 makes its findings accountable: every analysis rule is measured against a labelled corpus of real code for per-rule, per-language precision and recall, a checked-in baseline blocks any release that regresses a rule, and every finding in the sidebar now carries a thumbs up / down so you can tell Iris Code when it is right or wrong. Ships alongside `@iris-code/cli` 1.8.0. See [Accuracy benchmark](/trust/accuracy-benchmark).
+
+- **Added** a thumbs up / down control on every finding in the sidebar and Issues view. Feedback is count-only - the rule, the language, and your verdict, never source code, file paths, or line contents - and respects your account analytics setting. Rate once and change your mind anytime; the control remembers your choice.
+- **Added** an accuracy benchmark: every rule is measured against a labelled corpus for per-rule, per-language precision and recall, with a checked-in baseline that fails the build on any regression. A public [methodology page](/trust/accuracy-benchmark) shows the enforcement-rule figures per rule - no single misleading global percentage.
+- **Fixed** false positives found by the benchmark: `any` in a comment or string, `print(...)` in a Python docstring, CommonJS `module.exports` files reported as export-less, arithmetic like `(a + b) * c` mistaken for a risky regular expression, and the `eval(` token inside a string literal are no longer flagged. Each fix is guarded by a permanent test case.
+
+---
+
 ## v1.14.0 - 19 Jul 2026
 
 <Note>**feature** - per-language config overrides, six more secret formats, and a bounded hook timeout</Note>

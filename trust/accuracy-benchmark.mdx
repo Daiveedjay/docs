@@ -1,0 +1,124 @@
+---
+title: "Accuracy Benchmark: How Iris Code Measures Its Own Rules"
+sidebarTitle: "Accuracy Benchmark"
+description: "Iris Code measures every analysis rule against a labelled corpus and reports per-rule, per-language precision and recall. No single global accuracy number - just honest, checked-in measurements and a CI tripwire that blocks accuracy regressions."
+badge: "New"
+---
+
+A code-health tool is only worth running if you can trust what it flags. Iris Code
+measures the accuracy of every analysis rule against a labelled corpus of real
+code, records the result, and fails its own build if any rule gets worse. This
+page explains what is measured, how, and where the current numbers live.
+
+## What is measured
+
+Each rule (hardcoded secrets, SQL concatenation, duplicate code, function length,
+and so on) is scored on two axes, separately for each language it supports:
+
+- **Precision** - of the findings a rule reports, how many are real. Low
+  precision means noise: the rule cries wolf.
+- **Recall** - of the real issues present, how many the rule catches. Low recall
+  means blind spots: the rule misses things.
+
+There is deliberately **no single "Iris Code is 97% accurate" number**. A global
+figure would average away exactly the detail that matters - a rule can be
+excellent at catching secrets and mediocre at flagging open redirects, and you
+deserve to see that per rule. The published tables are per-rule and per-language.
+
+## How it works
+
+The benchmark lives in the analysis engine itself, versioned alongside the rules
+it measures, so a rule change and its expected-result change are always one
+commit.
+
+1. **A labelled corpus.** Every rule has a set of hand-written fixture files -
+   realistic code, not toy snippets - split into *positive* fixtures (the rule
+   should fire, with the exact line labelled) and *negative* fixtures (the rule
+   must stay silent). Negative fixtures deliberately encode the tricky
+   look-alikes: placeholder secrets, commented-out debug prints, parameterised
+   SQL, test-file credentials, uniform data tables that resemble duplication.
+2. **A deterministic run.** The harness analyses every fixture with the shipped
+   `balanced` preset - never a machine-specific config - so the numbers are
+   reproducible. A finding matches a label when the rule id matches and the line
+   is within one line of the expected line.
+3. **Precision and recall per rule, per language**, computed from true
+   positives, false positives, and false negatives.
+
+Unmeasured rules are reported loudly, never hidden - a rule with no fixtures
+shows as unmeasured rather than silently counting as perfect.
+
+## Enforcement vs advisory rules
+
+Every rule is classified as **enforcement** or **advisory**:
+
+- **Enforcement** rules are the high-confidence ones that feed the quality gate
+  and can block a push or build - hardcoded secrets, SQL concatenation, disabled
+  TLS verification, weak hashing, duplicate code, function and file length,
+  complexity.
+- **Advisory** rules are useful signals better suited to review than to blocking
+  - TODOs, magic numbers, `console.log`, and similar.
+
+The benchmark is what justifies that split: a rule earns enforcement status by
+demonstrating high precision on the corpus, and the tables make any weak spot
+visible.
+
+## The regression tripwire
+
+The measured result is saved as a checked-in baseline. Iris Code's own test
+suite re-runs the benchmark on every change and **fails the build if any rule's
+precision or recall drops below its baseline**, or if a previously measured rule
+becomes unmeasured. Improvements never slip in silently either - regenerating the
+baseline is an explicit, reviewable step, so a rule getting better shows up in a
+diff.
+
+Because that test runs in the same suite gating every release, no release can
+ship an accuracy regression unnoticed.
+
+## Current results: enforcement rules
+
+These are the rules that can actually block a push, build, or CI check - where
+accuracy matters most. The figures are measured against the labelled corpus and
+regenerated on every release. **Precision** is how often a finding is correct
+(the opposite of a false alarm); **recall** is how many of the real issues the
+rule catches.
+
+| Rule | Languages | Precision | Recall |
+| --- | --- | ---: | ---: |
+| Hardcoded secrets | TS · JS · Go · Python | 100% | 100% |
+| eval / dynamic code execution | TS · JS · Python | 100% | 100% |
+| SQL built by string concatenation | TS · JS · Go · Python | 89% | 100% |
+| Disabled TLS verification | TS · JS · Go · Python | 100% | 100% |
+| Weak hashing (MD5 / SHA-1) | TS · JS · Go · Python | 100% | 100% |
+| Duplicate code blocks | TS · JS · Go · Python | 100% | 100% |
+| Over-long functions | TS · JS · Go · Python | 100% | 100% |
+| Over-long files | TS · JS · Go · Python | 100% | 100% |
+| High file complexity | TS · JS · Go · Python | 100% | 100% |
+
+Figures are aggregated across languages for readability; the per-language
+breakdown, and the advisory-tier rules (TODOs, magic numbers, and the like,
+which never block anything), are available on request. The one sub-100%
+figure - SQL concatenation, where a sentence of prose containing a SQL keyword
+can occasionally read like a query - is a known, documented limitation kept
+honest rather than tuned away at the risk of missing a real injection.
+
+## Known limitations
+
+We would rather state these plainly than imply the benchmark is the last word:
+
+- **A corpus is not the universe of real code.** It covers each rule's common
+  shapes and known false-positive traps, not every construct in every codebase.
+- **The analysers are pattern-based.** Some false positives are structural - a
+  SQL keyword inside a prose string, a regex-like arithmetic expression - and are
+  documented rather than papered over.
+- **Line matching is within one line**, so the benchmark does not penalise
+  harmless off-by-one shifts from formatting.
+
+## Tell us when a finding is wrong
+
+Every finding in the sidebar and Issues view has a small 👍 / 👎 control. If a
+rule flags something incorrectly - or nails something useful - rate it. The
+feedback is **count-only**: Iris Code records the rule id, the language, and your
+verdict, and nothing else. No source code, file paths, or line contents ever
+leave your machine, and the feedback respects the analytics setting in your
+account. Confirmed false positives become permanent negative fixtures in this
+corpus, so reporting one directly hardens the rule.
