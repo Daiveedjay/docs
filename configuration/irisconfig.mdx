@@ -20,7 +20,9 @@ The fastest way to get started is a preset. Add `presetId` and commit - your who
 }
 ```
 
-Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`.
+Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`, `ai-assisted`.
+
+The `ai-assisted` preset uses stricter defaults for teams reviewing AI-assisted code at volume. It caps Slop Score, duplicate blocks, and suppressions, but does not impose a naming convention.
 
 <Tabs>
   <Tab title="Free">
@@ -85,6 +87,8 @@ For complete control over every rule, write out the full config. Every key is op
   "gateMaxSecuritySmells": 0,  // Pro — max security smells workspace-wide
   "gateMaxSuppressions": 5,    // Pro — max iris-ignore suppressions per file
   "gateMaxDuplicateBlocks": 0, // Pro — max duplicate code blocks across the scan
+  "gateMaxSlopScore": 40,      // Pro — max workspace Slop Score; higher is worse
+  "gateMaxNamingViolations": 0,// Pro — max naming violations across the scan
   "ignoreSuppressions": false, // Pro — treat all iris-ignore directives as inert
 
   // Ignore rules — skip files or functions from analysis
@@ -183,6 +187,8 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
 | `gateMaxSuppressions` | Pro | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
 | `gateMaxDuplicateBlocks` | Pro | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
+| `gateMaxSlopScore` | Pro | Maximum [Slop Score](/features/slop-score) for a directory scan. Higher is worse. |
+| `gateMaxNamingViolations` | Pro | Maximum [file naming](/configuration/file-naming) violations across the scan. |
 | `ignoreSuppressions` | Pro | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
 
 ### Ignore rules
@@ -197,7 +203,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 `healthScoreWeights` is a Pro key that lets you override how many points each finding type subtracts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights) for the full reference and examples.
 
-### Per-language overrides (Pro, 1.14.0+)
+### Per-language config
 
 Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, and `python` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript.
 
@@ -205,14 +211,24 @@ Mixed-language repos rarely want one threshold set for everything - a 500-line P
 {
   "fileLengthThreshold": 300,
   "languages": {
-    "python": { "fileLengthThreshold": 500 },
-    "typescript": { "functionLengthThreshold": 35 },
+    "python": {
+      "fileLengthThreshold": 500,
+      "fileNaming": { "convention": "snake_case", "scope": "all", "ignore": [] }
+    },
+    "typescript": {
+      "functionLengthThreshold": 35,
+      "fileNaming": { "convention": "kebab-case", "ignore": ["src/legacy/**"] }
+    },
     "go": { "functionLengthThreshold": 60, "gateMaxSmellsPerFile": 3 }
   }
 }
 ```
 
-A language block may set only per-file fields: the six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and the per-file gate caps `gateMaxSmellsPerFile` / `gateMaxSuppressions`. Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`), `presetId`, and `enable*` toggles are rejected inside a block with a validation warning - they have no per-language meaning.
+`languages.*.fileNaming` is Free. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
+
+Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A language can override that default with `languages.*.fileNaming.scope`; omit the nested scope to inherit the global value. See [File naming conventions](/configuration/file-naming) for baseline behavior, suggestions, ignore globs, and the complete exemption list.
+
+Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxSlopScore`, `gateMaxNamingViolations`), `presetId`, and `enable*` toggles are rejected inside a language block with a validation warning.
 
 Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
 

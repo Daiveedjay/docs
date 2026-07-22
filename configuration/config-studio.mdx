@@ -4,16 +4,17 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code with a diff preview."
 ---
 
-Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, tune thresholds and detection toggles, then sync the resulting `.irisconfig.json` directly to VS Code without touching a file manually. Free users can pick a preset and sync it in one click. Pro users get the full studio with custom thresholds, gate limits, severity overrides, and custom scoring weights.
+Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, configure Free per-language file naming, then sync the resulting `.irisconfig.json` directly to VS Code. Pro adds custom thresholds, gate limits, and severity overrides.
 
 ## What the studio contains
 
 Config Studio surfaces every configuration option in one place, with a live JSON preview updating as you make changes:
 
-- **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, or switch to Custom mode to edit every value individually.
+- **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or switch to Custom mode.
+- **File naming** (Free) - choose a convention and ignore globs independently for TypeScript, JavaScript, Go, and Python.
 - **Detection matrix** - see at a glance which rule categories are on or off for the selected preset.
 - **minHealthScore bar** - the gate threshold used by the CLI and hooks is always visible at the top of the card.
-- **Gate limits** (Pro, Custom mode) - hard caps on secrets count, max file length, max complexity, and smells per file. Leave a field empty to impose no workspace-wide limit.
+- **Gate limits** (Pro, Custom mode) - hard caps including `gateMaxSlopScore` and `gateMaxNamingViolations`. Leave a field empty to impose no limit.
 - **Custom scoring** (Pro, Custom mode) - control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
 - **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
 
@@ -26,7 +27,7 @@ The sync flow is designed to never write silently - every sync opens a diff in V
     Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris Code account.
   </Step>
   <Step title="Choose a preset or switch to Custom mode">
-    Select one of the five presets from the selector, or switch to Custom mode to tune individual thresholds, detections, and gate limits.
+    Select one of the six presets from the selector, or switch to Custom mode to tune individual thresholds, detections, and gate limits.
   </Step>
   <Step title="Click 'Sync to VS Code'">
     Hit the **Sync to VS Code** button. Iris Code generates a short-lived one-time token and opens VS Code via a deep link.
@@ -68,7 +69,7 @@ You don't need the dashboard to use a preset. Create a `.irisconfig.json` at you
 { "presetId": "balanced" }
 ```
 
-All five preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security`. Commit the file and every developer on the team picks up the same thresholds automatically.
+All six preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security`, `ai-assisted`. Commit the file and every developer on the team picks up the same thresholds automatically.
 
 ## Free vs Pro
 
@@ -77,6 +78,7 @@ All five preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security
     - Pick any preset from the selector
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
+    - Configure the global `fileNamingScope`, then optionally override it per language inside each `languages.*.fileNaming` policy
 
     The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
   </Tab>

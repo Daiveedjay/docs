@@ -8,6 +8,18 @@ These are the release notes for the Iris Code VS Code extension and the `@iris-c
 
 ---
 
+## v1.16.0 - Unreleased
+
+<Note>**feature** - Slop Score, AI-assisted preset, and Free file naming conventions</Note>
+
+- **Added** Slop Score: a transparent 0-100 workspace metric where higher is worse. It density-normalizes duplication, security findings, suppressions, type debt, debug prints, complexity spikes, TODOs, and naming violations. It is not an AI authorship detector.
+- **Added** Free per-language file naming checks with four conventions, framework-aware exemptions, custom ignore globs, rename suggestions, baseline-aware new-file rollout, opt-in diagnostics, and a 50-result disclosure for first scans without a baseline.
+- **Added** the `ai-assisted` preset for high-volume AI-assisted review. It tightens structural, security, suppression, duplication, and Slop Score defaults without choosing a team-specific naming style.
+- **Added** Pro gate fields `gateMaxSlopScore` and `gateMaxNamingViolations`, enforced consistently by the CLI, hooks, and CI.
+- **Changed** Free config handling inside `languages`: Iris keeps `fileNaming` and squiggles each ignored Pro-only sibling instead of discarding the whole block.
+
+---
+
 ## v1.15.0 - 20 Jul 2026
 
 <Note>**feature** - per-rule accuracy benchmark and one-click finding feedback</Note>

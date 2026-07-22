@@ -1,0 +1,52 @@
+---
+title: "File naming conventions"
+description: "Configure Free per-language file naming checks with baseline-aware rollout, ignore globs, suggestions, and built-in exemptions."
+---
+
+File naming checks are Free and configured inside each language block. Other properties in the same block can remain Pro without disabling naming.
+
+```jsonc
+{
+  "fileNamingScope": "new-files",
+  "languages": {
+    "typescript": {
+      "fileNaming": { "convention": "kebab-case", "scope": "all", "ignore": ["src/legacy/**"] }
+    },
+    "python": {
+      "fileNaming": { "convention": "snake_case", "ignore": [] }
+    }
+  }
+}
+```
+
+Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris checks the file stem, preserves known suffixes such as `.test` and `.spec`, and suggests a replacement name.
+
+## Roll out without legacy noise
+
+`fileNamingScope` defaults to `"new-files"`.
+
+- With `.iris-baseline.json`, Iris checks paths not present in the baseline. A renamed path counts as new.
+- Without a baseline, Iris checks the whole scan. If it finds more than 50 violations, it shows 50 and discloses the full count.
+- Set `"all"` to check every file explicitly.
+
+The top-level value is the workspace default. Add `scope: "new-files"` or `scope: "all"` inside a language's `fileNaming` object to override it for that language. When `scope` is omitted, that language inherits `fileNamingScope`.
+
+## Built-in exemptions
+
+Iris always exempts:
+
+- Next.js reserved files under `app/` or `pages/`: `page`, `layout`, `route`, `loading`, `error`, `global-error`, `not-found`, `template`, `default`, `middleware`, `instrumentation`, `opengraph-image`, `sitemap`, `robots`, `manifest`, `_app`, `_document`, and `_error`.
+- Dynamic segments, route groups, parallel routes, and private folders: `[id]`, `[...slug]`, `[[...slug]]`, `(group)`, `@slot`, and `_private`.
+- Python conventions: `__init__.py`, `__main__.py`, `conftest.py`, `setup.py`, `manage.py`, and other `__dunder__.py` files.
+- Go conventions: `main.go`, `*_test.go`, and generated `*.pb.go`. Platform suffixes such as `_windows`, `_linux`, `_darwin`, `_amd64`, and `_arm64` are preserved but removed before checking the stem.
+- Type declarations, universal entry files, and hidden paths: `*.d.ts`, `index.*`, dotfiles, and dotfolders.
+- Generated or vendored paths: `vendor/`, `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, and `*.generated.*`.
+- Config-by-convention files such as `next.config.*`, `tailwind.config.*`, `postcss.config.*`, `jest.config.*`, `vitest.config.*`, `vite.config.*`, `webpack.config.*`, `rollup.config.*`, and `esbuild.*`.
+
+The `ignore` array adds workspace-relative globs to this list. Windows separators are normalized before matching.
+
+## Diagnostics and enforcement
+
+Enable `inlineDiagnostics.fileNaming` to show an opt-in line-one squiggle. Suppress an intentional exception with `iris-ignore-file: file-naming -- <reason>`.
+
+Pro users can set `gateMaxNamingViolations` to cap the scan-total count in hooks and CI.

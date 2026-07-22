@@ -1,0 +1,47 @@
+---
+title: "Slop Score"
+description: "Understand Iris Code's transparent workspace-level signal for accumulated low-quality code texture."
+---
+
+Slop Score is a 0-100 workspace metric. Higher is worse. It measures the texture of unreviewed generated code by combining findings Iris Code already detected.
+
+<Warning>
+  Slop Score is not an AI detector and does not claim who wrote your code.
+</Warning>
+
+## What contributes
+
+Iris Code density-normalizes count-based signals per 1,000 code lines. A large clean repository does not score worse merely because it has more files.
+
+| Contributor | Maximum points |
+|---|---:|
+| Duplicate code | 30 |
+| Security smells | 20 |
+| Suppressions | 12 |
+| Type debt (`any` and missing return types) | 12 |
+| Debug prints | 8 |
+| Complexity spikes | 10 |
+| TODO load | 4 |
+| File naming | 4 |
+
+Each component saturates at its cap. For Go- or Python-only scans, Iris redistributes the TypeScript-only weight across the applicable contributors.
+
+## Bands
+
+| Score | Band |
+|---|---|
+| `0-24` | Clean |
+| `25-54` | Drifting |
+| `55-100` | Slop |
+
+Expand **Slop Score** in the workspace or folder view to see the point breakdown. Select a contributor to jump to its existing finding surface. `iris check <directory>` prints the score and top contributors. Single-file checks do not show Slop Score.
+
+## Enforce a maximum
+
+Pro users can set `gateMaxSlopScore` in `.irisconfig.json`:
+
+```json
+{ "gateMaxSlopScore": 40 }
+```
+
+The gate fails only when the score is above the configured maximum. Failure output includes the three largest contributors.

@@ -28,6 +28,7 @@
               "features/file-analysis",
               "features/change-review",
               "features/workspace-analysis",
+              "features/slop-score",
               "features/editor-integration",
               "features/language-support"
             ]
@@ -53,6 +54,7 @@
             "group": "Configuration",
             "pages": [
               "configuration/irisconfig",
+              "configuration/file-naming",
               "configuration/config-studio",
               "configuration/scoring-weights",
               "configuration/vscode-settings"
