@@ -1,0 +1,37 @@
+---
+title: "Quality Signals"
+description: "Understand the recurring workspace issues Iris Code ranks by density and impact."
+---
+
+Quality Signals explain the strongest recurring issues across a workspace or folder scan. They are not a second health score: Code Health remains the single headline metric.
+
+Each signal keeps its real value visible:
+
+- Duplication is shown as a percentage of code lines.
+- Complexity spikes are shown as affected files.
+- Security smells, suppressions, type debt, debug prints, TODOs, and file naming are shown as finding counts.
+
+## How ranking works
+
+Iris Code normalizes count-based signals per 1,000 code lines before ranking them. This prevents a large repository from appearing worse merely because it contains more code.
+
+| Signal | Displayed value |
+|---|---|
+| Duplicate code | Percentage |
+| Security smells | Findings |
+| Suppressions | Findings |
+| Type debt (`any` and missing return types) | Findings |
+| Debug prints | Findings |
+| Complexity spikes | Files |
+| TODO load | Findings |
+| File naming | Findings |
+
+The `Present`, `Elevated`, and `High` labels communicate density, not another score. Type debt is omitted for scans without TypeScript or JavaScript files.
+
+## Using the panel
+
+Expand **Quality Signals** in the workspace or folder view to see the ranked list. Select a signal to open or jump toward the corresponding findings.
+
+`iris check <directory>` prints the top three signals with their raw values. Single-file checks do not print workspace Quality Signals.
+
+Quality Signals do not have a composite gate. Pro enforcement uses explicit limits such as `gateMaxDuplicateBlocks`, `gateMaxSecuritySmells`, `gateMaxSuppressions`, and `gateMaxNamingViolations`, so a failed gate always names the concrete standard that was exceeded.

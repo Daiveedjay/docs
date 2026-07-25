@@ -28,7 +28,7 @@
               "features/file-analysis",
               "features/change-review",
               "features/workspace-analysis",
-              "features/slop-score",
+              "features/quality-signals",
               "features/editor-integration",
               "features/language-support"
             ]

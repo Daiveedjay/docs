@@ -14,7 +14,7 @@ Config Studio surfaces every configuration option in one place, with a live JSON
 - **File naming** (Free) - choose a convention and ignore globs independently for TypeScript, JavaScript, Go, and Python.
 - **Detection matrix** - see at a glance which rule categories are on or off for the selected preset.
 - **minHealthScore bar** - the gate threshold used by the CLI and hooks is always visible at the top of the card.
-- **Gate limits** (Pro, Custom mode) - hard caps including `gateMaxSlopScore` and `gateMaxNamingViolations`. Leave a field empty to impose no limit.
+- **Gate limits** (Pro, Custom mode) - explicit hard caps including `gateMaxDuplicateBlocks` and `gateMaxNamingViolations`. Leave a field empty to impose no limit.
 - **Custom scoring** (Pro, Custom mode) - control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
 - **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
 
@@ -78,7 +78,7 @@ All six preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security`
     - Pick any preset from the selector
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
-    - Configure the global `fileNamingScope`, then optionally override it per language inside each `languages.*.fileNaming` policy
+    - Configure workspace-wide `fileNaming` and `fileNamingScope`, then optionally override either per language
 
     The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
   </Tab>
