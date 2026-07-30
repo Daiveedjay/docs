@@ -1,10 +1,12 @@
 ---
-title: "Install Iris Code: VS Code Extension and CLI Setup Guide"
+title: "Install Iris Code: VS Code, JetBrains, and CLI Setup Guide"
 sidebarTitle: "Installation"
-description: "Install Iris Code from the VS Code Marketplace or as a .vsix file in Cursor, Windsurf, or VSCodium. CLI available via npm for terminal and CI use."
+description: "Install Iris Code from the VS Code Marketplace, as a .vsix file in Cursor, Windsurf, or VSCodium, or from the JetBrains Marketplace for IntelliJ IDEA, WebStorm, PyCharm, and GoLand. CLI available via npm for terminal and CI use."
 ---
 
-Iris Code installs in three ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, or as a global npm package for terminal and CI use. Most users should start with the Marketplace - it handles updates automatically and requires no extra steps. If your editor isn't connected to the Marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
+Iris Code installs in four ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, from the JetBrains Marketplace for IntelliJ IDEA and the other JetBrains IDEs, or as a global npm package for terminal and CI use. Most users should start with their editor's marketplace - it handles updates automatically and requires no extra steps. If your editor isn't connected to a marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
+
+Every host runs the same analysis engine, so a file scores identically in each one, and a single sign-in is shared between your editors and the CLI.
 
 ## VS Code Marketplace (Preferred)
 
@@ -68,6 +70,51 @@ Once you have the file, install it using your editor's GUI or the command line:
   Manual VSIX installs do not auto-update. When a new version of Iris Code is released, you need to re-download the `.vsix` file from `iriscode.co/downloads/iris-code.vsix` and re-install it using the same steps above.
 </Warning>
 
+## JetBrains IDEs
+
+Iris Code runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion, and Android Studio.
+
+<Steps>
+  <Step title="Install LSP4IJ first">
+    Open **Settings → Plugins → Marketplace**, search for **LSP4IJ**, and install it. Iris Code uses it to talk to its analysis engine. If you install Iris Code from disk rather than the Marketplace, dependencies are not pulled automatically and Iris Code will not load without LSP4IJ.
+  </Step>
+  <Step title="Install Iris Code">
+    In the same **Marketplace** tab, search for **Iris Code** and click **Install**.
+  </Step>
+  <Step title="Restart the IDE">
+    Use a full restart, not a plugin reload. JetBrains registers file-type associations at startup, so a reload leaves `.irisconfig.json` handled incorrectly.
+  </Step>
+  <Step title="Confirm the install">
+    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file - findings appear as squiggles, and the **Iris Code** tool window on the right shows the full panel. Sign in from **Tools → Iris Code → Sign In**.
+  </Step>
+</Steps>
+
+### JSON standard does not allow comments
+
+`.irisconfig.json` is JSONC - the presets Iris Code generates are commented so each setting explains itself. Iris Code registers the file with the IDE's JSON5 file type so those comments are valid. If you see this error anyway, your IDE is holding a user-level override that cancels the plugin's registration.
+
+This happens when a plugin that contributes a file-type mapping is uninstalled - updating Iris Code by uninstalling and reinstalling is enough to trigger it. The override lives in your IDE settings rather than in the plugin, so **reinstalling, updating, or restarting will not clear it**.
+
+<Steps>
+  <Step title="Open the file type settings">
+    Go to **Settings → Editor → File Types**.
+  </Step>
+  <Step title="Select JSON5">
+    Choose **JSON5** in the **Recognized File Types** list.
+  </Step>
+  <Step title="Add the pattern back">
+    In **File name patterns** below, click **+**, enter `.irisconfig.json`, then click **OK** and **Apply**. If the IDE warns that the pattern was previously removed, accept it - that is the override being cleared. No restart is needed.
+  </Step>
+</Steps>
+
+<Note>
+  Prefer editing the file directly? Close the IDE completely, remove the line `<removed_mapping pattern=".irisconfig.json" approved="true" type="JSON5" />` from `filetypes.xml` in your IDE's configuration directory, then reopen. A running IDE rewrites that file when it exits, so the IDE must be closed first.
+</Note>
+
+<Warning>
+  Do not fix this under **Settings → Languages & Frameworks → Schemas and DTDs**. That screen maps JSON *schemas* to files and its version dropdown lists schema drafts, not file types - JSON5 never appears there. Iris Code configs already carry a `$schema` line, so schema mapping needs no manual entry.
+</Warning>
+
 ## CLI Install
 
 The Iris Code CLI lets you scan files, run enforcement gates, audit dependencies, and aggregate TODOs from any terminal or CI pipeline - no VS Code required.
@@ -94,6 +141,7 @@ iris --version
 |---|---|
 | **VS Code** | Version 1.85 or later |
 | **Compatible editors** | Cursor, Windsurf, VSCodium (any VS Code-compatible editor) |
+| **JetBrains IDEs** | 2024.2 or later, plus the LSP4IJ plugin |
 | **Node.js (CLI only)** | Version 18 or later |
 | **Operating system** | Windows, macOS, Linux |
 

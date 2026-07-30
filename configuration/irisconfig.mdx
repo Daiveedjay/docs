@@ -10,6 +10,26 @@ Drop a `.irisconfig.json` at your project root and commit it - every developer o
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
 </Note>
 
+## Comments and editor support
+
+`.irisconfig.json` is JSONC, so `//` comments are valid. Every config Iris Code generates is commented, which is why a preset file explains each setting inline.
+
+Generated configs also start with a `$schema` line:
+
+```json
+{
+  "$schema": "https://www.iriscode.co/schema/v1/irisconfig.schema.json"
+}
+```
+
+Your editor resolves that itself, which gives you completion for every field and validation of values and enums in any editor with JSON Schema support - VS Code, JetBrains IDEs, Neovim - with no plugin-specific setup. Keep the line when you edit the file by hand.
+
+**Hover any setting to see what it does.** Iris Code serves that documentation from the schema bundled with your installed version, so it works offline and behind a proxy, and it always matches the version of Iris Code you are running rather than whatever the remote schema happens to say.
+
+<Warning>
+  **JetBrains IDEs:** if `.irisconfig.json` reports "JSON standard does not allow comments", your IDE is holding a user-level override that cancels the file-type registration Iris Code ships. Reinstalling the plugin will not clear it. See [the fix in the installation guide](/installation#json-standard-does-not-allow-comments).
+</Warning>
+
 ## Config presets (Free + Pro)
 
 The fastest way to get started is a preset. Add `presetId` and commit - your whole team is aligned in one line, no threshold spreadsheet required.

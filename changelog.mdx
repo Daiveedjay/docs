@@ -1,10 +1,33 @@
 ---
-title: "Iris Code Changelog: VS Code Extension and CLI Release Notes"
+title: "Iris Code Changelog: VS Code, JetBrains, and CLI Release Notes"
 sidebarTitle: "Changelog"
-description: "Full release notes for the Iris Code VS Code extension and @iris-code/cli npm package. Updates ship automatically through the VS Code Marketplace."
+description: "Full release notes for the Iris Code VS Code extension, the JetBrains plugin, and the @iris-code/cli npm package. Updates ship automatically through the VS Code Marketplace, Open VSX, and the JetBrains Marketplace."
 ---
 
-These are the release notes for the Iris Code VS Code extension and the `@iris-code/cli` npm package. Updates to the extension ship automatically through the VS Code Marketplace - you do not need to reinstall to receive new versions.
+These are the release notes for the Iris Code VS Code extension, the JetBrains plugin, and the `@iris-code/cli` npm package. Updates ship automatically through the VS Code Marketplace, Open VSX, and the JetBrains Marketplace - you do not need to reinstall to receive new versions.
+
+---
+
+## v1.17.0 - 2026-07-30
+
+<Note>**feature** - Iris Code for JetBrains IDEs, Open VSX distribution, and config docs on hover</Note>
+
+### One engine, every editor
+
+Iris Code now runs in JetBrains IDEs and installs from Open VSX, both driven by the same analysis engine as the VS Code extension. A file scores identically in each host, one sign-in covers your editors and the CLI, and analysis still never leaves your machine.
+
+- **Added** Iris Code for JetBrains IDEs - IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion, and Android Studio. Inline diagnostics, `iris-ignore` quick fixes, health scores on hover, code lenses, filename-convention renames, and the full Iris Code panel under **Tools > Iris Code**. Install the **LSP4IJ** plugin first and restart the IDE fully after installing.
+- **Added** Open VSX distribution, so Cursor, Windsurf, VSCodium, and other Open VSX editors install the byte-identical extension and receive updates automatically instead of a manual `.vsix`.
+- **Added** 25 searchable Iris Code commands in JetBrains: press `Ctrl+Shift+A` (`Cmd+Shift+A`), type `iris`, and run workspace scans, Review My Changes, trends, hooks, dependencies, history secrets, or report export. Any of them can be bound to a shortcut under **Settings > Keymap**.
+- **Added** sign in and sign out from JetBrains under **Tools > Iris Code**. Analysis and the panel refresh in place, so Pro features activate without restarting the IDE.
+- **Added** dashboard config sync for JetBrains: build a config in the Config Studio, choose **Sync to JetBrains**, and paste the one-time code into **Tools > Iris Code > Sync Config from Dashboard**. You review a diff before anything is written.
+- **Added** GitHub Actions workflow and CI snippet generators to JetBrains, matching the VS Code commands.
+- **Added** shared push-blocked history, so the Enforcement card shows the same blocked-push counts, Pro activation date, and score delta in either editor.
+- **Changed** hover documentation for `.irisconfig.json` now comes from the schema bundled with your installed version. Hovering any setting explains what it does, works offline and behind a proxy, and always matches the version of Iris Code you are running.
+- **Fixed** a Pro config could briefly be reported as Free in JetBrains while the licence was still being validated, which also scored files against Free thresholds until it settled.
+- **Fixed** Gate Preview and the trend-history table are Free features but were refused on the Free plan in JetBrains.
+- **Fixed** the GitHub Actions and CI snippet generators now require Pro in JetBrains, matching VS Code.
+- **Fixed** `.irisconfig.json` is recognised as comment-tolerant JSON in JetBrains. If your IDE still reports "JSON standard does not allow comments", it holds a user-level override - see [Installation](/installation#json-standard-does-not-allow-comments).
 
 ---
 
