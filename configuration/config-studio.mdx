@@ -1,7 +1,7 @@
 ---
 title: "Config Studio: Build and Sync Your Iris Code Config Visually"
 sidebarTitle: "Config Studio"
-description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code with a diff preview."
+description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
 
 Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, configure Free per-language file naming, then sync the resulting `.irisconfig.json` directly to VS Code. Pro adds custom thresholds, gate limits, and severity overrides.
@@ -43,6 +43,31 @@ The sync flow is designed to never write silently - every sync opens a diff in V
 <Note>
   The sync token is short-lived and single-use. If VS Code doesn't open within a few seconds, check that the Iris Code extension is installed and that VS Code is running.
 </Note>
+
+## Other editors: sync with a code
+
+The **Sync to VS Code** button opens a `vscode://` deep link, which only VS Code itself claims. JetBrains IDEs have no such scheme, and VS Code forks register their own - so in Trae, Positron, or a JetBrains IDE that link would open VS Code, or nothing at all.
+
+For those editors, click **Get a sync code** instead. You get a one-time code to paste into your editor, and the rest of the flow is identical - same diff, same confirmation, same write targets.
+
+<Tabs>
+  <Tab title="JetBrains IDEs">
+    **Tools → Iris Code → Sync Config from Dashboard**, then paste the code.
+
+    Iris Code shows a real diff against your current config and writes only after you confirm. The write goes through the IDE, so it is undoable and analysis restarts automatically.
+  </Tab>
+  <Tab title="Trae, Positron, other forks">
+    Open the command palette and run **Iris Code: Sync Config from Dashboard**, then paste the code.
+
+    Requires Iris Code 1.17.1 or later. If the command does not appear, update the extension.
+
+    This runs the same handler as the deep link, so the diff preview and confirmation are identical to VS Code's.
+  </Tab>
+</Tabs>
+
+<Warning>
+  The code can only be redeemed once. If you cancel at the diff, generate a new code rather than reusing the old one.
+</Warning>
 
 ## Write targets
 
