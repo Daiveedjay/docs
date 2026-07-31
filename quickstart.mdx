@@ -1,17 +1,28 @@
 ---
 title: "Quick Start: Install Iris Code, Scan Files, and Preview Gates"
 sidebarTitle: "Quick Start"
-description: "Install Iris Code in VS Code, run your first file analysis, and preview your enforcement posture - from zero to first scan in two minutes."
+description: "Install Iris Code in VS Code or a JetBrains IDE, run your first file analysis, and preview your enforcement posture - from zero to first scan in two minutes."
 ---
 
 Keep AI-assisted code up to your standards. This guide gets Iris Code's deterministic, local-first checks between a code change and human review: install the extension, read your first file score, scan your workspace, and preview five built-in enforcement thresholds.
 
 <Steps>
-  <Step title="Install Iris Code from the VS Code Marketplace">
-    Open the Extensions panel in VS Code with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris Code**, and click **Install**. The Iris Code icon appears in the Activity Bar as soon as the install completes - click it to open the sidebar.
+  <Step title="Install Iris Code in your editor">
+    <Tabs>
+      <Tab title="VS Code and forks">
+        Open the Extensions panel with `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS), search for **Iris Code**, and click **Install**. The Iris Code icon appears in the Activity Bar as soon as the install completes - click it to open the sidebar.
+
+        The same search works in **Cursor**, **Windsurf**, **VSCodium** and **Trae**, which install the byte-identical build from [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code). You can also [install the `.vsix` manually](/installation).
+      </Tab>
+      <Tab title="JetBrains IDEs">
+        Install the **LSP4IJ** plugin first, then open **Settings > Plugins**, search the Marketplace tab for **Iris Code**, and click **Install**. Restart the IDE fully afterwards, because JetBrains registers file-type associations at startup.
+
+        Open the **Iris Code** tool window from the right sidebar. Works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion and Android Studio. See [Installation](/installation) for the full list and troubleshooting.
+      </Tab>
+    </Tabs>
 
     <Note>
-      Iris Code installs in any VS Code-compatible editor. If you use **Cursor**, **Windsurf**, or **VSCodium**, the Marketplace install works the same way - or you can [install the `.vsix` manually](/installation).
+      There is one analysis engine behind every host, so the same file gets the same health score, the same findings and the same gate decision in whichever editor you open it.
     </Note>
   </Step>
 

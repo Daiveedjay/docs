@@ -10,7 +10,7 @@ Every host runs the same analysis engine, so a file scores identically in each o
 
 ## VS Code Marketplace (Preferred)
 
-The Marketplace install gives you automatic updates and the simplest setup path.
+The Marketplace install gives you automatic updates and the simplest setup path. Listing: [marketplace.visualstudio.com/items?itemName=davidjaja.iris-code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code).
 
 <Steps>
   <Step title="Open the Extensions panel">
@@ -27,9 +27,29 @@ The Marketplace install gives you automatic updates and the simplest setup path.
   </Step>
 </Steps>
 
+## Open VSX (Cursor, Windsurf, VSCodium, Trae)
+
+These editors read the [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code) registry rather than the VS Code Marketplace, and Iris Code publishes the **byte-identical build** to both. So the in-editor install works exactly as it does in VS Code, and updates arrive automatically.
+
+<Steps>
+  <Step title="Open the Extensions panel">
+    Press `Ctrl+Shift+X` on Windows/Linux or `Cmd+Shift+X` on macOS.
+  </Step>
+  <Step title="Search for Iris Code">
+    Type **Iris Code** and look for the extension published by **davidjaja**.
+  </Step>
+  <Step title="Install">
+    Click **Install**. No restart required, and no `.vsix` to manage by hand.
+  </Step>
+</Steps>
+
+<Note>
+  You do not need the manual `.vsix` route for these editors. Use it only if your environment cannot reach a registry at all.
+</Note>
+
 ## Manual VSIX Install
 
-Download the `.vsix` file and install it yourself when you need to use Cursor, Windsurf, or VSCodium, or when your environment doesn't have Marketplace access.
+Download the `.vsix` and install it yourself when your environment has no registry access, for example an air-gapped or locked-down machine.
 
 **Download URL:** [`https://www.iriscode.co/downloads/iris-code.vsix`](https://www.iriscode.co/downloads/iris-code.vsix)
 
@@ -72,7 +92,7 @@ Once you have the file, install it using your editor's GUI or the command line:
 
 ## JetBrains IDEs
 
-Iris Code runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion, and Android Studio.
+Iris Code runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion, and Android Studio. Listing: [plugins.jetbrains.com/plugin/33168-iris-code](https://plugins.jetbrains.com/plugin/33168-iris-code).
 
 <Steps>
   <Step title="Install LSP4IJ first">
