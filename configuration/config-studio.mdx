@@ -4,19 +4,32 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
 
-Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, configure Free per-language file naming, then sync the resulting `.irisconfig.json` directly to VS Code. Pro adds custom thresholds, gate limits, and severity overrides.
+Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, configure Free workspace, path/role, and fallback language naming, then sync the resulting `.irisconfig.json` to any supported editor. Pro adds custom thresholds, gate limits, and severity overrides.
 
 ## What the studio contains
 
-Config Studio surfaces every configuration option in one place, with a live JSON preview updating as you make changes:
+Config Studio surfaces the team-policy configuration in one place, with a live JSON preview updating as you make changes:
 
 - **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or switch to Custom mode.
-- **File naming** (Free) - choose a convention and ignore globs independently for TypeScript, JavaScript, Go, and Python.
+- **File naming** (Free) - choose a workspace fallback, absolute ignore globs, and ordered path/role rules; legacy language policies remain available as fallbacks.
 - **Detection matrix** - see at a glance which rule categories are on or off for the selected preset.
 - **minHealthScore bar** - the gate threshold used by the CLI and hooks is always visible at the top of the card.
 - **Gate limits** (Pro, Custom mode) - explicit hard caps including `gateMaxDuplicateBlocks` and `gateMaxNamingViolations`. Leave a field empty to impose no limit.
 - **Custom scoring** (Pro, Custom mode) - control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
 - **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
+
+<Warning>
+  Four settings are deliberately not in the studio, because they describe one
+  machine or one project rather than a shared standard: `ignoreFiles`,
+  `ignoreFunctions`, `testConvention`, and `sidebarFontSize`.
+
+  Syncing **replaces the whole `.irisconfig.json`**, so if your file already sets
+  any of those four, they are removed. The diff shown before the write lists every
+  removed line - read it, and re-add what you need afterwards. To keep them out of
+  the sync path entirely, set them in
+  [VS Code settings](/configuration/vscode-settings) instead, which sync never
+  touches.
+</Warning>
 
 ## Syncing to VS Code
 
@@ -103,7 +116,7 @@ All six preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security`
     - Pick any preset from the selector
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
-    - Configure workspace-wide `fileNaming` and `fileNamingScope`, then optionally override either per language
+    - Configure workspace-wide `fileNaming` and `fileNamingScope`, then add ordered path rules or fallback language policies
 
     The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
   </Tab>

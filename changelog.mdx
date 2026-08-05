@@ -8,6 +8,32 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## Unreleased
+
+- **Added** ordered path/role overrides for Free file naming policies. A project can enforce `PascalCase` under component folders and `camelCase` under hooks or composables even when every file resolves to TypeScript. Workspace ignores remain absolute, the last matching rule wins, and existing language naming policies remain fallbacks.
+
+---
+
+## v1.18.0 - 2026-08-05
+
+<Note>**feature** - Vue and Svelte analysis, plus file naming that follows folder roles</Note>
+
+### Components are code too
+
+Iris Code reads `.vue` and `.svelte` components: their `<script>` blocks are analysed as JavaScript or TypeScript from the `lang` attribute, while template and style markup is excluded from both analysis and duplicate detection. Findings keep the component's own line numbers. Ships alongside `@iris-code/cli` 1.10.0. See [Language support](/features/language-support).
+
+- **Added** Vue and Svelte single-file component analysis everywhere Iris Code runs - the editor, the CLI, hooks, and CI. Secrets, security smells, duplicate detection, suppressions, health scores, change review, and workspace scans all cover them, and root-level script blocks only: a `<script>` inside a template or an `{#if}` block is markup, not code.
+- **Added** role-based file naming (Free): `fileNaming.overrides` takes an ordered list of path globs, so `components/**` can require `PascalCase` while `composables/**` requires `camelCase`. Both conventions could not be expressed before, because a `lang="ts"` component and an ordinary `.ts` module resolve to the same language. The last matching rule wins, workspace `ignore` globs stay absolute, and a config without `overrides` behaves exactly as before. See [File naming](/configuration/file-naming).
+- **Added** inline file-naming diagnostics in JetBrains IDEs, matching VS Code.
+- **Added** SvelteKit awareness: `+page.svelte`, `+layout.svelte`, `+server.ts` and their siblings are exempt from naming conventions, because the framework resolves them by exact filename.
+- **Fixed** the `no-exports` check firing on essentially every Vue and Svelte component - a `<script setup>` block has no `export` by design.
+- **Fixed** large-file analysis speed. Analysis time grew with the square of a file's line count, so a very long file - especially one with many blank lines, worse with Windows line endings - could stall the editor or a CI run for minutes. A 200,000-line file went from over two minutes to a fraction of a second, with no change to findings.
+- **Fixed** an unusable file-naming glob stopping the scan. The offending pattern is now named with its exact location, the rest of the rule keeps working, and the pattern can never quietly excuse a file from its convention.
+- **Changed** `iris report` and `iris sbom` to require `--output` to stay inside the current directory, matching `iris check`, `iris deps`, and `iris cve`.
+- **Fixed** the Config Studio preview showing a config shape Iris cannot read. The panel described its own nested format (`thresholds`, `detections`, `diagnostics`, `severity`), so copying the preview instead of syncing produced a file where every threshold, detection toggle, inline-diagnostic setting, and severity override was silently ignored - and because `presetId` was honoured, it looked like it had worked. The preview, the Copy button, and Sync are now the same text: the exact file that gets written. Configs you synced were always correct; only copied ones were affected.
+
+---
+
 ## v1.17.0 - 2026-07-30
 
 <Note>**feature** - Iris Code for JetBrains IDEs, Open VSX distribution, and config docs on hover</Note>

@@ -52,7 +52,7 @@ Iris Code continuously monitors the files you work on and the projects you manag
     Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris Code icon appears in the Activity Bar immediately.
   </Step>
   <Step title="Open any file">
-    Open a JavaScript, TypeScript, Go, or Python file. Iris Code scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
+    Open a JavaScript, TypeScript, Vue, Svelte, Go, or Python file. Iris Code scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
   </Step>
   <Step title="Preview your enforcement posture">
     Scroll to the bottom of the File tab and click **Preview Gate**. See how your codebase scores against all five built-in presets before enabling a single hook.
@@ -72,14 +72,16 @@ This means:
 
 ## Supported Languages
 
-Iris Code provides full analysis for four languages:
+Iris Code provides full analysis for four languages, plus Vue and Svelte single-file components:
 
 | Language | File extensions | Notes |
 |---|---|---|
-| **TypeScript** | `.ts`, `.tsx` | Includes `any` usage, `@ts-ignore`, non-null assertions, and missing return types |
+| **TypeScript** | `.ts`, `.tsx`, `.mts`, `.cts` | Includes `any` usage, `@ts-ignore`, non-null assertions, and missing return types |
 | **JavaScript** | `.js`, `.jsx`, `.mjs`, `.cjs` | Full smell and complexity analysis; unused import detection included |
+| **Vue** | `.vue` | `<script>` and `<script setup>` blocks, analysed as TypeScript when `lang="ts"` is declared; template and style excluded |
+| **Svelte** | `.svelte` | Instance and module `<script>` blocks, same `lang` handling; markup and style excluded |
 | **Go** | `.go` | Method and function detection, `go.mod` unused package audit, `vendor/` skipped automatically |
-| **Python** | `.py` | `def` declarations, `requirements.txt` / `pyproject.toml` package audit, `.venv` skipped automatically |
+| **Python** | `.py`, `.pyw` | `def` declarations, `requirements.txt` / `pyproject.toml` package audit, `.venv` skipped automatically |
 
 ## Free vs Pro
 

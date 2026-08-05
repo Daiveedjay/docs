@@ -227,7 +227,14 @@ Mixed-language repos rarely want one threshold set for everything - a 500-line P
 
 ```jsonc
 {
-  "fileNaming": { "convention": "snake_case", "ignore": [] },
+  "fileNaming": {
+    "convention": "kebab-case",
+    "ignore": [],
+    "overrides": [
+      { "files": ["**/components/**"], "convention": "PascalCase" },
+      { "files": ["**/hooks/**", "**/composables/**"], "convention": "camelCase" }
+    ]
+  },
   "fileNamingScope": "new-files",
   "fileLengthThreshold": 300,
   "languages": {
@@ -244,9 +251,9 @@ Mixed-language repos rarely want one threshold set for everything - a 500-line P
 }
 ```
 
-Top-level `fileNaming` and `languages.*.fileNaming` are Free. The top-level policy applies to every supported language; a nested policy replaces it for that language. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
+Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
 
-Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A language can override that default with `languages.*.fileNaming.scope`; omit the nested scope to inherit the global value. See [File naming conventions](/configuration/file-naming) for baseline behavior, suggestions, ignore globs, and the complete exemption list.
+Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
 
 Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxNamingViolations`), `presetId`, and `enable*` toggles are rejected inside a language block with a validation warning.
 

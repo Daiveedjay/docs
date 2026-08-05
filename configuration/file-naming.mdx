@@ -1,17 +1,24 @@
 ---
 title: "File naming conventions"
-description: "Configure Free workspace and per-language file naming checks with baseline-aware rollout, ignore globs, suggestions, and built-in exemptions."
+description: "Configure Free path-aware file naming checks with ordered role overrides, baseline-aware rollout, ignore globs, suggestions, and built-in exemptions."
 ---
 
-File naming checks are Free. Set a workspace-wide policy at the top level, then override only the languages that need a different convention. Other properties in a language block can remain Pro without disabling naming.
+File naming checks are Free. Set a workspace fallback, then add path rules when components, hooks, routes, utilities, or packages follow different conventions. This works even when the files share one language or extension.
 
 ```jsonc
 {
-  "fileNaming": { "convention": "snake_case", "ignore": ["src/legacy/**"] },
+  "fileNaming": {
+    "convention": "kebab-case",
+    "ignore": ["src/generated/**"],
+    "overrides": [
+      { "files": ["**/components/**"], "convention": "PascalCase" },
+      { "files": ["**/hooks/**", "**/composables/**"], "convention": "camelCase" }
+    ]
+  },
   "fileNamingScope": "new-files",
   "languages": {
-    "typescript": {
-      "fileNaming": { "convention": "kebab-case", "scope": "all", "ignore": [] }
+    "python": {
+      "fileNaming": { "convention": "snake_case", "scope": "all", "ignore": [] }
     }
   }
 }
@@ -19,15 +26,26 @@ File naming checks are Free. Set a workspace-wide policy at the top level, then 
 
 Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris checks the file stem, preserves known suffixes such as `.test` and `.spec`, and suggests a replacement name.
 
+## How Iris chooses a policy
+
+For every file, Iris applies one deterministic precedence order:
+
+1. Built-in framework/generated-file exemptions and top-level `fileNaming.ignore` globs exclude the file.
+2. Every matching `fileNaming.overrides` rule is considered in declaration order; the **last matching rule wins**.
+3. If no path rule matches, an existing `languages.<language>.fileNaming` policy is used as a backward-compatible fallback.
+4. Otherwise the top-level `fileNaming.convention` applies.
+
+An override requires a non-empty `files` glob array and a `convention`. It may also set `scope`. Override lists are valid only in the top-level `fileNaming` object, so there is one ordered rule list rather than nested precedence systems.
+
 ## Roll out without legacy noise
 
 `fileNamingScope` defaults to `"new-files"`.
 
 - With `.iris-baseline.json`, Iris checks paths not present in the baseline. A renamed path counts as new.
-- Without a baseline, Iris checks the whole scan. If it finds more than 50 violations, it shows 50 and discloses the full count.
+- Without a baseline, Iris checks the whole scan. It shows the first 50 violations governed by `new-files` and discloses the full count; findings from a matching rule with `scope: "all"` are never hidden by that rollout cap.
 - Set `"all"` to check every file explicitly.
 
-Top-level `fileNaming` is the workspace convention and `fileNamingScope` is its rollout default. A language's `fileNaming` object replaces the workspace naming policy for that language. Add `scope: "new-files"` or `scope: "all"` there to override rollout too; when omitted, the language inherits `fileNamingScope`.
+Top-level `fileNaming` supplies the workspace default, absolute ignores, and ordered path rules. `fileNamingScope` is the rollout default. A matching path rule can set `scope`; otherwise a legacy language fallback may set it; when neither does, `fileNamingScope` applies.
 
 ## Built-in exemptions
 
@@ -41,7 +59,7 @@ Iris always exempts:
 - Generated or vendored paths: `vendor/`, `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, and `*.generated.*`.
 - Config-by-convention files such as `next.config.*`, `tailwind.config.*`, `postcss.config.*`, `jest.config.*`, `vitest.config.*`, `vite.config.*`, `webpack.config.*`, `rollup.config.*`, and `esbuild.*`.
 
-The `ignore` array adds workspace-relative globs to this list. Windows separators are normalized before matching.
+The top-level `ignore` array adds absolute workspace-relative exclusions to this list, even when a language fallback applies. A legacy language policy's ignore globs are additive. Windows separators are normalized before matching.
 
 ## Diagnostics and enforcement
 

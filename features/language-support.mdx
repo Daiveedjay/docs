@@ -1,10 +1,10 @@
 ---
-title: "Supported Languages: TypeScript, JavaScript, Go, Python"
+title: "Supported Languages: TypeScript, JavaScript, Vue, Svelte, Go, Python"
 sidebarTitle: "Language Support"
-description: "Iris Code natively parses and scores TypeScript, JavaScript, Go, and Python with per-language function detection, import tracking, and debug-print flagging."
+description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, and Python with per-language function detection, import tracking, and debug-print flagging."
 ---
 
-Iris Code supports four languages with native parsers and language-aware rules. Rather than applying a generic analysis to every file, Iris Code routes each file through a dedicated parser that understands the idioms of that language - how functions are declared, what constitutes a third-party import, which debug-print patterns to flag, and how to detect unused packages. The result is a health score and set of findings that are meaningful in context, not just a count of lines and tokens.
+Iris Code supports four languages with native parsers and language-aware rules, plus Vue and Svelte single-file components, whose script blocks are analysed as JavaScript or TypeScript. Rather than applying a generic analysis to every file, Iris Code routes each file through a dedicated parser that understands the idioms of that language - how functions are declared, what constitutes a third-party import, which debug-print patterns to flag, and how to detect unused packages. The result is a health score and set of findings that are meaningful in context, not just a count of lines and tokens.
 
 <Note>
   Health scores are **not directly comparable across languages**. TypeScript
@@ -23,6 +23,17 @@ Iris Code supports four languages with native parsers and language-aware rules. 
     - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. This detection is **TS/JS only** - Go and Python handle unused imports at the compiler or runtime level.
     - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript Metrics](/features/file-analysis#typescript-metrics) for the full breakdown.
     - **Debug prints** - `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
+  </Tab>
+
+  <Tab title="Vue & Svelte">
+    Iris Code analyses `.vue` and `.svelte` single-file components by extracting their script blocks and running them through the same TS/JS analyser as an ordinary module. There is nothing to configure and no plugin to install.
+
+    - **Script blocks only** - Vue `<script>` and `<script setup>`, and Svelte instance and module `<script>` blocks, are analysed. `<template>`, Svelte markup, and `<style>` are excluded from analysis and from duplicate detection, so component markup never inflates a finding count or a duplication percentage.
+    - **Original line numbers** - every finding, `iris-ignore` suppression, and duplicate range reports the line you see in your own component file. A secret on line 11 of a `.vue` file is reported at line 11.
+    - **`lang` decides the rule set** - a component whose script declares `lang="ts"` (or `lang="typescript"`) is analysed as TypeScript, so TypeScript quality metrics apply. Any other component is analysed as JavaScript. An unrecognised preprocessor (for example `lang="coffee"`) is skipped rather than mis-parsed.
+    - **Root-level scripts only** - a `<script>` tag nested inside `<template>`, `<svelte:head>`, or a Svelte `{#if}` block is rendered markup, not executable code, and is not analysed.
+    - **Framework file names are respected** - SvelteKit route files (`+page.svelte`, `+layout.svelte`, `+server.ts` and siblings) are exempt from file-naming conventions, because the framework resolves them by exact name.
+    - **Role-aware file naming** - a component still resolves to the `typescript` or `javascript` language key from its script tag for thresholds and scoring. Naming can additionally use ordered path globs, so `components/CheckoutPanel.vue` can require `PascalCase` while `composables/useCart.ts` requires `camelCase`, even though both contain TypeScript. See [File naming conventions](/configuration/file-naming).
   </Tab>
 
   <Tab title="Go">
