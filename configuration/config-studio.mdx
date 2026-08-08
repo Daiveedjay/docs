@@ -4,11 +4,13 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
 
-Config Studio is a visual editor at [iriscode.co/account/config](https://www.iriscode.co/account/config) - pick a preset, configure Free workspace, path/role, and fallback language naming, then sync the resulting `.irisconfig.json` to any supported editor. Pro adds custom thresholds, gate limits, and severity overrides.
+Config Studio is a visual editor for `.irisconfig.json`, so you can configure Iris Code without knowing the key names.
 
-## What the studio contains
+It lives at [iriscode.co/account/config](https://www.iriscode.co/account/config). Choose a preset, set your naming rules, and watch the JSON build up alongside your changes, then sync it to your editor. Presets and naming are free; Pro adds custom thresholds, gate limits and severity overrides.
 
-Config Studio surfaces the team-policy configuration in one place, with a live JSON preview updating as you make changes:
+## What it covers
+
+Everything that counts as a shared team standard, in one place, with a live preview of the file you will actually get:
 
 - **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or switch to Custom mode.
 - **File naming** (Free) - choose a workspace fallback, absolute ignore globs, and ordered path/role rules; legacy language policies remain available as fallbacks.
@@ -19,16 +21,13 @@ Config Studio surfaces the team-policy configuration in one place, with a live J
 - **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
 
 <Warning>
-  Four settings are deliberately not in the studio, because they describe one
-  machine or one project rather than a shared standard: `ignoreFiles`,
-  `ignoreFunctions`, `testConvention`, and `sidebarFontSize`.
+  **Sync replaces your entire `.irisconfig.json`.** It doesn't merge.
 
-  Syncing **replaces the whole `.irisconfig.json`**, so if your file already sets
-  any of those four, they are removed. The diff shown before the write lists every
-  removed line - read it, and re-add what you need afterwards. To keep them out of
-  the sync path entirely, set them in
-  [VS Code settings](/configuration/vscode-settings) instead, which sync never
-  touches.
+  Four settings aren't in the studio on purpose, because they describe one machine or one project rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention` and `sidebarFontSize`. If your current file sets any of them, syncing removes them.
+
+  A diff is shown before anything is written, and every removed line appears in it. Review it before confirming.
+
+  To avoid the situation entirely, set those four in [VS Code settings](/configuration/vscode-settings) instead. Sync never touches them there.
 </Warning>
 
 ## Syncing to VS Code

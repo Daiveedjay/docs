@@ -1,22 +1,18 @@
 ---
 title: "GitHub Actions: Block Merges With Iris Code CI Enforcement"
 sidebarTitle: "GitHub Actions"
-description: "Add Iris Code to GitHub Actions to block merges when files fall below your threshold. Get inline PR annotations at failing lines. Requires Iris Code Pro."
+description: "Run Iris Code on every push and pull request. Failing lines get annotated on the diff and the merge is blocked."
 ---
 
-Add Iris Code to your GitHub Actions CI pipeline to enforce code quality on every push and pull request. When any file falls below your configured threshold, the workflow fails, the merge is blocked, and the failing lines are annotated directly on the pull request diff. Everything runs on your own runners - your code never leaves your infrastructure.
+A hook protects your machine. CI protects the branch, including from everyone who hasn't installed the hook.
 
-## What the workflow does
+Add Iris Code to GitHub Actions and every push and pull request gets checked. When something falls below your threshold the workflow fails, the merge is blocked, and the offending lines get annotated right on the diff so nobody has to open a log.
 
-- Installs the Iris Code CLI via `npm install -g @iris-code/cli`
-- Runs `iris gate .` against your workspace using your configured threshold
-- Renders inline annotations on the pull request diff at the exact failing lines
-- Exits with code `1` if the gate fails, blocking the merge
-- Writes a pass/fail summary table to the workflow run's job summary
+It runs on your own runners. Your code never leaves your infrastructure.
 
-## Full workflow
+## The workflow
 
-Copy the following into `.github/workflows/iris.yml` in your repository:
+Drop this in `.github/workflows/iris.yml`:
 
 ```yaml
 name: Iris Code
@@ -52,12 +48,14 @@ jobs:
 ```
 
 <Tip>
-  Add `IRIS_LICENCE_TOKEN` to your repository secrets under **Settings → Secrets and variables → Actions**. Directory scans require a Pro licence - the workflow runs as Free and skips the directory check if no token is provided.
+  Add `IRIS_LICENCE_TOKEN` under **Settings → Secrets and variables → Actions**. Directory scans need Pro. Without a token the step runs as Free and skips the directory check rather than failing your build, so a missing secret never turns the pipeline red for the wrong reason.
 </Tip>
 
-## Setting a threshold
+You don't have to type it out. **Iris Code: Add GitHub Actions Workflow** writes this file for you, filled in with your current threshold.
 
-Control the minimum health score by adding a `.irisconfig.json` at your project root:
+## Setting the bar
+
+A `.irisconfig.json` at your project root:
 
 ```json
 {
@@ -66,15 +64,17 @@ Control the minimum health score by adding a `.irisconfig.json` at your project 
 }
 ```
 
-If no config file is present, the default threshold of `70` is used.
+No config file means a threshold of 70.
 
-## Inline annotations
+## Annotations on the diff
 
-The `--format github` flag emits GitHub workflow commands so each broken gate rule renders as a red annotation on the relevant file and line in the PR diff - no extra parsing step required. The flag also writes a pass/fail summary table to the run's job summary. It works on both `iris gate` and `iris check`.
+`--format github` is what makes findings appear on the pull request itself, in red, on the exact line. No log-scraping, no extra action. It also writes a pass/fail table into the run's job summary.
 
-## Keeping a JSON report
+It works on `iris check` too, not just `iris gate`.
 
-To capture a machine-readable report as a build artifact - regardless of whether the gate passes or fails - add these two steps after the enforcement step:
+## Keeping the report
+
+To hang onto a machine-readable report whether the gate passed or failed, add two steps after the gate:
 
 ```yaml
       - name: Save JSON report
@@ -90,14 +90,20 @@ To capture a machine-readable report as a build artifact - regardless of whether
           path: iris-report.json
 ```
 
+The `if: always()` matters. Without it the report only gets saved on the runs where you didn't need it.
+
+## Telling the team
+
+Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as failing the build. See [Slack notifications](/enforcement/slack-notifications).
+
 ## Exit codes
 
 | Code | Meaning |
 | --- | --- |
-| `0` | Gate passed - workflow continues |
-| `1` | Gate failed - workflow blocked |
-| `2` | Invalid arguments or config error |
+| `0` | Passed, workflow continues |
+| `1` | Failed, merge blocked |
+| `2` | Bad arguments or a broken config |
 
 <Note>
-  Generate this workflow directly from VS Code with **Iris Code: Add GitHub Actions Workflow**. Use **Iris Code: Add CI Pipeline Snippet** to get a ready-made snippet for GitLab CI, Bitbucket Pipelines, an npm/pnpm/yarn script, or a generic shell step instead.
+  Not on GitHub? **Iris Code: Add CI Pipeline Snippet** generates the equivalent for GitLab CI, Bitbucket Pipelines, an npm script, or a plain shell step. Inline annotations are GitHub-only; everywhere else the exit code does the work.
 </Note>

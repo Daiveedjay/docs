@@ -1,0 +1,87 @@
+---
+title: "Dependents Table: Audit npm, Go, and Python Packages"
+sidebarTitle: "Dependents Table"
+description: "Open the Dependents Table in VS Code to audit every package for outdated versions and CVEs from the OSV.dev database. No token or rate-limit setup. Requires Iris Code Pro."
+---
+
+Most of the code running in production came from packages, not from your repository, and those are the parts nobody reviews.
+
+The Dependents Table audits every third-party package in your project: the version you have installed against the latest available, and any known vulnerabilities from the [OSV.dev](https://osv.dev) database. npm, Go modules and Python appear side by side, instead of in three separate tools with three output formats.
+
+<Note>
+  The Dependents Table requires **Iris Code Pro**.
+</Note>
+
+## Opening it
+
+Run **Iris Code: Open Dependents Table** from the command palette.
+
+## Where it reads from
+
+- **npm** - `package.json`
+- **Go modules** - `go.mod`
+- **Python** - `requirements.txt` and `pyproject.toml`
+
+## Versions come from your lockfile
+
+A manifest range like `"express": "^4.18.0"` does not tell you which version is installed. The lockfile does, so it is read in preference when one is present:
+
+- **npm** - `package-lock.json` (v1-v3)
+- **pnpm** - `pnpm-lock.yaml`
+- **yarn** - `yarn.lock` (classic and Berry)
+- **Python** - `poetry.lock` and `Pipfile.lock`
+
+Advisories are then filtered to the version you have installed. A CVE that only affects 3.x is not reported when you are on 4.x, which keeps the list to things you can act on.
+
+## Monorepos
+
+Workspace members declared through npm or yarn workspaces, or in `pnpm-workspace.yaml`, are discovered automatically and their dependencies deduplicated into a single view. Internal `workspace:` / `file:` / `link:` dependencies are excluded, since they are your own packages rather than third-party ones.
+
+## What the table shows
+
+For each package, the table displays the installed version, the latest available version, and any known CVEs from the OSV.dev database:
+
+| Package | Installed → Latest | Advisories |
+| --- | --- | --- |
+| `next` | 14.1.0 → 15.3.2 | — |
+| `express` | 4.18.2 → 4.21.2 | CVE-2024-29041 |
+| `jsonwebtoken` | 8.5.1 → 9.0.2 | CVE-2022-23529, CVE-2022-23540 |
+
+Each advisory shows a severity badge, the advisory id, a **confidence label**, and the **fixed-in version** where one exists.
+
+## Confidence labels
+
+A count of vulnerabilities is not much use on its own; what matters is which ones you can resolve. Every advisory carries a label describing how actionable it is:
+
+| Label | What it means |
+| --- | --- |
+| `fix-available` | A patched version exists. Upgrading resolves it |
+| `direct` | The vulnerable package is one you depend on directly, so the upgrade is yours to make |
+| `transitive` | It arrived through another dependency, so a fix may depend on that package's maintainer |
+| `manual-review` | The advisory could not be matched confidently to your installed version. Review it yourself |
+
+## Unverifiable advisories are never shown
+
+An advisory record without a verifiable id or severity is dropped rather than displayed, and the footer discloses how many were skipped. Duplicate records describing the same underlying advisory are collapsed into a single row.
+
+If a lookup fails outright, through a network error or a registry outage, that package is marked **not checked** rather than assumed clean. "No vulnerabilities found" and "the check did not complete" mean different things, and the table distinguishes them.
+
+## The sidebar badge
+
+The Dependencies section of the Workspace tab shows a summary of your last scan: green when it came back clean, otherwise the number of vulnerable packages and the highest severity found.
+
+It reads only from the local cache, so opening the sidebar never triggers a network request on its own. Refresh it from the Dependents Table, or by running `iris deps`.
+
+## Caching
+
+Results are cached for 24 hours in `.iris-cache/dependents.json`, so reopening the panel is immediate. `.iris-cache/` is added to your `.gitignore` on first write, since it is a local cache rather than something to commit.
+
+## No token required
+
+Vulnerability lookups query OSV.dev directly. There is nothing to create, no rate limits to manage, and no token to configure.
+
+Each lookup sends a package name, its ecosystem and a version. It does not send your code, your file paths, or your project name.
+
+<Tip>
+  A failed advisory lookup does not prevent the table loading. Version data still appears, and the affected package is marked "not checked" so its advisory status is explicit.
+</Tip>

@@ -8,9 +8,19 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
-## Unreleased
+## v1.19.0 - 2026-08-08
 
-- **Added** ordered path/role overrides for Free file naming policies. A project can enforce `PascalCase` under component folders and `camelCase` under hooks or composables even when every file resolves to TypeScript. Workspace ignores remain absolute, the last matching rule wins, and existing language naming policies remain fallbacks.
+<Note>**feature** - Slack notifications and a responsive Config Studio</Note>
+
+### Gate results where the team sees them
+
+Iris Code can send `iris check` and `iris gate` results directly from your own CI to Slack. The message never passes through Iris Code servers, and notification delivery never changes the command's exit code. Ships alongside `@iris-code/cli` 1.11.0. See [Slack notifications](/enforcement/slack-notifications).
+
+- **Added** Slack notifications controlled by the `IRIS_SLACK_WEBHOOK` CI secret. Messages contain file paths, scores, rule names and counts, but never source, finding text or secret values.
+- **Added** the free `iris slack setup`, `iris slack test` and `iris slack manifest` commands for guided setup, delivery testing and creation of a pre-configured Slack app.
+- **Added** `--slack-on always` to report passing runs and `--slack-dry-run` to inspect the payload without posting.
+- **Changed** the Config Studio on narrow screens. **Preview config** opens the live `.irisconfig.json` preview in a centred, scrollable modal, and account navigation opens from an animated menu instead of occupying the bottom of each page.
+- **Fixed** file-naming violations appearing twice in the VS Code Problems panel.
 
 ---
 
@@ -106,7 +116,7 @@ Iris Code 1.14.0 lets mixed-language repos stop compromising: a `languages` bloc
 
 ### Review my changes, and secrets that history still remembers
 
-Iris Code 1.13.0 makes reviewing your own Git changes the primary workflow - free, interactive, and scoped to exactly what you touched - and adds a **git history secrets scan** that finds credentials which were committed and later removed. Ships alongside `@iris-code/cli` 1.6.0. See [Review My Changes](/features/change-review) and [Git History Secrets Scan](/enforcement/git-history-secrets).
+Iris Code 1.13.0 makes reviewing your own Git changes the primary workflow - free, interactive, and scoped to exactly what you touched - and adds a **git history secrets scan** that finds credentials which were committed and later removed. Ships alongside `@iris-code/cli` 1.6.0. See [Review My Changes](/features/change-review) and [Git History Secrets Scan](/features/git-history-secrets).
 
 - **Added** Review my changes (free): when Git reports local changes, a count-aware strip appears above the sidebar tabs. Running it checks every supported staged, unstaged, and untracked file and opens a dedicated review - blockers first, severity filters, search, changed-file health, and click-to-open findings. The Issues and TODOs tabs show the review's evidence on Free.
 - **Added** the git history secrets scan (Pro): walks past commits - committed `.env` files included - through the same two-layer secrets detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, commit and file counts, and whether the secret is still in HEAD. Merge-commit content is covered; depth, size-cap, and shallow-clone limits are always disclosed. Runs entirely against local git.
@@ -124,7 +134,7 @@ Iris Code 1.13.0 makes reviewing your own Git changes the primary workflow - fre
 
 ### Duplicate code detection: find the copy-paste, diff it, gate on it
 
-Iris Code 1.12.0 finds copy-pasted blocks within and across files using normalised token-window matching - renamed identifiers, changed literals, reformatted whitespace, and comments do not hide a duplicate. Free for everyone, with a Pro side-by-side diff view and a new gate rule. Ships alongside `@iris-code/cli` 1.5.0. See [Duplicate Code Detection](/enforcement/duplicate-detection).
+Iris Code 1.12.0 finds copy-pasted blocks within and across files using normalised token-window matching - renamed identifiers, changed literals, reformatted whitespace, and comments do not hide a duplicate. Free for everyone, with a Pro side-by-side diff view and a new gate rule. Ships alongside `@iris-code/cli` 1.5.0. See [Duplicate Code Detection](/features/duplicate-detection).
 
 - **Added** duplicate code detection (free): source is normalised before comparison (identifiers, literals, whitespace, and comments ignored; keywords kept verbatim), so two stretches of code that differ only in naming or values still match. Within-file blocks appear as a Duplicate blocks smell on the File tab and deduct `healthScoreWeights.duplicateCode` points (default `3`); cross-file blocks power a new Duplication section on the Workspace and Folder tabs with block count, the duplication percentage of total code lines, and the largest blocks with click-through to both locations.
 - **Added** noise guards so results stay reviewable: import/require headers never match, uniform data literals (country lists, enum tables) are excluded, a block repeated many times reports as a minimal set of pairs instead of every combination, JSX-heavy files need twice the token evidence, and oversized or minified-looking files are excluded and disclosed as skipped.

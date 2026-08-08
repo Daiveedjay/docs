@@ -4,14 +4,12 @@ sidebarTitle: "Language Support"
 description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, and Python with per-language function detection, import tracking, and debug-print flagging."
 ---
 
-Iris Code supports four languages with native parsers and language-aware rules, plus Vue and Svelte single-file components, whose script blocks are analysed as JavaScript or TypeScript. Rather than applying a generic analysis to every file, Iris Code routes each file through a dedicated parser that understands the idioms of that language - how functions are declared, what constitutes a third-party import, which debug-print patterns to flag, and how to detect unused packages. The result is a health score and set of findings that are meaningful in context, not just a count of lines and tokens.
+Four languages, each with its own parser, plus Vue and Svelte components whose script blocks go through the JavaScript or TypeScript one.
+
+The reason for separate parsers rather than one generic pass: a debug print is `console.log` in one language, `fmt.Println` in another, and `print()` in a third. A third-party import looks completely different in `go.mod` and `requirements.txt`. Analysis that doesn't know which language it's reading ends up counting lines and tokens, which tells you nothing.
 
 <Note>
-  Health scores are **not directly comparable across languages**. TypeScript
-  files carry TypeScript-specific deductions (for `any` usage, `@ts-ignore`
-  suppressions, missing return types, and non-null assertions) that do not
-  apply to Go or Python. A score of 80 in a Go file and a score of 80 in a
-  TypeScript file reflect different things.
+  **Don't compare scores across languages.** A TypeScript file carries deductions that simply don't exist in Go or Python: `any`, `@ts-ignore`, missing return types, non-null assertions. An 80 in Go and an 80 in TypeScript are not the same 80, and ranking a mixed codebase by score across languages will mislead you.
 </Note>
 
 <Tabs>

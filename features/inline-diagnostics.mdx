@@ -1,0 +1,51 @@
+---
+title: "Inline Diagnostics: Squiggles and Problems Panel Entries"
+sidebarTitle: "Inline Diagnostics"
+description: "Put selected Iris Code findings in the editor as squiggles and in the Problems panel. Off by default, on purpose."
+---
+
+Every Iris Code finding could be rendered as a squiggle, but that would make the Problems panel less useful rather than more.
+
+The Problems panel is where you look for what is broken right now: compiler errors and type failures. Filling it with forty TODOs and a magic number means it stops being read, which costs more than the TODOs do.
+
+Inline diagnostics are therefore **off by default**, and when enabled, only the categories most likely to need immediate attention are on.
+
+## What is enabled by default
+
+Secrets, security smells, `@ts-ignore`, unused functions and `any` usage: findings that usually warrant fixing at the moment you see them.
+
+Structural warnings such as file length stay off. A long file is a property of your project rather than an error, and it should not appear beside a type failure with the same urgency.
+
+| Category | Default | What it flags |
+| --- | --- | --- |
+| `hardcodedSecrets` | `true` | Credentials |
+| `securitySmells` | `true` | All nine patterns: eval, SQL concatenation, insecure RNG, ReDoS regex, disabled TLS, weak hashing, open redirects, debug flags, localhost URLs |
+| `tsIgnore` | `true` | `@ts-ignore` |
+| `unusedFunctions` | `true` | Functions nothing calls |
+| `anyUsage` | `true` | Explicit `any` |
+| `errorWarnings` | `false` | Error-level structural warnings |
+| `warningLevelWarnings` | `false` | Warning and info structural warnings |
+| `consoleLogs` | `false` | `console.log` |
+| `magicNumbers` | `false` | Raw numeric literals |
+| `longParamLists` | `false` | Long parameter lists |
+| `unusedVars` | `false` | Unused variables |
+| `todos` | `false` | TODO / FIXME / HACK |
+
+## Turning it on
+
+Enable it globally, then pick what you want:
+
+```json
+{
+  "enableInlineDiagnostics": true,
+  "inlineDiagnostics": {
+    "consoleLogs": true,
+    "magicNumbers": false,
+    "todos": false
+  }
+}
+```
+
+<Note>
+  `"enableInlineDiagnostics": false` removes every squiggle and Problems panel entry while leaving all findings visible in the Iris Code sidebar. Nothing stops being detected; it stops being surfaced in the editor.
+</Note>

@@ -4,11 +4,15 @@ sidebarTitle: "Scoring & Metrics"
 description: "Iris Code calculates a 0–100 health score and a 1–10 complexity score per file. Health starts at 100 with points deducted per finding type."
 ---
 
-Iris Code calculates two scores per file - a **health score** (0–100) and a **complexity score** (1–10). Both scores are fully deterministic: the same code always produces the same result, regardless of when or where you run the analysis.
+Iris Code calculates two numbers per file: a **health score** out of 100, and a **complexity score** out of 10.
+
+Both are deterministic. The same code produces the same result today, next month, on your machine, on a colleague's, and in CI. No model and no sampling is involved. That property is what makes them usable as a gate, since a threshold only means something if the number behind it is stable.
 
 ## Health score
 
-The health score is a per-file composite measure of code quality. It starts at 100 and deductions are applied based on findings. The floor is 0 - scores never go negative. Use the health score to answer the question: *is this code problematic?*
+The health score starts at 100 and decreases as findings are applied. It floors at 0 rather than going negative.
+
+It answers one question: is there something wrong with this file?
 
 | Finding | Default deduction | Weight key (Pro) |
 |---|---|---|

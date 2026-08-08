@@ -4,7 +4,9 @@ sidebarTitle: "CI Integration"
 description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
 ---
 
-The Iris Code CLI is designed for non-interactive pipelines - install it, pass your licence as an environment variable, and use `iris gate` as your quality gate step. No browser, no interactive login, no persistent state on the runner.
+Install the CLI, pass your licence as an environment variable, and run `iris gate` as your quality gate step.
+
+There is no browser step, no interactive login, and nothing persisted on the runner. Analysis runs on your own infrastructure, so your code never leaves it.
 
 ## Exit codes
 
@@ -77,6 +79,20 @@ Use `iris cve` (Pro) as a separate dependency gate. It runs the same scan as `ir
 ```
 
 See the [command reference](/cli/commands#iris-cve) for severity levels and exit codes.
+
+## Telling the team in Slack
+
+A pipeline that only writes to the build log gets read by whoever opened the build log. Set `IRIS_SLACK_WEBHOOK` as a protected CI secret and the outcome lands in a channel instead:
+
+```yaml
+      - name: Iris Code gate
+        run: iris gate . --format github
+        env:
+          IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+          IRIS_SLACK_WEBHOOK: ${{ secrets.IRIS_SLACK_WEBHOOK }}
+```
+
+The message is built and sent by your own runner and never passes through Iris servers, so it can name the failing files. It stays quiet on a passing run unless you add `--slack-on always`, and a Slack outage can never change the exit code. See [Slack notifications](/enforcement/slack-notifications) for the full setup.
 
 ## GitLab CI
 

@@ -5,10 +5,11 @@ description: "Iris Code measures every analysis rule against a labelled corpus a
 badge: "New"
 ---
 
-A code-health tool is only worth running if you can trust what it flags. Iris Code
-measures the accuracy of every analysis rule against a labelled corpus of real
-code, records the result, and fails its own build if any rule gets worse. This
-page explains what is measured, how, and where the current numbers live.
+A code-health tool is only worth running if you can trust what it flags. A rule that produces false positives gets ignored, and then disabled, and then it protects nothing at all.
+
+So every analysis rule in Iris Code is measured against a labelled corpus of real code. The results are recorded, and the build fails if any rule scores worse than its recorded baseline. It is a test that runs on every release rather than a claim about accuracy.
+
+This page covers what is measured, how, and where the current numbers live.
 
 ## What is measured
 
@@ -16,7 +17,7 @@ Each rule (hardcoded secrets, SQL concatenation, duplicate code, function length
 and so on) is scored on two axes, separately for each language it supports:
 
 - **Precision** - of the findings a rule reports, how many are real. Low
-  precision means noise: the rule cries wolf.
+  precision means noise: the rule flags things that are fine.
 - **Recall** - of the real issues present, how many the rule catches. Low recall
   means blind spots: the rule misses things.
 

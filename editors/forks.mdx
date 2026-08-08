@@ -1,0 +1,41 @@
+---
+title: "Iris Code in Cursor, Windsurf, VSCodium, Trae and Positron"
+sidebarTitle: "VS Code forks"
+description: "Iris Code installs into every VS Code fork from Open VSX and behaves identically, including sign-in."
+---
+
+The VS Code forks run the same extension package as VS Code itself. One artifact is published to both the Visual Studio Marketplace and Open VSX, so the two listings cannot drift apart.
+
+Feature support is identical to VS Code.
+
+## Install
+
+Most forks cannot reach the Visual Studio Marketplace and use [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code) instead. Search for **Iris Code** in the Extensions view; if it is not found, install the `.vsix` directly:
+
+<Steps>
+<Step title="Download the package">
+Get the latest `.vsix` from [iriscode.co/downloads](https://iriscode.co/downloads) or from Open VSX.
+</Step>
+<Step title="Install from disk">
+In the Extensions view, open the `...` menu and choose **Install from VSIX**.
+</Step>
+</Steps>
+
+## Sign in
+
+Sign-in works in every fork. Each registers its own URI scheme (`cursor://`, `windsurf://`, `trae://` and so on), and the callback is validated on its destination rather than on the scheme, so a fork does not need to appear on any allowlist for sign-in to complete.
+
+If a sign-in fails to return to your editor, `iris auth login` in a terminal is the fallback. It writes `~/.iris/credentials`, which every host can read.
+
+## AI-assisted editors specifically
+
+Cursor, Windsurf and Trae generate code quickly and in volume, which is the situation Iris Code is designed for. Two features are worth enabling immediately:
+
+- **Review My Changes** scores only what changed, so a large generated diff is reviewed as a unit rather than being averaged into a whole-project score.
+- **The pre-push git hook** stops generated code below your standard from leaving the machine, which matters more as the volume of code exceeds what anyone reads line by line.
+
+Iris Code does not read your assistant's suggestions and makes no claim about whether code was written by a person or a model. It analyses what is in the file.
+
+## Analytics
+
+Each fork is recorded separately in usage analytics, as `cursor`, `windsurf`, `trae` and so on, so support and roadmap decisions reflect where Iris Code is actually used. The events are counts only, and never include source code, file paths or findings.

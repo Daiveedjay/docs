@@ -4,17 +4,19 @@ sidebarTitle: ".irisconfig.json"
 description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
 ---
 
-Drop a `.irisconfig.json` at your project root and commit it - every developer on the team runs Iris Code with the same thresholds, no per-machine drift. Iris Code resolves the nearest config file by walking up the directory tree, so monorepos can have per-package configs without any extra setup.
+A standard nobody agreed on isn't a standard. Drop a `.irisconfig.json` at your project root, commit it, and everyone runs the same thresholds, in every editor, on every machine, plus CI.
+
+Iris Code looks for the nearest one by walking up from the file it's analysing, so a monorepo can give each package its own rules without you configuring anything extra.
 
 <Note>
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
 </Note>
 
-## Comments and editor support
+## It explains itself
 
-`.irisconfig.json` is JSONC, so `//` comments are valid. Every config Iris Code generates is commented, which is why a preset file explains each setting inline.
+`.irisconfig.json` is JSONC, so `//` comments are legal, and every config Iris Code writes is commented. The file should be readable without this page open alongside it.
 
-Generated configs also start with a `$schema` line:
+Generated configs also open with a `$schema` line:
 
 ```json
 {
@@ -22,9 +24,9 @@ Generated configs also start with a `$schema` line:
 }
 ```
 
-Your editor resolves that itself, which gives you completion for every field and validation of values and enums in any editor with JSON Schema support - VS Code, JetBrains IDEs, Neovim - with no plugin-specific setup. Keep the line when you edit the file by hand.
+Your editor handles that on its own, so you get autocomplete on every field and a squiggle when a value is wrong, in VS Code, JetBrains, Neovim or anything else that speaks JSON Schema. No plugin needed. Keep the line if you edit the file by hand.
 
-**Hover any setting to see what it does.** Iris Code serves that documentation from the schema bundled with your installed version, so it works offline and behind a proxy, and it always matches the version of Iris Code you are running rather than whatever the remote schema happens to say.
+**Hover any setting and it tells you what it does.** That text comes from the schema bundled with your installed version, not fetched from us, so it works offline, works behind a proxy, and always describes the version you're actually running rather than whatever we shipped last week.
 
 <Warning>
   **JetBrains IDEs:** if `.irisconfig.json` reports "JSON standard does not allow comments", your IDE is holding a user-level override that cancels the file-type registration Iris Code ships. Reinstalling the plugin will not clear it. See [the fix in the installation guide](/installation#json-standard-does-not-allow-comments).
@@ -32,7 +34,7 @@ Your editor resolves that itself, which gives you completion for every field and
 
 ## Config presets (Free + Pro)
 
-The fastest way to get started is a preset. Add `presetId` and commit - your whole team is aligned in one line, no threshold spreadsheet required.
+Rather than choosing every threshold individually, start from a preset. Add `presetId`, commit it, and the team is aligned in one line.
 
 ```json .irisconfig.json
 {
@@ -173,7 +175,7 @@ Turn individual detection categories on or off without removing findings from th
 | `enableUnusedDetection` | `true` | Flag unused variables and functions |
 | `enableMissingReturnTypeWarnings` | `true` | Flag exported functions missing return types (TS/JS only) |
 | `enableSecretsDetection` | `true` | Enable two-layer hardcoded credential scanning (JS/TS, Go, Python) |
-| `enableSecuritySmells` | `true` | Enable the nine [security smell](/enforcement/security-smells) patterns (eval usage, SQL concatenation, insecure RNG, and the rest) |
+| `enableSecuritySmells` | `true` | Enable the nine [security smell](/features/security-smells) patterns (eval usage, SQL concatenation, insecure RNG, and the rest) |
 | `enableDuplicateDetection` | `true` | Detect duplicated code blocks within and across files via normalised token-window matching |
 | `duplicateBlockMinTokens` | `40` | Minimum normalised-token run length before two stretches of code count as a duplicate block (min `10`) |
 

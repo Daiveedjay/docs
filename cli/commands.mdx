@@ -1,10 +1,12 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all twelve Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all thirteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris report, iris hook, iris auth, and iris config."
 ---
 
-The Iris Code CLI provides twelve commands covering the full code health workflow - scanning individual files, auditing dependencies, gating on CVEs, exporting SBOMs, enforcing thresholds in CI, and managing hooks. Commands marked **Pro** require an active Iris Code Pro licence.
+Thirteen commands, covering scanning, dependency audits, CVE gating, SBOM export, enforcement and hooks. Anything marked **Pro** needs a licence; the rest work with no account at all.
+
+If you only ever learn two: `iris check` for a score, `iris gate` for CI.
 
 ---
 
@@ -23,10 +25,12 @@ Scores source files and prints health findings. Single-file scans are free; scan
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
 | `--verbose` | Show individual findings per file |
 | `--show-suppressed` | List each finding suppressed by an `iris-ignore` comment, with its reason |
+| `--slack-on <when>` | `failure` (default) or `always` |
+| `--slack-dry-run` | Print the Slack payload instead of posting it |
 
 Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against the score, but the suppressed count always appears in the output; `--show-suppressed` lists each one individually. JSON reports include a per-file `suppressed` array.
 
-Directory checks also find [duplicate code blocks](/enforcement/duplicate-detection) across files; JSON file entries carry an additive `duplicateBlocks` array, and files excluded from duplicate comparison (too large or minified-looking) are disclosed rather than silently skipped.
+Directory checks also find [duplicate code blocks](/features/duplicate-detection) across files; JSON file entries carry an additive `duplicateBlocks` array, and files excluded from duplicate comparison (too large or minified-looking) are disclosed rather than silently skipped.
 
 ```bash
 # Score a single file (free)
@@ -85,7 +89,7 @@ iris secrets --history --depth 0
 
 ### iris security
 
-Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/enforcement/security-smells) for the full pattern reference. **Free - no authentication required.**
+Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/features/security-smells) for the full pattern reference. **Free - no authentication required.**
 
 | Flag | Description |
 |---|---|
@@ -243,6 +247,8 @@ Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-
 | `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
 | `--show-suppressed` | List each finding suppressed by an `iris-ignore` comment, with its reason |
+| `--slack-on <when>` | `failure` (default) or `always` |
+| `--slack-dry-run` | Print the Slack payload instead of posting it |
 
 ```bash
 # Run the gate against the configured rules
@@ -250,6 +256,9 @@ iris gate
 
 # Emit inline PR annotations in GitHub Actions format
 iris gate . --format github
+
+# Post the outcome to a Slack channel from your own CI
+IRIS_SLACK_WEBHOOK="$SLACK_WEBHOOK_URL" iris gate .
 ```
 
 | Exit code | Meaning |
@@ -257,6 +266,20 @@ iris gate . --format github
 | `0` | All rules pass |
 | `1` | One or more rules fail |
 | `2` | Bad arguments or config error |
+
+---
+
+### iris slack
+
+Sets up and tests Slack notifications for `iris check` and `iris gate`. The command is **free**. Iris Code reads the webhook only from `IRIS_SLACK_WEBHOOK` and sends messages directly from your machine or CI.
+
+| Subcommand | Description |
+|---|---|
+| `iris slack setup` | Validate a webhook, send a test message, and show the CI secret configuration |
+| `iris slack test` | Send a test message using `IRIS_SLACK_WEBHOOK` |
+| `iris slack manifest` | Print a link and manifest for creating a pre-configured Slack app |
+
+The complete setup, payload contents and credential rules are covered in [Slack notifications](/enforcement/slack-notifications).
 
 ---
 

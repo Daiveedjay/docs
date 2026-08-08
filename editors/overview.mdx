@@ -1,0 +1,55 @@
+---
+title: "Editors: What Each One Supports"
+sidebarTitle: "Overview"
+description: "Iris Code runs in VS Code, its forks, JetBrains IDEs and the CLI. This page states exactly what each host supports and what it does not."
+---
+
+Iris Code is one analysis engine with several front ends. Every rule, score and gate decision comes from the same core, so a finding in JetBrains is the same finding in VS Code, on the same line.
+
+What differs between hosts is how much interface each editor allows an extension to build.
+
+The table below is filled in only where a feature has been verified working in that host. Where a cell says no, it means no today rather than planned.
+
+## Support matrix
+
+| Feature | VS Code | Forks | JetBrains | Other LSP editors |
+|---|---|---|---|---|
+| Inline diagnostics | Yes | Yes | Yes | Yes |
+| Quick fixes and code actions | Yes | Yes | Yes | Yes |
+| Hover: health score and rule id | Yes | Yes | Yes | Yes |
+| Code lens on long functions | Yes | Yes | Yes | Host dependent |
+| File analysis panel | Sidebar | Sidebar | Tool window | No |
+| Workspace and folder scans | Yes | Yes | Yes | No |
+| Issues and TODO tabs | Yes | Yes | Yes | No |
+| Suppressions, duplicates, naming, dependency and trend tables | Yes | Yes | Yes | No |
+| Duplicate diff view | Yes | Yes | Yes | No |
+| Review My Changes | Yes | Yes | Yes | No |
+| Git and build hook install | Yes | Yes | Yes | CLI only |
+| CI workflow generators | Yes | Yes | Yes | CLI only |
+| Config sync from the dashboard | Deep link | Deep link | Pasted code | No |
+| Rename to naming convention | Yes | Yes | Yes | Yes |
+| Git history secrets scan | Yes | Yes | Yes | CLI only |
+| Detached panel | Yes | Yes | No | No |
+| Guided onboarding tour | Yes | Yes | No | No |
+| Explorer file-naming badge | Yes | Yes | No | No |
+| Push-blocked counter | Yes | Yes | No | No |
+
+"Forks" means Cursor, Windsurf, VSCodium, Trae and Positron. They install the same extension package as VS Code and behave the same way.
+
+Everything in the CLI column of your mind is available everywhere: `iris check`, `iris gate`, `iris secrets`, hooks and CI run from a terminal regardless of which editor you use, and they are the same binary on every platform.
+
+## One licence, every editor
+
+Signing in once covers every host and the CLI. There is no per-editor licence, no per-editor price, and using the same licence from three editors on one machine counts as one user, not three.
+
+VS Code and its forks store the key in the editor's own secret storage. Everything else reads `~/.iris/credentials`, written by `iris auth login`.
+
+## Other LSP editors
+
+`iris-lsp` is a standalone language server that speaks stdio JSON-RPC and carries the whole analysis engine, which is what JetBrains support is built on. In principle it works in Neovim, Helix, Sublime Text and anything else that speaks LSP.
+
+In practice we do not yet publish the compiled binaries anywhere you can download them, so there is no supported setup path today. When that changes this page will carry the configuration snippets. We would rather say that plainly than publish a guide that depends on a download that does not exist.
+
+## Reporting a problem
+
+Because the same symptom usually has a different cause per host, please say which editor and which version you are using. The [bug report template](https://github.com/Daiveedjay/Iris-VSCode-Extension/issues/new/choose) asks for both.

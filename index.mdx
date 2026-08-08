@@ -1,127 +1,131 @@
 ---
 title: "Iris Code: Keep AI-Assisted Code Up to Your Standards"
 sidebarTitle: "Home"
-description: "Keep AI-assisted code up to your standards with deterministic, local-first checks that catch concrete regressions before human review."
+description: "Iris Code reads the code you didn't. Local, deterministic checks that catch secrets, copy-paste and complexity before anyone else sees them."
 ---
 
-Keep AI-assisted code up to your standards. Iris Code catches secrets, duplicate code, security smells, and maintainability regressions before they reach human review. Source analysis runs locally, and the same deterministic rules run in VS Code, the `iris` CLI, hooks, and CI.
+An AI assistant can change fourteen files in one prompt. Reviewing that properly takes longer than most people have, so the diff gets skimmed and approved.
 
-Iris Code runs in **VS Code** and its forks (Cursor, Windsurf, VSCodium, Trae) and in **JetBrains IDEs** (IntelliJ IDEA, WebStorm, PyCharm, GoLand and more), plus the `iris` CLI, git hooks and CI. One analysis engine sits behind all of them, so the same file gets the same score everywhere.
+Iris Code reviews it deterministically instead. It scores every file, flags the hardcoded key, the function that has doubled in length, and the block now pasted in three places, and it can block the push before any of it leaves your machine.
+
+It makes no judgement about who wrote the code. It checks what is there.
 
 <Note>
-  Iris Code does not try to identify AI-generated code. It independently checks the result with explicit rules, whether a person, an AI assistant, or both wrote it. Your source is not uploaded to an AI model or analysis backend.
+  Iris Code does not attempt to identify AI-generated code, and it does not upload your source. Analysis runs on your machine, in your editor, in milliseconds. No model processes your files.
 </Note>
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
-    Install Iris Code and run your first scan in under two minutes
+    Install Iris Code and read your first score, in about two minutes
   </Card>
-  <Card title="Features" icon="sparkles" href="/features/file-analysis">
-    Explore file analysis, workspace scans, and editor integration
+  <Card title="What it finds" icon="sparkles" href="/features/file-analysis">
+    Health scores, secrets, duplicate code and security smells
   </Card>
-  <Card title="Enforcement" icon="shield-check" href="/enforcement/gate-preview">
-    Block weak code with git hooks, build hooks, and CI gates
+  <Card title="Blocking bad code" icon="shield-check" href="/enforcement/gate-preview">
+    Hooks and CI gates that block code below your threshold
   </Card>
-  <Card title="CLI" icon="terminal" href="/cli/overview">
-    Use Iris Code from the terminal and CI pipelines with <code>@iris-code/cli</code>
+  <Card title="Terminal and CI" icon="terminal" href="/cli/overview">
+    The same checks from a shell or a pipeline, with <code>@iris-code/cli</code>
   </Card>
   <Card title="Configuration" icon="sliders" href="/configuration/irisconfig">
-    Share thresholds across your team with <code>.irisconfig.json</code>
+    One committed file so the whole team shares the same thresholds
   </Card>
   <Card title="Iris Code Pro" icon="star" href="/pro">
-    Unlock fresh project reviews, hooks, CVE audits, and the full CLI suite
+    Whole-project scans, hooks, CVE audits and the full CLI
   </Card>
 </CardGroup>
 
-## What Iris Code Does
+## What you get
 
-Iris Code continuously monitors the files you work on and the projects you manage, giving you four interconnected layers of insight:
+**A score on every file, on every save.** Zero to 100, reduced by long functions, deep nesting, leftover debug prints and hardcoded values. Nothing needs triggering.
 
-**Health scores** - every supported file receives a 0–100 composite score on every save, penalising long functions, deep nesting, debug prints, magic numbers, and secrets. The score updates instantly; no manual trigger required.
+**Secrets caught before they ship.** A real API key is flagged in the sidebar with its value masked. Free on every plan, no configuration required.
 
-**Code smells** - Iris Code detects TODOs, unused code, magic numbers, debug print statements, and long parameter lists across all supported languages. Every finding is clickable and jumps you directly to the relevant line.
+**Copy-paste made visible.** When the same block appears in three files, Iris Code reports all three locations and can open them side by side.
 
-**Secrets detection** - hardcoded credentials are flagged with a masked preview in the sidebar before they can ship. Secrets detection is free on all plans and works without any configuration.
+**A gate you turn on when you are ready.** Preview how your project scores against five presets first. When the result looks right, a pre-push hook or a CI step blocks anything below your threshold.
 
-**Enforcement** - Gate Preview lets you preview your enforcement posture against five preset thresholds before installing a single hook. When you're ready, a git pre-push hook or build hook blocks files that fall below your chosen minimum health score. The same threshold can also be enforced in CI via `iris gate`.
-
-## How Iris Code works
+## How it works
 
 <Steps>
   <Step title="Install the extension">
-    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the VS Code Marketplace - it's free. The Iris Code icon appears in the Activity Bar immediately.
+    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the Marketplace. It is free, and the icon appears in your Activity Bar immediately.
   </Step>
-  <Step title="Open any file">
-    Open a JavaScript, TypeScript, Vue, Svelte, Go, or Python file. Iris Code scores it instantly in the sidebar - health score, complexity, functions, code smells, and hardcoded secrets with no configuration required.
+  <Step title="Open a file">
+    JavaScript, TypeScript, Vue, Svelte, Go or Python. The score appears in the sidebar with the findings below it. No configuration required.
   </Step>
   <Step title="Preview your enforcement posture">
-    Scroll to the bottom of the File tab and click **Preview Gate**. See how your codebase scores against all five built-in presets before enabling a single hook.
+    At the bottom of the File tab, click **Preview Gate**. It shows how your code scores against every preset without changing anything.
   </Step>
-  <Step title="Block weak code automatically">
-    Install a git pre-push hook or build hook from the command palette - or run `iris gate` in CI. Pushes and builds that fall below your threshold are blocked before they ship.
+  <Step title="Enable enforcement">
+    Install the pre-push hook, or add `iris gate` to CI. Code below your threshold is then blocked before it ships.
   </Step>
 </Steps>
 
-Iris Code performs source analysis in-process on your machine. Your source code never reaches an analysis backend, and no AI model processes your files. Network requests are limited to account and licensing operations, dependency and advisory lookups, and product-use events. These requests never include source code, file contents, or project structure; you can disable optional product-use events in your account settings.
+## Your code stays on your machine
 
-This means:
+Analysis runs in the editor process, on your machine. Your source never reaches a server of ours, and no AI model processes it.
 
-- **Instant feedback** - analysis runs in milliseconds on every save, with no round-trip latency
-- **Offline capable** - file analysis and CLI commands work without an internet connection
-- **Private by design** - proprietary code, secrets, and unreleased features stay on your machine
+Iris Code does make network requests, and it is worth being specific about which: signing in, licence validation, dependency version and advisory lookups, and anonymous product-use events you can disable in your account settings. None of them carry source code, file contents or project structure.
 
-## Supported Languages
+That local-first design gives you three things:
 
-Iris Code provides full analysis for four languages, plus Vue and Svelte single-file components:
+- **Instant feedback** - milliseconds on save, with no round trip.
+- **Offline capability** - file analysis and CLI commands work without a connection.
+- **Privacy by design** - proprietary code, secrets and unreleased features stay on your machine.
 
-| Language | File extensions | Notes |
+## Languages
+
+| Language | Extensions | Worth knowing |
 |---|---|---|
-| **TypeScript** | `.ts`, `.tsx`, `.mts`, `.cts` | Includes `any` usage, `@ts-ignore`, non-null assertions, and missing return types |
-| **JavaScript** | `.js`, `.jsx`, `.mjs`, `.cjs` | Full smell and complexity analysis; unused import detection included |
-| **Vue** | `.vue` | `<script>` and `<script setup>` blocks, analysed as TypeScript when `lang="ts"` is declared; template and style excluded |
-| **Svelte** | `.svelte` | Instance and module `<script>` blocks, same `lang` handling; markup and style excluded |
-| **Go** | `.go` | Method and function detection, `go.mod` unused package audit, `vendor/` skipped automatically |
-| **Python** | `.py`, `.pyw` | `def` declarations, `requirements.txt` / `pyproject.toml` package audit, `.venv` skipped automatically |
+| **TypeScript** | `.ts`, `.tsx`, `.mts`, `.cts` | Also flags `any`, `@ts-ignore`, non-null assertions, missing return types |
+| **JavaScript** | `.js`, `.jsx`, `.mjs`, `.cjs` | Full smell and complexity analysis, plus unused imports |
+| **Vue** | `.vue` | `<script>` and `<script setup>`, analysed as TypeScript when `lang="ts"` is set. Template and style are excluded |
+| **Svelte** | `.svelte` | Instance and module `<script>`, with the same `lang` handling. Markup and style are excluded |
+| **Go** | `.go` | Functions and methods, unused `go.mod` packages, with `vendor/` skipped |
+| **Python** | `.py`, `.pyw` | `def` declarations, unused packages from `requirements.txt` or `pyproject.toml`, with `.venv` skipped |
 
-## Free vs Pro
+## Free or Pro
 
-Unlimited file reviews, one saved Project Review, Gate Preview, secrets detection, and preset configs are free forever. Pro keeps project-wide evidence current and turns that signal into a hard gate.
+Everything needed to review your own code is free: unlimited file scores, clickable findings, secrets detection, one saved whole-project review, and Gate Preview.
+
+Pro keeps project-wide evidence current over time, and turns the score into something that blocks.
 
 <CardGroup cols={2}>
   <Card title="Free - $0/month" icon="circle-check">
-    - One complete Project Review saved locally for the first reviewed workspace
-    - File analysis: health score, complexity, and functions
-    - Clickable findings that open the affected source line
-    - TypeScript-specific metrics
+    - One complete Project Review, saved locally
+    - File scores, complexity, function counts
+    - Findings you click to jump to the line
+    - TypeScript-specific checks
     - Code smell detection
     - Hardcoded secrets detection
-    - Inline diagnostics (squiggles + Problems panel)
-    - Status bar and Code Lens overlays
-    - Detached panel and HTML report export
-    - Health score trend tracking (2 snapshots)
-    - `.irisconfig.json` preset configs (`presetId`)
-    - Gate Preview - read-only enforcement posture check
-    - CLI: `iris check` (single file), `iris secrets`, `iris security`, `iris report`, `iris hook status`, `iris config`
+    - Squiggles and Problems panel entries
+    - Status bar and Code Lens
+    - Detached panel and HTML export
+    - Trend history, 2 snapshots
+    - Preset configs via `presetId`
+    - Gate Preview, read-only
+    - CLI: `iris check` on a file, `iris secrets`, `iris security`, `iris report`, `iris slack`, `iris hook status`, `iris config`
   </Card>
   <Card title="Pro - $6/month" icon="bolt">
     - Everything in Free
-    - Fresh workspace reviews and folder analysis
-    - Gate Preview drilldown - see exactly which files fail each preset
-    - Git pre-push hook enforcement
+    - Rescan the whole project whenever you like, plus folder scans
+    - Gate Preview drilldown: exactly which files fail, and why
+    - Pre-push hook enforcement
     - Build hook enforcement
-    - Dependents table with version audit and CVE scan
+    - Dependency versions and CVE scanning
     - Issues tab with blocker and warning filters
-    - TODOs tab aggregation
-    - Custom `.irisconfig.json` threshold overrides
-    - Custom enforcement limits - block on secret count, complexity ceiling, file size, smell density, or security smell count
-    - Custom scoring weights per finding type
-    - Config Studio - build, preview, and sync configs visually
+    - TODOs tab
+    - Your own thresholds in `.irisconfig.json`
+    - Hard limits on secrets, complexity, file size, smell density, security smells
+    - Custom scoring weights
+    - Config Studio, to build and share a config visually
     - Unlimited trend history
-    - Full CLI suite: `iris gate`, `iris deps`, `iris todos`, `iris hook install`, and more
-    - Account Insights dashboard
+    - Full CLI: `iris gate`, `iris deps`, `iris todos`, `iris hook install` and the rest
+    - Account Insights
   </Card>
 </CardGroup>
 
 <Tip>
-  You can request a **14-day Pro trial** - no credit card required. [See how trial requests work →](/pro)
+  You can request a **14-day Pro trial**, with no card required. [How trials work →](/pro)
 </Tip>

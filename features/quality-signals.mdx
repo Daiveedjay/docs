@@ -1,37 +1,46 @@
 ---
 title: "Quality Signals"
-description: "Understand the recurring workspace issues Iris Code ranks by density and impact."
+sidebarTitle: "Quality Signals"
+description: "The handful of things dragging your project down, ranked by density rather than raw count."
 ---
 
-Quality Signals explain the strongest recurring issues across a workspace or folder scan. They are not a second health score: Code Health remains the single headline metric.
+A project with 400 findings is not necessarily worse than one with 40. It may simply be larger.
 
-Each signal keeps its real value visible:
+Quality Signals answer a different question from the health score. Rather than "how good is this code", they answer "what should be addressed first", by ranking the recurring problems in a scan by density rather than raw count.
 
-- Duplication is shown as a percentage of code lines.
-- Complexity spikes are shown as affected files.
-- Security smells, suppressions, type debt, debug prints, TODOs, and file naming are shown as finding counts.
+They are **not** a second score. Code Health remains the only headline number.
 
-## How ranking works
+## Each signal keeps its real units
 
-Iris Code normalizes count-based signals per 1,000 code lines before ranking them. This prevents a large repository from appearing worse merely because it contains more code.
+Converting everything into a single abstract figure would obscure what is actually happening, so nothing is normalised away:
 
-| Signal | Displayed value |
+| Signal | Shown as |
 |---|---|
-| Duplicate code | Percentage |
+| Duplicate code | A percentage of your code lines |
 | Security smells | Findings |
 | Suppressions | Findings |
-| Type debt (`any` and missing return types) | Findings |
+| Type debt (`any`, missing return types) | Findings |
 | Debug prints | Findings |
 | Complexity spikes | Files |
 | TODO load | Findings |
 | File naming | Findings |
 
-The `Present`, `Elevated`, and `High` labels communicate density, not another score. Type debt is omitted for scans without TypeScript or JavaScript files.
+## Why density rather than totals
+
+Count-based signals are normalised per 1,000 lines of code before ranking. Without that step a large repository would always rank worse than a small one purely on size, which tells you nothing useful.
+
+The **Present**, **Elevated** and **High** labels describe that density. They are not a grade.
+
+Type debt is omitted entirely on projects containing no TypeScript or JavaScript, rather than displayed as zero.
 
 ## Using the panel
 
-Expand **Quality Signals** in the workspace or folder view to see the ranked list. Select a signal to open or jump toward the corresponding findings.
+Expand **Quality Signals** in the Workspace or Folder view for the ranked list, then select a signal to open the findings behind it.
 
-`iris check <directory>` prints the top three signals with their raw values. Single-file checks do not print workspace Quality Signals.
+From the terminal, `iris check <directory>` prints the top three with their real values. Single-file checks do not print them, since one file does not constitute a distribution.
 
-Quality Signals do not have a composite gate. Pro enforcement uses explicit limits such as `gateMaxDuplicateBlocks`, `gateMaxSecuritySmells`, `gateMaxSuppressions`, and `gateMaxNamingViolations`, so a failed gate always names the concrete standard that was exceeded.
+## There is no Quality Signals gate
+
+Quality Signals cannot fail a build. Enforcement uses explicit named limits instead: `gateMaxDuplicateBlocks`, `gateMaxSecuritySmells`, `gateMaxSuppressions` and `gateMaxNamingViolations`.
+
+This is deliberate. When a gate fails it should name the specific standard that was exceeded and by how much, rather than reporting that a blended metric moved. A composite score gives no indication of what to change.

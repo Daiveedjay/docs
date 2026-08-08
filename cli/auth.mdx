@@ -4,11 +4,15 @@ sidebarTitle: "Authentication"
 description: "Sign in to Iris Code CLI via browser OAuth for local development, or use IRIS_LICENCE_TOKEN for non-interactive CI runners. Credentials stored in ~/.iris/credentials."
 ---
 
-Most CLI commands require an active Iris Code Pro licence. Authenticate via the interactive `iris auth login` flow for local development, or set the `IRIS_LICENCE_TOKEN` environment variable for non-interactive CI runners - no login step needed on the runner.
+How you authenticate depends on where the CLI is running.
 
-## Authentication commands
+**On your own machine**, run `iris auth login` and sign in through the browser.
 
-`iris auth login` is fully interactive - it prompts you to choose between a browser sign-in and pasting a licence token. It requires a TTY and exits with an error in a non-interactive shell.
+**On a CI runner**, set `IRIS_LICENCE_TOKEN` as a secret instead. The CLI reads it directly, so there is no login step in the pipeline.
+
+## The commands
+
+`iris auth login` is interactive: it asks whether you want to sign in through the browser or paste a token. It requires a terminal, and reports an error rather than hanging when it does not have one.
 
 ```bash
 # Interactive sign-in (choose browser or token when prompted)

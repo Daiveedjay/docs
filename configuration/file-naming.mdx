@@ -3,7 +3,11 @@ title: "File naming conventions"
 description: "Configure Free path-aware file naming checks with ordered role overrides, baseline-aware rollout, ignore globs, suggestions, and built-in exemptions."
 ---
 
-File naming checks are Free. Set a workspace fallback, then add path rules when components, hooks, routes, utilities, or packages follow different conventions. This works even when the files share one language or extension.
+Most projects use more than one naming convention: components in `PascalCase`, hooks in `camelCase`, and everything else in `kebab-case`.
+
+A rule keyed on language cannot express that, since a component and a composable are both TypeScript. Naming rules are therefore keyed on **where a file lives**. Set a fallback for the workspace, then add path rules for the directories that differ.
+
+File naming checks are Free.
 
 ```jsonc
 {

@@ -1,17 +1,18 @@
 ---
 title: "Inline Suppressions: Silence a Finding with a Documented Reason"
-sidebarTitle: "Inline Suppressions"
-description: "Suppress individual Iris Code findings with an iris-ignore comment. Every suppression requires a reason, stays visible in the sidebar and CLI, and can be capped or disabled by team leads."
-badge: "New"
+sidebarTitle: "Suppressions"
+description: "Silence one finding on one line without switching the rule off, and write down why you did it."
 ---
 
-Sometimes a finding is a deliberate choice: a `console.log` in a bootstrap script, a long function that reads better unsplit, an `any` at a genuinely untyped boundary. Inline suppressions let you silence a specific finding on a specific line without turning the whole rule off - and force whoever does it to write down why.
+Some findings are correct and the code is still right. A `console.log` in a CLI entry point is the program's output. A long function sometimes reads worse when split. An `any` at a boundary you do not control is the honest type.
 
-Suppressions are a **free** feature. The two team-control config fields are Pro.
+Inline suppressions silence one finding on one line, rather than switching the rule off for the whole project. The requirement is that you record why.
 
-## Syntax
+Suppressions are **free**. The two configuration fields that let a team put limits on them are Pro.
 
-Place an `iris-ignore` comment on the line directly above the finding you want to suppress:
+## Writing one
+
+Put the comment on the line directly above:
 
 ```typescript
 // iris-ignore: console-log -- CLI entry point, intentional user output
@@ -21,89 +22,90 @@ console.log(`Report written to ${outputPath}`)
 function onLegacyEvent(payload: any, a: string, b: string, c: string, d: string, e: string) {
 ```
 
-Python uses `#` comments:
+Python uses `#`:
 
 ```python
 # iris-ignore: insecure-random -- shuffling a UI carousel, not security-sensitive
 index = random.randint(0, len(slides) - 1)
 ```
 
-To suppress a rule across an entire file, use `iris-ignore-file` anywhere in the file:
+For a whole file, put `iris-ignore-file` anywhere in it:
 
 ```typescript
 // iris-ignore-file: console-log -- this whole module is a debug logger
 ```
 
-The format is the same in both cases:
+The shape is the same either way:
 
 ```
 // iris-ignore: <ruleId>[, <ruleId>...] -- <reason>
 ```
 
-- One or more rule ids, comma-separated.
-- A `--` separator followed by a **reason**. The reason is required, not decorative.
+One or more rule ids, then `--`, then a reason.
 
-## The reason is required
+## The reason isn't optional
 
-A directive that is missing its reason, names an unknown rule id, or names no rule at all suppresses **nothing**. Instead, it is reported as a **Bare Ignore** finding with its own health-score penalty (`healthScoreWeights.bareSuppression`, default `2`). This keeps the mechanism honest: a suppression is a documented decision, not a mute button.
+Leave the reason out, misspell the rule id, or name no rule at all, and the directive **suppresses nothing**. It gets reported as a **Bare Ignore** with its own score penalty instead.
 
 ```typescript
-// iris-ignore: console-log            <- bare: no reason, suppresses nothing
-// iris-ignore: consol-log -- typo     <- bare: unknown rule id, suppresses nothing
-// iris-ignore: console-log -- CLI output   <- valid
+// iris-ignore: console-log            <- no reason: suppresses nothing, costs points
+// iris-ignore: consol-log -- typo     <- unknown rule: suppresses nothing, costs points
+// iris-ignore: console-log -- CLI output   <- works
 ```
 
-## What can be suppressed
+This is deliberate. A suppression that costs nothing and explains nothing becomes a mute button rather than a decision, and months later there is no way to tell whether the `any` was reasoned about or simply inconvenient. Penalising an undocumented one keeps the mechanism meaningful.
 
-Eighteen rule ids are suppressible - every finding that carries a line position:
+## What you can suppress
+
+Eighteen rules, which is every finding that points at a specific line:
 
 | Rule id | Finding |
 |---|---|
-| `console-log` | Console / debug print statement |
-| `todo` | `TODO` / `FIXME` / `HACK` comment |
+| `console-log` | Console or debug print |
+| `todo` | `TODO` / `FIXME` / `HACK` |
 | `magic-number` | Raw numeric literal |
 | `long-param-list` | Long parameter list |
 | `unused-var` | Unused variable |
 | `unused-function` | Unused function |
 | `hardcoded-secret` | Hardcoded credential |
-| `eval-usage` | `eval()` / `exec()` call |
+| `eval-usage` | `eval()` / `exec()` |
 | `sql-concatenation` | SQL built by string concatenation |
 | `insecure-random` | Non-cryptographic RNG |
 | `unsafe-regex` | ReDoS-prone regex |
 | `hardcoded-localhost` | Hardcoded localhost URL |
-| `disabled-tls-verification` | TLS verification disabled |
+| `disabled-tls-verification` | TLS verification switched off |
 | `debug-flags-enabled` | Debug flag in production code |
-| `weak-hashing` | MD5 / SHA-1 hashing |
+| `weak-hashing` | MD5 or SHA-1 |
 | `open-redirect` | Unvalidated redirect |
-| `any-usage` | Explicit `any` type (TS/JS) |
+| `any-usage` | Explicit `any` |
 | `function-too-long` | Function over the length threshold |
 
-Findings without a line position cannot be suppressed: file-level metrics (file too long, too many functions, too many imports) and parse errors always count.
+Findings that aren't about a line can't be suppressed: file too long, too many functions, too many imports, and parse errors. Those always count.
 
-## Effect on the health score
+## What it does to your score
 
-Suppressed findings stop costing health-score points - the score is recomputed after suppressions are applied. They are never silently invisible, though: every suppressed finding stays counted and inspectable in the sidebar and CLI output.
+A suppressed finding stops costing points, since the score is recalculated after suppressions are applied. It does not disappear, though: it stays counted and listed in both the sidebar and CLI output, so a project accumulating suppressions is visibly doing so.
 
-A bare ignore works the other way: it suppresses nothing and *deducts* points (default `2` per bare directive, tunable via [Scoring Weights](/configuration/scoring-weights)).
+A bare ignore does the opposite: it suppresses nothing and takes points off, 2 by default, adjustable in [Scoring Weights](/configuration/scoring-weights).
 
-## Where suppressions surface
+## Where you see them
 
-**File tab** - a collapsible **Suppressed** section below Code Smells lists each suppressed finding with its rule, line, and reason. Bare ignores appear as a "Bare Ignores" smell row.
+**File tab** has a collapsible **Suppressed** section under Code Smells, with each rule, line and reason. Bare ignores show up as their own smell row.
 
-**Workspace and Folder tabs** - a **Suppressions** section shows the suppressed and bare-ignore counts plus the top files by suppression count. The **See all** button opens a full table of every suppression in the last scan, filterable by rule and text, with click-to-open at the exact line.
+**Workspace and Folder tabs** show suppressed and bare counts plus the worst offending files. **See all** opens the full table for the last scan, filterable, with click-to-open.
 
-**CLI** - `iris check` and `iris gate` always print the suppressed count. Add `--show-suppressed` to list each suppressed finding with its reason:
+**The CLI** always prints the count. `--show-suppressed` lists them:
 
 ```bash
 iris check src/ --show-suppressed
 iris gate --show-suppressed
 ```
 
-JSON reports (`--format json`) include a per-file `suppressed` array carrying the rule id, line, and reason for each suppression.
+`--format json` includes a per-file `suppressed` array with the rule, line and reason.
 
-## Team controls (Pro)
+## Keeping a lid on it (Pro)
 
-Two `.irisconfig.json` fields let team leads keep suppressions in check:
+Two fields in `.irisconfig.json`:
 
 ```json
 {
@@ -112,13 +114,13 @@ Two `.irisconfig.json` fields let team leads keep suppressions in check:
 }
 ```
 
-| Key | What it controls |
+| Key | What it does |
 |-----|-----------------|
-| `gateMaxSuppressions` | Per-file cap on suppressions. A file with more `iris-ignore` directives than this fails the gate - enforced by `iris gate`, the git pre-push hook, and the build hook. |
-| `ignoreSuppressions` | Kill-switch. Set to `true` and every `iris-ignore` directive becomes inert: suppressed findings count as live again, everywhere. Useful for audits or when suppressions are being used to dodge the gate rather than document exceptions. |
+| `gateMaxSuppressions` | Caps suppressions per file. Go over it and the file fails the gate, in `iris gate`, the pre-push hook and the build hook alike. |
+| `ignoreSuppressions` | The kill switch. Set it to `true` and every directive goes inert, so suppressed findings count as live again. Useful for an audit, or when suppressions have clearly become a way around the gate rather than a record of decisions. |
 
-The `strict` and `security` presets ship with a default cap (`gateMaxSuppressions: 5` and `3` per file) and a raised `bareSuppression` penalty (`3` and `4`). The other presets leave the cap unset, so there is no suppression limit until you configure one.
+The `strict` and `security` presets already set a cap (5 and 3 per file) and a heavier bare-ignore penalty (3 and 4). The other presets leave it unset, so there's no limit until you set one.
 
 <Tip>
-  Commit `.irisconfig.json` with `gateMaxSuppressions` set and the cap applies to everyone - a teammate cannot suppress their way past the gate file by file. See [Gate thresholds](/configuration/irisconfig#gate-thresholds) for the full list of gate fields.
+  Commit `.irisconfig.json` with `gateMaxSuppressions` set and the cap applies to everyone. Without it, a file can be brought under the gate by suppression rather than by fixing anything. See [Gate thresholds](/configuration/irisconfig#gate-thresholds).
 </Tip>

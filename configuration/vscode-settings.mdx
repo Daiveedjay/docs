@@ -4,7 +4,9 @@ sidebarTitle: "VS Code Settings"
 description: "All iris.* settings available in VS Code's settings UI (Ctrl+,). Configure thresholds, detection toggles, and display options per machine."
 ---
 
-VS Code settings (`Ctrl+,` → search **"Iris Code"**) configure Iris Code on a per-machine basis. These settings apply only to your local setup - to share thresholds across your whole team, use a `.irisconfig.json` at the project root instead. When both exist, `.irisconfig.json` takes priority over VS Code settings for any key it defines.
+These settings (`Ctrl+,`, then search **"Iris Code"**) apply to your machine only. They are not shared with the rest of the team.
+
+That makes them suitable for personal preferences and unsuitable for team standards. Anything everyone should be held to belongs in a `.irisconfig.json` committed at the project root. When both exist, the project file takes priority for any key it defines.
 
 ## Settings reference
 

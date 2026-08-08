@@ -1,14 +1,16 @@
 ---
 title: "Iris Code CLI: Code Health Enforcement from the Terminal"
 sidebarTitle: "Overview"
-description: "The @iris-code/cli package brings Iris Code health analysis to any terminal, build script, or CI pipeline. Twelve commands cover scanning, gating, secrets, security smells, deps, CVEs, SBOMs, and hooks."
+description: "The @iris-code/cli package brings Iris Code health analysis to any terminal, build script, or CI pipeline. Thirteen commands cover scanning, gating, secrets, security smells, dependencies, CVEs, SBOMs, Slack notifications, and hooks."
 ---
 
-The Iris Code CLI runs the same health analysis as Iris Code in your editor from any terminal, build script, or CI pipeline - no editor required. Install it once, point it at any file or directory, and get the same scores and findings you see inline in your editor.
+The same analysis, without an editor. Install it, point it at a file or a directory, and you get the scores and findings the sidebar would show you.
 
-## How it differs from the extension
+## When to use which
 
-The editor extension is **interactive**: it scores files as you work and surfaces findings inline while you type. The CLI is **non-interactive**: it scans, prints results, and exits with a code you can act on. Use the CLI wherever there is no editor - pre-commit hooks, build pipelines, and CI workflows.
+The extension is interactive. It scores files as you work and puts findings next to the code you are writing.
+
+The CLI is not. It scans, prints a result, and exits with a status code another tool can act on. That makes it the right choice for hooks, build scripts and CI pipelines, where no one is watching a sidebar and the only meaningful output is whether to continue.
 
 ## Installing
 
@@ -78,6 +80,7 @@ These commands require an active Iris Code Pro licence:
 - **`iris sbom`** - export a CycloneDX 1.5 software bill of materials, fully offline
 - **`iris todos`** - list every `TODO`, `FIXME`, and `HACK` comment across the project
 - **`iris gate`** - CI quality gate; exits `1` if any configured rule fails (`minHealthScore`, `gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`)
+- **`iris slack setup|test|manifest`** - configure and test Slack notifications sent directly from your own CI
 - **`iris hook install|uninstall`** - install or remove git pre-push and build hooks
 
 ## Next steps
@@ -87,7 +90,7 @@ These commands require an active Iris Code Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all twelve Iris Code CLI commands, flags, and exit codes.
+    Full reference for all thirteen Iris Code CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as a quality gate in GitHub Actions, GitLab CI, or any shell pipeline.

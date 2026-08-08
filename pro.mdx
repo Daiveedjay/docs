@@ -1,90 +1,90 @@
 ---
 title: "Iris Code Pro: Workspace Scans, Hooks, and Full Enforcement"
 sidebarTitle: "Iris Code Pro"
-description: "Iris Code Pro adds workspace scans, git and build hook enforcement, dependency CVE audits, custom config weights, and the full CLI suite. 14-day trial available by request."
+description: "Pro turns Iris Code from something that tells you about your code into something that stops bad code shipping. 14-day trial, no card."
 ---
 
-Iris Code Pro takes the health scores and saved Project Review you see in the free plan and turns them into current evidence and hard gates. It adds fresh workspace reviews, folder analysis, git and build hook enforcement, dependency CVE audits, custom configuration weights, Config Studio, unlimited trend history, the full CLI suite, and Account Insights. A **14-day free trial** with full Pro access is available by request, with no credit card required upfront.
+Free tells you what is wrong. Pro stops it shipping.
 
-## What's Included in Pro
+Free gives you unlimited file scores, clickable findings, secrets detection and one saved project review, which is enough to review your own work properly. What it does not give you is the ability to rescan the whole project whenever it changes, or to put a gate in front of a push.
 
-Free already includes unlimited file reviews, clickable findings, and one saved whole-project review. Pro includes everything in Free, plus:
+A **14-day trial** unlocks everything, and does not require a card.
 
-- **Fresh workspace reviews** - rescan your entire project whenever it changes and keep the aggregated evidence current
+## What you get
+
+Everything in Free, plus:
+
+- **Fresh workspace reviews** - rescan the whole project whenever it changes, rather than relying on one saved snapshot
 - **Folder analysis** - scoped scans for any directory in your project
-- **Gate Preview drilldown** - see exactly which files fail each preset, with scores and warning pills per file
-- **Git hook enforcement** - block pushes when any file falls below your minimum health score
-- **Build hook enforcement** - block builds below your health threshold before review starts
-- **Dependents table** - version audit and advisory scan for all project dependencies
-- **Issues tab** - blocking issues and warning-level findings across the latest scan scope, with blocker and warning filters
-- **TODOs tab** - all TODO, FIXME, and HACK items aggregated across your project
-- **Custom `.irisconfig.json`** - override individual thresholds, detections, and severity per rule
-- **Custom enforcement limits** - block on secret count, complexity ceiling, file size, smell density, or security smell count
-- **Custom scoring weights** - control how many points each finding type deducts via `healthScoreWeights`
-- **Config Studio** - full visual editor for gate limits, scoring weights, and global default sync
-- **Unlimited trend history** - track health score changes over time, week over week and month over month
-- **Full Pro CLI suite** - `iris gate` for CI pipelines, `iris deps` for dependency and CVE audits, `iris cve` for severity-gated CVE checks, `iris sbom` for CycloneDX SBOM export, `iris todos` for TODO aggregation, `iris hook install` and `iris hook uninstall`, and `iris check` for directory and staged file scans
-- **Account Insights** - enforcement activity dashboard showing hook pass/fail counts, push-blocked history, and daily usage
+- **Gate Preview drilldown** - which files fail each preset, with their scores
+- **Git hook enforcement** - blocks a push when any file falls below your threshold
+- **Build hook enforcement** - stops a failing build before compilation begins
+- **Dependents table** - version audit and CVE scanning for every dependency
+- **Issues tab** - every blocker and warning from the latest scan, filterable
+- **TODOs tab**, aggregating every TODO, FIXME and HACK in the project
+- **Custom `.irisconfig.json`** - override individual thresholds, detections and severities per rule
+- **Custom enforcement limits** - hard caps on secret count, complexity, file size, smell density and security smells
+- **Custom scoring weights** - control how many points each finding type deducts
+- **Config Studio** - build, preview and sync a config visually
+- **Unlimited trend history**, rather than two rolling snapshots
+- **The full CLI**: `iris gate` for CI, `iris deps` and `iris cve` for dependencies, `iris sbom`, `iris todos`, `iris hook install`, and `iris check` on directories and staged files
+- **Account Insights** - an enforcement activity dashboard covering hook results and blocked pushes
 
-## Free Trial
+## The trial
 
-You can request a 14-day Pro trial from your Iris Code account. Trial requests are reviewed before activation; signing in does not start a trial automatically. Once approved and activated, you get full access to everything listed above with no credit card needed upfront. After 14 days, the account reverts to the Free plan unless you subscribe.
-
-<Info>
-  The trial is the fastest way to evaluate enforcement. You get access to git and build hooks, workspace-wide drilldowns, and the full CLI suite for two weeks at no cost.
-</Info>
-
-## How to Upgrade
-
-<Steps>
-  <Step title="Go to the pricing page">
-    Visit [iriscode.co/pricing](https://iriscode.co/pricing). Pricing adjusts for your region automatically.
-  </Step>
-  <Step title="Request your free trial">
-    Click **Request free trial** and sign in with Google or GitHub. Submit the request from your account page. Iris Code activates Pro trial access after the request is approved and you accept the trial invitation.
-  </Step>
-</Steps>
+Request a 14-day trial from your Iris Code account. Requests are reviewed before activation, so signing in does not start one automatically. Once active you have everything listed above with no card required. After 14 days the account reverts to Free unless you subscribe.
 
 <Tip>
-  Before committing to a subscription, install a git or build hook and trigger a few blocked pushes or builds during your trial. Then check your Insights dashboard to see pass/fail counts and the health score delta since Pro activated - it gives you a concrete picture of what enforcement is catching.
+  The most useful way to evaluate the trial is to install a hook and let it block a few real pushes, then check Insights for the pass/fail counts and the score delta since activation. That gives a concrete picture of what enforcement is catching, which a feature list cannot.
 </Tip>
 
-## Sign In
+## Upgrading
 
 <Steps>
-  <Step title="Run the sign-in command">
-    In VS Code and its forks, open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris Code: Sign In**. In a JetBrains IDE, use **Tools > Iris Code > Sign In**.
+  <Step title="Open the pricing page">
+    Visit [iriscode.co/pricing](https://iriscode.co/pricing). Pricing adjusts for your region automatically.
   </Step>
-  <Step title="Sign in with Google or GitHub">
-    Your browser opens automatically. Sign in with your Google or GitHub account - no separate Iris Code password to create or remember.
+  <Step title="Request the trial">
+    Click **Request free trial**, sign in with Google or GitHub, and submit from your account page. Pro turns on once the request is approved and you accept the invitation.
+  </Step>
+</Steps>
+
+## Signing in
+
+<Steps>
+  <Step title="Run the command">
+    VS Code and forks: command palette, **Iris Code: Sign In**. JetBrains: **Tools → Iris Code → Sign In**.
+  </Step>
+  <Step title="Use Google or GitHub">
+    Your browser opens automatically. There is no separate Iris Code password to create or remember.
   </Step>
   <Step title="Return to your editor">
-    After signing in, you are redirected back to your editor automatically. No copy-pasting of tokens or codes required, and one sign-in covers your editors and the `iris` CLI. In JetBrains IDEs, analysis and the panel refresh in place, so Pro features activate without restarting the IDE.
+    You are redirected back automatically, with no token to copy. One sign-in covers your editors and the `iris` CLI. JetBrains IDEs refresh in place, so no restart is needed.
   </Step>
   <Step title="Pro features activate">
-    Pro features unlock instantly. The sidebar updates immediately - workspace scan, enforcement hooks, and all Pro tabs become available.
+    Pro unlocks immediately. The sidebar updates, and workspace scans, hooks and the Pro tabs become available.
   </Step>
 </Steps>
 
 <Note>
-  Iris Code never stores your password or any sensitive credentials. Only a licence key is saved: in VS Code's encrypted secret storage, or in a local credentials file that JetBrains IDEs and the `iris` CLI share.
+  Iris Code never stores your password. Only a licence key is saved: in VS Code's encrypted secret storage, or in a local credentials file shared by JetBrains IDEs and the CLI.
 </Note>
 
-## Managing Your Subscription
+## Your subscription
 
-Visit [iriscode.co/account/billing](https://iriscode.co/account/billing) to manage your plan:
+Visit [iriscode.co/account/billing](https://iriscode.co/account/billing) to:
 
-- View your current plan and renewal date
-- Choose card auto-renew or a one-time bank transfer checkout
-- Cancel or reactivate a card subscription
-- Update your payment method if a saved card expires
+- view your current plan and renewal date
+- choose card auto-renew or a one-time bank transfer checkout
+- cancel or reactivate a card subscription
+- update a payment method if a saved card expires
 
-If you use card auto-renew, you can cancel at any time and retain Pro access until the end of the current billing period.
+Cancelling a card subscription retains Pro access until the end of the current billing period.
 
 <Note>
-  If you are billed in Nigeria, Iris Code can open a Paystack bank-transfer checkout for manual renewal. Paystack generates a transaction-specific account number you can pay from **OPay**, **Kuda**, **Moniepoint**, **PalmPay**, or your regular bank app. That account number typically expires after about 30 minutes. When you want to renew the following month, Iris Code opens a fresh transfer checkout with a new account number.
+  If you are billed in Nigeria, Iris Code can open a Paystack bank-transfer checkout instead. Paystack generates a transaction-specific account number you can pay from **OPay**, **Kuda**, **Moniepoint**, **PalmPay** or your usual bank app. It expires after about 30 minutes, and a fresh one is generated for the next renewal.
 </Note>
 
-## What Happens if Payment Fails
+## If a payment fails
 
-Paystack retries the charge automatically over a few days. Your Pro access stays active throughout the retry window. If all retries fail, your subscription is cancelled and your account reverts to the Free plan. Iris Code sends you an email notification if this happens so you can update your payment method and resubscribe.
+Paystack retries the charge automatically over several days, and Pro access stays active throughout. If every retry fails, the subscription is cancelled and the account reverts to Free. Iris Code emails you when that happens so you can update your payment method.

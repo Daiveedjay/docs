@@ -1,67 +1,51 @@
 ---
 title: "Install Iris Code: VS Code, JetBrains, and CLI Setup Guide"
 sidebarTitle: "Installation"
-description: "Install Iris Code from the VS Code Marketplace, as a .vsix file in Cursor, Windsurf, or VSCodium, or from the JetBrains Marketplace for IntelliJ IDEA, WebStorm, PyCharm, and GoLand. CLI available via npm for terminal and CI use."
+description: "Install Iris Code from your editor's marketplace, from a .vsix file, or as an npm package for terminals and CI."
 ---
 
-Iris Code installs in four ways: directly from the VS Code Marketplace for automatic updates, as a `.vsix` file for manual installation in any VS Code-compatible editor, from the JetBrains Marketplace for IntelliJ IDEA and the other JetBrains IDEs, or as a global npm package for terminal and CI use. Most users should start with their editor's marketplace - it handles updates automatically and requires no extra steps. If your editor isn't connected to a marketplace, or you need a specific version, use the `.vsix` route. Install the CLI separately whenever you want to run scans and gates outside the editor.
+Most people should install from their editor's marketplace. It handles updates automatically and needs no extra steps.
 
-Every host runs the same analysis engine, so a file scores identically in each one, and a single sign-in is shared between your editors and the CLI.
+The other routes exist for specific situations: a `.vsix` file when a machine cannot reach a registry, and npm when you want the CLI for terminals and CI.
 
-## VS Code Marketplace (Preferred)
+Every route runs the same analysis engine, so a file scores identically in each, and one sign-in covers your editors and the CLI together.
 
-The Marketplace install gives you automatic updates and the simplest setup path. Listing: [marketplace.visualstudio.com/items?itemName=davidjaja.iris-code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code).
+## VS Code
 
-<Steps>
-  <Step title="Open the Extensions panel">
-    Press `Ctrl+Shift+X` on Windows/Linux or `Cmd+Shift+X` on macOS to open the Extensions panel in VS Code.
-  </Step>
-  <Step title="Search for Iris Code">
-    Type **Iris Code** in the search box. Look for the extension published by **davidjaja**.
-  </Step>
-  <Step title="Install the extension">
-    Click **Install**. VS Code downloads and activates the extension immediately - no restart required.
-  </Step>
-  <Step title="Confirm the install">
-    The Iris Code icon appears in the Activity Bar. Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file - the Iris Code sidebar populates instantly with no configuration required.
-  </Step>
-</Steps>
-
-## Open VSX (Cursor, Windsurf, VSCodium, Trae)
-
-These editors read the [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code) registry rather than the VS Code Marketplace, and Iris Code publishes the **byte-identical build** to both. So the in-editor install works exactly as it does in VS Code, and updates arrive automatically.
+Listing: [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code).
 
 <Steps>
-  <Step title="Open the Extensions panel">
-    Press `Ctrl+Shift+X` on Windows/Linux or `Cmd+Shift+X` on macOS.
+  <Step title="Open Extensions">
+    Press `Ctrl+Shift+X` on Windows and Linux, or `Cmd+Shift+X` on macOS.
   </Step>
-  <Step title="Search for Iris Code">
-    Type **Iris Code** and look for the extension published by **davidjaja**.
+  <Step title="Search Iris Code">
+    Look for the extension published by **davidjaja**.
   </Step>
   <Step title="Install">
-    Click **Install**. No restart required, and no `.vsix` to manage by hand.
+    VS Code downloads and activates it immediately. No restart is required.
+  </Step>
+  <Step title="Confirm the install">
+    The Iris Code icon appears in the Activity Bar. Open a `.js`, `.ts`, `.vue`, `.svelte`, `.go` or `.py` file and the sidebar populates with no configuration.
   </Step>
 </Steps>
 
+## Cursor, Windsurf, VSCodium, Trae
+
+These editors read [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code) rather than the Visual Studio Marketplace. Iris Code publishes the **identical build** to both, so the in-editor install works the same way and updates still arrive automatically.
+
+Open the Extensions panel, search for **Iris Code**, and click Install.
+
 <Note>
-  You do not need the manual `.vsix` route for these editors. Use it only if your environment cannot reach a registry at all.
+  The manual `.vsix` route is not needed for these editors. Use it only if your environment cannot reach a registry at all.
 </Note>
 
-## Manual VSIX Install
+## Installing from a file
 
-Download the `.vsix` and install it yourself when your environment has no registry access, for example an air-gapped or locked-down machine.
+For air-gapped or locked-down machines, or when you need a specific version.
 
-**Download URL:** [`https://www.iriscode.co/downloads/iris-code.vsix`](https://www.iriscode.co/downloads/iris-code.vsix)
+**Download:** [`iriscode.co/downloads/iris-code.vsix`](https://www.iriscode.co/downloads/iris-code.vsix)
 
-Once you have the file, install it using your editor's GUI or the command line:
-
-**Via the GUI (works in all editors):**
-
-1. Open the Extensions panel (`Ctrl+Shift+X` / `Cmd+Shift+X`)
-2. Click the **⋯** menu at the top right of the panel
-3. Select **Install from VSIX...** and choose the downloaded file
-
-**Via the command line:**
+Install it through the GUI, using the Extensions panel → the **⋯** menu → **Install from VSIX...**, or from the command line:
 
 <Tabs>
   <Tab title="VS Code">
@@ -87,33 +71,37 @@ Once you have the file, install it using your editor's GUI or the command line:
 </Tabs>
 
 <Warning>
-  Manual VSIX installs do not auto-update. When a new version of Iris Code is released, you need to re-download the `.vsix` file from `iriscode.co/downloads/iris-code.vsix` and re-install it using the same steps above.
+  Installing from a file means no automatic updates. Each new version has to be downloaded and installed again manually.
 </Warning>
 
 ## JetBrains IDEs
 
-Iris Code runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion, and Android Studio. Listing: [plugins.jetbrains.com/plugin/33168-iris-code](https://plugins.jetbrains.com/plugin/33168-iris-code).
+Works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion and Android Studio. Listing: [plugins.jetbrains.com](https://plugins.jetbrains.com/plugin/33168-iris-code).
 
 <Steps>
   <Step title="Install LSP4IJ first">
-    Open **Settings → Plugins → Marketplace**, search for **LSP4IJ**, and install it. Iris Code uses it to talk to its analysis engine. If you install Iris Code from disk rather than the Marketplace, dependencies are not pulled automatically and Iris Code will not load without LSP4IJ.
+    Open **Settings → Plugins → Marketplace**, search for **LSP4IJ**, and install it. Iris Code communicates with its analysis engine through it.
+
+    The Marketplace resolves this dependency automatically. Installing Iris Code from a file does not, and Iris Code will not load without LSP4IJ.
   </Step>
   <Step title="Install Iris Code">
-    In the same **Marketplace** tab, search for **Iris Code** and click **Install**.
+    In the same **Marketplace** tab, search for **Iris Code** and click Install.
   </Step>
   <Step title="Restart the IDE">
-    Use a full restart, not a plugin reload. JetBrains registers file-type associations at startup, so a reload leaves `.irisconfig.json` handled incorrectly.
+    Use a full restart rather than a plugin reload. JetBrains registers file-type associations at startup, so a reload leaves `.irisconfig.json` handled incorrectly.
   </Step>
   <Step title="Confirm the install">
-    Open any `.js`, `.jsx`, `.ts`, `.tsx`, `.go`, or `.py` file - findings appear as squiggles, and the **Iris Code** tool window on the right shows the full panel. Sign in from **Tools → Iris Code → Sign In**.
+    Open a supported file. Findings appear as squiggles, and the **Iris Code** tool window on the right shows the full panel. Sign in from **Tools → Iris Code → Sign In**.
   </Step>
 </Steps>
 
-### JSON standard does not allow comments
+### "JSON standard does not allow comments"
 
-`.irisconfig.json` is JSONC - the presets Iris Code generates are commented so each setting explains itself. Iris Code registers the file with the IDE's JSON5 file type so those comments are valid. If you see this error anyway, your IDE is holding a user-level override that cancels the plugin's registration.
+If `.irisconfig.json` reports this error, your IDE is holding a user-level override that cancels the file-type registration Iris Code ships.
 
-This happens when a plugin that contributes a file-type mapping is uninstalled - updating Iris Code by uninstalling and reinstalling is enough to trigger it. The override lives in your IDE settings rather than in the plugin, so **reinstalling, updating, or restarting will not clear it**.
+Iris Code writes configs as JSONC, with a comment on each setting so the file explains itself, and registers the file with the JSON5 file type so those comments are valid. When a plugin contributing a file-type mapping is uninstalled, IntelliJ records a permanent override cancelling it, and updating Iris Code by uninstalling and reinstalling is enough to trigger that.
+
+The override lives in your IDE settings rather than in the plugin, which is why **reinstalling, updating and restarting will not clear it**.
 
 <Steps>
   <Step title="Open the file type settings">
@@ -123,53 +111,41 @@ This happens when a plugin that contributes a file-type mapping is uninstalled -
     Choose **JSON5** in the **Recognized File Types** list.
   </Step>
   <Step title="Add the pattern back">
-    In **File name patterns** below, click **+**, enter `.irisconfig.json`, then click **OK** and **Apply**. If the IDE warns that the pattern was previously removed, accept it - that is the override being cleared. No restart is needed.
+    Under **File name patterns**, click **+**, enter `.irisconfig.json`, then click OK and Apply. If the IDE warns that the pattern was previously removed, accept it: that is the override being cleared. No restart is needed.
   </Step>
 </Steps>
 
 <Note>
-  Prefer editing the file directly? Close the IDE completely, remove the line `<removed_mapping pattern=".irisconfig.json" approved="true" type="JSON5" />` from `filetypes.xml` in your IDE's configuration directory, then reopen. A running IDE rewrites that file when it exits, so the IDE must be closed first.
+  Prefer editing the file directly? Close the IDE completely, remove the line `<removed_mapping pattern=".irisconfig.json" approved="true" type="JSON5" />` from `filetypes.xml` in your IDE's configuration directory, then reopen. The IDE must be closed first, since a running instance rewrites that file when it exits.
 </Note>
 
 <Warning>
-  Do not fix this under **Settings → Languages & Frameworks → Schemas and DTDs**. That screen maps JSON *schemas* to files and its version dropdown lists schema drafts, not file types - JSON5 never appears there. Iris Code configs already carry a `$schema` line, so schema mapping needs no manual entry.
+  Do not attempt to fix this under **Settings → Languages & Frameworks → Schemas and DTDs**. That screen maps JSON *schemas* rather than file types, and JSON5 never appears there. Iris Code configs already carry a `$schema` line, so no manual entry is needed.
 </Warning>
 
-## CLI Install
+## The CLI
 
-The Iris Code CLI lets you scan files, run enforcement gates, audit dependencies, and aggregate TODOs from any terminal or CI pipeline - no VS Code required.
-
-Install it globally with npm:
+The CLI runs scans, enforcement gates and dependency audits from any terminal or CI pipeline, with no editor involved.
 
 ```bash
 npm install -g @iris-code/cli
-```
-
-Verify the installation:
-
-```bash
 iris --version
 ```
 
 <Note>
-  The CLI requires **Node.js 18 or later**. Run `node --version` to check. If you need to upgrade Node, visit [nodejs.org](https://nodejs.org) or use a version manager like `nvm`.
+  Requires **Node.js 18 or later**. Check with `node --version`. Very new Node releases occasionally run ahead of tooling support, so an LTS release is the safer choice.
 </Note>
 
-## System Requirements
+## System requirements
 
-| Component | Requirement |
+| | Requirement |
 |---|---|
-| **VS Code** | Version 1.85 or later |
-| **Compatible editors** | Cursor, Windsurf, VSCodium (any VS Code-compatible editor) |
-| **JetBrains IDEs** | 2024.2 or later, plus the LSP4IJ plugin |
-| **Node.js (CLI only)** | Version 18 or later |
-| **Operating system** | Windows, macOS, Linux |
+| **VS Code** | 1.85 or later |
+| **Forks** | Cursor, Windsurf, VSCodium, Trae, Positron |
+| **JetBrains** | 2024.2 or later, plus LSP4IJ |
+| **Node.js** | 18 or later, CLI only |
+| **OS** | Windows, macOS, Linux |
 
-**Supported languages:**
+Languages: TypeScript, JavaScript, Vue, Svelte, Go and Python. Full list of extensions and caveats in [Supported languages](/features/language-support).
 
-- TypeScript - `.ts`, `.tsx`
-- JavaScript - `.js`, `.jsx`, `.mjs`, `.cjs`
-- Go - `.go`
-- Python - `.py`
-
-No additional language servers, compilers, or runtimes are required for the extension. Iris Code analyses your files in-process using its own static analysis engine.
+No additional language servers, compilers or runtimes are required. Iris Code analyses files in-process using its own static analysis engine.

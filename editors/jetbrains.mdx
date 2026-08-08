@@ -1,0 +1,56 @@
+---
+title: "Iris Code in JetBrains IDEs"
+sidebarTitle: "JetBrains"
+description: "Install and use the Iris Code plugin in IntelliJ IDEA, WebStorm, GoLand, PyCharm and the rest of the JetBrains family, including the two install traps worth knowing about."
+---
+
+The JetBrains plugin runs the same analysis engine and renders the same panel as VS Code, rather than a reduced version of it.
+
+It supports IntelliJ IDEA, WebStorm, GoLand, PyCharm, PhpStorm, RubyMine, Rider and CLion, from 2024.2 onwards.
+
+## Install
+
+<Steps>
+<Step title="Install from the Marketplace">
+**Settings > Plugins > Marketplace**, search for **Iris Code**, install.
+</Step>
+<Step title="Restart the IDE fully">
+Not a plugin reload, a full restart. See the note below on why this matters.
+</Step>
+<Step title="Open the tool window">
+**View > Tool Windows > Iris Code**, or **Tools > Iris Code: Open Panel**.
+</Step>
+</Steps>
+
+<Warning>
+**Installing from disk does not pull dependencies.** The plugin depends on LSP4IJ, which the Marketplace resolves automatically. If you install the `.zip` by hand, install LSP4IJ first or the plugin will not start.
+</Warning>
+
+<Warning>
+**Restart the IDE fully after installing or updating.** File-type associations register at startup, so a hot-reloaded plugin leaves `.irisconfig.json` parsed as strict JSON, which reports every comment in it as an error. A restart fixes it.
+
+If the file is still flagged after a restart, your IDE may be holding a user-level override from an earlier uninstall. Check **Settings > Editor > File Types > JSON5** and add `.irisconfig.json` to its patterns.
+</Warning>
+
+## Sign in
+
+**Tools > Iris Code: Sign In**, or run `iris auth login` in a terminal. Both write the same `~/.iris/credentials` file, so one sign-in covers the plugin, the CLI, your hooks and CI.
+
+## What you get
+
+The tool window is the same panel as the VS Code sidebar, rendered by the same code: File, Folder, Workspace, Issues and TODO tabs, gate preview, trends, and every table. The tables open as editor tabs. Diagnostics, hover, code lens and quick fixes come through LSP4IJ. Clicking a file opens it at the right line, "Update dependency" runs in a real terminal, duplicate pairs open in the IDE's own diff viewer, and hook installation asks before touching your repository.
+
+Twenty-five actions are available from **Find Action** (`Ctrl+Shift+A`). They are all named `Iris Code: ...` so typing "iris" finds every one of them.
+
+## What it does not have
+
+- No detached panel. The tool window can be widened or floated using the IDE's own controls.
+- No guided onboarding tour. The docs are the tour.
+- No project-view badge for file-naming violations. The violations still appear in the Problems panel and the naming table.
+- No push-blocked counter panel.
+
+Config sync from the dashboard works, but through a pasted one-time code rather than a link: JetBrains has no URL scheme a plugin can claim. Use **Tools > Iris Code: Sync Config from Dashboard** and paste the code the dashboard shows you. You get a real diff and a confirmation before anything is written.
+
+## Panel appearance
+
+The panel follows your IDE theme and UI scale, including live theme switches. If it ever looks out of step with the rest of the IDE after changing your interface font, reopening the tool window re-applies the scale.

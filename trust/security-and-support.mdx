@@ -3,13 +3,13 @@ title: "Iris Code Security, Privacy, and Support"
 description: "Understand Iris Code's local-analysis boundary, network requests, workspace writes, credential storage, and private vulnerability-reporting process."
 ---
 
-Iris Code is built and maintained by [David Jaja](https://iriscode.co/about). The product and public brand are **Iris Code**; the shorter `iris` name is used only for technical identifiers such as the CLI command, settings, and config files.
+Iris Code is built and maintained by [David Jaja](https://iriscode.co/about). The product is **Iris Code**; the shorter `iris` only survives in technical identifiers like the CLI command and the config filename.
 
-## Source analysis stays local
+## Your code doesn't leave your machine
 
-Iris Code analyses source code on your machine. Source files, file contents, project names, and workspace structure are not uploaded to an Iris Code analysis service or an AI model.
+Analysis happens in the process running on your computer. Your source, your file contents, your project name and your folder structure are not uploaded to us, and no AI model sees any of it.
 
-The extension reads supported files in the open workspace to calculate health scores, find duplicate code and security smells, and provide editor diagnostics. The CLI applies the same local analysis engine.
+The extension reads the supported files in your open workspace to work out scores, duplicates and security smells. The CLI does the same thing with the same engine. Neither sends any of it anywhere.
 
 ## Network requests
 

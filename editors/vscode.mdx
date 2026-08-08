@@ -1,0 +1,117 @@
+---
+title: "Iris Code in VS Code"
+sidebarTitle: "VS Code"
+description: "Install Iris Code in VS Code, sign in, and use the sidebar, Code Lens, status bar and detached panel."
+---
+
+VS Code is the reference host. Every feature ships here first, and the [support matrix](/editors/overview) is measured against it.
+
+## Getting started
+
+<Steps>
+<Step title="Install the extension">
+Search for **Iris Code** in the Extensions view, or install `davidjaja.iris-code` from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code).
+</Step>
+<Step title="Open a project">
+Iris Code activates on JavaScript, TypeScript, JSX, TSX, Vue, Svelte, Go and Python files. Its icon appears in the Activity Bar.
+</Step>
+<Step title="Open a file">
+The score, metrics and findings appear in the sidebar immediately. No configuration is needed to start.
+</Step>
+</Steps>
+
+## Signing in
+
+Run **Iris Code: Sign In** from the command palette. Your browser opens, you authorise, and the licence key is returned to the editor and stored in VS Code's secret storage.
+
+That does not sign in the CLI. For hooks and CI, run `iris auth login` as well, which writes `~/.iris/credentials`.
+
+## Code Lens
+
+Iris Code adds an inline hint above functions that exceed the configured length threshold, and next to specific debug-print patterns. The hints are language-aware, so you only see signals relevant to the file you are editing.
+
+| Language | What gets flagged |
+|---|---|
+| **TypeScript / JavaScript** | Every `@ts-ignore`, and every `console.log` / `console.warn` / `console.error` |
+| **Go** | `fmt.Print*` and `log.*` calls |
+| **Python** | `print()` calls |
+
+```ts
+// payment.ts
+
+const stripe = new Stripe(process.env.KEY!);
+
+// Iris Code · console.log left in · 2 occurrences
+export async function processPayment(amount: number) {
+  console.log("processing:", amount);
+  const charge = await stripe.charges.create({
+    amount, currency: 'usd'
+  });
+  console.log("charge id:", charge.id);
+  return charge;
+}
+```
+
+To turn them off:
+
+```json
+{
+  "iris.enableCodeLens": false
+}
+```
+
+## Status bar
+
+The status bar shows three live metrics for the active file: health score, line count and function count. It changes colour when the score or complexity crosses a threshold, giving you an ambient signal without having to check.
+
+```
+⚠ Iris Code 64 · 379 lines · 12 fns
+```
+
+```json
+{
+  "iris.enableStatusBar": false
+}
+```
+
+## Detached panel
+
+The sidebar is narrow. The detached panel moves Iris Code into a full editor column beside your code, which is easier when reading a long findings breakdown.
+
+Click the **pop-out icon** in the sidebar title bar, or run **Iris Code: Open in Panel**. The same action closes it.
+
+- **Auto-refreshes** as you switch files or save.
+- **Two-column layout** at 700px or wider: stats on the left, findings on the right.
+- **The sidebar shows a placeholder** while the panel is open, so the same data is never displayed twice.
+- **Findings stay clickable**, opening the exact source line.
+
+```
+Iris Code (Panel) — cancel-order-modal.tsx
+
+Enforcement Snapshot
+Needs cleanup before it becomes a gate problem
+score 64 · 2 blockers · trend -4
+
+Lines    379    Code  349
+Fns       12    Imports  6
+
+Code Smells
+  console.log       2
+  Magic Numbers     7
+  Unused Vars       1
+  Unused Fns        0
+```
+
+<Note>
+  The detached panel is available on all plans, as are Code Lens and the status bar.
+</Note>
+
+## What you get
+
+Everything: the sidebar with File, Folder, Workspace, Issues and TODO tabs, inline diagnostics, quick fixes, the onboarding tour, the Explorer file-naming badge, every table view, the duplicate diff, Review My Changes, hook and CI installation, and dashboard config sync over the `iris-code://` deep link.
+
+## Settings
+
+Iris Code reads `.irisconfig.json` from your project first, then VS Code settings. Prefer the project file for anything a teammate should also get, since it travels with the repository.
+
+See [Configuration](/configuration/irisconfig) for the fields, and [VS Code settings](/configuration/vscode-settings) for the editor-level toggles.

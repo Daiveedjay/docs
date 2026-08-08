@@ -1,10 +1,12 @@
 ---
 title: "Git Hook: Block Weak Code Before It Leaves Your Machine"
 sidebarTitle: "Git Hook"
-description: "Install Iris Code's git pre-push hook to automatically block any push where a file scores below your configured health threshold. Requires Iris Code Pro."
+description: "A pre-push hook that checks your project before every push and blocks the ones that fall below your threshold."
 ---
 
-The Iris Code git pre-push hook intercepts every `git push` before it leaves your machine. If any file in your workspace scores below your configured health threshold, the push is blocked and the offending files are listed - so broken code never reaches your remote.
+The pre-push hook runs in front of `git push`. If any file in your project scores below your threshold, the push is blocked and the offending files are listed.
+
+Catching it here means nothing reaches the remote, so there is nothing to revert and no one else has to review it first.
 
 <Note>
   The git pre-push hook requires **Iris Code Pro**.
@@ -12,18 +14,11 @@ The Iris Code git pre-push hook intercepts every `git push` before it leaves you
 
 ## Installing
 
-Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the hook to `.git/hooks/pre-push` and makes it executable automatically. On first activation in a git repo, Iris Code offers to install the hook for you - if you dismiss the prompt, that decision is stored per-workspace and you won't be prompted again.
+Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes `.git/hooks/pre-push` and makes it executable.
 
-## What the hook does
+On first activation in a git repository, Iris Code also offers to install it for you. Declining is remembered per workspace, so you are not asked again.
 
-Each time you run `git push`, the hook:
-
-- Resolves the workspace root via `git rev-parse --show-toplevel`
-- Runs `iris check` against your workspace using the bundled CLI
-- Blocks the push and lists offending files if any file score falls below `minHealthScore`
-- Exits cleanly and allows the push to proceed if all files pass
-
-Here is an example terminal session with one failing file:
+## What happens on push
 
 ```bash
 $ git push origin main
@@ -36,9 +31,11 @@ Checking workspace against threshold 70...
 Push blocked — 1 file below threshold (70)
 ```
 
+The hook resolves your project root, runs `iris check` using the bundled CLI, and either blocks with the list above or exits cleanly and allows the push.
+
 ## Configuring the threshold
 
-Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum acceptable score. The default is `70` if the key is absent.
+Set `minHealthScore` in `.irisconfig.json` to control the minimum acceptable score. It defaults to 70.
 
 ```json
 {
@@ -46,16 +43,23 @@ Set `"minHealthScore"` in your `.irisconfig.json` to control the minimum accepta
 }
 ```
 
-Pro users can also enable `"gateBaselineMode": true` so existing files are judged against their locked baseline score instead of only the absolute minimum. New files still use `minHealthScore` - useful for older codebases that want to stop regressions without requiring a full cleanup upfront.
+On an established codebase, an absolute threshold can block a large share of the project from the first day, which usually ends with the hook being uninstalled. `gateBaselineMode` avoids that. Each existing file is judged against its own locked score, so the rule becomes "do not make this worse" rather than "fix everything first". New files still have to clear `minHealthScore`.
+
+```json
+{
+  "minHealthScore": 70,
+  "gateBaselineMode": true
+}
+```
 
 <Tip>
-  The hook chains safely with any existing pre-push hook content. Iris Code appends its block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, leaving anything already in the file untouched.
+  An existing pre-push hook is left intact. Iris Code appends its own block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, so anything already in the file continues to run.
 </Tip>
 
 ## Insights tracking
 
-Every git hook run is logged in your account Insights as a pass or fail, so you can track enforcement activity over time without digging through terminal history. View the breakdown at [iriscode.co/account/insights](https://iriscode.co/account/insights).
+Every hook run is recorded as a pass or fail in your account Insights, so enforcement activity is visible over time without reading terminal history. See [iriscode.co/account/insights](https://iriscode.co/account/insights).
 
 ## Uninstalling
 
-Run **Iris Code: Uninstall Git Hook** from the command palette. Iris Code removes only its own block between the markers. If removing the block leaves only a shebang line, the hook file is deleted entirely.
+Run **Iris Code: Uninstall Git Hook**. Only the Iris Code block between the markers is removed. If that leaves nothing but a shebang, the hook file is deleted.

@@ -1,0 +1,149 @@
+---
+title: "Slack Notifications for Gate Runs"
+sidebarTitle: "Slack Notifications"
+description: "Send Iris Code gate results to a Slack channel. Your CI builds the message and sends it, so your file paths never touch our servers."
+---
+
+A failed build is only visible to whoever opens the build log. Everyone else finds out later.
+
+Sending the result to a Slack channel makes it visible to the team at the moment it happens. One command sets it up:
+
+```bash
+iris slack setup
+```
+
+It asks for a webhook URL, sends a test message so you watch it arrive, and tells you the one secret to add to your CI. Your existing Iris Code step doesn't change.
+
+## What lands in the channel
+
+```
+❌ Iris Code gate failed
+acme/api · main
+
+2 rules broken across 40 files.
+
+Workspace score            Files analysed
+58/100 · min 70            40
+─────────────────────────────────────────
+🚨 Max secrets  ·  Found 1 hardcoded secret (maximum 0)
+src/config.ts              1 secret
+
+⚠️ Max complexity  ·  3 files exceed maximum complexity 15
+src/billing/charge.ts      complexity 24
+src/auth/session.ts        complexity 19
+src/orders/reconcile.ts    complexity 17
+
+[ View CI run ]
+```
+
+A red stripe runs down the left edge on failure and a green one on success, so the outcome is readable without opening the message. In CI, each file name links directly to that file at that commit.
+
+**It stays quiet when the gate passes.** A message on every successful build trains people to ignore the channel. Add `--slack-on always` if you would rather have the confirmation.
+
+## What it does not send
+
+File names, scores, rule names and counts. Nothing else.
+
+It does not include your code, the text of a finding, the value of a detected secret (masked or otherwise), or the line it appeared on. When more than ten files break the same rule, the message shows ten and states how many were omitted rather than silently shortening the list.
+
+Iris Code builds the message on your machine and posts it directly to Slack. It never passes through our servers, which is the reason it can name your files at all. If we relayed it, we would be collecting your file paths, and paths reveal product names, client names and unreleased features.
+
+That is also why the webhook URL cannot be set in `.irisconfig.json`. That file is committed to your repository, so anyone able to open a pull request could redirect your team's file paths to a URL of their own.
+
+## Setting it up
+
+<Steps>
+<Step title="Make the channel">
+Create the channel you want reports in, say `#code-health`. Slack's picker only shows channels that already exist.
+</Step>
+
+<Step title="Create the Slack app">
+```bash
+iris slack manifest
+```
+
+That prints a link. Open it and Slack shows you an app that's already named, described and set up for webhooks. Click **Create**, then **Incoming Webhooks → Add New Webhook to Workspace**, pick your channel, click **Allow**.
+
+Copy the URL. It starts with `https://hooks.slack.com/services/`.
+
+Private channel? Also run `/invite @Iris Code` in it.
+</Step>
+
+<Step title="Test it">
+```bash
+iris slack setup
+```
+
+Paste the URL. It checks the shape, sends a real message to your channel, and prints exactly what to add for your CI provider. If the message doesn't show up, you find out now rather than after wiring up a pipeline.
+</Step>
+
+<Step title="Add the secret">
+Add `IRIS_SLACK_WEBHOOK` as a secret in your CI, with the webhook URL as the value. Nothing else changes.
+
+<Tabs>
+<Tab title="GitHub Actions">
+Settings → Secrets and variables → Actions → **New repository secret**. Then pass it to the step you already have:
+
+```yaml
+- name: Iris Code gate
+  run: iris gate . --format github
+  env:
+    IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+    IRIS_SLACK_WEBHOOK: ${{ secrets.IRIS_SLACK_WEBHOOK }}
+```
+
+If you used **Iris Code: Add GitHub Actions Workflow**, that line is already in your file, commented out.
+</Tab>
+
+<Tab title="GitLab CI">
+Settings → CI/CD → Variables → **Add variable**, with **Mask variable** ticked. GitLab exposes project variables to every job, so your `.gitlab-ci.yml` needs no change.
+</Tab>
+
+<Tab title="Bitbucket">
+Repository settings → **Repository variables**, and tick **Secured**. Your `bitbucket-pipelines.yml` doesn't change.
+</Tab>
+
+<Tab title="Anywhere else">
+```bash
+export IRIS_SLACK_WEBHOOK="https://hooks.slack.com/services/..."
+iris gate .
+```
+</Tab>
+</Tabs>
+</Step>
+</Steps>
+
+Treat the URL like a password. Anyone who has it can post to that channel. If it leaks, delete the row on the Incoming Webhooks page and add a new one; the old URL dies immediately.
+
+## Making it look like yours
+
+The name and picture on the message come from the Slack app you made, not from us. Change them at **Basic Information → Display Information**: the app name, a square icon of at least 512x512, and a short description.
+
+<Frame>
+  <img src="/logo/iris-slack-icon.png" alt="Iris Code Slack app icon" width="192" height="192" />
+</Frame>
+
+<a href="/logo/iris-slack-icon.png" download="iris-code-slack-icon.png">Download the 512x512 Iris Code Slack icon</a> and upload it under **App icon**. This is optional; Slack delivery works without it.
+
+## Commands and flags
+
+| Command | What it does |
+|---|---|
+| `iris slack setup` | Checks your webhook, sends a test message, tells you what to add to CI |
+| `iris slack test` | Sends another test message using the webhook you've configured |
+| `iris slack manifest` | Prints the link that creates a pre-configured Slack app |
+
+| Flag | What it does |
+|---|---|
+| `--slack-on always` | Report passing runs too, not just failures |
+| `--slack-dry-run` | Print the message instead of sending it |
+
+`IRIS_SLACK_WEBHOOK` is the only place Iris reads the webhook, and it works with both `iris gate` and `iris check`. The URL is a posting credential, so Iris never accepts it as a command-line argument or reads it from `.irisconfig.json`; that keeps it out of shell history, process listings and committed files.
+
+## Behaviour worth knowing
+
+**A Slack outage cannot affect your build.** If the message fails to send, Iris Code writes a single warning line to stderr and exits with the code the gate decided. A notification problem never turns a passing build red, or a failing one green.
+
+**Only Slack hosts are accepted.** Any URL that is not `https://hooks.slack.com` is refused, and refused before the scan runs so the error is immediate. The message contains your file paths, so a mistyped URL must not be able to send them elsewhere.
+
+**Local runs work too.** You get the message, the colour, the score and the file list. File names are not clickable, because outside CI there is no commit to link them to.
