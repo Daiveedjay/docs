@@ -16,7 +16,7 @@ It opens with a readiness summary: the score, any blockers, whether a hook is in
 |---|---|
 | **Health score** | 0 to 100, reduced by warnings, secrets, security smells, deep nesting, long functions and debug prints |
 | **Trend** | Movement since the previous snapshot, once trend history exists |
-| **Language badge** | Go, TypeScript, JavaScript or Python, in the header |
+| **Language badge** | Go, TypeScript, JavaScript, Python or Ruby, in the header |
 | **Line counts** | Total, blank, and actual code |
 | **Complexity** | 1 to 10, from function density, nesting, control flow and imports |
 | **Functions** | Every detected function with its line number, clickable |
@@ -92,5 +92,5 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
 </Tip>
 
 <Note>
-  Unused *import* detection is TypeScript and JavaScript only. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that.
+  Unused *import* detection is TypeScript and JavaScript only. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that, and Ruby resolves constants at runtime, where static analysis cannot tell an unused require from one loaded through `send` or Rails autoloading.
 </Note>

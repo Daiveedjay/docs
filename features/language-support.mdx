@@ -1,10 +1,10 @@
 ---
-title: "Supported Languages: TypeScript, JavaScript, Vue, Svelte, Go, Python"
+title: "Supported Languages: TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby"
 sidebarTitle: "Language Support"
-description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, and Python with per-language function detection, import tracking, and debug-print flagging."
+description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, Python, and Ruby with per-language function detection, import tracking, and debug-print flagging."
 ---
 
-Four languages, each with its own parser, plus Vue and Svelte components whose script blocks go through the JavaScript or TypeScript one.
+Five languages, each with its own parser, plus Vue and Svelte components whose script blocks go through the JavaScript or TypeScript one.
 
 The reason for separate parsers rather than one generic pass: a debug print is `console.log` in one language, `fmt.Println` in another, and `print()` in a third. A third-party import looks completely different in `go.mod` and `requirements.txt`. Analysis that doesn't know which language it's reading ends up counting lines and tokens, which tells you nothing.
 
@@ -55,5 +55,32 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     - **Unused Python packages** - a workspace scan reads `requirements.txt` and `pyproject.toml` and flags any declared package that is never imported across `.py` files in the project
     - **Auto-skipped directories** - `__pycache__`, `.venv`, and `venv` directories are skipped automatically during workspace and folder scans
     - **Parameter counting** - `self` and `cls` are excluded from the parameter count when evaluating long parameter list warnings
+  </Tab>
+
+  <Tab title="Ruby">
+    Ruby spreads itself across more filenames than most languages: a `Gemfile` has no extension, a Rake task uses `.rake`, and a Rails view is Ruby embedded in HTML. Iris Code recognises all three rather than only scanning `.rb`.
+
+    **Files that are analysed:**
+
+    `.rb`, `.rbw`, `.rake`, `.gemspec`, `.ru`, `.thor`, `.builder`, `.jbuilder`, `.rabl`, `.arb`, `.podspec`, `.erb`, and `.rhtml`.
+
+    Extensionless files are matched by name: `Gemfile`, `Rakefile`, `Vagrantfile`, `Capfile`, `Guardfile`, `Podfile`, `Brewfile`, `Berksfile`, `Puppetfile`, `Thorfile`, `Dangerfile`, the Fastlane set (`Fastfile`, `Appfile`, `Matchfile`, `Gymfile`, `Scanfile`, `Snapfile`, `Deliverfile`, `Pluginfile`), and the `.irbrc` and `.pryrc` dotfiles.
+
+    **Language-aware behaviours:**
+
+    - **Method detection** - instance methods, class methods (`def self.name`), operator methods, and endless methods (`def total = items.sum`) are all detected. A method's end is resolved by tracking `do`/`end` block nesting, so a method containing blocks is measured at its real length rather than ending at the first `end`.
+    - **Heredocs, percent literals, and comments** - heredoc bodies (including squiggly `<<~`), `%w[]` and `%i[]` literals, `#` comments, and `=begin`/`=end` blocks are excluded before pattern matching, so a `puts` quoted inside a heredoc is not counted as a live debug print.
+    - **Gems and requires** - `require` and `autoload` calls are read as imports, and a `Gemfile` or `.gemspec` contributes its declared gems. Standard-library requires are excluded so only genuine third-party dependencies count towards the import threshold.
+    - **Debug prints** - `puts`, `print`, `p`, and `pp` at the start of a statement are flagged, controlled by the `enableConsoleLogWarnings` toggle.
+    - **`method_missing` without `respond_to_missing?`** - defining one without the other leaves `respond_to?` and reflection lying about what the object answers to. Iris Code flags the pair as incomplete.
+    - **God classes** - a class defining more methods than the configured limit is flagged at its `class` line, with the class name and method count.
+    - **Rails mass assignment** - parameters passed straight into a model without `require` and `permit` are flagged as an error, because the vulnerability is in what the code omits rather than in anything visible on the line.
+    - **ERB templates** - `.erb` and `.rhtml` files have their Ruby extracted from `<% %>` and `<%= %>` tags; the surrounding HTML is excluded from analysis and from duplicate detection. Findings report the line number in the template file itself, so a secret on line 14 of a view is reported at line 14.
+
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.ruby` overrides all apply to Ruby the same way they apply to every other language.
+
+    <Note>
+      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind. Unused dependency detection covers npm, Go, and Python manifests only.
+    </Note>
   </Tab>
 </Tabs>

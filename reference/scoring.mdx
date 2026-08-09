@@ -66,7 +66,7 @@ The workspace health score is the average of all per-file health scores across y
 ## Language differences
 
 <Warning>
-  TypeScript-specific deductions - `any` usage, `@ts-ignore`, non-null assertions, and missing return types - only apply to JS/TS files and are automatically zeroed out for Go and Python. Health scores are not directly comparable across languages: a Go file and a TypeScript file with identical structure may score differently.
+  TypeScript-specific deductions - `any` usage, `@ts-ignore`, non-null assertions, and missing return types - only apply to JS/TS files and are automatically zeroed out for Go, Python and Ruby. Health scores are not directly comparable across languages: a Go file and a TypeScript file with identical structure may score differently.
 </Warning>
 
 ## Configurable thresholds

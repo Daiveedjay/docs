@@ -1,5 +1,5 @@
 ---
-title: "Security Smell Detection: Nine Patterns Across TS, JS, Go, and Python"
+title: "Security Smell Detection: Nine Patterns Across TS, JS, Go, Python, and Ruby"
 sidebarTitle: "Security Smells"
 description: "Iris Code detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
 badge: "New"
@@ -9,7 +9,7 @@ None of these nine patterns is a defect on its own. Each one is a way a vulnerab
 
 `eval` with a literal string is safe until the string becomes dynamic. A query built by concatenation is safe until one of its values comes from a request. Because the risk is real but latent, security smells count as **Blockers**, alongside hardcoded secrets, rather than as structural warnings like file length.
 
-All nine are detected across TypeScript, JavaScript, Go and Python wherever they apply, and `enableSecuritySmells` enables or disables the group.
+All nine are detected across TypeScript, JavaScript, Go, Python and Ruby wherever they apply, and `enableSecuritySmells` enables or disables the group.
 
 ## Patterns
 

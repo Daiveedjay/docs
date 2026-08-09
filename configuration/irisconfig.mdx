@@ -225,7 +225,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 ### Per-language config
 
-Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, and `python` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript.
+Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, and `ruby` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`.
 
 ```jsonc
 {
@@ -261,7 +261,7 @@ Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `
 
 Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
 
-Unknown language keys (say, a `ruby` block written for a newer Iris Code) produce a warning and are skipped, so a forward-looking config never breaks an older install. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
+Unknown language keys (say, an `elixir` block written for a newer Iris Code) produce a warning and are skipped, so a forward-looking config never breaks an older install. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
 
 ## Severity overrides
 

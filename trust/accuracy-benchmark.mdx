@@ -94,10 +94,18 @@ rule catches.
 | Over-long functions | TS · JS · Go · Python | 100% | 100% |
 | Over-long files | TS · JS · Go · Python | 100% | 100% |
 | High file complexity | TS · JS · Go · Python | 100% | 100% |
+| Rails mass assignment | Ruby | 100% | 100% |
 
 Figures are aggregated across languages for readability; the per-language
 breakdown, and the advisory-tier rules (TODOs, magic numbers, and the like,
-which never block anything), are available on request. The one sub-100%
+which never block anything), are available on request.
+
+The language column states which languages a rule's published figures were
+measured on, not everywhere it runs. The shared rules apply to Ruby too, and
+the Ruby-specific rules are measured against their own labelled fixtures, but
+the shared rules' Ruby figures are not yet part of the corpus. Where a number
+has not been measured, this page leaves it out rather than carrying one over
+from another language. The one sub-100%
 figure - SQL concatenation, where a sentence of prose containing a SQL keyword
 can occasionally read like a query - is a known, documented limitation kept
 honest rather than tuned away at the risk of missing a real injection.
