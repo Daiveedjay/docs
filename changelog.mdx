@@ -8,6 +8,26 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.20.0 - 2026-08-10
+
+<Note>**feature** - Ruby, Rails, and ERB analysis</Note>
+
+### Ruby joins the same engine
+
+Ruby is analysed everywhere Iris Code runs - the editor, the CLI, hooks, and CI - with the same scoring, secrets detection, security smells, duplicate detection and suppressions as every other language. Ships alongside `@iris-code/cli` 1.12.0. See [Language support](/features/language-support).
+
+- **Added** Ruby analysis covering `.rb` and the Ruby DSL extensions, plus the extensionless files Ruby projects actually use: `Gemfile`, `Rakefile`, `Vagrantfile`, `Capfile`, the Fastlane set, and `.irbrc`. A file's language is not always decidable from its extension, so these are matched by name.
+- **Added** ERB template support. Ruby inside `<% %>` and `<%= %>` tags is analysed while the surrounding HTML is excluded from scoring and duplicate matching, and findings report the line number in the template file itself.
+- **Added** three Ruby-specific checks: `method_missing` defined without `respond_to_missing?`, god classes, and Rails parameters reaching a model without `require` and `permit`.
+- **Added** Ruby build hooks. A project with a `Gemfile` gets an `iris-check` Makefile target wired as a prerequisite of `build` or `all`.
+- **Changed** file renaming to warn on Ruby as it already did on Python. A rename does not rewrite `require_relative` paths or the constant names Rails derives from a filename.
+- **Fixed** a Ruby guard clause such as `return 0 if value.nil?` being read as a missing `end`, which scored the file 0 and skipped its analysis.
+- **Fixed** analysis speed on large files containing many findings. Several checks repeated whole-file work per finding, so cost grew with the square of the file size; a large Rails controller that took over a minute now completes in a fraction of a second. Findings are unchanged.
+
+<Note>Ruby reports no unused imports or unused gems. Constants resolve at runtime through `send`, `const_get` and Rails autoloading, so an unused verdict is not one that can be stood behind. Dependency and CVE scanning covers npm, Go, and Python manifests only.</Note>
+
+---
+
 ## v1.19.0 - 2026-08-08
 
 <Note>**feature** - Slack notifications and a responsive Config Studio</Note>
