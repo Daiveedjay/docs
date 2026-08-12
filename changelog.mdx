@@ -8,6 +8,31 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.21.0 - 2026-08-12
+
+<Note>**feature** - C# and .NET analysis</Note>
+
+### C# joins the same engine
+
+C# is analysed everywhere Iris Code runs - the editor, the CLI, hooks, and CI - with the same scoring, secrets detection, security smells, duplicate detection and suppressions as every other language. A `.csproj` is read as a manifest rather than as code: it contributes the packages your project depends on, and it is scanned for secrets, but its language version and warning level are build settings. See [Language support](/features/language-support).
+
+- **Added** C# analysis for `.cs` and `.csproj`, covering methods and constructors, nesting and complexity, `using` namespaces and `PackageReference` entries, security idioms, secrets in fields, properties, locals and project XML, test conventions, suppressions, file naming, scoring, and gates.
+- **Added** four C#-specific checks: `async void` outside event handlers, where a thrown exception cannot be observed by the caller; catch-all exception handlers, with `when (...)` filters exempt; LINQ chains of five or more operators in one statement; and types carrying too many responsibilities.
+- **Added** .NET build hooks. A project with a `.csproj` or `.sln` gets an `iris-check` Makefile target wired as a prerequisite of `build` or `all`, defaulting to `dotnet build`.
+- **Added** a `csharp` key to the `languages` block in `.irisconfig.json`, and severity overrides plus `iris-ignore` support for the four new rule ids.
+- **Fixed** a verbatim Windows path breaking the file it appeared in. `@"C:\logs\"` was read as an unterminated string, so every brace after it counted at the wrong depth and the file was reported as a parse error with no findings at all. Raw strings failed the same way in the other direction. Both are now understood, along with the interpolated and doubled-quote forms.
+- **Fixed** .NET test projects being treated as production code. C# has no `_test` filename separator and its test directory is `<Project>.Tests`, so fixture credentials and localhost URLs in tests were reported as real findings.
+- **Fixed** project files reporting their language version and warning level as unnamed numbers, and C# attributes, `const`/`readonly` declarations and enum members now count as naming their own values.
+- **Fixed** constructors with a `: base(...)` or `: this(...)` initialiser being skipped entirely, so no length, parameter, or nesting check applied to them, and a positional `record` being counted as both a type and a method.
+- **Fixed** the C# debug-output Code Lens appearing in JetBrains only, and the File tab, Problems entries and inline diagnostic using the JavaScript wording for a C# file.
+- **Fixed** the Iris Code panel opening blank in IntelliJ 2026.2 and other current JetBrains IDEs. The IDE moved its embedded browser out of the platform into a bundled component that Iris Code did not ask for, so the panel and the table tabs had nothing to draw with. Where an IDE cannot provide an embedded browser at all - some platforms and architectures do not ship one - the panel now offers to open the same interface in your own browser, and everything you click there still acts on the IDE. Analysis, diagnostics and enforcement were never affected.
+- **Fixed** a type written entirely on one line - `class C { public void M() { } }` - reporting no methods, which exempted its members from the length, parameter-count and nesting checks.
+- **Fixed** the Problems list showing raw rule ids as group headings for the C# checks and, since 1.20.0, the Ruby ones.
+
+<Note>C# reports no unused members or unused packages, and no NuGet advisories. Dependency injection, reflection, partial classes and source generators reference code in ways static analysis cannot see, so an unused verdict is not one that can be stood behind. Dependency and CVE scanning covers npm, Go, and Python manifests only.</Note>
+
+---
+
 ## v1.20.0 - 2026-08-10
 
 <Note>**feature** - Ruby, Rails, and ERB analysis</Note>

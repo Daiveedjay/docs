@@ -225,7 +225,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 ### Per-language config
 
-Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, and `ruby` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`.
+Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, and `csharp` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`, and a `csharp` block governs both `.cs` sources and `.csproj` project files.
 
 ```jsonc
 {

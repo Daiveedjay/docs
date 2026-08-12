@@ -75,7 +75,7 @@ Pro users can set `gateMaxNamingViolations` to cap the scan-total count in hooks
 
 Iris Code renames files to the suggested convention for you:
 
-- **One file (Free).** The naming CodeLens, the Quick Fix on the naming diagnostic, and the Explorer right-click menu all rename a file through an editable prompt. Iris Code updates TypeScript and JavaScript imports across the workspace, and every rename can be undone from the toast or the **Iris Code: Undo Last Rename** command. Renaming Python files does not rewrite `import` statements, and renaming Ruby files does not rewrite `require_relative` paths or the constant names Rails derives from a filename. Iris Code warns you in both cases.
+- **One file (Free).** The naming CodeLens, the Quick Fix on the naming diagnostic, and the Explorer right-click menu all rename a file through an editable prompt. Iris Code updates TypeScript and JavaScript imports across the workspace, and every rename can be undone from the toast or the **Iris Code: Undo Last Rename** command. Renaming Python files does not rewrite `import` statements, renaming Ruby files does not rewrite `require_relative` paths or the constant names Rails derives from a filename, and renaming C# files does not rewrite type names, namespaces, or project references. Iris Code warns you in each case.
 - **Every file (Pro).** The **File Naming** panel (from the sidebar's File Naming section) lists every violation with an editable target name. Rename selected files, or all of them, in one import-updating pass; name collisions are skipped and disclosed. Committing before a large batch is recommended.
 
 ## Adopting your existing convention

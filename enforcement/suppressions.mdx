@@ -79,6 +79,15 @@ Eighteen rules, which is every finding that points at a specific line:
 | `open-redirect` | Unvalidated redirect |
 | `any-usage` | Explicit `any` |
 | `function-too-long` | Function over the length threshold |
+| `duplicate-code` | Duplicated block |
+| `file-naming` | Filename against the configured convention |
+| `method-missing` | Ruby: `method_missing` without `respond_to_missing?` |
+| `god-class` | Ruby: class over the method limit |
+| `mass-assignment` | Ruby: Rails params without `require`/`permit` |
+| `large-class` | C#: type over the method limit or the length threshold |
+| `catch-all-exception` | C#: `catch (Exception)` or a bare `catch` |
+| `async-void` | C#: `async void` outside an event handler |
+| `linq-abuse` | C#: five or more LINQ operators in one statement |
 
 Findings that aren't about a line can't be suppressed: file too long, too many functions, too many imports, and parse errors. Those always count.
 
