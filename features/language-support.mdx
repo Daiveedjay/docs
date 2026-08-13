@@ -81,7 +81,7 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.ruby` overrides all apply to Ruby the same way they apply to every other language.
 
     <Note>
-      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind. Unused dependency detection covers npm, Go, and Python manifests only.
+      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind. Dependency and CVE scanning does cover RubyGems when versions can be pinned from `Gemfile.lock`; unpinned Gemfile-only entries are reported as not checked rather than clean.
     </Note>
   </Tab>
 
@@ -105,7 +105,7 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.csharp` overrides all apply to C# the same way they apply to every other language. Secrets are read from `string` and `var` declarations, from property initialisers, and from project XML: `<UserSecretsId>` and MSBuild references such as `$(ApiTokenFromCi)` are the correct way to keep a credential out of the repository, and are never flagged.
 
     <Note>
-      **No unused-code detection and no NuGet advisories in C#.** Dependency injection, reflection, partial classes and source generators all reference code in ways static analysis cannot see, so Iris Code reports no unused members or unused packages for C# rather than reporting ones it cannot stand behind. A `.csproj`'s packages count towards a file's dependency signal, but no version or vulnerability lookup runs for them: the [dependency table](/features/dependents-table) covers npm, Go and Python manifests only.
+      **No unused-code detection in C#.** Dependency injection, reflection, partial classes and source generators all reference code in ways static analysis cannot see, so Iris Code reports no unused members or unused packages for C# rather than reporting ones it cannot stand behind. NuGet dependency and CVE scanning is available through the [dependency table](/features/dependents-table); projects without `packages.lock.json` expose direct package declarations only.
     </Note>
   </Tab>
 </Tabs>

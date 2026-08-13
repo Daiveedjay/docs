@@ -8,6 +8,27 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.22.0 - 2026-08-13
+
+<Note>**feature** - RubyGems and NuGet dependency audits</Note>
+
+### Ruby and .NET dependencies are audited like every other ecosystem
+
+The Dependents Table, `iris deps`, `iris cve`, and `iris sbom` now read Ruby and .NET manifests alongside npm, Go, and Python. `Gemfile.lock` gives the full resolved tree, so transitive gems are covered; NuGet without `packages.lock.json` sees the packages a project declares. Where a version cannot be resolved, the package is reported as **not checked** rather than assumed clean. See [Dependents Table](/features/dependents-table).
+
+- **Added** RubyGems support: `Gemfile.lock` for exact transitive versions, with `Gemfile` and `.gemspec` as fallbacks. A gem pinned to an exact version is checked; a range is reported as not checked, because an advisory verdict against a range is either a false clean or a false alarm.
+- **Added** NuGet support: `.csproj` `PackageReference` entries aggregated across every project in a solution, plus Central Package Management (`Directory.Packages.props`), `packages.lock.json`, and legacy `packages.config`. Two projects pinning different versions of one package are reported as a conflict rather than silently resolved to one of them.
+- **Added** prerelease filtering for NuGet, so a `9.0.0-preview` is never offered as an upgrade from a stable release.
+- **Added** Ruby to the published accuracy benchmark on every shared rule, not only its three Ruby-specific ones. See [Accuracy benchmark](/trust/accuracy-benchmark).
+- **Changed** the dependency-lookup disclosure to name RubyGems.org and NuGet.org, the two new registries contacted. Only package names and versions are sent, as before.
+- **Fixed** native gems being reported as vulnerable when already patched. A gem built for your platform is locked as `1.19.4-x64-mingw-ucrt`, and that platform suffix was read as part of the version, sorting it below the plain release - so advisories already fixed in the installed version still matched, and up-to-date gems sat permanently in "outdated". This affected most Ruby projects, since Rails pulls in several native gems.
+- **Fixed** a gem RubyGems cannot resolve - yanked, renamed, private, or mistyped - appearing as outdated with an upgrade target of "unknown" instead of being reported as not checked.
+- **Fixed** SBOM components with no resolvable version carrying a package URL whose version was placeholder text. The form was structurally valid, so a vulnerability scanner reading the SBOM failed to match those components without reporting a problem. They now carry a version-less package URL and state why.
+- **Fixed** "Update all outdated" offering a command that covered only part of what it listed in a project using more than one package manager.
+- **Fixed** the CLI reporting "Running as Free" when the licence server was unreachable but a cached Pro licence was still valid, and emitting the CI notice about skipped Pro steps on runs where nothing was skipped.
+
+---
+
 ## v1.21.0 - 2026-08-12
 
 <Note>**feature** - C# and .NET analysis</Note>

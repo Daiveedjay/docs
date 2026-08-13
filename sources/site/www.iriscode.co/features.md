@@ -126,7 +126,7 @@ Pro
 
 ### Dependents table
 
-Version audit and CVE scan for npm, Go, and Python dependencies.
+Version audit and CVE scan for npm, Go, Python, RubyGems, and NuGet dependencies.
 
 02
 

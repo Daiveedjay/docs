@@ -64,7 +64,7 @@ Workspace scan crawls every file and ranks the places most likely to slow the te
 
 - Largest and most complex files ranked first.
 - Folder analysis for monorepos and feature areas.
-- Unused packages across npm, Go, and Python.
+- Dependency version and CVE checks across npm, Go, Python, RubyGems, and NuGet.
 
 Iris / workspacescan complete
 

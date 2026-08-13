@@ -184,9 +184,11 @@ iris cve --severity low
 
 ### iris sbom
 
-**Pro.** Exports a CycloneDX 1.5 software bill of materials covering every npm, Go, and Python manifest in the project. The command is fully offline: no network requests are made and no consent prompt appears.
+**Pro.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, and NuGet manifests in the project. The command is fully offline: no network requests are made and no consent prompt appears.
 
 Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
+
+Some dependencies have no version to report: a NuGet `PackageReference` with no version and no Central Package Management entry, or two projects pinning different versions of the same package. Those components are still listed, because an SBOM that quietly omits a dependency is worse than one that admits it does not know the version. They carry a version-less `purl` such as `pkg:nuget/CsvHelper`, no `version` field, and an `iris:version-unresolved` property naming the reason. A purl with an invented version would be well-formed, so a scanner reading it would fail to match the package without reporting a problem.
 
 | Flag | Description |
 |---|---|
