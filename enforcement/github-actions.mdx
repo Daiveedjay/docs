@@ -34,6 +34,42 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: Daiveedjay/iris-code-action@v1
+        with:
+          licence-token: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+The action installs the CLI and runs `iris gate . --format github`. Pinning `@v1` means fixes to the invocation reach you without editing anything.
+
+<Tip>
+  Add `IRIS_LICENCE_TOKEN` under **Settings → Secrets and variables → Actions**. Directory scans need Pro. Without a token the step runs as Free and skips the directory check rather than failing your build, so a missing secret never turns the pipeline red for the wrong reason.
+</Tip>
+
+### Inputs
+
+| Input | Default | Description |
+| --- | --- | --- |
+| `command` | `gate` | `gate`, `check`, `secrets`, `security`, or `cve` |
+| `path` | `.` | Directory or file to analyse |
+| `format` | `github` | `github`, `pretty`, or `json`. `secrets` and `security` support `pretty` and `json` only |
+| `output` | | Write the JSON result to this file. Requires `format: json` |
+| `min-score` | | Minimum health score, 0-100, for `command: check` |
+| `severity` | | Minimum severity to fail on for `command: cve` |
+| `licence-token` | | Iris Code Pro licence key |
+| `slack-webhook` | | Slack incoming webhook |
+| `cli-version` | `^1` | Version range of `@iris-code/cli` to install |
+| `node-version` | `20` | Node version used to run the CLI |
+| `working-directory` | `.` | Run from here if your project is not at the repository root |
+
+The action also sets an `exit-code` output, matching the codes in the table further down.
+
+There is deliberately no general `threshold` input. Gate thresholds live in `.irisconfig.json`, which is committed and reviewable, so a workflow input that quietly overrode them would defeat the point of having a written policy. `command: gate` rejects `min-score` rather than accepting it and enforcing something you did not ask for. `min-score` applies to `command: check`, where the CLI supports `--min-score`.
+
+## Running the CLI directly
+
+The action is a wrapper. If you would rather see the exact commands, or pin your own CLI version, call it yourself:
+
+```yaml
       - uses: actions/setup-node@v5
         with:
           node-version: '20'
@@ -47,13 +83,9 @@ jobs:
           IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-<Tip>
-  Add `IRIS_LICENCE_TOKEN` under **Settings → Secrets and variables → Actions**. Directory scans need Pro. Without a token the step runs as Free and skips the directory check rather than failing your build, so a missing secret never turns the pipeline red for the wrong reason.
-</Tip>
+**Iris Code: Add GitHub Actions Workflow** writes this version of the file for you, filled in with your current threshold.
 
-You don't have to type it out. **Iris Code: Add GitHub Actions Workflow** writes this file for you, filled in with your current threshold.
-
-## Setting the bar
+## Configuring the threshold
 
 A `.irisconfig.json` at your project root:
 
@@ -72,7 +104,7 @@ No config file means a threshold of 70.
 
 It works on `iris check` too, not just `iris gate`.
 
-## Keeping the report
+## Saving a machine-readable report
 
 To hang onto a machine-readable report whether the gate passed or failed, add two steps after the gate:
 
@@ -90,9 +122,9 @@ To hang onto a machine-readable report whether the gate passed or failed, add tw
           path: iris-report.json
 ```
 
-The `if: always()` matters. Without it the report only gets saved on the runs where you didn't need it.
+`if: always()` is what makes the report available after a failed gate, which is when it is most useful.
 
-## Telling the team
+## Slack notifications
 
 Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as failing the build. See [Slack notifications](/enforcement/slack-notifications).
 

@@ -1,0 +1,119 @@
+---
+title: "Neovim, Helix and Other LSP Editors"
+sidebarTitle: "Other LSP editors"
+description: "Install iris-lsp, the standalone Iris Code language server, and get diagnostics, hover scores and quick fixes in any editor that speaks LSP."
+---
+
+`iris-lsp` is a standalone language server carrying the whole Iris Code analysis engine. It is the same binary the JetBrains plugin runs, so a finding in Neovim is the same finding in VS Code, on the same line.
+
+It speaks stdio JSON-RPC and needs no Node installation. Analysis runs on your machine and the server makes no network call to analyse code.
+
+## Installing
+
+Download the binary for your platform from the [releases page](https://github.com/Daiveedjay/iris-code-releases/releases/latest), make it executable, and put it on your `PATH`.
+
+| Platform | Asset |
+| --- | --- |
+| Linux x86-64 (glibc) | `iris-lsp-linux-amd64` |
+| Linux ARM64 | `iris-lsp-linux-arm64` |
+| Linux x86-64 (musl / Alpine) | `iris-lsp-linux-musl-amd64` |
+| macOS Intel | `iris-lsp-macos-amd64` |
+| macOS Apple Silicon | `iris-lsp-macos-arm64` |
+| Windows x86-64 | `iris-lsp-windows-amd64.exe` |
+
+```bash
+curl -LO https://github.com/Daiveedjay/iris-code-releases/releases/latest/download/iris-lsp-linux-amd64
+chmod +x iris-lsp-linux-amd64
+sudo mv iris-lsp-linux-amd64 /usr/local/bin/iris-lsp
+```
+
+### Verifying the download
+
+Every release ships a `SHA256SUMS` file covering the binaries. A binary you fetched over the network is worth checking before you put it on your `PATH`.
+
+```bash
+curl -LO https://github.com/Daiveedjay/iris-code-releases/releases/latest/download/SHA256SUMS
+sha256sum --check --ignore-missing SHA256SUMS
+```
+
+On macOS the command is `shasum -a 256 --check --ignore-missing SHA256SUMS`.
+
+<Warning>
+  The macOS binaries are not notarised, so Gatekeeper quarantines them on download and the file will refuse to run. Clear it with `xattr -d com.apple.quarantine ./iris-lsp` once you have verified the checksum.
+</Warning>
+
+## Configuration
+
+### Neovim
+
+Neovim 0.11 and newer can configure a language server without any plugin:
+
+```lua
+vim.lsp.config('iris', {
+  cmd = { 'iris-lsp' },
+  filetypes = {
+    'typescript', 'typescriptreact', 'javascript', 'javascriptreact',
+    'vue', 'svelte', 'go', 'python', 'ruby', 'cs',
+  },
+  root_markers = { '.irisconfig.json', '.git' },
+})
+vim.lsp.enable('iris')
+```
+
+Iris Code is an additional server rather than a replacement, so enable it alongside whichever server already handles your language. Neovim runs several at once and merges their diagnostics.
+
+### Helix
+
+In `languages.toml`:
+
+```toml
+[language-server.iris]
+command = "iris-lsp"
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server", "iris"]
+```
+
+Add `"iris"` to the `language-servers` list of every language you want covered. Helix also runs several servers per language, so your existing one stays in place.
+
+## What you get
+
+Diagnostics, hover, code actions and renames come from the language server, so they work in any LSP client:
+
+- inline diagnostics for health, complexity, duplication, naming, hardcoded secrets and the nine security smell categories
+- the file's health score on hover
+- code lenses on long functions, where the client renders them
+- quick fixes that scaffold an `iris-ignore` suppression with its required reason
+- filename-convention renames
+- configuration read from the same `.irisconfig.json`, reloaded when that file changes
+
+The panels are not available here. Workspace and folder scans, the Issues and TODO tabs, Review My Changes, and the suppressions, duplicates, naming, dependency and trend tables are all interface that an editor extension builds, and LSP has no equivalent. The [support matrix](/editors/overview) sets out which host has what.
+
+Two of those gaps have a terminal equivalent. `iris-lsp --panel <dir>` serves the full Iris Code panel over local HTTP and prints its URL, and `iris-lsp --dashboard <dir>` serves a one-page workspace summary. Both bind to `127.0.0.1` behind a per-run random path.
+
+## Signing in
+
+One sign-in covers the language server, the CLI and the JetBrains plugin. All three read `~/.iris/credentials`.
+
+```bash
+iris-lsp --auth-login       # paste your licence key
+iris-lsp --licence-status   # check what is active
+iris-lsp --auth-logout
+```
+
+`--licence-status` fails closed: when the licence cannot be resolved it reports not-Pro rather than assuming.
+
+## Enforcement without Node
+
+The binary carries the gate, so a repository can be checked on a machine with no Node installation:
+
+```bash
+iris-lsp --check .
+```
+
+It exits `0` on a pass and `1` on a failure, which is all a git hook or a CI step needs. See [the git hook](/enforcement/git-hook) and [CI enforcement](/enforcement/github-actions) for how that fits into a workflow.
+
+## Free and Pro
+
+Diagnostics, hover, quick fixes and renames are free. The gate, and the Pro rules behind it, need a licence. Without one, `--check` reports what it can and does not enforce the Pro limits. See [Pro](/pro) for the split.
