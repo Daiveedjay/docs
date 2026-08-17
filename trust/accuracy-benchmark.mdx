@@ -3,7 +3,7 @@ title: "Accuracy Benchmark: How Iris Code Measures Its Own Rules"
 sidebarTitle: "Accuracy Benchmark"
 description: "Iris Code measures every analysis rule against a labelled corpus and reports per-rule, per-language precision and recall. No single global accuracy number - just honest, checked-in measurements and a CI tripwire that blocks accuracy regressions."
 badge: "New"
-keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "false positives", "precision", "recall", "async void", "LINQ"]
+keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "false positives", "precision", "recall", "async void", "LINQ", "unwrap", "panic"]
 ---
 
 A code-health tool is only worth running if you can trust what it flags. A rule that produces false positives gets ignored, and then disabled, and then it protects nothing at all.
@@ -86,31 +86,43 @@ rule catches.
 
 | Rule | Languages | Precision | Recall |
 | --- | --- | ---: | ---: |
-| Hardcoded secrets | TS · JS · Go · Python · C# | 100% | 100% |
-| eval / dynamic code execution | TS · JS · Python · C# | 100% | 100% |
-| SQL built by string concatenation | TS · JS · Go · Python · C# | 91% | 100% |
-| Disabled TLS verification | TS · JS · Go · Python · C# | 100% | 100% |
-| Weak hashing (MD5 / SHA-1) | TS · JS · Go · Python · C# | 100% | 100% |
+| Hardcoded secrets | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
+| eval / dynamic code execution | TS · JS · Python · Ruby · C# | 100% | 100% |
+| SQL built by string concatenation | TS · JS · Go · Python · Ruby · C# · Java · Rust | 96% | 100% |
+| Disabled TLS verification | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
+| Weak hashing (MD5 / SHA-1) | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
 | Duplicate code blocks | TS · JS · Go · Python | 100% | 100% |
-| Over-long functions | TS · JS · Go · Python | 100% | 100% |
+| Over-long functions | TS · JS · Go · Python · Java · Rust | 100% | 100% |
 | Over-long files | TS · JS · Go · Python | 100% | 100% |
 | High file complexity | TS · JS · Go · Python | 100% | 100% |
 | Rails mass assignment | Ruby | 100% | 100% |
 | `async void` outside event handlers | C# | 100% | 100% |
+| Catch-all exception handler | C# · Java | 100% | 100% |
+| Process execution (`Runtime.exec`, `ProcessBuilder`) | Java | 100% | 100% |
+| `unwrap` / `expect` outside tests | Rust | 100% | 100% |
+| `panic!` / `todo!` outside tests | Rust | 100% | 100% |
 
 Figures are aggregated across languages for readability; the per-language
 breakdown, and the advisory-tier rules (TODOs, magic numbers, and the like,
 which never block anything), are available on request.
 
 The language column states which languages a rule's published figures were
-measured on, not everywhere it runs. Ruby is measured on its own rules plus the
-shared rules whose Ruby implementation is a distinct set of patterns. C# is measured on
-18 rules, its four own and the fourteen shared rules whose C# implementation is a
-distinct set of patterns. Where a number has not been measured, this page leaves
-it out rather than carrying one over from another language. The one sub-100%
-figure - SQL concatenation, where a sentence of prose containing a SQL keyword
-can occasionally read like a query - is a known, documented limitation kept
-honest rather than tuned away at the risk of missing a real injection.
+measured on, not everywhere it runs. A language is listed once its own
+implementation of that rule has fixtures: Ruby on its own rules plus the shared
+rules whose Ruby implementation is a distinct pattern set, C# on 18 rules, Java
+on 17 and Rust on 16. Where a number has not been measured, this page leaves it
+out rather than carrying one over from another language.
+
+Two rules are shared across languages on purpose rather than duplicated per
+language. Catch-all exception handling is one rule for both C# and Java: the same
+defect with the same fix, so one severity setting and one suppression comment
+cover a codebase that uses both.
+
+The one sub-100% figure - SQL concatenation, where a sentence of prose containing
+a SQL keyword can occasionally read like a query - is a known, documented
+limitation kept honest rather than tuned away at the risk of missing a real
+injection. It affects the JavaScript implementation only; the figure shown is the
+average across all eight measured languages.
 
 ## Known limitations
 

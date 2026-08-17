@@ -2,7 +2,7 @@
 title: "Configure Iris Code with .irisconfig.json - Presets and Rules"
 sidebarTitle: ".irisconfig.json"
 description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
-keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "per-language thresholds", "golang", "Gemfile"]
+keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "Java", "languages.java", ".properties", "Rust", "languages.rust", "Cargo", "per-language thresholds", "golang", "Gemfile"]
 ---
 
 A standard nobody agreed on isn't a standard. Drop a `.irisconfig.json` at your project root, commit it, and everyone runs the same thresholds, in every editor, on every machine, plus CI.
@@ -226,7 +226,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 ### Per-language config
 
-Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, and `csharp` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`, and a `csharp` block governs both `.cs` sources and `.csproj` project files.
+Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java`, and `rust` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`; a `csharp` block governs both `.cs` sources and `.csproj` project files; and a `java` block governs both `.java` sources and the `.properties` files Iris Code reads for credentials.
 
 ```jsonc
 {

@@ -2,7 +2,7 @@
 title: "File Analysis: Health Scores, Code Smells, and Secrets"
 sidebarTitle: "File Analysis"
 description: "What the File tab tells you about the file you're in: score, complexity, functions, smells, security patterns and secrets."
-keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".cs", "method detection", "unused imports", "language badge"]
+keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".cs", "Java", ".java", "Rust", ".rs", "method detection", "unused imports", "language badge"]
 ---
 
 Iris Code analyses every supported file as you open or save it, with no command to run.
@@ -17,7 +17,7 @@ It opens with a readiness summary: the score, any blockers, whether a hook is in
 |---|---|
 | **Health score** | 0 to 100, reduced by warnings, secrets, security smells, deep nesting, long functions and debug prints |
 | **Trend** | Movement since the previous snapshot, once trend history exists |
-| **Language badge** | Go, TypeScript, JavaScript, Python, Ruby or C#, in the header |
+| **Language badge** | TypeScript, JavaScript, Go, Python, Ruby, C#, Java or Rust, in the header |
 | **Line counts** | Total, blank, and actual code |
 | **Complexity** | 1 to 10, from function density, nesting, control flow and imports |
 | **Functions** | Every detected function with its line number, clickable |
@@ -26,7 +26,7 @@ It opens with a readiness summary: the score, any blockers, whether a hook is in
 
 ## TypeScript-specific checks
 
-Four additional signals appear in `.ts`, `.tsx`, `.js` and `.jsx` files. They are hidden entirely in Go, Python, Ruby, and C# rather than shown as empty rows.
+Four additional signals appear in `.ts`, `.tsx`, `.js` and `.jsx` files. They are hidden entirely in Go, Python, Ruby, C#, Java, and Rust rather than shown as empty rows.
 
 | Metric | What it counts |
 |---|---|
@@ -93,5 +93,5 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
 </Tip>
 
 <Note>
-  Unused *import* detection is TypeScript and JavaScript only. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that, Ruby resolves constants at runtime, where static analysis cannot tell an unused require from one loaded through `send` or Rails autoloading, and C# resolves types through dependency injection, reflection, and source generators for the same reason.
+  Unused *import* detection runs for TypeScript, JavaScript, and Java. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that. Ruby resolves constants at runtime, where static analysis cannot tell an unused require from one loaded through `send` or Rails autoloading, and C# resolves types through dependency injection, reflection, and source generators for the same reason. Rust is excluded because a trait must be imported for its methods to be callable and its name is then never written again, so the usage is invisible to a static read. Java is the one addition where the verdict is safe: an import there is a compile-time type alias and javac itself warns, and the check reads Javadoc so a `{@link}` reference counts as usage.
 </Note>

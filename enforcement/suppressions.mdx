@@ -2,7 +2,7 @@
 title: "Inline Suppressions: Silence a Finding with a Documented Reason"
 sidebarTitle: "Suppressions"
 description: "Silence one finding on one line without switching the rule off, and write down why you did it."
-keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "large-class", "catch-all-exception", "async-void", "linq-abuse", "method-missing", "god-class", "mass-assignment"]
+keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "large-class", "catch-all-exception", "async-void", "linq-abuse", "method-missing", "god-class", "mass-assignment", "process-execution", "unwrap-abuse", "explicit-panic"]
 ---
 
 Some findings are correct and the code is still right. A `console.log` in a CLI entry point is the program's output. A long function sometimes reads worse when split. An `any` at a boundary you do not control is the honest type.
@@ -86,9 +86,12 @@ Eighteen rules, which is every finding that points at a specific line:
 | `god-class` | Ruby: class over the method limit |
 | `mass-assignment` | Ruby: Rails params without `require`/`permit` |
 | `large-class` | C#: type over the method limit or the length threshold |
-| `catch-all-exception` | C#: `catch (Exception)` or a bare `catch` |
+| `catch-all-exception` | C# and Java: `catch (Exception)`, `catch (Throwable)`, or a bare `catch` |
 | `async-void` | C#: `async void` outside an event handler |
 | `linq-abuse` | C#: five or more LINQ operators in one statement |
+| `process-execution` | Java: `Runtime.exec` or `ProcessBuilder` |
+| `unwrap-abuse` | Rust: `unwrap` or `expect` outside test code |
+| `explicit-panic` | Rust: `panic!`, `todo!`, or `unimplemented!` outside test code |
 
 Findings that aren't about a line can't be suppressed: file too long, too many functions, too many imports, and parse errors. Those always count.
 

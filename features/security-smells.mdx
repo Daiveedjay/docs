@@ -1,16 +1,16 @@
 ---
-title: "Security Smell Detection: Nine Patterns Across TS, JS, Go, Python, Ruby, and C#"
+title: "Security Smell Detection: Nine Patterns Across Nine Languages"
 sidebarTitle: "Security Smells"
 description: "Iris Code detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
 badge: "New"
-keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "ASP.NET", "catch-all exception", "async void", "SQL injection", "open redirect", "weak hashing", "insecure random", "TLS verification"]
+keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "ASP.NET", "Java", "Spring", "Rust", "Cargo", "catch-all exception", "async void", "process execution", "unwrap", "panic", "SQL injection", "open redirect", "weak hashing", "insecure random", "TLS verification"]
 ---
 
 None of these nine patterns is a defect on its own. Each one is a way a vulnerability gets introduced later.
 
 `eval` with a literal string is safe until the string becomes dynamic. A query built by concatenation is safe until one of its values comes from a request. Because the risk is real but latent, security smells count as **Blockers**, alongside hardcoded secrets, rather than as structural warnings like file length.
 
-All nine are detected across TypeScript, JavaScript, Go, Python, Ruby and C# wherever they apply, and `enableSecuritySmells` enables or disables the group.
+All nine are detected across TypeScript, JavaScript, Go, Python, Ruby, C#, Java, and Rust wherever they apply, and `enableSecuritySmells` enables or disables the group. Not every pattern exists in every language: Java has no dynamic code evaluation in the sense the eval rule means, so its process-execution check is a separate rule, and Rust has neither.
 
 ## Patterns
 
