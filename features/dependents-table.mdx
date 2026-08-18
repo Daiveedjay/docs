@@ -1,12 +1,12 @@
 ---
-title: "Dependents Table: Audit npm, Go, Python, RubyGems, and NuGet Packages"
+title: "Dependents Table: Audit npm, Go, Python, RubyGems, NuGet, Cargo, and Maven Packages"
 sidebarTitle: "Dependents Table"
 description: "Open the Dependents Table in VS Code to audit every package for outdated versions and CVEs from the OSV.dev database. No token or rate-limit setup. Requires Iris Code Pro."
 ---
 
 Most of the code running in production came from packages, not from your repository, and those are the parts nobody reviews.
 
-The Dependents Table audits every third-party package in your project: the version you have installed against the latest available, and any known vulnerabilities from the [OSV.dev](https://osv.dev) database. npm, Go modules, Python, RubyGems, and NuGet appear side by side, instead of in separate tools with separate output formats.
+The Dependents Table audits every third-party package in your project: the version you have installed against the latest available, and any known vulnerabilities from the [OSV.dev](https://osv.dev) database. npm, Go modules, Python, RubyGems, NuGet, Cargo, and Maven appear side by side, instead of in separate tools with separate output formats.
 
 <Note>
   The Dependents Table requires **Iris Code Pro**.
@@ -23,6 +23,8 @@ Run **Iris Code: Open Dependents Table** from the command palette.
 - **Python** - `requirements.txt` and `pyproject.toml`
 - **RubyGems** - `Gemfile.lock`, with `Gemfile` and `.gemspec` fallbacks
 - **NuGet** - `.csproj`, `Directory.Packages.props`, `packages.lock.json`, and `packages.config`
+- **Cargo** - `Cargo.lock`, with `Cargo.toml` as the fallback for libraries, which conventionally do not commit a lockfile
+- **Maven and Gradle** - `pom.xml` and `build.gradle` / `build.gradle.kts`, including Gradle version catalogues in `gradle/libs.versions.toml`
 
 ## Versions come from your lockfile
 
@@ -34,8 +36,9 @@ A manifest range like `"express": "^4.18.0"` does not tell you which version is 
 - **Python** - `poetry.lock` and `Pipfile.lock`
 - **RubyGems** - `Gemfile.lock`
 - **NuGet** - `packages.lock.json`
+- **Cargo** - `Cargo.lock`
 
-Advisories are then filtered to the version you have installed. A CVE that only affects 3.x is not reported when you are on 4.x, which keeps the list to things you can act on. RubyGems lockfiles include the full resolved tree; NuGet without `packages.lock.json` scans direct package declarations only. Unpinned or conflicting versions are marked **not checked**, never assumed clean.
+Advisories are then filtered to the version you have installed. A CVE that only affects 3.x is not reported when you are on 4.x, which keeps the list to things you can act on. RubyGems and Cargo lockfiles include the full resolved tree; NuGet without `packages.lock.json` scans direct package declarations only, and Maven and Gradle declarations are read from the build files rather than from a resolved tree. Unpinned or conflicting versions are marked **not checked**, never assumed clean.
 
 ## Monorepos
 

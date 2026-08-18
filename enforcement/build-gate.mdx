@@ -19,11 +19,11 @@ Run **Iris Code: Install Build Hook** from the command palette. Iris Code detect
 
 <Steps>
   <Step title="Detects your project type">
-    Looks for `package.json` (Node), `go.mod` (Go), `pyproject.toml` / `requirements.txt` (Python), `Gemfile` (Ruby), or a `.csproj` / `.sln` (.NET).
+    Looks for `package.json` (Node), `go.mod` (Go), `Cargo.toml` (Rust), `pyproject.toml` / `requirements.txt` (Python), `Gemfile` (Ruby), a `.csproj` / `.sln` (.NET), or `pom.xml` / `build.gradle` (Java).
   </Step>
   <Step title="Installs the hook">
     - **Node**: adds a `prebuild` entry to `package.json`, chaining safely before any existing `prebuild` command.
-    - **Go, Python, Ruby, and .NET**: writes an `iris-check` target into your Makefile and wires it as a prerequisite of the `build` or `all` target. A Makefile created for a .NET project defaults to `dotnet build`.
+    - **Everything else**: writes an `iris-check` target into your Makefile and wires it as a prerequisite of the `build` or `all` target. Where the Makefile has to be created, its build command matches the project: `go build ./...`, `cargo build`, `dotnet build`, or `./gradlew build`, `gradle build` and `mvn test` for Java depending on which wrapper and build files are present.
   </Step>
   <Step title="Runs on every build">
     If any file falls below `minHealthScore`, the build exits `1` and lists the offending files. Otherwise it proceeds normally.

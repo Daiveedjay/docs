@@ -53,12 +53,15 @@ vim.lsp.config('iris', {
   cmd = { 'iris-lsp' },
   filetypes = {
     'typescript', 'typescriptreact', 'javascript', 'javascriptreact',
-    'vue', 'svelte', 'go', 'python', 'ruby', 'cs',
+    'vue', 'svelte', 'go', 'python', 'ruby', 'cs', 'java', 'rust',
+    'jproperties',
   },
   root_markers = { '.irisconfig.json', '.git' },
 })
 vim.lsp.enable('iris')
 ```
+
+`jproperties` is in the list because Iris Code reads `.properties` files for committed credentials, which is the one thing it checks in them. Drop it if you would rather not attach a server to those files.
 
 Iris Code is an additional server rather than a replacement, so enable it alongside whichever server already handles your language. Neovim runs several at once and merges their diagnostics.
 

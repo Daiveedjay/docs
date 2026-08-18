@@ -184,7 +184,7 @@ iris cve --severity low
 
 ### iris sbom
 
-**Pro.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, and NuGet manifests in the project. The command is fully offline: no network requests are made and no consent prompt appears.
+**Pro.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, NuGet, Cargo, and Maven manifests in the project. The command is fully offline: no network requests are made and no consent prompt appears.
 
 Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
 
