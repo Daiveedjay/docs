@@ -1,0 +1,30 @@
+---
+title: "Iris Code Playground: Run the Real Engine in Your Browser"
+sidebarTitle: "Playground"
+description: "Try Iris Code on an editable multi-file project in your browser. The real analysis and gate run locally in the Playground."
+---
+
+The [Iris Code Playground](https://www.iriscode.co/playground) is a safe way to see the product loop before installing anything. It starts with an editable multi-file project containing realistic problems, including a committed secret, SQL built by concatenation, duplicated logic, and a naming violation.
+
+It runs the same `@iris-code/core` analysis package and gate evaluation used by Iris Code. The only simulation is the Git transport around the push: the score, findings, and pass or block verdict are real.
+
+## Try the loop
+
+1. Open the Playground on a laptop or desktop browser.
+2. Start from the onboarding screen, then jump into the seeded project or launch the guided tour.
+3. Inspect the findings in the Iris Code panel, then edit the files or `.irisconfig.json`; analysis runs in the browser.
+4. Run the simulated push from the Playground shell. Fix the findings and push again to see the verdict change.
+
+## What stays private
+
+Your code stays in the browser tab. The Playground does not upload source code, file paths, source hashes, or project structure.
+
+It records a small set of anonymous, daily usage counters such as opening the demo, pasting code, running a post-edit scan, simulating a push, and clicking install. These counters contain no visitor or session identifier and cannot be connected into a person-level funnel.
+
+## What it does not replace
+
+The Playground focuses on the immediate editor-to-gate loop. Install Iris Code for live editor diagnostics, workspace scans, real Git hooks, build gates, CI, dependency audit, configuration sync, and editor-host integration.
+
+<Card title="Open the Playground" icon="play" href="https://www.iriscode.co/playground">
+  Edit the sample project and run the real gate in your browser.
+</Card>

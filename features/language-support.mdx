@@ -22,6 +22,10 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. This detection is **TS/JS only** - Go and Python handle unused imports at the compiler or runtime level.
     - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript Metrics](/features/file-analysis#typescript-metrics) for the full breakdown.
     - **Debug prints** - `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
+
+    <Note>
+      **Iris Code does not format JavaScript or TypeScript.** It analyses and diagnoses source, then leaves formatting to your configured editor formatter such as Prettier or the built-in TypeScript service. This is deliberate: formatting a document is a separate ownership boundary, and Iris Code must not compete with or silently override the formatter your repository has chosen.
+    </Note>
   </Tab>
 
   <Tab title="Vue & Svelte">
