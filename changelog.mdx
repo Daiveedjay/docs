@@ -8,6 +8,51 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.23.1 - 2026-08-23
+
+<Note>**fix** - workspace scans stay inside the workspace</Note>
+
+### A scan covers the folder you selected
+
+A workspace score is only useful if it describes the project it names. A symlinked file pointing outside the scanned folder was followed, so a file living elsewhere on the machine could be analysed, scored, and counted as part of the project.
+
+- **Fixed** workspace scans following symlinked files out of the selected folder. Partial scans compare resolved paths, and full scans skip links.
+
+Version 1.23.2 followed the same day with a fix to the release process itself and no change to analysis.
+
+---
+
+## v1.23.0 - 2026-08-17
+
+<Note>**feature** - Java and Rust analysis, with Maven, Gradle, and Cargo dependency audits</Note>
+
+### Java and Rust join the same engine
+
+Java and Rust are analysed everywhere Iris Code runs - the editor, the CLI, hooks, and CI - which brings the total to nine languages. Both arrive with the full rule set rather than a subset: functions and methods, imports, nesting, complexity, magic numbers, debug output, TODOs, secrets, security smells, duplicate detection, suppressions, file naming, scoring, and gates. Ships alongside `@iris-code/cli` 1.15.0. See [Language support](/features/language-support).
+
+- **Added** Java analysis for `.java` source and `.properties` configuration. A `.properties` file is read as configuration rather than code: it is scanned for committed credentials, and its ports and log levels are not reported as unexplained numbers.
+- **Added** Rust analysis, covering functions, modules, imports, complexity, secrets, suppressions, naming, scoring, gates, and duplicate detection.
+- **Added** three language-specific checks: process execution in Java through `Runtime.exec` or `ProcessBuilder`, and in Rust both `unwrap` or `expect` calls and explicit panics.
+- **Added** Java to the catch-all exception rule that C# already used, under one shared rule id. The same defect has the same fix in both languages, so one severity setting and one `iris-ignore` comment cover a codebase that uses both.
+- **Added** test-aware exemptions for Rust. Rust puts its tests in the file under test, so the exemption is computed per `#[cfg(test)]` item rather than per file. A file-level exemption would spare the production half of the same file.
+- **Added** Java unused-import reporting. The usage search reads Javadoc, so an import referenced only from a `{@link}` is left alone, because removing it would break `javadoc`.
+- **Added** Maven and Gradle dependency and CVE audits, covering `pom.xml`, `build.gradle`, `build.gradle.kts`, and version catalogues, including `${property}` placeholders and `dependencyManagement`. Neither tool commits a resolved dependency tree by default, so these scans cover declared dependencies and say so. See [Dependents Table](/features/dependents-table).
+- **Added** Cargo dependency and CVE audits. `Cargo.lock` gives exact versions and the full transitive tree, with git and path dependencies excluded, because a public registry knows nothing about them.
+- **Added** Java and Rust to the published accuracy benchmark, on 17 and 16 rules respectively. See [Accuracy benchmark](/trust/accuracy-benchmark).
+- **Changed** advisories published without a severity to appear rather than be dropped. Most RustSec advisories carry no score, so they were hidden entirely. They now show as unrated and are counted, and they never satisfy a `--severity high` gate, because an unrated advisory is one nobody has scored rather than one known to be minor.
+- **Fixed** committed credentials in Java source and `.properties` files going undetected. Java has no `const`, `let`, or `var`, so the name-based check matched nothing and only credentials with a recognisable provider format were ever reported. A database password has no such format.
+- **Fixed** constants that name a credential field being reported as the credential itself, such as `PASSWORD_FIELD = "password"`.
+- **Fixed** fixture credentials in Gradle test source sets being reported as production secrets. Gradle projects declare test source sets freely, and only `src/test` was recognised.
+- **Fixed** a named constant being reported as a magic number in Java and Rust. Naming the number is the fix the rule asks for, so reporting it described the fix as the defect.
+- **Fixed** a naming convention asking you to rename `application.properties`. Spring resolves that filename exactly, so the rename would have broken the application, and both the Quick Fix and the Pro batch rename offered to make it in one click.
+- **Fixed** `iris sbom` reporting no dependencies for Java and Rust projects, and `iris deps`, `iris cve`, and `iris sbom` refusing pure Rust and pure Gradle projects while naming both manifest families in the error.
+- **Fixed** Maven latest-version lookups in both directions. An upgrade is no longer offered to a date-based release from 2003, which sorts above every modern version, and a `-jre` or `-android` classifier is no longer read as a prerelease, which had left some packages with no known latest version at all.
+- **Fixed** a Cargo dependency whose name is not a valid crate name being matched against an unrelated crate that occupies the same index path. It is reported as not checked.
+- **Fixed** the Dependencies table flickering when a scan finishes. It rebuilt every row in order to re-sort them, which also closed any advisory panel you had expanded, and repeated on every filter click and search keystroke.
+- **Fixed** large, heavily documented Java files analysing slowly. Analysis now scales in proportion to file size.
+
+---
+
 ## v1.22.0 - 2026-08-13
 
 <Note>**feature** - RubyGems and NuGet dependency audits</Note>
