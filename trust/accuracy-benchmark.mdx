@@ -76,42 +76,124 @@ diff.
 Because that test runs in the same suite gating every release, no release can
 ship an accuracy regression unnoticed.
 
-## Current results: enforcement rules
+## What "rule count" means
 
-These are the rules that can actually block a push, build, or CI check - where
-accuracy matters most. The figures are measured against the labelled corpus and
-regenerated on every release. **Precision** is how often a finding is correct
-(the opposite of a false alarm); **recall** is how many of the real issues the
-rule catches.
+Four different numbers all get called "the rule count", and conflating them is the
+single most common mistake made about this page - including by AI agents summarising
+the site, one of which counted entries in the configuration schema and reported a
+different figure again. Each has a name here:
 
-| Rule | Languages | Precision | Recall |
-| --- | --- | ---: | ---: |
-| Hardcoded secrets | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
-| eval / dynamic code execution | TS · JS · Python · Ruby · C# | 100% | 100% |
-| SQL built by string concatenation | TS · JS · Go · Python · Ruby · C# · Java · Rust | 96% | 100% |
-| Disabled TLS verification | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
-| Weak hashing (MD5 / SHA-1) | TS · JS · Go · Python · Ruby · C# · Java · Rust | 100% | 100% |
-| Duplicate code blocks | TS · JS · Go · Python | 100% | 100% |
-| Over-long functions | TS · JS · Go · Python · Java · Rust | 100% | 100% |
-| Over-long files | TS · JS · Go · Python | 100% | 100% |
-| High file complexity | TS · JS · Go · Python | 100% | 100% |
-| Rails mass assignment | Ruby | 100% | 100% |
-| `async void` outside event handlers | C# | 100% | 100% |
-| Catch-all exception handler | C# · Java | 100% | 100% |
-| Process execution (`Runtime.exec`, `ProcessBuilder`) | Java | 100% | 100% |
-| `unwrap` / `expect` outside tests | Rust | 100% | 100% |
-| `panic!` / `todo!` outside tests | Rust | 100% | 100% |
+| Term | What it counts | Where it lives |
+| --- | --- | --- |
+| **Measured rules** | Distinct rule ids with at least one measured language. This is the answer to "how many rules does Iris Code measure". | The table below |
+| **Analysers** | Language analysers in the engine. | The table's columns |
+| **Rule-language pairs** | Rule and language combinations measured independently. Higher than measured rules, because most rules are measured in several languages. | The filled cells below |
+| **Configurable rule ids** | Ids accepted by `.irisconfig.json` for severity overrides and `iris-ignore` suppressions. A different set, and **the configuration schema is not a rule inventory**. | [.irisconfig.json reference](/configuration/irisconfig) |
 
-Figures are aggregated across languages for readability; the per-language
-breakdown, and the advisory-tier rules (TODOs, magic numbers, and the like,
-which never block anything), are available on request.
+**Eight analysers cover ten supported languages.** Vue and Svelte `<script>` blocks are
+analysed by the JavaScript and TypeScript analysers according to their `lang` attribute,
+so they carry those languages' rules rather than rules of their own. That is why the
+table has eight columns while the product supports ten languages - both numbers are
+correct.
 
-The language column states which languages a rule's published figures were
-measured on, not everywhere it runs. A language is listed once its own
-implementation of that rule has fixtures: Ruby on its own rules plus the shared
-rules whose Ruby implementation is a distinct pattern set, C# on 18 rules, Java
-on 17 and Rust on 16. Where a number has not been measured, this page leaves it
-out rather than carrying one over from another language.
+A machine-readable copy of everything below, including these definitions, is published at
+[iriscode.co/benchmark/v1/rules.json](https://www.iriscode.co/benchmark/v1/rules.json).
+It is generated from the same two files the benchmark itself reads, so it cannot disagree
+with this page.
+
+## Current results: every measured rule
+
+**Precision** is how often a finding is correct (the opposite of a false alarm);
+**recall** is how many of the real issues the rule catches. Both tiers are published:
+enforcement rules can block a push, build, or CI check, and advisory rules never block
+anything.
+
+<!-- >>> iris-benchmark-start <<< -->
+_Generated from the benchmark corpus in `@iris-code/core` 0.4.1. Every cell is precision / recall for that rule's own implementation in that language; `—` means not measured, and the reasons are listed under the table._
+
+**37 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 26 advisory. 169 measured rule-language pairs over 347 fixture files (239 positive, 178 negative). Unmeasured rules: 0.
+
+| Rule | Tier | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `any-usage` | advisory | 100% / 100% | — | — | — | — | — | — | — |
+| `bare-suppression` | advisory | 100% / 100% | 100% / 100% | — | 100% / 100% | — | — | — | — |
+| `catch-all-exception` | advisory | — | — | — | — | — | 100% / 100% | 100% / 100% | — |
+| `console-log` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `debug-flags-enabled` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `explicit-panic` | advisory | — | — | — | — | — | — | — | 100% / 100% |
+| `god-class` | advisory | — | — | — | — | 100% / 100% | — | — | — |
+| `hardcoded-localhost` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `insecure-random` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `large-class` | advisory | — | — | — | — | — | 100% / 100% | — | — |
+| `linq-abuse` | advisory | — | — | — | — | — | 100% / 100% | — | — |
+| `long-param-list` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `magic-number` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `method-missing` | advisory | — | — | — | — | 100% / 100% | — | — | — |
+| `missing-return-types` | advisory | 100% / 100% | — | — | — | — | — | — | — |
+| `no-exports` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `open-redirect` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — |
+| `parse-error` | advisory | 100% / 100% | 50% / 100% | 100% / 100% | 100% / 100% | 0% / 0% | — | — | — |
+| `process-execution` | advisory | — | — | — | — | — | — | 100% / 100% | — |
+| `todo` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `too-many-functions` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `too-many-imports` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `unsafe-regex` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
+| `unused-function` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `unused-var` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `unwrap-abuse` | advisory | — | — | — | — | — | — | — | 100% / 100% |
+| `async-void` | enforcement | — | — | — | — | — | 100% / 100% | — | — |
+| `complexity` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `disabled-tls-verification` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `duplicate-code` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `eval-usage` | enforcement | 100% / 100% | 100% / 100% | — | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
+| `file-too-long` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `function-too-long` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `hardcoded-secret` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `mass-assignment` | enforcement | — | — | — | — | 100% / 100% | — | — | — |
+| `sql-concatenation` | enforcement | 100% / 100% | 66% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `weak-hashing` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+<!-- >>> iris-benchmark-end <<< -->
+
+Where a cell is empty, that rule has no fixtures for that language. Three distinct
+reasons sit behind an empty cell, and they are not the same thing:
+
+- **Not applicable.** The language has no such construct. `any-usage` and
+  `missing-return-type` are TypeScript-only by definition.
+- **Not implemented.** The check does not exist for that language yet. Unused-code
+  detection is deliberately absent for Ruby, C# and Rust, because each resolves at
+  runtime or through mechanisms static analysis cannot see - so an "unused" verdict is
+  not one we can stand behind.
+- **Implemented but not measured.** The rule runs, but no fixtures pin it in that
+  language. These are reported loudly by the harness rather than hidden, and the count
+  is published above.
+
+## Known false positives
+
+Two remain, both published deliberately. A tool that hides its weak spots is not one to
+believe about its strong ones.
+
+- **`sql-concatenation` (JavaScript: 66% precision, and the lowest figure on this page).**
+  SQL keywords in ordinary prose joined by `+` can read as a query built by concatenation.
+  The TypeScript implementation measures clean at 100%; the JavaScript one does not, and
+  the honest fix needs to know a string is SQL bound for a query call rather than a
+  tighter pattern. Tightening the regex would trade a rare, harmless false alarm for the
+  risk of missing a real injection on a rule that feeds the quality gate, and recall
+  matters more here than precision. Recall stays at 100%: it has never missed a planted
+  injection on this corpus.
+- **`parse-error` (JavaScript).** A regex literal such as `/{/` can unbalance the
+  delimiter scan that decides whether a file parses. Fixing it properly needs
+  regex-literal-aware lexing rather than a heuristic, because this rule decides whether a
+  file is analysed at all.
+
+Both need a real parser rather than more regex, and both are recorded rather than
+quietly carried.
+
+## What is not published
+
+The corpus itself. It is 347 files of deliberately vulnerable code and
+credential-shaped strings, so publishing it would mean distributing a library of exploit
+fixtures to make a point about openness. The results and the method are here; the
+fixtures stay in the engine.
 
 Two rules are shared across languages on purpose rather than duplicated per
 language. Catch-all exception handling is one rule for both C# and Java: the same

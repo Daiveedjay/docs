@@ -4,6 +4,13 @@ sidebarTitle: "Scoring & Metrics"
 description: "Iris Code calculates a 0–100 health score and a 1–10 complexity score per file. Health starts at 100 with points deducted per finding type."
 ---
 
+<Note>
+  The table on this page lists the **weights used to compute a health score**, not the
+  set of rules Iris Code measures. Several rules carry no score weight, and several
+  weights cover a group of findings rather than one rule. The measured-rule count, per
+  language, is on the [accuracy benchmark](/trust/accuracy-benchmark) page.
+</Note>
+
 Iris Code calculates two numbers per file: a **health score** out of 100, and a **complexity score** out of 10.
 
 Both are deterministic. The same code produces the same result today, next month, on your machine, on a colleague's, and in CI. No model and no sampling is involved. That property is what makes them usable as a gate, since a threshold only means something if the number behind it is stable.

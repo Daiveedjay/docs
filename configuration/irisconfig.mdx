@@ -5,6 +5,14 @@ description: "Drop a .irisconfig.json at your project root to share thresholds a
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "Java", "languages.java", ".properties", "Rust", "languages.rust", "Cargo", "per-language thresholds", "golang", "Gemfile"]
 ---
 
+<Note>
+  This page documents **configurable keys**, not a rule inventory. It mixes gate limits,
+  thresholds, scoring weights, severity overrides and suppressible rule ids, so counting
+  entries here does not give the number of rules Iris Code measures. For that, see the
+  [accuracy benchmark](/trust/accuracy-benchmark), which publishes every measured rule
+  per language.
+</Note>
+
 A standard nobody agreed on isn't a standard. Drop a `.irisconfig.json` at your project root, commit it, and everyone runs the same thresholds, in every editor, on every machine, plus CI.
 
 Iris Code looks for the nearest one by walking up from the file it's analysing, so a monorepo can give each package its own rules without you configuring anything extra.
