@@ -37,9 +37,27 @@ mint dev
 
 Mintlify does not run on Node 25 or later. Use Node 18-22. The failure appears only after a long startup delay, so it looks like a hang rather than an error.
 
+## These are .mdx files, not .md
+
+A comment is `{/* text */}`. An HTML comment outside a code fence fails the build
+for the **whole site**, not just its own page - MDX reads `<!--` as a JSX tag and
+stops at the `!`. This shipped on 2026-08-25 and took the deploy down; inside a
+code fence it is fine, which is why `agents/project-rules.mdx` can still show the
+`<!-- >>> iris-rules-start <<< -->` markers as example content.
+
+```bash
+node scripts/check-mdx-comments.mjs
+```
+
+No dependencies, so it runs in a fresh clone. Run it before any push.
+
 ## Before finishing
 
 1. Render the page, do not just read the source.
-2. Every nav entry resolves; every internal link resolves; moved paths have redirects.
-3. Grep the diff for em dashes, bare "Iris", and anything from the banned list.
-4. Feature and tier claims match the code in `Iris-extension`, not the roadmap.
+2. Run `node scripts/check-mdx-comments.mjs`.
+3. Every nav entry resolves; every internal link resolves; moved paths have redirects.
+4. Grep the diff for em dashes, bare "Iris", and anything from the banned list.
+5. Feature and tier claims match the code in `Iris-extension`, not the roadmap.
+6. **Watch the deploy finish.** A push is not a publish: this repo builds on
+   Mintlify's side, and a parse error there leaves the live page serving the old
+   bytes while git looks perfectly healthy.

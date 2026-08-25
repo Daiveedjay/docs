@@ -49,20 +49,31 @@ commit.
 Unmeasured rules are reported loudly, never hidden - a rule with no fixtures
 shows as unmeasured rather than silently counting as perfect.
 
-## Enforcement vs advisory rules
+## Enforcement and advisory groups
 
-Every rule is classified as **enforcement** or **advisory**:
+Every rule carries a group in the benchmark data: **enforcement** for the
+high-confidence rules describing a defect worth stopping a push over, **advisory**
+for signals better suited to review - TODOs, magic numbers, `console.log`.
 
-- **Enforcement** rules are the high-confidence ones that feed the quality gate
-  and can block a push or build - hardcoded secrets, SQL concatenation, disabled
-  TLS verification, weak hashing, duplicate code, function and file length,
-  complexity.
-- **Advisory** rules are useful signals better suited to review than to blocking
-  - TODOs, magic numbers, `console.log`, and similar.
+This grouping is a confidence classification, and it is not the same thing as what
+blocks a push. Being precise about that matters, because an earlier version of this
+page said enforcement rules were "the rules that feed the quality gate" and advisory
+rules "never block anything", and neither half was quite true.
 
-The benchmark is what justifies that split: a rule earns enforcement status by
-demonstrating high precision on the corpus, and the tables make any weak spot
-visible.
+What actually decides a block is the gate, which has nine rules of its own:
+
+- **The health-score threshold** (`minHealthScore`). Every finding costs points,
+  advisory ones included, so any rule can contribute to a failing score.
+- **Eight specific caps** - secrets, complexity, file length, smells per file,
+  security smells, suppressions, duplicate blocks and naming violations. Each has
+  its own configurable limit and is off unless you set it.
+
+So an advisory rule can help fail a score threshold, and an enforcement-group rule
+with no dedicated cap - `async-void`, for instance - reaches the gate only through
+the score like any other. The group tells you how much to trust a finding; the
+[gate configuration](/configuration/irisconfig) tells you what stops a push. Each
+rule's `gateRule`, where it has one, is in the
+[machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json).
 
 ## The regression tripwire
 
@@ -104,55 +115,64 @@ with this page.
 ## Current results: every measured rule
 
 **Precision** is how often a finding is correct (the opposite of a false alarm);
-**recall** is how many of the real issues the rule catches. Both tiers are published:
-enforcement rules can block a push, build, or CI check, and advisory rules never block
-anything.
+**recall** is how many of the real issues the rule catches. Both groups are published,
+and so is the sample each percentage came from.
 
-<!-- >>> iris-benchmark-start <<< -->
+Read the **Cases** column before reading any percentage. It is the number of labelled
+fixtures behind that row, and most rules sit between one and fifteen. At those sizes a
+single false alarm moves precision by tens of points, which cuts both ways: the one
+figure below 100% - `sql-concatenation` in JavaScript, at 66% - is two correct findings,
+one false alarm and no misses, and a row reading 100% on one case is a much weaker claim
+than the same figure on fifteen. Per-language true positive, false positive and false
+negative counts are in the
+[machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json) if you want the
+arithmetic rather than the ratio.
+
+{/* >>> iris-benchmark-start <<< */}
 _Generated from the benchmark corpus in `@iris-code/core` 0.4.1. Every cell is precision / recall for that rule's own implementation in that language; `—` means not measured, and the reasons are listed under the table._
 
 **37 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 26 advisory. 169 measured rule-language pairs over 347 fixture files (239 positive, 178 negative). Unmeasured rules: 0.
 
-| Rule | Tier | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `any-usage` | advisory | 100% / 100% | — | — | — | — | — | — | — |
-| `bare-suppression` | advisory | 100% / 100% | 100% / 100% | — | 100% / 100% | — | — | — | — |
-| `catch-all-exception` | advisory | — | — | — | — | — | 100% / 100% | 100% / 100% | — |
-| `console-log` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `debug-flags-enabled` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `explicit-panic` | advisory | — | — | — | — | — | — | — | 100% / 100% |
-| `god-class` | advisory | — | — | — | — | 100% / 100% | — | — | — |
-| `hardcoded-localhost` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `insecure-random` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `large-class` | advisory | — | — | — | — | — | 100% / 100% | — | — |
-| `linq-abuse` | advisory | — | — | — | — | — | 100% / 100% | — | — |
-| `long-param-list` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `magic-number` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `method-missing` | advisory | — | — | — | — | 100% / 100% | — | — | — |
-| `missing-return-types` | advisory | 100% / 100% | — | — | — | — | — | — | — |
-| `no-exports` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `open-redirect` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — |
-| `parse-error` | advisory | 100% / 100% | 50% / 100% | 100% / 100% | 100% / 100% | 0% / 0% | — | — | — |
-| `process-execution` | advisory | — | — | — | — | — | — | 100% / 100% | — |
-| `todo` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `too-many-functions` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
-| `too-many-imports` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
-| `unsafe-regex` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
-| `unused-function` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `unused-var` | advisory | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `unwrap-abuse` | advisory | — | — | — | — | — | — | — | 100% / 100% |
-| `async-void` | enforcement | — | — | — | — | — | 100% / 100% | — | — |
-| `complexity` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `disabled-tls-verification` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `duplicate-code` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `eval-usage` | enforcement | 100% / 100% | 100% / 100% | — | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
-| `file-too-long` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
-| `function-too-long` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
-| `hardcoded-secret` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `mass-assignment` | enforcement | — | — | — | — | 100% / 100% | — | — | — |
-| `sql-concatenation` | enforcement | 100% / 100% | 66% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-| `weak-hashing` | enforcement | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
-<!-- >>> iris-benchmark-end <<< -->
+| Rule | Group | Cases | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust |
+| --- | --- | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
+| `any-usage` | advisory | 2 | 100% / 100% | — | — | — | — | — | — | — |
+| `bare-suppression` | advisory | 3 | 100% / 100% | 100% / 100% | — | 100% / 100% | — | — | — | — |
+| `catch-all-exception` | advisory | 6 | — | — | — | — | — | 100% / 100% | 100% / 100% | — |
+| `console-log` | advisory | 15 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `debug-flags-enabled` | advisory | 9 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `explicit-panic` | advisory | 3 | — | — | — | — | — | — | — | 100% / 100% |
+| `god-class` | advisory | 1 | — | — | — | — | 100% / 100% | — | — | — |
+| `hardcoded-localhost` | advisory | 11 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `insecure-random` | advisory | 10 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `large-class` | advisory | 1 | — | — | — | — | — | 100% / 100% | — | — |
+| `linq-abuse` | advisory | 1 | — | — | — | — | — | 100% / 100% | — | — |
+| `long-param-list` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `magic-number` | advisory | 15 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `method-missing` | advisory | 1 | — | — | — | — | 100% / 100% | — | — | — |
+| `missing-return-types` | advisory | 2 | 100% / 100% | — | — | — | — | — | — | — |
+| `no-exports` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `open-redirect` | advisory | 7 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — |
+| `parse-error` | advisory | 5 | 100% / 100% | 50% / 100% | 100% / 100% | 100% / 100% | 0% / 0% | — | — | — |
+| `process-execution` | advisory | 2 | — | — | — | — | — | — | 100% / 100% | — |
+| `todo` | advisory | 12 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `too-many-functions` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `too-many-imports` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `unsafe-regex` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
+| `unused-function` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `unused-var` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `unwrap-abuse` | advisory | 2 | — | — | — | — | — | — | — | 100% / 100% |
+| `async-void` | enforcement | 2 | — | — | — | — | — | 100% / 100% | — | — |
+| `complexity` | enforcement | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `disabled-tls-verification` | enforcement | 10 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `duplicate-code` | enforcement | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `eval-usage` | enforcement | 9 | 100% / 100% | 100% / 100% | — | 100% / 100% | 100% / 100% | 100% / 100% | — | — |
+| `file-too-long` | enforcement | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
+| `function-too-long` | enforcement | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
+| `hardcoded-secret` | enforcement | 22 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `mass-assignment` | enforcement | 2 | — | — | — | — | 100% / 100% | — | — | — |
+| `sql-concatenation` | enforcement | 16 | 100% / 100% | 66% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `weak-hashing` | enforcement | 14 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+{/* >>> iris-benchmark-end <<< */}
 
 Where a cell is empty, that rule has no fixtures for that language. Three distinct
 reasons sit behind an empty cell, and they are not the same thing:
