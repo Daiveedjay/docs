@@ -1,0 +1,116 @@
+---
+title: "Project Rules for AI Agents: Generate AGENTS.md from Your Config"
+sidebarTitle: "Project rules"
+description: "iris rules writes your project's limits, naming convention and gate rules into AGENTS.md, CLAUDE.md, Cursor rules or Copilot instructions, so your coding agent follows your standards while it writes rather than after review."
+---
+
+An AI agent writing code in your repository does not know your file-length limit, your naming
+convention, or the score your pre-push hook blocks below. It finds out when something fails, which is
+after the work is done and after you have read the diff.
+
+`iris rules` writes those rules into the file your agent already reads. Nothing is analysed, nothing
+is sent anywhere, and no model is involved: the content is derived from `.irisconfig.json`, so it says
+what Iris Code actually enforces.
+
+## Generating the file
+
+<CodeGroup>
+
+```bash CLI
+iris rules
+```
+
+```text Editor
+Command palette → Iris Code: Write Project Rules for AI Agents
+```
+
+</CodeGroup>
+
+Both write the same file. In the editor you get a picker for the target and a confirmation before
+anything is written; in the terminal, pass `--yes` to skip the prompt in a script.
+
+## Targets
+
+`AGENTS.md` is the default because most agents read it.
+
+| Flag | File | Read by |
+| --- | --- | --- |
+| *(default)* | `AGENTS.md` | Most coding agents |
+| `--target claude` | `CLAUDE.md` | Claude Code |
+| `--target cursor` | `.cursor/rules/iris.mdc` | Cursor |
+| `--target copilot` | `.github/copilot-instructions.md` | GitHub Copilot |
+
+The Cursor file carries the frontmatter Cursor expects (`alwaysApply: true`), so the rules apply to
+every request rather than only when a glob matches.
+
+### Writing more than one
+
+Teams routinely run two agents. Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the file
+Codex, Cursor and Copilot read, so a project using both needs both files.
+
+```bash
+iris rules --target agents --target claude   # the two most common
+iris rules --all                             # all four
+iris rules --refresh                         # update the ones this repo already has
+```
+
+In the editor the picker is multi-select: tick every file your team's agents read and they are all
+written from one confirmation.
+
+Each file gets the full rules rather than a pointer to another file. A `@AGENTS.md` import is
+Claude-specific syntax that reads as noise to every other tool, and a symlink does not survive a
+Windows checkout or a zip export. Every file owns its own block independently, so there is nothing to
+keep in sync by hand: run the command again and all of them update.
+
+`--refresh` is the one to use in a script. It updates the files that already exist and creates
+nothing, so it cannot add an agent file to a repository whose conventions you do not own. If nothing
+is there yet, it says so rather than creating a default.
+
+If one file cannot be updated, the others still are. A damaged file is reported with its reason and
+left exactly as it was.
+
+## What the file says
+
+Imperatives with your numbers in them, grouped into sections: size and shape, things not to write,
+file naming, suppressions, and what blocks a push. A project with a 250-line file limit and a
+kebab-case convention produces rules that say exactly that.
+
+Only what is configured appears. Turn off magic-number detection and that rule is absent rather than
+stated and contradicted. Set no naming policy and there is no naming section. Set gate limits and
+they appear under **What blocks a push**, because that is the part an agent most needs to know before
+it finishes.
+
+Gate limits and per-language blocks are included even on a Free licence. The file describes the
+config your project committed, which is what runs in your CI and on your teammates' machines, so
+understating it would produce rules that contradict your own gate.
+
+## Regenerating
+
+The block sits between markers:
+
+```markdown
+<!-- >>> iris-rules-start <<< -->
+...generated rules...
+<!-- >>> iris-rules-end <<< -->
+```
+
+Everything outside them is yours and is never touched. Run the command again after changing
+`.irisconfig.json` and only the block updates. Run it when nothing has changed and it reports the
+file is already up to date rather than rewriting it, so it produces no diff.
+
+If a marker has been deleted, the command refuses and says so instead of guessing which lines it
+owns. Restore the marker or delete the block, then run it again.
+
+Nothing regenerates automatically. Iris Code will not rewrite a committed file as a side effect of a
+config change.
+
+## Committing it
+
+Commit the file. The rules are for whoever, or whatever, writes code in the project next, and a rules
+file that only exists on your machine helps only your agent.
+
+## What this does not do
+
+- It does not check the agent's work. That is what `iris check` and the [git hook](/enforcement/git-hook) are for, and the generated file points the agent at them.
+- It does not send your code or your config anywhere.
+- It does not format anything. Iris Code analyses and diagnoses; your editor's formatter owns document edits.

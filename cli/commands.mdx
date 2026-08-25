@@ -1,10 +1,10 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all thirteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all fourteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris report, iris hook, iris auth, and iris config."
 ---
 
-Thirteen commands, covering scanning, dependency audits, CVE gating, SBOM export, enforcement and hooks. Anything marked **Pro** needs a licence; the rest work with no account at all.
+Fourteen commands, covering scanning, dependency audits, CVE gating, SBOM export, agent rules, enforcement and hooks. Anything marked **Pro** needs a licence; the rest work with no account at all.
 
 If you only ever learn two: `iris check` for a score, `iris gate` for CI.
 
@@ -282,6 +282,24 @@ Sets up and tests Slack notifications for `iris check` and `iris gate`. The comm
 | `iris slack manifest` | Print a link and manifest for creating a pre-configured Slack app |
 
 The complete setup, payload contents and credential rules are covered in [Slack notifications](/enforcement/slack-notifications).
+
+---
+
+### iris rules
+
+Writes this project's enforcement rules into the file your coding agent reads, generated from `.irisconfig.json`. **Free.** Nothing is analysed, nothing is sent anywhere, and no model is involved.
+
+| Flag | Description |
+|---|---|
+| `--target <name>` | `agents` (default, `AGENTS.md`), `claude`, `cursor`, or `copilot`. May be repeated to write several files |
+| `--all` | Write all four target files |
+| `--refresh` | Update only the target files this repository already has, and create none |
+| `--dry-run` | Print what would be written instead of writing it |
+| `--yes`, `-y` | Do not ask before updating a file that already exists |
+
+A project running two agents needs two files: Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is what Codex, Cursor and Copilot read. Each file is written independently, so one damaged file is reported and skipped while the rest still update.
+
+The block sits between `iris-rules` markers, so regenerating updates only Iris Code's own section and never your text. Full behaviour, including what the file contains and what happens to a damaged marker, is in [Project rules](/agents/project-rules).
 
 ---
 

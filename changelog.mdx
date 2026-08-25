@@ -8,6 +8,24 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.24.0 - 2026-08-25
+
+<Note>**feature** - project rules for AI agents</Note>
+
+### Your standards, in the file your agent reads
+
+An agent writing code in your repository does not know your file-length limit, your naming convention, or the score your pre-push hook blocks below. It finds out when something fails, which is after the work is done. `iris rules` writes those rules into the file the agent already reads, generated from `.irisconfig.json`. Nothing is analysed, nothing is sent anywhere, and no model is involved. Ships alongside `@iris-code/cli` 1.16.0. See [Project rules](/agents/project-rules).
+
+- **Added** `iris rules` and the editor command **Iris Code: Write Project Rules for AI Agents**, reachable from the command palette, the File tab, the welcome page, and in JetBrains from Find Action. Free.
+- **Added** support for writing several files in one run. Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the file Codex, Cursor and Copilot read, so a team running two agents needs both. Each file receives the full rules rather than a pointer to another file, and the editor picker accepts more than one.
+- **Added** `--all` to write every target, `--refresh` to update only the files a repository already has and create none, and `--dry-run` to print the result instead of writing it. Each file is written independently, so one file that cannot be updated is reported with its reason while the rest still change.
+- **Added** markers around the generated block, so regenerating updates only Iris Code's own section and never text you wrote. Running it again with an unchanged config reports the file is already up to date rather than producing a diff, and a file with a damaged marker is refused with an explanation rather than duplicated.
+- **Changed** the rules to describe only what your project contains. A Java project is not told to avoid `any`, and the debug-output rule names `System.out.println` rather than listing every language's equivalent.
+- **Changed** how a single-language project is described: where your config raises that language's limits, the rules state the effective numbers rather than the project defaults with a footnote. A rule that quotes a limit the gate does not enforce is worse than no rule.
+- **Fixed** per-language overrides for Java and Rust being rejected by the config schema. Both languages have been analysed since 1.23.0, but the schema declared six language keys against the analyser's eight, so a valid `languages.java` block was reported as invalid in every editor with schema support.
+
+---
+
 ## v1.23.1 - 2026-08-23
 
 <Note>**fix** - workspace scans stay inside the workspace</Note>
