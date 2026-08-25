@@ -31,7 +31,7 @@ anything is written; in the terminal, pass `--yes` to skip the prompt in a scrip
 
 ## Targets
 
-`AGENTS.md` is the default because most agents read it. One target is written per run.
+`AGENTS.md` is the default because most agents read it.
 
 | Flag | File | Read by |
 | --- | --- | --- |
@@ -42,6 +42,32 @@ anything is written; in the terminal, pass `--yes` to skip the prompt in a scrip
 
 The Cursor file carries the frontmatter Cursor expects (`alwaysApply: true`), so the rules apply to
 every request rather than only when a glob matches.
+
+### Writing more than one
+
+Teams routinely run two agents. Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the file
+Codex, Cursor and Copilot read, so a project using both needs both files.
+
+```bash
+iris rules --target agents --target claude   # the two most common
+iris rules --all                             # all four
+iris rules --refresh                         # update the ones this repo already has
+```
+
+In the editor the picker is multi-select: tick every file your team's agents read and they are all
+written from one confirmation.
+
+Each file gets the full rules rather than a pointer to another file. A `@AGENTS.md` import is
+Claude-specific syntax that reads as noise to every other tool, and a symlink does not survive a
+Windows checkout or a zip export. Every file owns its own block independently, so there is nothing to
+keep in sync by hand: run the command again and all of them update.
+
+`--refresh` is the one to use in a script. It updates the files that already exist and creates
+nothing, so it cannot add an agent file to a repository whose conventions you do not own. If nothing
+is there yet, it says so rather than creating a default.
+
+If one file cannot be updated, the others still are. A damaged file is reported with its reason and
+left exactly as it was.
 
 ## What the file says
 
