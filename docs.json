@@ -62,6 +62,13 @@
             ]
           },
           {
+            "group": "Working with AI agents",
+            "tag": "New",
+            "pages": [
+              "agents/project-rules"
+            ]
+          },
+          {
             "group": "Editors",
             "pages": [
               "editors/overview",
