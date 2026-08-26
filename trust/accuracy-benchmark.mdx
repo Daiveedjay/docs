@@ -120,18 +120,21 @@ and so is the sample each percentage came from.
 
 Read the **Cases** column before reading any percentage. It is the number of labelled
 fixtures behind that row, and most rules sit between one and fifteen. At those sizes a
-single false alarm moves precision by tens of points, which cuts both ways: the one
-figure below 100% - `sql-concatenation` in JavaScript, at 66% - is two correct findings,
-one false alarm and no misses, and a row reading 100% on one case is a much weaker claim
-than the same figure on fifteen. Per-language true positive, false positive and false
-negative counts are in the
-[machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json) if you want the
-arithmetic rather than the ratio.
+single false alarm moves precision by tens of points, so every cell below 100% carries
+its own counts. There are two: `parse-error` in JavaScript is one correct finding and one
+false alarm, and `sql-concatenation` in JavaScript is two correct findings and one false
+alarm. Neither has ever missed a planted case.
+
+That cuts both ways - a row reading 100% on a single case is a much weaker claim than the
+same figure on fifteen. A `—` means the rule was not measured in that language, never
+that it scored zero. Per-language true positive, false positive and false negative counts
+are in the [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json) if
+you want the arithmetic rather than the ratio.
 
 {/* >>> iris-benchmark-start <<< */}
 _Generated from the benchmark corpus in `@iris-code/core` 0.4.1. Every cell is precision / recall for that rule's own implementation in that language; `—` means not measured, and the reasons are listed under the table._
 
-**37 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 26 advisory. 169 measured rule-language pairs over 347 fixture files (239 positive, 178 negative). Unmeasured rules: 0.
+**37 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 26 advisory. 168 measured rule-language pairs over 347 fixture files (239 positive, 178 negative). Unmeasured rules: 0.
 
 | Rule | Group | Cases | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust |
 | --- | --- | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -152,7 +155,7 @@ _Generated from the benchmark corpus in `@iris-code/core` 0.4.1. Every cell is p
 | `missing-return-types` | advisory | 2 | 100% / 100% | — | — | — | — | — | — | — |
 | `no-exports` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | — | — |
 | `open-redirect` | advisory | 7 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — |
-| `parse-error` | advisory | 5 | 100% / 100% | 50% / 100% | 100% / 100% | 100% / 100% | 0% / 0% | — | — | — |
+| `parse-error` | advisory | 5 | 100% / 100% | 50% / 100%<br />_1 correct, 1 false alarm_ | 100% / 100% | 100% / 100% | — | — | — | — |
 | `process-execution` | advisory | 2 | — | — | — | — | — | — | 100% / 100% | — |
 | `todo` | advisory | 12 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `too-many-functions` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
@@ -170,7 +173,7 @@ _Generated from the benchmark corpus in `@iris-code/core` 0.4.1. Every cell is p
 | `function-too-long` | enforcement | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | — | — | 100% / 100% | 100% / 100% |
 | `hardcoded-secret` | enforcement | 22 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `mass-assignment` | enforcement | 2 | — | — | — | — | 100% / 100% | — | — | — |
-| `sql-concatenation` | enforcement | 16 | 100% / 100% | 66% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `sql-concatenation` | enforcement | 16 | 100% / 100% | 66% / 100%<br />_2 correct, 1 false alarm_ | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `weak-hashing` | enforcement | 14 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 {/* >>> iris-benchmark-end <<< */}
 
@@ -192,15 +195,17 @@ reasons sit behind an empty cell, and they are not the same thing:
 Two remain, both published deliberately. A tool that hides its weak spots is not one to
 believe about its strong ones.
 
-- **`sql-concatenation` (JavaScript: 66% precision, and the lowest figure on this page).**
-  SQL keywords in ordinary prose joined by `+` can read as a query built by concatenation.
+- **`sql-concatenation` (JavaScript: two correct findings, one false alarm, no misses -
+  66% precision).** SQL keywords in ordinary prose
+  joined by `+` can read as a query built by concatenation.
   The TypeScript implementation measures clean at 100%; the JavaScript one does not, and
   the honest fix needs to know a string is SQL bound for a query call rather than a
   tighter pattern. Tightening the regex would trade a rare, harmless false alarm for the
   risk of missing a real injection on a rule that feeds the quality gate, and recall
   matters more here than precision. Recall stays at 100%: it has never missed a planted
   injection on this corpus.
-- **`parse-error` (JavaScript).** A regex literal such as `/{/` can unbalance the
+- **`parse-error` (JavaScript: one correct finding, one false alarm, no misses - 50%
+  precision, the lowest figure on this page).** A regex literal such as `/{/` can unbalance the
   delimiter scan that decides whether a file parses. Fixing it properly needs
   regex-literal-aware lexing rather than a heuristic, because this rule decides whether a
   file is analysed at all.
