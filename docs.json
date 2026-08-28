@@ -65,7 +65,8 @@
             "group": "Working with AI agents",
             "tag": "New",
             "pages": [
-              "agents/project-rules"
+              "agents/project-rules",
+              "agents/mcp"
             ]
           },
           {

@@ -1,7 +1,7 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all fourteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all fifteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
 Fourteen commands, covering scanning, dependency audits, CVE gating, SBOM export, agent rules, enforcement and hooks. Anything marked **Pro** needs a licence; the rest work with no account at all.
@@ -300,6 +300,29 @@ Writes this project's enforcement rules into the file your coding agent reads, g
 A project running two agents needs two files: Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is what Codex, Cursor and Copilot read. Each file is written independently, so one damaged file is reported and skipped while the rest still update.
 
 The block sits between `iris-rules` markers, so regenerating updates only Iris Code's own section and never your text. Full behaviour, including what the file contains and what happens to a damaged marker, is in [Project rules](/agents/project-rules).
+
+---
+
+### iris mcp
+
+Runs Iris Code as a Model Context Protocol server over standard input and output, so an AI agent can query the project's real findings, rules and gate status. **Free and Pro:** single-file `iris_check`, `iris_config` and single-file `iris_fix_safe` are Free; folder and workspace scope, `iris_explain`, `iris_gate` and `iris_check_dependency` are Pro.
+
+| Flag | Description |
+|---|---|
+| `--root <path>` | Directory the server may read. Every requested path must resolve inside it, symlinks included (defaults to current directory) |
+| `--sdk` | Serve the same tools through the official MCP TypeScript SDK instead of the built-in transport |
+
+```bash
+# Run the server for the current project
+npx -y @iris-code/mcp --root .
+
+# Equivalent, with the CLI already installed
+iris mcp --root .
+```
+
+The server writes only protocol messages to standard output, so it must not be wrapped in a script that prints anything there. Editors bundling the Iris Code language-server binary can use `iris-lsp --mcp` instead, with no Node.js install.
+
+Tool-by-tool behaviour, the preview-token write gate, and the response caps are in [MCP server](/agents/mcp).
 
 ---
 

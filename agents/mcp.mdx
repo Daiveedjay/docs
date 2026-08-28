@@ -1,0 +1,180 @@
+---
+title: "MCP Server: Give Your AI Agent Your Real Code-Health Rules"
+sidebarTitle: "MCP server"
+description: "iris mcp serves Iris Code's analysis to Claude Code, Cursor, Windsurf, Copilot agent mode and Zed over the Model Context Protocol, so an agent works against your committed thresholds and gate rules instead of inferring a standard."
+---
+
+An AI agent asked to clean up a file has no way to know what your project counts as clean. It can
+count lines and guess at a limit, and its guess changes between runs. Neither answer is the one your
+pre-push hook uses, so an agent can finish work that the gate then blocks.
+
+The MCP server closes that gap. Iris Code analyses the code locally and answers with the same numbers
+the gate enforces, so the agent is working against your committed standard rather than its own.
+
+[`iris rules`](/agents/project-rules) does something related and complementary: it writes your rules
+into `AGENTS.md` so an agent follows them while writing. MCP lets the agent ask questions while it
+works, and check its own output before you see it.
+
+## Running the server
+
+<CodeGroup>
+
+```bash npm
+npx -y @iris-code/mcp --root /path/to/project
+```
+
+```bash Installed CLI
+iris mcp --root /path/to/project
+```
+
+```bash Bundled binary
+iris-lsp --mcp --root /path/to/project
+```
+
+</CodeGroup>
+
+All three run the same server. The `npx` form needs no install and is the one to use with agents that
+are themselves npm-installed. `iris-lsp --mcp` suits editors that already bundle the Iris Code
+language-server binary, and needs no Node.js.
+
+The server writes only protocol messages to standard output, so do not wrap it in a script that
+prints anything there.
+
+## Which folder it analyses
+
+`--root` is the boundary: nothing outside it is read, and nothing outside it is written. Iris Code
+resolves it in this order.
+
+1. **`--root`, if you pass it.** Your own explicit choice, never overridden.
+2. **The workspace your editor reports.** Clients that support MCP's `roots` capability tell the
+   server which project is open, so no flag is needed. Iris Code asks for this at startup.
+3. **The directory the client launched Iris Code in.** The fallback when neither of the above
+   applies.
+
+Most clients land on the right folder through step 2, which is why the bare command usually works.
+Pass `--root` when you want the boundary pinned regardless of client behaviour, and in shared or
+scripted setups where leaving it implicit is a poor default.
+
+Where several workspace roots are open, Iris Code analyses the first and names the others it is not
+analysing. It does not merge them: separate roots are usually separate projects with their own
+config and their own gate, so one blended score would describe neither.
+
+The resolved folder and where it came from are written to standard error at startup, so your client
+log shows what Iris Code is actually looking at.
+
+Iris Code refuses to start if the folder turns out to be a whole filesystem, your home directory, or
+a directory containing home directories. Granting an agent read and write access across any of those
+is not something a project setup needs, and it is the kind of mistake that is otherwise invisible.
+
+## Client setup
+
+Register the command as an MCP server in your client:
+
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@iris-code/mcp", "--root", "/path/to/project"]
+}
+```
+
+Claude Code, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the file it
+goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
+
+In controlled environments, pin the version so a client cannot pick up a change you have not
+reviewed:
+
+```bash
+npx -y @iris-code/mcp@0.1.0 --root /path/to/project
+```
+
+An absolute path to a local `dist/cli.js` also works, but it never updates, so prefer the `npx` form
+outside development.
+
+## Tools
+
+| Tool | Tier | What it returns |
+|---|---|---|
+| `iris_check` | Free | Findings for a path, with rule ids, lines and severities |
+| `iris_config` | Free | The project's resolved thresholds, weights and gate limits |
+| `iris_fix_safe` | Free | Preview, then apply, only the fixes Iris Code can prove safe |
+| `iris_explain` | Pro | Findings plus the rule detail behind them |
+| `iris_gate` | Pro | Whether the configured gate would pass, and which files fail which rule |
+| `iris_check_dependency` | Pro | OSV advisories with severity, confidence and fix version |
+
+`iris_check` and `iris_fix_safe` are Free on a single file. Folder and workspace scope are Pro, as
+they are in every other Iris Code surface.
+
+Pro tools stay in the tool list and describe themselves as Pro rather than being hidden, so your
+assistant can tell you what an upgrade would add. Entitlement is checked when a tool runs, not when
+it is listed, so a cached tool list cannot be replayed for Pro work.
+
+## Findings
+
+`iris_check` returns every rule that fired, each anchored to a line and carrying its severity
+(`critical`, `high`, `medium` or `low`) and a stable id.
+
+This is a wider list than `iris check --format github` produces in CI. That surface writes one
+error-level annotation per finding into a budget of roughly ten visible per step, so it carries
+error-severity findings only. An agent has neither limit and can act on the rest, so it receives
+them.
+
+Large results are bounded. When a scan exceeds the response cap, the lowest severities are dropped
+first and the response reports `totalFindingCount`, `returnedFindingCount`,
+`findingCountsBySeverity` and `droppedFindingCountsBySeverity`. A critical finding is never dropped
+to make room for a low one, and an agent can see that something was withheld rather than presenting
+a partial answer as complete.
+
+## Safe fixes
+
+`iris_fix_safe` previews by default. The preview lists the exact changes it would make and returns a
+`preview_token`.
+
+Writing requires `apply: true` and that token. It is single-use, expires after ten minutes, and
+authorises exactly the change set the preview showed, so Iris Code only ever applies edits that have
+already been put in front of you. A confirmation flag alone would not give you that, because the
+model sets the flag.
+
+Refusals are per finding, with a reason, and one refusal does not block the rest. Iris Code declines
+anything it cannot prove:
+
+- A hardcoded secret is never auto-fixed. Rotating a leaked credential and moving it to an
+  environment variable is not a mechanical edit.
+- A debug print sharing its line with real code is left alone, because deleting the line would take
+  the code with it.
+- Anything needing a name or a judgement, such as extracting a magic number or shortening a long
+  function, stays the agent's work.
+
+Every applied change is followed by re-analysis, reported as a score change and a count of findings
+resolved.
+
+## Long scans
+
+Code analysis runs under a fifteen-minute deadline in a separate process, so a large workspace cannot
+hang the server.
+
+Dependency scans allow one active scan per workspace and return `SCAN_IN_PROGRESS` for a second
+request. If your client sends a progress token, the server reports phase and package counts as it
+goes, and warns at two minutes. Cancelling returns the partial results collected so far, marked as
+partial, rather than discarding them.
+
+## What the server will not do
+
+Analysis is local. Your code is not uploaded, and there is no shell-execution tool and no generic
+"run any Iris Code command" passthrough, which would route around each tool's own policy.
+
+Every requested path must resolve inside `--root`. That is checked after resolving symlinks, so a
+link pointing outside the workspace is refused rather than followed.
+
+Secret values are never returned, only the masked form every other Iris Code surface shows.
+
+`iris_check_dependency` is the one tool that reaches the network, querying public package registries
+and OSV.dev. It requires `allow_network: true`, discloses what it is about to do, and falls back to a
+local 24-hour cache.
+
+## Licensing
+
+The server resolves your licence from the same credentials the CLI uses, so signing in once with
+`iris auth login` covers the CLI, your editor and MCP. The offline grace period applies here too.
+
+A Free licence calling a Pro tool gets an explicit refusal naming the feature and where to upgrade,
+which your assistant can relay. It is never a silent empty result.
