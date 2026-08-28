@@ -80,6 +80,14 @@ Register the command as an MCP server in your client:
 Claude Code, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the file it
 goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
 
+### JetBrains IDEs
+
+The Iris Code JetBrains plugin bundles `iris-lsp`, so it can provide the same server without Node.js.
+With a project open, choose **Tools | Iris Code | Set Up MCP Server**. The action copies a complete
+stdio configuration with the bundled executable's absolute path and `--root` set to the open project.
+Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change
+an assistant's configuration itself.
+
 In controlled environments, pin the version so a client cannot pick up a change you have not
 reviewed:
 
