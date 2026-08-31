@@ -105,12 +105,15 @@ This one does pin the folder, because the plugin knows which project you generat
 assistant reading it may not report roots at all. Paste it into that project's settings rather than a
 global one, and generate it again per project.
 
-In controlled environments, pin the version so a client cannot pick up a change you have not
-reviewed:
+The bare command resolves the current release each run, so agents pick up fixes without anyone
+editing a configuration file. Write `@latest` if you would rather that were explicit:
 
 ```bash
-npx -y @iris-code/mcp@0.1.1
+npx -y @iris-code/mcp@latest
 ```
+
+In controlled environments, where a client must not pick up a change you have not reviewed, append
+an exact version from [the npm page](https://www.npmjs.com/package/@iris-code/mcp) instead.
 
 An absolute path to a local `dist/cli.js` also works, but it never updates, so prefer the `npx` form
 outside development.
