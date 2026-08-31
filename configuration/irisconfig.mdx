@@ -119,6 +119,7 @@ For complete control over every rule, write out the full config. Every key is op
   "gateMaxSuppressions": 5,    // Pro — max iris-ignore suppressions per file
   "gateMaxDuplicateBlocks": 0, // Pro — max duplicate code blocks across the scan
   "gateMaxNamingViolations": 0,// Pro — max naming violations across the scan
+  "gateMaxParseErrors": 0,     // Pro - max unparseable files (unset = report, never block)
   "ignoreSuppressions": false, // Pro — treat all iris-ignore directives as inert
 
   // Ignore rules — skip files or functions from analysis
@@ -164,7 +165,7 @@ These keys set the structural size limits that trigger warnings in the editor an
 
 | Key | Default | What it controls |
 |-----|---------|-----------------|
-| `functionLengthThreshold` | `40` | Lines before a function is flagged |
+| `functionLengthThreshold` | `40` | Lines before a function is flagged. In `.jsx`/`.tsx`, JSX markup does not count toward this - a component is measured by its logic, the same way a Vue or Svelte `<template>` never counted. `fileLengthThreshold` still counts every line, so a large component is still flagged as a long file |
 | `fileLengthThreshold` | `300` | Lines before a file is flagged |
 | `maxFunctionsPerFile` | `10` | Max functions before the file is flagged |
 | `maxImportsPerFile` | `8` | Max third-party imports before flagging |
@@ -218,6 +219,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | `gateMaxSuppressions` | Pro | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
 | `gateMaxDuplicateBlocks` | Pro | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
 | `gateMaxNamingViolations` | Pro | Maximum [file naming](/configuration/file-naming) violations across the scan. |
+| `gateMaxParseErrors` | Pro | Maximum files Iris could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
 | `ignoreSuppressions` | Pro | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
 
 ### Ignore rules
@@ -266,7 +268,7 @@ Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` ar
 
 Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
 
-Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxNamingViolations`), `presetId`, and `enable*` toggles are rejected inside a language block with a validation warning.
+Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxNamingViolations`, `gateMaxParseErrors`), `presetId`, and `enable*` toggles are rejected inside a language block with a validation warning.
 
 Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
 

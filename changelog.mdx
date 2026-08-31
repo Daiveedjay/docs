@@ -8,6 +8,72 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.25.2 - 2026-08-31
+
+<Note>**fix** - accuracy corrections across JavaScript and TypeScript analysis</Note>
+
+### Files that could not be read are no longer scored as though they were bad
+
+Iris Code reported some valid JavaScript and TypeScript files as unparseable, scored them zero, and failed the gate on them. Two causes: brackets inside regular expressions were counted as code, and a URL in JSX text was read as the start of a comment, which swallowed the rest of the line. Both were reported on the same day from two unrelated projects. Ships with `@iris-code/cli` 1.17.3.
+
+- **Fixed** false parse errors on regular expressions containing brackets or braces, such as `/\[([^\]]*)\]/`, and on `.jsx`/`.tsx` files with a URL in visible markup. Twelve files in one project moved from a score of 0 to between 92 and 100.
+- **Fixed** a related error where a self-closing JSX tag with an attribute, such as `<Input value={x} />`, caused the rest of the component to be misread.
+- **Changed** how an unparseable file affects your results. It is now excluded from the workspace average and from the list of files below the minimum score, and is reported separately as a file that could not be analysed. A syntax error your compiler already catches no longer blocks the gate twice.
+- **Added** `gateMaxParseErrors` for teams that want unparseable files to fail the gate. Unset by default. See [.irisconfig.json](/configuration/irisconfig).
+
+### React components are measured by their logic
+
+"Function too long" counted JSX markup as function length, so it fired on about a third of `.tsx` files against 2% of `.ts` files. A component with twenty lines of hooks and sixty lines of markup was reported as an eighty-line function.
+
+- **Changed** function length in `.jsx` and `.tsx` to exclude JSX markup. Logic inside markup, such as an inline handler or a `.filter().map()` chain, still counts. Vue and Svelte have always worked this way, so this brings React into line with them.
+- **Unchanged** file length and functions-per-file, which still count every line. A 400-line component is still reported as a long file.
+- `.tsx` files score about 1 to 2 points higher as a result, measured across two projects. This corrects a measurement rather than reflecting a change in your code. If you use `gateBaselineMode` or follow the trend chart, re-lock your baseline after updating.
+- Files with no JSX are measured exactly as before, verified across 422 files.
+
+### Smaller corrections
+
+- **Fixed** storage keys being reported as hardcoded secrets. `const KEY = "da-os-canvas"` carried the same penalty as a live provider token. A value that a secret-named variable holds, such as `CLIENT_SECRET`, still reports.
+- **Fixed** TODO and FIXME going undetected in block comments. This affected every language variant, and mattered most in React, where a block comment is the only comment form available inside markup.
+- **Fixed** a localhost mention inside prose being reported as a hardcoded endpoint. Documentation explaining how to connect to a local database was flagged on every mention.
+- **Fixed** sample code quoted inside a string being detected as a real function.
+
+---
+
+## v1.25.1 - 2026-08-31
+
+<Note>**fix** - MCP server setup</Note>
+
+### The documented MCP setup no longer names a folder
+
+Every published example pinned `--root /path/to/project`, including the configuration block most people copy. That flag stops Iris Code asking your editor which project is open, so one pinned entry reused across projects answered all of them about the folder it named, safe fixes included.
+
+- **Changed** the documented setup to `npx -y @iris-code/mcp` with no folder, which is what makes a single registration correct for every project you open.
+- **Changed** `--root` to be documented as a per-project pin rather than a default. `--root .` pins nothing: it resolves to the directory the server was started in, which is already the fallback.
+- **Fixed** the server printing nothing at startup, which made a server that was waiting for its client indistinguishable from one that had failed. It now reports the folder it is analysing and where that came from. Run in a terminal by hand, it explains that it is a Model Context Protocol server and shows the configuration to paste.
+- Root resolution itself is unchanged. See [MCP server](/agents/mcp).
+
+---
+
+## v1.25.0 - 2026-08-28
+
+<Note>**feature** - MCP server for AI coding agents</Note>
+
+### Your agent can ask what your project actually enforces
+
+An agent asked to clean up a file has no way to know what your project counts as clean, so it guesses, and its guess is not the standard your pre-push hook uses. Iris Code now runs as a Model Context Protocol server, so Claude Code, Codex, Cursor, Windsurf, Copilot agent mode, Zed and JetBrains AI Assistant can ask for your real thresholds instead. Delivered through `@iris-code/cli` 1.17.0, so it needs no editor. See [MCP server](/agents/mcp).
+
+- **Added** six tools. Free: findings for a single file, the project's resolved configuration, and safe fixes on a single file. Pro: folder and workspace scope, rule detail, gate status, and dependency risk. Pro tools stay listed and identify themselves as Pro rather than hiding.
+- **Added** preview-first safe fixes. Applying requires a token from a previous preview, so a change set you have not seen cannot be written. Refusals are per finding with a reason: a hardcoded secret is never auto-fixed, and a debug print sharing its line with real code is left alone.
+- **Added** findings carrying every rule with its real severity and a stable id, rather than the error-level list CI annotations are limited to. Oversized results drop the lowest severities first and report what was withheld.
+- **Added** **Tools | Iris Code | Set Up MCP Server** in JetBrains IDEs, which copies a ready-to-paste configuration using the bundled binary and needs no Node.js installation.
+- Analysis stays on your machine. Only dependency and advisory lookups reach the network, and those ask first.
+
+### Changed
+
+- **Changed** the finding list used by CI annotations to exclude debug prints. That list produces one error-level annotation per entry with about ten visible per step, so a low-severity rule in it both misreported severity and could push a hardcoded-secret annotation out of view. Health scores are unchanged, and agents receive the complete list through MCP.
+
+---
+
 ## v1.24.0 - 2026-08-25
 
 <Note>**feature** - project rules for AI agents</Note>
