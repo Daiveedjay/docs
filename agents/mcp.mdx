@@ -68,8 +68,12 @@ Where several workspace roots are open, Iris Code analyses the first and names t
 analysing. It does not merge them: separate roots are usually separate projects with their own
 config and their own gate, so one blended score would describe neither.
 
-The resolved folder and where it came from are written to standard error at startup, so your client
-log shows what Iris Code is actually looking at.
+Iris Code writes a ready line to standard error as soon as it starts, followed by the resolved folder
+and where it came from, so your client log shows what it is actually looking at. Nothing but JSON-RPC
+goes to standard output.
+
+Started in a terminal rather than from a client, the server has nobody to talk to and will simply
+wait. It says so, and prints the configuration to paste, rather than sitting there silently.
 
 Iris Code refuses to start if the folder turns out to be a whole filesystem, your home directory, or
 a directory containing home directories. Granting an agent read and write access across any of those
