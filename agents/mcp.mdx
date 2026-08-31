@@ -1,7 +1,7 @@
 ---
 title: "MCP Server: Give Your AI Agent Your Real Code-Health Rules"
 sidebarTitle: "MCP server"
-description: "iris mcp serves Iris Code's analysis to Claude Code, Cursor, Windsurf, Copilot agent mode and Zed over the Model Context Protocol, so an agent works against your committed thresholds and gate rules instead of inferring a standard."
+description: "iris mcp serves Iris Code's analysis to Claude Code, Codex, Cursor, Windsurf, Copilot agent mode, Zed and JetBrains AI Assistant over the Model Context Protocol, so an agent works against your committed thresholds and gate rules instead of inferring a standard."
 ---
 
 An AI agent asked to clean up a file has no way to know what your project counts as clean. It can
@@ -90,12 +90,23 @@ Register the command as an MCP server in your client:
 }
 ```
 
-Claude Code, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the file it
-goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
+Claude Code, Codex, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the
+file it goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
 
-Because this entry names no folder, it is safe to register at your editor's global or user level, and
-every project you open is then covered. If you register per project instead, that works too; the
-server resolves the same way either way.
+Naming no folder is what lets one registration cover every project you open, and it works when your
+client either reports MCP roots or starts the server in the workspace. Verified on real clients:
+
+| Client | How it resolves | Registration |
+|---|---|---|
+| Claude Code | reports MCP roots | user or project level |
+| Cursor | reports MCP roots | user or project level |
+| Codex | starts the server in the workspace | user or project level |
+| JetBrains AI Assistant | neither - see below | per project, via the plugin |
+| Windsurf, Copilot agent mode, Zed | not yet confirmed | check the startup line |
+
+After connecting, the startup line on standard error states the folder and where it came from, so you
+can confirm your client rather than assume. `from your editor, over MCP roots` and `from the working
+directory` both resolve correctly when that directory is the project.
 
 ### JetBrains IDEs
 
@@ -105,9 +116,12 @@ stdio configuration with the bundled executable's absolute path and `--root` set
 Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change
 an assistant's configuration itself.
 
-This one does pin the folder, because the plugin knows which project you generated it from and the
-assistant reading it may not report roots at all. Paste it into that project's settings rather than a
-global one, and generate it again per project.
+This one pins the folder, and that is not a precaution - it is required. JetBrains AI Assistant
+reports no MCP roots, starts stdio servers from the IDE installation directory rather than the open
+project, and exposes no environment variable naming the project. A bare command there resolves to the
+IDE's own install folder, which is not your code. The plugin action fills in the pin so you never
+type a path, but it is per project: paste it into that project's settings rather than a global one,
+and generate it again for the next project.
 
 The bare command resolves the current release each run, so agents pick up fixes without anyone
 editing a configuration file. Write `@latest` if you would rather that were explicit:
