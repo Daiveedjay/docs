@@ -20,15 +20,15 @@ works, and check its own output before you see it.
 <CodeGroup>
 
 ```bash npm
-npx -y @iris-code/mcp --root /path/to/project
+npx -y @iris-code/mcp
 ```
 
 ```bash Installed CLI
-iris mcp --root /path/to/project
+iris mcp
 ```
 
 ```bash Bundled binary
-iris-lsp --mcp --root /path/to/project
+iris-lsp --mcp
 ```
 
 </CodeGroup>
@@ -51,9 +51,18 @@ resolves it in this order.
 3. **The directory the client launched Iris Code in.** The fallback when neither of the above
    applies.
 
-Most clients land on the right folder through step 2, which is why the bare command usually works.
-Pass `--root` when you want the boundary pinned regardless of client behaviour, and in shared or
-scripted setups where leaving it implicit is a poor default.
+Most clients land on the right folder through step 2, which is why the commands above pass no flag.
+Leaving it off is the right default if you work in more than one project: register the server once,
+and each editor window roots itself in the project it has open.
+
+Pass `--root` when you want the boundary pinned regardless of client behaviour, such as a scripted or
+shared setup where the launch directory is not dependable. Pin it per project, though. A `--root`
+registered once for every workspace points every workspace at that one folder: an agent working in
+project B is then answered about project A, and `iris_fix_safe` writes into A. Iris Code cannot detect
+that for you, because a pinned root is a legitimate instruction.
+
+`--root .` is not a pin. It resolves to the directory the client launched the server in, which is what
+Iris Code would have used anyway, and passing it suppresses step 2. Omit the flag instead.
 
 Where several workspace roots are open, Iris Code analyses the first and names the others it is not
 analysing. It does not merge them: separate roots are usually separate projects with their own
@@ -73,12 +82,16 @@ Register the command as an MCP server in your client:
 ```json
 {
   "command": "npx",
-  "args": ["-y", "@iris-code/mcp", "--root", "/path/to/project"]
+  "args": ["-y", "@iris-code/mcp"]
 }
 ```
 
 Claude Code, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the file it
 goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
+
+Because this entry names no folder, it is safe to register at your editor's global or user level, and
+every project you open is then covered. If you register per project instead, that works too; the
+server resolves the same way either way.
 
 ### JetBrains IDEs
 
@@ -88,11 +101,15 @@ stdio configuration with the bundled executable's absolute path and `--root` set
 Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change
 an assistant's configuration itself.
 
+This one does pin the folder, because the plugin knows which project you generated it from and the
+assistant reading it may not report roots at all. Paste it into that project's settings rather than a
+global one, and generate it again per project.
+
 In controlled environments, pin the version so a client cannot pick up a change you have not
 reviewed:
 
 ```bash
-npx -y @iris-code/mcp@0.1.0 --root /path/to/project
+npx -y @iris-code/mcp@0.1.0
 ```
 
 An absolute path to a local `dist/cli.js` also works, but it never updates, so prefer the `npx` form

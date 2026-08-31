@@ -309,16 +309,21 @@ Runs Iris Code as a Model Context Protocol server over standard input and output
 
 | Flag | Description |
 |---|---|
-| `--root <path>` | Directory the server may read. Every requested path must resolve inside it, symlinks included (defaults to current directory) |
+| `--root <path>` | Pins the directory the server may read. Every requested path must resolve inside it, symlinks included. Omit it and Iris Code asks your editor which project is open, falling back to the launch directory |
 | `--sdk` | Serve the same tools through the official MCP TypeScript SDK instead of the built-in transport |
 
 ```bash
-# Run the server for the current project
-npx -y @iris-code/mcp --root .
+# Run the server; your editor tells it which project is open
+npx -y @iris-code/mcp
 
 # Equivalent, with the CLI already installed
-iris mcp --root .
+iris mcp
 ```
+
+Omit `--root` unless you specifically need the folder pinned. Passing it stops Iris Code asking your
+editor, so a single pinned registration shared across several projects answers every one of them
+about the folder named in the flag. `--root .` in particular pins nothing: it is the launch directory,
+which is already the fallback.
 
 The server writes only protocol messages to standard output, so it must not be wrapped in a script that prints anything there. Editors bundling the Iris Code language-server binary can use `iris-lsp --mcp` instead, with no Node.js install.
 
