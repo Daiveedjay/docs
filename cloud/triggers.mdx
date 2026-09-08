@@ -1,0 +1,67 @@
+---
+title: "Audit Triggers: Merges, Pull Requests, and What Each One Costs"
+sidebarTitle: "Audit triggers"
+description: "Every repository chooses what it is audited on. A merge costs one audit; a pull request costs one per update. Merges are on by default and pull requests are opt-in."
+---
+
+Every audit spends one scan from your allowance, whoever or whatever started it. So the events a repository audits on are the main thing controlling what it costs, and each repository chooses for itself.
+
+## The two triggers
+
+<CardGroup cols={2}>
+  <Card title="Audit merges" icon="git-merge">
+    **On by default.** One audit each time a change lands on your default branch. This is what keeps a project's score current.
+  </Card>
+  <Card title="Audit pull requests" icon="git-pull-request">
+    **Off by default.** One audit each time a pull request is updated, so an active branch costs several. Catches problems before they land.
+  </Card>
+</CardGroup>
+
+## Why the defaults are asymmetric
+
+Because the two cost very different amounts, and the cheaper one is also the one that keeps your dashboard true.
+
+A merge fires once per change that lands. A pull request fires on every push to the branch, so a PR with eight commits pushed separately costs eight audits, and merging it costs one more.
+
+<Warning>
+  If you are trying to spend less, **turning pull request auditing on is the wrong lever** - it is the expensive setting, typically several times the volume of merges alone. Auditing merges only is the cheapest configuration that still keeps a score current.
+</Warning>
+
+## Changing them
+
+Open the repository from Projects and use the **When to audit** panel. Each row says what it costs rather than only what it does.
+
+Turning both off is a legitimate choice and the screen says so plainly: nothing is audited automatically, and the project's score changes only when you run an audit yourself.
+
+## Pausing, which is different
+
+Pausing a repository stops **every** automatic audit whichever triggers are on, and leaves audits you start by hand working. Use it when you want to keep the connection and the history but stop the volume for a while.
+
+Resuming picks up the triggers the repository already had; pausing does not reset them.
+
+## Rapid pushes are collapsed
+
+Pushing several times in quick succession does not cost an audit each time. A queued audit for the same stream, the same pull request or the same default branch, is superseded by the newer one and is **not** counted against your allowance. Only the surviving audit meters.
+
+The window for this is short, about twenty seconds, so it catches a rapid-fire series rather than a normal working day. Thirty pushes spread across an afternoon are thirty separate changes and cost thirty audits.
+
+## What is never charged
+
+An audit that produced no report does not count against your allowance:
+
+- One you cancelled
+- One superseded by a newer push to the same stream
+- One no scanner ever claimed, or that timed out
+- One stopped because the repository was paused, or because GitHub access ended
+
+<Note>
+  There is also a safety limit of 50 audits per repository per day. It exists to stop a misconfigured CI loop consuming a month's allowance in an afternoon, and sits well above any normal day's volume. If you hit it, something is looping.
+</Note>
+
+## Manual audits
+
+You can always run an audit by hand from the project screen, whatever the triggers say and even while the repository is paused. It costs one scan like any other.
+
+<Tip>
+  A good starting configuration for a team: merges on for every repository, and pull requests on only for the one or two repositories where review feedback matters most. That gives you a current score everywhere and pre-merge feedback where you will actually read it.
+</Tip>

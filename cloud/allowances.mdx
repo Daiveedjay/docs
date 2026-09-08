@@ -1,0 +1,78 @@
+---
+title: "Scan Allowances: How Many Cloud Audits You Get, and How They Are Counted"
+sidebarTitle: "Scan allowances"
+description: "Pro includes 50 cloud scans a month and a Teams workspace includes 100 per seat. Every audit counts one, whoever started it, and allowances never merge between workspaces."
+---
+
+A cloud audit costs one scan. The rule is deliberately that simple: **every audit counts one, whoever or whatever started it.**
+
+## What you get
+
+| | Window | Scans |
+| --- | --- | --- |
+| **Pro** | per billing month | **50** |
+| **Teams** | per billing month | **100 per seat** - 300 for the smallest team, 1,000 at ten seats |
+| **Pro trial** | 14 days | **40** |
+| **Teams trial** | 14 days, 3 seats | **100** |
+
+## What counts as one scan
+
+All of these, equally:
+
+- An audit you start yourself from the project screen
+- An audit triggered by a change landing on your default branch
+- An audit triggered by a pull request being opened or updated
+- The first audit queued when you import a repository
+
+And these do not count, because they produced no report:
+
+- An audit you cancelled
+- One superseded by a newer push to the same branch or pull request
+- One no scanner claimed, or that timed out
+- One stopped because the repository was paused or GitHub access ended
+
+## The window is your billing period, not the calendar month
+
+The allowance resets when you are charged, not on the first of the month. If you subscribed on the 14th, it resets on the 14th.
+
+A workspace with no subscription, a trial for instance, resets on a calendar month instead. The reset date is shown on your Projects screen either way, so you never have to work it out.
+
+## Allowances belong to a workspace, not to you
+
+This is the part that surprises people. Each workspace has its own pool, and pools never merge or transfer.
+
+- Your personal workspace spends your Pro allowance
+- Each team workspace spends that team's allowance
+- Being in two teams means two separate pools, both usable, neither shared
+
+<Warning>
+  A team seat does **not** give you cloud audits for your own repositories. A seat covers that team's repositories; auditing your own needs your own Pro subscription. This is the one case where holding both is genuinely useful rather than duplicated - see [Team entitlement](/teams/entitlement).
+</Warning>
+
+## Running out
+
+You are warned before the wall, not at it. Once four fifths of the allowance is spent, the card on your Projects screen turns amber and says so, while there is still enough left to act on.
+
+If it does run out, automatic audits stop for every repository in that workspace and each one reports "allowance used". Your GitHub connection is untouched, existing reports are unaffected, and audits resume on their own when the allowance resets. The screen names the date.
+
+## Getting more
+
+Three ways, depending on where you are:
+
+- **Adding seats** raises a team's allowance immediately, by 100 per seat
+- **Subscribing** replaces a trial allowance straight away
+- **Auditing merges only**, rather than every pull request update, is the single setting that most reduces what you spend. See [Audit triggers](/cloud/triggers)
+
+<Note>
+  There is no scan top-up to buy yet. If a workspace runs out, the options are the three above or waiting for the reset.
+</Note>
+
+## Working out what you need
+
+Count the changes that land, not the pushes you make. Merges are one audit each, so a team merging six pull requests a day across all its repositories spends roughly 120 a month and sits comfortably inside a three-seat allowance of 300.
+
+Turning pull request auditing on multiplies that by however many times a branch is pushed before it merges, which is usually three to five. That is the number worth estimating before switching it on across every repository.
+
+<Tip>
+  The daily limit of 50 audits per repository is a runaway-loop breaker, not a budget. It sits far above a busy day and exists so a misconfigured CI job cannot spend a month's allowance in an afternoon. Hitting it means something is looping, not that you are working too hard.
+</Tip>

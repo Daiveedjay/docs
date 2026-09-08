@@ -67,7 +67,7 @@ It makes no judgement about who wrote the code. It checks what is there.
 
 ## Your code stays on your machine
 
-Analysis runs in the editor process, on your machine. Your source never reaches a server of ours, and no AI model processes it.
+Analysis runs in the editor process, on your machine. Nothing you scan in the editor or the CLI is uploaded, and no AI model processes it.
 
 Iris Code does make network requests, and it is worth being specific about which: signing in, licence validation, dependency version and advisory lookups, and anonymous product-use events you can disable in your account settings. None of them carry source code, file contents or project structure.
 
@@ -76,6 +76,12 @@ That local-first design gives you three things:
 - **Instant feedback** - milliseconds on save, with no round trip.
 - **Offline capability** - file analysis and CLI commands work without a connection.
 - **Privacy by design** - proprietary code, secrets and unreleased features stay on your machine.
+
+<Note>
+  **The one exception is a cloud audit, which you have to switch on.** If you connect a repository through the Iris Code GitHub App, the scanner fetches that repository's source from GitHub in order to audit it without your editor open. The source is analysed and discarded; what is stored is the report. Nothing is ever executed, and no AI model sees it.
+
+  Connect nothing and this does not apply: the editor and the CLI behave exactly as described above. See [Cloud overview](/cloud/overview) for what is fetched, stored and deleted.
+</Note>
 
 ## Languages
 

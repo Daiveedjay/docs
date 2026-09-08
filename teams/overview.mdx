@@ -1,0 +1,73 @@
+---
+title: "Iris Code Teams: A Shared Standard and One Place to See It Held"
+sidebarTitle: "Teams overview"
+description: "A Teams workspace gives everyone Pro, publishes one standard your repositories are measured against, and keeps an audit trail a reviewer can read."
+---
+
+Pro makes one developer's work measurable. It does not make a team's standard the same standard, and it does not give anyone a way to check that it held.
+
+A Teams workspace does three things: it gives every member Pro, it publishes one standard your repositories are measured against, and it keeps a record of what was audited, when, and against which version of that standard.
+
+## What a workspace is
+
+A workspace is the unit that owns everything: members and their seats, connected repositories, the published standard, the audit trail, and the billing relationship.
+
+You can own up to **three** workspaces. Most people need one.
+
+## Members and roles
+
+| Role | Can do |
+| --- | --- |
+| **Owner** | Everything, including billing, seat changes and deleting the workspace. Exactly one, and cannot be removed or demoted |
+| **Admin** | Invite and remove members, connect repositories, publish the standard |
+| **Member** | Use everything in the workspace. Cannot invite, remove, or change billing |
+
+The owner cannot be demoted or removed, because a workspace whose only owner had been demoted could not be administered by anyone.
+
+## Inviting people
+
+Invite by email address and choose a role. The invitation is created whether or not the email is delivered, and the screen tells you which happened rather than reporting "invitations sent" for both.
+
+An invitation **holds a seat** while it is pending, so five invitations on a three-seat workspace will not all succeed. Invitations expire after **7 days**, and you can revoke one at any time to release its seat immediately.
+
+<Note>
+  Iris Code reports each invitation's outcome separately. A batch of five on two free seats succeeds twice and fails three times, and you are told which three, because "invitations sent" hides exactly the information you need.
+</Note>
+
+## What every member gets
+
+A seat grants Pro in that member's editor, whatever their own subscription says. See [Team entitlement](/teams/entitlement) for how that interacts with a personal subscription, and what happens when a seat ends.
+
+## The shared standard
+
+A workspace publishes one `.irisconfig.json` standard, built and previewed in Config Studio. It is committed beside your code like any other config, so a new machine enforces it on its first push.
+
+Publishing does not change any repository. It sets what the workspace expects; the config in each repository is what actually runs, and every report names which policy version it used, so drift is visible rather than silently corrected.
+
+## The audit trail
+
+Every completed audit records what ran, on which commit and branch, what it scored, how many findings were open and how many were high severity, and which policy version applied. Audits arrive from three places, and all three land in the same trail:
+
+- **The editor**, on every completed workspace scan
+- **CI**, from `iris gate`, when the repository sets a `teamProjectId`
+- **Cloud audits**, from connected GitHub repositories
+
+Counts and revisions only. No source code, no file names, no findings text.
+
+## Cloud audits for a team
+
+A workspace has its own connected repositories and its own scan allowance of 100 per seat per month, entirely separate from any member's personal repositories. See [Scan allowances](/cloud/allowances).
+
+## Trials
+
+A workspace can start a **14-day trial** with 3 seats, no card required.
+
+<Warning>
+  The trial is one per **person**, not one per workspace. If you have already trialled Teams, a second workspace you create starts with no trial and no plan: it exists and accepts invitations, but no member gets Pro from it and it cannot run cloud audits until a subscription starts. The billing screen says so rather than leaving you to guess.
+</Warning>
+
+## Deleting a workspace
+
+Only the owner can, and only once the subscription has been cancelled, because deleting a workspace tells the billing provider nothing and a team removed mid-subscription would keep being charged for something that no longer exists.
+
+Deleting removes members, invitations, connected repositories, cloud reports and the audit trail. A record of the deletion is kept. Deleting your last workspace returns you to your personal account.
