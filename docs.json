@@ -66,6 +66,7 @@
             "tag": "New",
             "pages": [
               "teams/overview",
+              "teams/rollout",
               "teams/seats-and-billing",
               "teams/entitlement"
             ]
