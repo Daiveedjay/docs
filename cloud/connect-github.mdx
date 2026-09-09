@@ -57,17 +57,18 @@ Reconnecting a repository you had disconnected starts fresh: its previous cloud 
 
 ## Troubleshooting
 
-<AccordionGroup>
-  <Accordion title="A repository shows 'allowance used'">
-    The workspace has spent its scan allowance for the period. Automatic audits resume on their own when it resets. The GitHub connection itself is fine. See [Scan allowances](/cloud/allowances).
-  </Accordion>
-  <Accordion title="A repository shows the connection needs attention">
-    Iris Code's access to that repository ended: it was deselected on GitHub, the App was suspended or uninstalled, or the repository was renamed or moved. Reconnect from GitHub and audits resume, with history intact.
-  </Accordion>
-  <Accordion title="Pushes are not triggering audits">
-    Check three things, in order. That the push was to the **default branch**, since other branches are ignored. That **Audit merges** is on for that repository. And that the repository is not paused, which stops every automatic audit while leaving manual ones available.
-  </Accordion>
-  <Accordion title="An audit has been queued for a long time">
-    An audit that no scanner has claimed for fifteen minutes is reported as stalled rather than as slow, because nothing is running it. Cancel it to free the commit for another attempt; a cancelled audit is not counted against your allowance.
-  </Accordion>
-</AccordionGroup>
+### A repository shows 'allowance used'
+
+The workspace has spent its scan allowance for the period. Automatic audits resume on their own when it resets. The GitHub connection itself is fine. See [Scan allowances](/cloud/allowances).
+
+### A repository shows the connection needs attention
+
+Iris Code's access to that repository ended: it was deselected on GitHub, the App was suspended or uninstalled, or the repository was renamed or moved. Reconnect from GitHub and audits resume, with history intact.
+
+### Pushes are not triggering audits
+
+Check three things, in order. That the push was to the **default branch**, since other branches are ignored. That **Audit merges** is on for that repository. And that the repository is not paused, which stops every automatic audit while leaving manual ones available.
+
+### An audit has been queued for a long time
+
+An audit that no scanner has claimed for fifteen minutes is reported as stalled rather than as slow, because nothing is running it. Cancel it to free the commit for another attempt; a cancelled audit is not counted against your allowance.
