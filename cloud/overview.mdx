@@ -1,0 +1,58 @@
+---
+title: "Iris Code Cloud: Audits That Run Without Your Editor Open"
+sidebarTitle: "Cloud overview"
+description: "Connect a GitHub repository once and Iris Code audits it on the events you choose, keeping every report pinned to the commit that produced it."
+---
+
+The editor scores the code in front of you. A hook stops a bad push. Neither tells you what the default branch looks like on a Tuesday morning when nobody is looking at it.
+
+Cloud audits do. Connect a repository once and Iris Code scores it on the events you choose, keeping the result against the exact commit that produced it.
+
+## What it audits
+
+A cloud audit runs the same analysis as the editor and the CLI: health score, findings by severity, file coverage, and the dependency and CVE report. Nothing is scored differently because it ran in the cloud.
+
+What differs is where the result lives. Every audit is stored against its commit SHA, so a report is a statement about one revision rather than about "now".
+
+<Note>
+  This matters most for pull requests. A PR audit records the PR head, so reviewing a branch never overwrites your default branch's score. The two live side by side, and each says which commit it describes.
+</Note>
+
+## What it does not do
+
+Iris Code never runs your code. A cloud audit downloads a source tarball, expands it, reads the files, and parses your dependency manifests. There is no clone, no `npm install`, no build step, and nothing from the repository is executed at any point.
+
+The extraction refuses symlinks and hardlinks, and the analysis stage has no network access.
+
+## How a repository gets connected
+
+You install the Iris Code GitHub App on the repositories you choose. See [Connecting GitHub](/cloud/connect-github) for the permissions it asks for and why.
+
+Importing a repository queues one audit immediately, so the project has a score before you have configured anything. That first audit counts against your allowance like any other.
+
+## What triggers an audit afterwards
+
+Each repository decides for itself. A change landing on your default branch, a pull request update, or both.
+
+The two cost very different amounts, and the setting says so rather than presenting them as equivalent switches. See [Audit triggers](/cloud/triggers).
+
+## Reports and retention
+
+Every audit keeps its full report for **400 days**. After that the report body is removed and the audit row is kept, so the record of what ran, on which commit, and with what outcome survives, while an old link resolves to an honest "the detail is no longer retained" rather than to nothing.
+
+Disconnecting a repository deletes that workspace's cloud reports for it permanently and immediately. A record of the deletion is kept, nothing on GitHub is changed, and you would need to connect the repository again to run any audit against it.
+
+## Personal and team repositories are separate
+
+A personal workspace and a Teams workspace each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
+
+Being seated in a team does not let that team's allowance audit your own repositories, and your personal subscription does not audit theirs. See [Scan allowances](/cloud/allowances).
+
+## What you need
+
+- **Iris Code Pro**, or a seat in a Teams workspace with an active subscription or trial
+- A GitHub account with permission to install an App on the repository you want audited
+
+<Tip>
+  If you only want the dashboard score to stay current, leave the defaults alone. Merges are audited, pull requests are not, and that is the cheapest configuration that keeps a project's score true.
+</Tip>

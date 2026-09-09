@@ -1,0 +1,85 @@
+---
+title: "Team Entitlement: How a Seat Grants Pro, and What a Personal Subscription Adds"
+sidebarTitle: "Team entitlement"
+description: "A team seat grants Pro in your editor. A personal subscription is the only thing that cloud-audits your own repositories. Here is exactly how the two interact."
+---
+
+A seat in a Teams workspace grants Pro in that member's editor. It does not replace a personal subscription, and the difference between them is narrow but real.
+
+## How Pro is decided
+
+Iris Code checks three things in order and stops at the first that grants it:
+
+<Steps>
+  <Step title="Are you paying for Pro yourself?">
+    An active personal subscription. Reported as **individual**.
+  </Step>
+  <Step title="Are you on a personal trial?">
+    An active 14-day Pro trial. Also reported as **individual**.
+  </Step>
+  <Step title="Do you hold a seat in a workspace with an active subscription or trial?">
+    Reported as **team**, along with which workspace is covering you.
+  </Step>
+</Steps>
+
+A seat is checked **last**, and only when nothing personal already grants Pro. So joining a team never changes anything for someone who already pays for Pro.
+
+## What a seat gives you
+
+Everything in Pro, in your editor and CLI, for as long as the workspace's subscription runs. Your account page names the workspace covering you and the date its cover currently runs to.
+
+It also gives you access to that workspace: its connected repositories, its reports, its audit trail, and its scan allowance.
+
+## What a seat does not give you
+
+**Cloud audits of your own repositories.** Scan allowances belong to a workspace, and a team seat never qualifies a personal pool.
+
+If you want your own side projects audited in the cloud, that needs your own Pro subscription. The seat covers the team's repositories only.
+
+<Warning>
+  This is the reason Iris Code does not cancel a personal subscription when you join a team, and does not ask you to. Cancelling would silently stop your own repositories being audited, which is not something a team seat covers.
+</Warning>
+
+## If you have both
+
+Your editor is covered by your personal subscription, and the seat is what gives you the workspace. Iris Code shows a notice on your billing screen saying you are covered twice, so nobody finds out from a bank statement.
+
+Keeping both is reasonable if you work on your own repositories as well as the team's. If you only ever work on the team's, cancelling your personal subscription stops that charge without affecting your access to the workspace at all.
+
+## Two teams
+
+Only one seat provides your editor entitlement, and a **paid** workspace always beats a trialling one. That matters because a trial expires in a fortnight while a subscription does not, so picking the paid one means your Pro lasts as long as somebody is actually paying for it.
+
+Scan allowances are different: you get both workspaces' pools, each spendable on that workspace's own repositories.
+
+## When cover ends
+
+### You are removed from the workspace
+
+Immediately. Iris Code tells you as it happens rather than leaving you to discover it, and returns you to your personal account. If your Pro came from that seat it ends with it; if you pay for Pro yourself, nothing changes.
+
+That workspace's notifications are cleared from your inbox at the same time, because every link in them pointed somewhere you can no longer open.
+
+### The workspace stops paying
+
+A 7-day grace window keeps every member on Pro. After it, the entitlement becomes read-only and members drop to Free together. Existing reports stay readable. See [Seats and billing](/teams/seats-and-billing).
+
+### The workspace is deleted
+
+Cover ends with it, and its repositories, reports and audit trail are removed. Your personal account is untouched. Deleting your last workspace returns you to it.
+
+### Your seat is deactivated but you stay a member
+
+A seat that is not active does not grant Pro. Ask an owner or admin to reactivate it; the workspace's seat allowance has to have room.
+
+## What your account page shows
+
+Your billing screen distinguishes the three cases rather than reading your own subscription alone:
+
+- **Paying yourself** - your plan, price and renewal date, plus the "covered twice" notice if you also hold a seat
+- **Covered by a team** - which workspace, until when, that there is nothing for you to pay, and that a personal subscription is what would audit your own repositories
+- **Neither** - the Free plan, with the upgrade path
+
+<Note>
+  Your editor and the website resolve Pro through the same logic, so they cannot disagree about whether you have it.
+</Note>

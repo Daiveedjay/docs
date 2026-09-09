@@ -52,6 +52,25 @@
             ]
           },
           {
+            "group": "Cloud scanning",
+            "tag": "New",
+            "pages": [
+              "cloud/overview",
+              "cloud/connect-github",
+              "cloud/triggers",
+              "cloud/allowances"
+            ]
+          },
+          {
+            "group": "Teams",
+            "tag": "New",
+            "pages": [
+              "teams/overview",
+              "teams/seats-and-billing",
+              "teams/entitlement"
+            ]
+          },
+          {
             "group": "Configuration",
             "pages": [
               "configuration/irisconfig",
