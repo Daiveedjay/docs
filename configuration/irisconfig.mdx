@@ -1,5 +1,5 @@
 ---
-title: "Configure Iris Code with .irisconfig.json - Presets and Rules"
+title: "Configure shared project standards with .irisconfig.json"
 sidebarTitle: ".irisconfig.json"
 description: "Drop a .irisconfig.json at your project root to share thresholds across your team. Covers presets, custom thresholds, gate limits, and severity overrides."
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "Java", "languages.java", ".properties", "Rust", "languages.rust", "Cargo", "per-language thresholds", "golang", "Gemfile"]
@@ -219,7 +219,7 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | `gateMaxSuppressions` | Pro | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
 | `gateMaxDuplicateBlocks` | Pro | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
 | `gateMaxNamingViolations` | Pro | Maximum [file naming](/configuration/file-naming) violations across the scan. |
-| `gateMaxParseErrors` | Pro | Maximum files Iris could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
+| `gateMaxParseErrors` | Pro | Maximum files Iris Code could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris Code adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
 | `ignoreSuppressions` | Pro | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
 
 ### Ignore rules
@@ -264,7 +264,7 @@ Mixed-language repos rarely want one threshold set for everything - a 500-line P
 }
 ```
 
-Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
+Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris Code applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
 
 Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
 
@@ -272,7 +272,7 @@ Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `
 
 Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
 
-Unknown language keys (say, an `elixir` block written for a newer Iris Code) produce a warning and are skipped, so a forward-looking config never breaks an older install. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
+Unknown language keys, such as an `elixir` block written for a newer Iris Code release, produce a warning and are skipped, so a forward-looking config does not break an older installation. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
 
 ## Severity overrides
 

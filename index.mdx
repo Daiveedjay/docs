@@ -1,17 +1,17 @@
 ---
-title: "Iris Code: Keep AI-Assisted Code Up to Your Standards"
+title: "Iris Code: Quality Control for AI-Assisted Development"
 sidebarTitle: "Home"
-description: "Iris Code reads the code you didn't. Local, deterministic checks that catch secrets, copy-paste and complexity before anyone else sees them."
+description: "Give coding agents your project rules, check their changes with deterministic analysis, and enforce the same standards in editors, hooks, CI, and opt-in cloud audits."
 ---
 
-An AI assistant can change fourteen files in one prompt. Reviewing that properly takes longer than most people have, so the diff gets skimmed and approved.
+AI assistants can change more code than a reviewer can inspect carefully. Iris Code gives the agent your project rules, checks the resulting code independently, and applies the same standard before review, push, or merge.
 
-Iris Code reviews it deterministically instead. It scores every file, flags the hardcoded key, the function that has doubled in length, and the block now pasted in three places, and it can block the push before any of it leaves your machine.
+Its deterministic analysis scores files and identifies hardcoded credentials, security smells, complexity, duplication, naming violations, and dependency risk. The editor explains findings while you work; hooks and CI can stop changes that exceed your configured limits.
 
 It makes no judgement about who wrote the code. It checks what is there.
 
 <Note>
-  Iris Code does not attempt to identify AI-generated code, and it does not upload your source. Analysis runs on your machine, in your editor, in milliseconds. No model processes your files.
+  Iris Code does not identify whether code was written by AI, and it makes no model calls. Editor, CLI, hook, and CI analysis runs in your environment. Opt-in Cloud audits temporarily fetch a selected GitHub repository, delete the working copy after the audit, and retain the report.
 </Note>
 
 <CardGroup cols={2}>

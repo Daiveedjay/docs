@@ -1,7 +1,7 @@
 ---
-title: "Git Hook: Block Weak Code Before It Leaves Your Machine"
+title: "Git hook: check configured standards before every push"
 sidebarTitle: "Git Hook"
-description: "A pre-push hook that checks your project before every push and blocks the ones that fall below your threshold."
+description: "Install a pre-push hook that runs Iris Code locally and blocks changes when the configured gate fails."
 ---
 
 The pre-push hook runs in front of `git push`. If any file in your project scores below your threshold, the push is blocked and the offending files are listed.
