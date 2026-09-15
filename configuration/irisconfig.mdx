@@ -55,6 +55,8 @@ Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`, `ai
 
 The `ai-assisted` preset uses stricter explicit limits for teams reviewing AI-assisted code at volume. It caps duplicate blocks and suppressions, but does not impose a naming convention.
 
+Generated configs show the active detection and gate choices with one-line comments. Team-specific items such as naming conventions, ignore lists, and language overrides remain commented examples until the project chooses them.
+
 <Tabs>
   <Tab title="Free">
     Iris Code applies the shipped preset values as the source of truth. Local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.

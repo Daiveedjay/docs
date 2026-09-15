@@ -1,12 +1,72 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all fifteen Iris Code CLI commands: iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all seventeen Iris Code CLI commands: iris init, iris fix, iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Fifteen commands cover code checks, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
+Seventeen commands cover setup, code checks, safe fixes, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
 
-If you only ever learn two: `iris check` for a score, `iris gate` for CI.
+`iris init` sets a project up. After that, `iris check` gives a score and `iris gate` enforces one in CI.
+
+---
+
+### iris init
+
+Sets up a project: asks three short questions, recommends a preset, writes `.irisconfig.json`, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows it. **Free**, except the hook step, which is Pro and is reported as skipped rather than failing the run.
+
+| Flag | Description |
+|---|---|
+| `[path]` | Directory to set up (defaults to current directory) |
+| `--yes`, `-y` | Take the Balanced preset without prompting. Also the behaviour when there is no terminal to ask at |
+
+```bash
+npx -y @iris-code/cli init
+```
+
+The questions cover what kind of project this is, what matters most right now, and whether Iris Code should enforce before push or only report. The answers map to one of the shipped presets, and the recommendation is shown with its reason before anything is written. Choosing another preset from the list is always offered.
+
+Each step reports what it did:
+
+```
+Iris Code setup
+  config: created .irisconfig.json with the Balanced preset
+  git hook: skipped - Pro installs the pre-push gate; run `iris hook git install` after upgrading
+  agent rules: created or refreshed Iris Code blocks
+```
+
+Running it again is safe. An existing `.irisconfig.json` is left alone rather than overwritten, and existing rules files have only their Iris Code block refreshed. A step that cannot complete is reported and skipped; it does not stop the rest or fail the command.
+
+---
+
+### iris fix
+
+Removes findings Iris Code can prove are safe to remove. **Free** for a single file. Previews by default and never writes without confirmation.
+
+| Flag | Description |
+|---|---|
+| `--safe <file>` | Required. Restricts the command to deterministic removals |
+| `--apply` | Write the changes. Asks for confirmation first |
+| `--yes`, `-y` | Answer that confirmation in advance. Required when there is no terminal to ask at |
+
+```bash
+# See what would be removed
+iris fix --safe src/auth.ts
+
+# Remove it, after confirming
+iris fix --safe src/auth.ts --apply
+```
+
+Three cases qualify:
+
+| Case | Example |
+|---|---|
+| A line holding nothing but a debug statement | `console.log("debug")` |
+| A variable that is unused and assigned a literal | `const unused = 1` |
+| A standalone unused Java import | `import java.util.List;` |
+
+Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do. A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
+
+The same three cases are offered as a Quick Fix in VS Code and through `iris_fix_safe` on the [MCP server](/agents/mcp). All three share one planner, so they agree on what is safe.
 
 ---
 

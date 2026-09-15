@@ -14,9 +14,17 @@ Catching it here means nothing reaches the remote, so there is nothing to revert
 
 ## Installing
 
-Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes `.git/hooks/pre-push` and makes it executable.
+Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the pre-push hook and makes it executable.
 
 On first activation in a git repository, Iris Code also offers to install it for you. Declining is remembered per workspace, so you are not asked again.
+
+## Husky and custom hook paths
+
+Iris Code follows Git's active `core.hooksPath` rather than assuming `.git/hooks`.
+
+In a Husky project the block goes in `.husky/pre-push`, which is the file Husky intends you to edit. Any script already there is kept. Husky v9 sets `core.hooksPath` to `.husky/_` and generates dispatcher files in it; Iris Code leaves those alone, because they are regenerated on install and an edit to them would not survive.
+
+Any other `core.hooksPath` receives the block in that directory's `pre-push` file. The sidebar's hook badge watches whichever file Git will actually run, so it stays accurate whatever the layout.
 
 ## What happens on push
 

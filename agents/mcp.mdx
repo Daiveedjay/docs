@@ -81,7 +81,11 @@ is not something a project setup needs, and it is the kind of mistake that is ot
 
 ## Client setup
 
-Register the command as an MCP server in your client:
+With the Iris Code extension installed, VS Code discovers the server through its own MCP server
+picker. Choose **Iris Code** there; no JSON entry is needed, and VS Code supplies the workspace
+boundary for each session.
+
+For every other client, register the command as an MCP server:
 
 ```json
 {
@@ -170,6 +174,22 @@ first and the response reports `totalFindingCount`, `returnedFindingCount`,
 to make room for a low one, and an agent can see that something was withheld rather than presenting
 a partial answer as complete.
 
+## Explanations
+
+`iris_explain` returns the finding report plus a context bundle for each finding, so an agent can act
+on the cause rather than the label.
+
+For a threshold rule, the bundle carries the measured value, the configured limit, and the overage:
+a 302-line file against a 300-line limit reports `actual: 302`, `limit: 300`, `overBy: 2`. The limit
+quoted is the one that actually applied to that file, so a per-language `languages` block or a nested
+`.irisconfig.json` in a monorepo package is reflected rather than the workspace default.
+
+Every bundle also carries the file's imports and exports, and the other findings in the same file, so
+a fix can account for what the file is for and what else is wrong with it.
+
+Rules without a configured number - a hardcoded secret, a security smell - carry the finding's own
+message and that same file context. Iris Code does not invent remediation prose for them.
+
 ## Safe fixes
 
 `iris_fix_safe` previews by default. The preview lists the exact changes it would make and returns a
@@ -179,6 +199,10 @@ Writing requires `apply: true` and that token. It is single-use, expires after t
 authorises exactly the change set the preview showed, so Iris Code only ever applies edits that have
 already been put in front of you. A confirmation flag alone would not give you that, because the
 model sets the flag.
+
+Three cases are eligible: a line holding nothing but a debug statement, a variable that is unused and
+assigned a literal, and a standalone unused Java import. The same three are offered as a Quick Fix in
+VS Code and by `iris fix --safe`, from one shared planner, so the three surfaces agree.
 
 Refusals are per finding, with a reason, and one refusal does not block the rest. Iris Code declines
 anything it cannot prove:

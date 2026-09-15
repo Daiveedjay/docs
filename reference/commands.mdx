@@ -23,10 +23,12 @@ Several also appear in right-click context menus, in the Explorer file tree and 
 | `Iris Code: Analyse Current Folder` | Analyse the folder of the currently open file |
 | `Iris Code: Open in Panel` | Pop the sidebar out into a full editor panel beside your code |
 | `Iris Code: Export Scan Report as HTML` | Save the current analysis as a standalone HTML report |
-| `Iris Code: Install Git Hook` | Install the pre-push hook into `.git/hooks/pre-push` |
+| `Iris Code: Install Git Hook` | Install the pre-push hook. Follows Git's `core.hooksPath`, so a Husky project gets `.husky/pre-push` |
 | `Iris Code: Uninstall Git Hook` | Remove the Iris Code block from the pre-push hook |
 | `Iris Code: Install Build Hook` | Wire Iris Code health checks into the project build - `prebuild` for Node, Makefile target for Go, Python, Ruby, and .NET |
 | `Iris Code: Uninstall Build Hook` | Remove the Iris Code build hook, leaving any other build steps intact |
+| `Iris Code: Write Project Rules for AI Agents` | Generate this project's rules into `AGENTS.md`, `CLAUDE.md`, a Cursor rule, or Copilot instructions |
+| `Iris Code: Open Config Studio` | Open the browser Config Studio to build or edit `.irisconfig.json` |
 | `Iris Code: Open Dependents Table` | Open the dependency audit panel (versions + CVEs) |
 | `Iris Code: Show Welcome Page` | Open the Getting Started welcome page |
 
