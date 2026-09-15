@@ -89,7 +89,11 @@ Cancelling a card subscription retains Pro access until the end of the current b
 
 ## If a payment fails
 
-Paystack retries the charge automatically over several days, and Pro access stays active throughout. If every retry fails, the subscription is cancelled and the account reverts to Free. Iris Code emails you when that happens so you can update your payment method.
+Paystack retries the charge automatically, and Pro access stays active for **3 days** from the first failed charge. If none of the retries land inside that window, Pro stops and the account reverts to Free.
+
+Iris Code emails you as soon as a charge fails. That email quotes the reason your bank gave and names the date access stops, and the billing screen shows both. The reason is worth reading before you replace anything: a card with money in it that was refused for a recurring charge is a decision by your bank rather than a problem with the card, and paying once by hand usually clears it.
+
+Your licence key, settings and history survive a lapse. Paying again restores Pro on the same key with nothing to set up.
 
 ## Working with a team
 
