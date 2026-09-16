@@ -29,6 +29,8 @@ const RULES = [
   { pattern: /cloud audit/gi, use: "cloud scan" },
   { pattern: /(solo|personal|team) workspace/gi, use: "team, or account - workspace means the editor folder" },
   { pattern: /quality gate/gi, use: "gate" },
+  { pattern: /Iris Code: Analyse/g, use: "Iris Code: Scan - the act is a scan at every scope" },
+  { pattern: /health check/gi, use: "scan" },
 ];
 
 /**
