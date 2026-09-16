@@ -8,6 +8,87 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.28.0 - 2026-09-16
+
+<Note>**change** - one name per concept, across the editors, the CLI and these docs</Note>
+
+### Every command that runs an analysis is called Scan
+
+The Command Palette offered two verbs for a single act. `Scan Workspace` sat beside `Analyse Current File`, and the Folder tab told you to choose `Iris: Analyse This Folder`, a name no registered command had. The JetBrains plugin carried its own copies of these titles and had drifted from VS Code.
+
+- **Changed** `Analyse Workspace` to `Scan Workspace`, `Analyse This Folder` to `Scan This Folder`, `Analyse Current Folder` to `Scan Current Folder`, `Analyse Current File` to `Scan Current File`, and `Analyse This File` to `Scan This File`.
+- **Changed** `Restart First Review` to `Restart First Scan`. It restarts the first file scan; a review is the changed-files feature.
+- **Unchanged** command ids. Any keybinding you have already set still works.
+- **Fixed** six places in the in-app documentation that named commands prefixed `Iris:` rather than `Iris Code:`, including `Install Git Hook`, `Install Build Hook`, `Add GitHub Actions Workflow`, `Add CI Pipeline Snippet` and `Open Dependents Table`. Following any of those instructions found nothing.
+
+### One name per concept everywhere else
+
+- **Changed** the Issues tab to the Findings tab. A finding is what Iris Code reports; "issue" also meant a real defect and a support report.
+- **Changed** "Project Review" to a workspace scan. The behaviour is identical: your first full workspace scan is still free, still saved locally, still needs no account.
+- **Changed** cloud audits to cloud scans, and the Teams entity that owns seats and billing from a "workspace" to a **team**. Workspace now means the project folder open in your editor and nothing else, because that is what VS Code uses the word for.
+- **Added** a [terminology reference](/reference/terminology) listing every term and the ones it replaced, and inline definitions of finding, blocker, warning, gate and threshold on the [home page](/).
+
+### Corrections to these docs
+
+- **Fixed** Gate Preview and Quick Start stating five presets while the configuration pages stated six. The `ai-assisted` preset, minimum score 82, was missing from both.
+- **Fixed** the CLI overview omitting `iris init`, `iris fix`, `iris mcp`, `iris rules` and `iris auth` while linking to a page describing all seventeen commands.
+- **Fixed** the Languages table on the home page listing six of ten languages, silently omitting Ruby, C#, Java and Rust.
+- **Fixed** Gate Preview claiming it would block commits. It blocks pushes.
+
+---
+
+## v1.27.0 - 2026-09-15
+
+<Note>**feature** - one-command setup, provably safe fixes, and presets that enforce what they display</Note>
+
+### `iris init` sets a project up in one command
+
+It asks three short questions, recommends one of the shipped presets and explains why, writes a commented `.irisconfig.json`, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows it. Every step says what it did or why it skipped it. Re-running preserves an existing config, and `--yes` takes the Balanced default without prompting.
+
+### `iris fix --safe` removes only what it can prove is safe
+
+Three cases qualify: a line holding nothing but a debug statement, a literal-only unused variable, and a standalone unused Java import. Everything else refuses with a reason, per finding rather than per run, and a hardcoded secret is never auto-fixed.
+
+- **Added** the same fixes as a Quick Fix in VS Code. The lightbulb on an eligible finding offers to remove it, sharing one planner with the CLI and the MCP server so all three agree on what is safe.
+- Previews by default. `--apply` asks before writing, and requires `--yes` when there is nobody to ask.
+
+### A preset now enforces what it displays
+
+- **Fixed** `presetId` being honoured in the editor and silently dropped by the CLI, the git hook and CI. A project on `strict` saw strict thresholds while its hook and CI enforced the shipped defaults: one repository judged by two standards, with nothing on screen saying so. Expect your gate to start enforcing the threshold it has been displaying. `legacy` gates at 60, `balanced` at 70, `typescript` at 76, `strict` and `ai-assisted` at 82, `security` at 85.
+- **Changed** presets to carry gate limits, so choosing one configures the whole gate rather than only the score. Gate limits remain a Pro feature.
+- **Changed** `strict`, `security` and `ai-assisted` to check filenames across the whole project rather than only newly added files. Set `"fileNamingScope": "new-files"` to keep the old behaviour.
+
+### Smaller additions
+
+- **Added** stale-rules detection. Saving `.irisconfig.json` compares the Iris Code block in files it has already written and suggests `iris rules --refresh` when it no longer describes the config. It never edits a committed file.
+- **Added** native MCP server discovery in VS Code, so no hand-written JSON entry is needed.
+- **Fixed** Husky and custom hook paths. Iris Code follows Git's active `core.hooksPath`, so the block lands in `.husky/pre-push` with your script preserved.
+- **Fixed** a rate-limited licence check switching Pro off. The endpoint locks out per IP rather than per key, so a shared network could trip it; that response was read as a definitive "you are on Free". A rate limit is now treated as transient and nothing is revoked.
+
+---
+
+## v1.26.0 - 2026-09-08
+
+<Note>**feature** - cloud audits and team evidence</Note>
+
+### Audits that run without your editor open
+
+Connect a GitHub repository once and Iris Code audits it on the events you choose: every change that lands on your default branch, every pull request update, or both. It keeps the score, findings and dependency report against the commit that produced them.
+
+Each repository decides its own triggers, because a merge costs one audit and a pull request costs one per update pushed to it. Merges are on by default; pull requests are opt-in. See [Cloud scanning](/cloud/overview).
+
+### Team evidence, from the editor and from CI
+
+- **Added** `teamProjectId` in `.irisconfig.json`, binding a repository to a team project. Every completed workspace scan and every `iris gate` run then records privacy-minimal evidence against it. The value is opaque and is not a repository URL.
+- **Added** the option to the JSON schema, so editors complete and validate it.
+- Team evidence records execution outcomes and aggregate counts. It never contains source, file paths, repository URLs, snippets, or finding text.
+
+### Fixed
+
+- **Fixed** a dependency scan being discarded in order to save its cache. Creating the cache directory happened outside the write's error handling, so a read-only checkout aborted the whole scan after every registry and advisory lookup had already completed.
+
+---
+
 ## v1.25.2 - 2026-08-31
 
 <Note>**fix** - accuracy corrections across JavaScript and TypeScript analysis</Note>
