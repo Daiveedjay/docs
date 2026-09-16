@@ -1,0 +1,8 @@
+{
+  "name": "iris-code-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/check_terminology.mjs"
+  }
+}

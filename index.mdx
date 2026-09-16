@@ -1,18 +1,29 @@
 ---
 title: "Iris Code: Quality Control for AI-Assisted Development"
 sidebarTitle: "Home"
-description: "Give coding agents your project rules, check their changes with deterministic analysis, and enforce the same standards in editors, hooks, CI, and opt-in cloud audits."
+description: "Give coding agents your project rules, check their changes with deterministic analysis, and enforce the same standards in editors, hooks, CI, and opt-in cloud scans."
 ---
 
 AI assistants can change more code than a reviewer can inspect carefully. Iris Code gives the agent your project rules, checks the resulting code independently, and applies the same standard before review, push, or merge.
 
-Its deterministic analysis scores files and identifies hardcoded credentials, security smells, complexity, duplication, naming violations, and dependency risk. The editor explains findings while you work; hooks and CI can stop changes that exceed your configured limits.
+Its deterministic analysis scores files and identifies hardcoded credentials, security smells, complexity, duplication, naming violations, and dependency risk. The editor explains findings while you work; hooks and CI can stop changes that cross your configured thresholds.
 
 It makes no judgement about who wrote the code. It checks what is there.
 
 <Note>
-  Iris Code does not identify whether code was written by AI, and it makes no model calls. Editor, CLI, hook, and CI analysis runs in your environment. Opt-in Cloud audits temporarily fetch a selected GitHub repository, delete the working copy after the audit, and retain the report.
+  Iris Code does not identify whether code was written by AI, and it makes no model calls. Editor, CLI, hook, and CI analysis runs in your environment. Opt-in Cloud scans temporarily fetch a selected GitHub repository, delete the working copy after the scan, and retain the report.
 </Note>
+
+## Four words used throughout
+
+A **finding** is one thing Iris Code reports about your code. Every finding is
+either a **blocker**, serious enough to stop a push, or a **warning**, which is
+not. A **threshold** is a cap you configure, such as a minimum health score. The
+**gate** is the decision about whether a change gets through, made by comparing
+a scan against those thresholds.
+
+Those four carry most of the product. The rest are on the
+[terminology page](/reference/terminology).
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
@@ -46,7 +57,7 @@ It makes no judgement about who wrote the code. It checks what is there.
 
 **Copy-paste made visible.** When the same block appears in three files, Iris Code reports all three locations and can open them side by side.
 
-**A gate you turn on when you are ready.** Preview how your project scores against five presets first. When the result looks right, a pre-push hook or a CI step blocks anything below your threshold.
+**A gate you turn on when you are ready.** Preview how your project scores against six presets first. When the result looks right, a pre-push hook or a CI step blocks anything below your threshold.
 
 ## How it works
 
@@ -78,12 +89,14 @@ That local-first design gives you three things:
 - **Privacy by design** - proprietary code, secrets and unreleased features stay on your machine.
 
 <Note>
-  **The one exception is a cloud audit, which you have to switch on.** If you connect a repository through the Iris Code GitHub App, the scanner fetches that repository's source from GitHub in order to audit it without your editor open. The source is analysed and discarded; what is stored is the report. Nothing is ever executed, and no AI model sees it.
+  **The one exception is a cloud scan, which you have to switch on.** If you connect a repository through the Iris Code GitHub App, the scanner fetches that repository's source from GitHub in order to audit it without your editor open. The source is analysed and discarded; what is stored is the report. Nothing is ever executed, and no AI model sees it.
 
   Connect nothing and this does not apply: the editor and the CLI behave exactly as described above. See [Cloud overview](/cloud/overview) for what is fetched, stored and deleted.
 </Note>
 
 ## Languages
+
+Vue and Svelte script blocks go through the JavaScript or TypeScript analyser, and ERB through the Ruby one. The table is the list; counts are not stated in prose because they drift the moment a parser is added.
 
 | Language | Extensions | Worth knowing |
 |---|---|---|
@@ -93,16 +106,20 @@ That local-first design gives you three things:
 | **Svelte** | `.svelte` | Instance and module `<script>`, with the same `lang` handling. Markup and style are excluded |
 | **Go** | `.go` | Functions and methods, unused `go.mod` packages, with `vendor/` skipped |
 | **Python** | `.py`, `.pyw` | `def` declarations, unused packages from `requirements.txt` or `pyproject.toml`, with `.venv` skipped |
+| **Ruby** | `.rb`, `.erb`, `Gemfile`, `Rakefile` | Methods and blocks, including extensionless Ruby files and ERB templates |
+| **C#** | `.cs`, `.csproj` | Methods and properties, with package references read from the project file |
+| **Java** | `.java`, `.properties` | Methods and classes, with secrets detection across properties files |
+| **Rust** | `.rs` | Functions and impl blocks |
 
 ## Free or Pro
 
-Everything needed to review your own code is free: unlimited file scores, clickable findings, secrets detection, one saved whole-project review, and Gate Preview.
+Everything needed to review your own code is free: unlimited file scores, clickable findings, secrets detection, one saved whole-workspace scan, and Gate Preview.
 
 Pro keeps project-wide evidence current over time, and turns the score into something that blocks.
 
 <CardGroup cols={2}>
   <Card title="Free - $0/month" icon="circle-check">
-    - One complete Project Review, saved locally
+    - One complete workspace scan, saved locally
     - File scores, complexity, function counts
     - Findings you click to jump to the line
     - TypeScript-specific checks

@@ -6,13 +6,13 @@ description: "Compare the project with five built-in gate presets before writing
 
 Installing enforcement without knowing what it will block is how a gate ends up being switched off a day later.
 
-Gate Preview scans your project and shows how it scores against all five presets at once, before anything is enabled. It is read-only: no config is written and no push is blocked until you choose to act on it.
+Gate Preview scans your project and shows how it scores against all six presets at once, before anything is enabled. It is read-only: no config is written and no push is blocked until you choose to act on it.
 
 ## Opening it
 
 Scroll to the bottom of the **File tab** in the sidebar and click **Preview Gate**. Iris Code runs a background workspace scan and renders the results inline, respecting your `ignoreFiles` list.
 
-## The five presets
+## The six presets
 
 Ordered from most lenient to most strict:
 
@@ -22,6 +22,7 @@ Ordered from most lenient to most strict:
 | `balanced` | 70 | A typical TypeScript project, and the best starting point |
 | `typescript` | 76 | Raises the bar on `any`, `ts-ignore` and missing return types |
 | `strict` | 82 | Greenfield code, or a library other teams depend on |
+| `ai-assisted` | 82 | Reviewing AI-assisted code at volume. Tightens structural, security, suppression and duplication defaults without imposing a naming convention |
 | `security` | 85 | Prioritises secrets and safety. The tightest threshold available |
 
 ## What the preview shows

@@ -298,7 +298,7 @@ iris todos ./src --format json
 
 ### iris gate
 
-**Pro.** Runs the full enforcement gate - every rule configured in `.irisconfig.json`, including `gateMaxNamingViolations` - and shows each rule's threshold vs actual value with per-rule PASS/FAIL. This is the recommended command for CI quality gates. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+**Pro.** Runs the full enforcement gate - every threshold configured in `.irisconfig.json`, including `gateMaxNamingViolations` - and shows each threshold against its actual value, with a PASS or FAIL for each. This is the recommended command for CI. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
 
 Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the suppressed count always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to make all directives inert so suppressed findings count as live.
 
@@ -313,7 +313,7 @@ Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-
 | `--slack-dry-run` | Print the Slack payload instead of posting it |
 
 ```bash
-# Run the gate against the configured rules
+# Run the gate against the configured thresholds
 iris gate
 
 # Emit inline PR annotations in GitHub Actions format
@@ -347,7 +347,7 @@ The complete setup, payload contents and credential rules are covered in [Slack 
 
 ### iris rules
 
-Writes this project's enforcement rules into the file your coding agent reads, generated from `.irisconfig.json`. **Free.** Nothing is analysed, nothing is sent anywhere, and no model is involved.
+Writes this project's configured thresholds into the file your coding agent reads, generated from `.irisconfig.json`. **Free.** Nothing is analysed, nothing is sent anywhere, and no model is involved.
 
 | Flag | Description |
 |---|---|

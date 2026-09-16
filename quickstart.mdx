@@ -1,7 +1,7 @@
 ---
 title: "Quick start: install Iris Code and review your first project"
 sidebarTitle: "Quick Start"
-description: "Install Iris Code, inspect a file, run the first project review, and preview the configured gate without creating an account."
+description: "Install Iris Code, inspect a file, run the first workspace scan, and preview the configured gate without creating an account."
 ---
 
 Install Iris Code, open a file, and read the score. The first run takes about two minutes.
@@ -44,8 +44,8 @@ Everything on this page is free and works without an account.
     Save the file and the score updates immediately.
   </Step>
 
-  <Step title="Run your free project review">
-    Command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`), run **Iris Code: Analyse Workspace**.
+  <Step title="Run your free workspace scan">
+    Command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`), run **Iris Code: Scan Workspace**.
 
     Iris Code walks every supported file and populates:
 
@@ -54,7 +54,7 @@ Everything on this page is free and works without an account.
     - **Issues tab** - every blocker and warning in one filterable list
     - **TODOs tab** - every TODO, FIXME and HACK in the project
 
-    Your first full project review is free, stays on your machine, and requires no account. Iris Code saves it, so the files, issues, TODOs and duplicates remain available without scanning again.
+    Your first full workspace scan is free, stays on your machine, and requires no account. Iris Code saves it, so the files, issues, TODOs and duplicates remain available without scanning again.
 
     <Note>
       The free review is a fixed snapshot. It deliberately makes no claims about unused packages, dependency risk or trends, since those require a current scan. **Refresh With Pro** re-runs it. Folder scans, hooks, builds, CI and dependency audits are also Pro.
@@ -62,7 +62,7 @@ Everything on this page is free and works without an account.
   </Step>
 
   <Step title="Preview your enforcement posture">
-    At the bottom of the **File tab**, click **Preview Gate**. Iris Code runs a background scan and shows how your project scores against all five presets:
+    At the bottom of the **File tab**, click **Preview Gate**. Iris Code runs a background scan and shows how your project scores against all six presets:
 
     | Preset | Min score | Best for |
     |---|---|---|
@@ -70,6 +70,7 @@ Everything on this page is free and works without an account.
     | **Balanced** | 70 | A typical TypeScript project, and the best starting point |
     | **TypeScript** | 76 | Raising the bar on type safety |
     | **Strict** | 82 | Greenfield code, or a shared library |
+    | **AI-assisted** | 82 | Reviewing AI-assisted code at volume, without imposing a naming convention |
     | **Security** | 85 | Prioritising secrets and safety |
 
     Each card shows how many files would be blocked at that threshold. **Apply** writes `presetId` into your `.irisconfig.json` without opening the file.

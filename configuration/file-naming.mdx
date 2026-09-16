@@ -28,11 +28,11 @@ File naming checks are Free.
 }
 ```
 
-Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris checks the file stem, preserves known suffixes such as `.test` and `.spec`, and suggests a replacement name.
+Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris Code checks the file stem, preserves known suffixes such as `.test` and `.spec`, and suggests a replacement name.
 
-## How Iris chooses a policy
+## How Iris Code chooses a policy
 
-For every file, Iris applies one deterministic precedence order:
+For every file, Iris Code applies one deterministic precedence order:
 
 1. Built-in framework/generated-file exemptions and top-level `fileNaming.ignore` globs exclude the file.
 2. Every matching `fileNaming.overrides` rule is considered in declaration order; the **last matching rule wins**.
@@ -45,15 +45,15 @@ An override requires a non-empty `files` glob array and a `convention`. It may a
 
 `fileNamingScope` defaults to `"new-files"`.
 
-- With `.iris-baseline.json`, Iris checks paths not present in the baseline. A renamed path counts as new.
-- Without a baseline, Iris checks the whole scan. It shows the first 50 violations governed by `new-files` and discloses the full count; findings from a matching rule with `scope: "all"` are never hidden by that rollout cap.
+- With `.iris-baseline.json`, Iris Code checks paths not present in the baseline. A renamed path counts as new.
+- Without a baseline, Iris Code checks the whole scan. It shows the first 50 violations governed by `new-files` and discloses the full count; findings from a matching rule with `scope: "all"` are never hidden by that rollout cap.
 - Set `"all"` to check every file explicitly.
 
 Top-level `fileNaming` supplies the workspace default, absolute ignores, and ordered path rules. `fileNamingScope` is the rollout default. A matching path rule can set `scope`; otherwise a legacy language fallback may set it; when neither does, `fileNamingScope` applies.
 
 ## Built-in exemptions
 
-Iris always exempts:
+Iris Code always exempts:
 
 - Next.js reserved files under `app/` or `pages/`: `page`, `layout`, `route`, `loading`, `error`, `global-error`, `not-found`, `template`, `default`, `middleware`, `instrumentation`, `opengraph-image`, `sitemap`, `robots`, `manifest`, `_app`, `_document`, and `_error`.
 - Files whose own name is a route construct or a private file: `[id].tsx`, `[...slug].tsx`, `(group).tsx`, and `_`/`@`-prefixed files. These apply to the **file's own name only** - ordinary files inside a route-group `(app)`, private `_modals`, parallel `@slot`, or dynamic `[slug]` **folder** are still checked against the convention.

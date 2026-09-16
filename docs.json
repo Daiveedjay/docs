@@ -108,6 +108,7 @@
               "cli/ci",
               "reference/commands",
               "reference/scoring",
+              "reference/terminology",
               "trust/accuracy-benchmark",
               "trust/security-and-support",
               "changelog"

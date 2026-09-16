@@ -138,7 +138,7 @@ The name and picture on the message come from the Slack app you made, not from u
 | `--slack-on always` | Report passing runs too, not just failures |
 | `--slack-dry-run` | Print the message instead of sending it |
 
-`IRIS_SLACK_WEBHOOK` is the only place Iris reads the webhook, and it works with both `iris gate` and `iris check`. The URL is a posting credential, so Iris never accepts it as a command-line argument or reads it from `.irisconfig.json`; that keeps it out of shell history, process listings and committed files.
+`IRIS_SLACK_WEBHOOK` is the only place Iris Code reads the webhook, and it works with both `iris gate` and `iris check`. The URL is a posting credential, so Iris Code never accepts it as a command-line argument or reads it from `.irisconfig.json`; that keeps it out of shell history, process listings and committed files.
 
 ## Behaviour worth knowing
 

@@ -1,0 +1,108 @@
+---
+title: "Terminology: one name per thing in Iris Code"
+sidebarTitle: "Terminology"
+description: "What a finding, a gate, a threshold, a scan and a team mean in Iris Code, and which words were retired so that each concept has exactly one name."
+---
+
+Every term here means one thing and is spelled one way, in these docs, in the
+editor, in the CLI and on the website.
+
+<Note>
+  This page is a reference, not an introduction. Each term is also defined where
+  it first appears on the page that uses it, because nobody clicks "Terminology"
+  in a sidebar while they are trying to get something done.
+</Note>
+
+## Why this page exists
+
+These docs once used four labels for the single act of scanning a project, two
+unrelated meanings for "workspace", five for "rule" and three for "gate". The
+word "finding" appeared 172 times across 37 pages without being defined
+anywhere. Each page was internally consistent, so nothing looked wrong until
+the whole corpus was read at once.
+
+## The words that carry the product
+
+**Finding** - one thing Iris Code reports about your code. Every finding is
+either a blocker or a warning. It is not called an issue.
+
+**Blocker** - a finding serious enough to stop a push: committed credentials and
+security smells.
+
+**Warning** - a finding worth knowing about that does not stop a push: file
+length, function length, function count, import count, missing exports.
+
+**Gate** - the decision about whether a change is allowed through, made by
+comparing a scan against your configured thresholds. There is one gate. "Quality
+gate" is not a second thing; it is only used to describe what kind of product
+Iris Code is.
+
+**Threshold** - a configured cap the gate checks against, such as
+`minHealthScore` or `gateMaxComplexity`. Thresholds are not rules. Confusing the
+two is the single most common mistake made about enforcement, which is why
+[the accuracy benchmark](/trust/accuracy-benchmark) opens by separating them.
+
+**Health score** - a file's score out of 100. It starts at 100 and decreases as
+findings are applied, flooring at 0. It answers one question: is there something
+wrong with this file? See [Scoring](/reference/scoring).
+
+**Scan** - the act of analysing code, at any scope: a file scan, a folder scan,
+a workspace scan, a cloud scan. It is not called a review, an audit or an
+analysis.
+
+**Workspace** - the project folder open in your editor. Nothing else. VS Code
+owns this word (workspace folders, multi-root workspaces), so Iris Code does not
+use it for anything but the folder.
+
+**Team** - the entity that owns seats, connected repositories, the published
+standard, the audit trail and the billing relationship. This used to be called a
+workspace, which collided with the editor sense above.
+
+## Rules, in their five senses
+
+"Rule" is the one word that legitimately means several things. Each sense is
+qualified, always:
+
+| Term | What it means |
+| --- | --- |
+| **Analysis rule** | Something the engine checks for, measured in the benchmark |
+| **Rule id** | The identifier you name in an `iris-ignore` suppression |
+| **Project rules** | The thresholds written into the file your coding agent reads |
+| **Naming rule** | A path-keyed file-naming convention |
+| **Threshold** | A configured cap the gate enforces. Never called a gate rule |
+
+## The rest
+
+**Snapshot** - one saved record of a scan, kept for the daily trend. The saved
+free scan and the HTML export are not snapshots.
+
+**Readiness** - whether the current scope would pass the gate as it is
+configured right now.
+
+**Hotspot** - a file that ranks high for size or complexity within a scan.
+
+**Entitlement** - which plan a person's editor resolves to, from an individual
+subscription, an individual trial, or a team seat, in that order. See
+[Entitlement](/teams/entitlement).
+
+**Analysis engine** - `@iris-code/core`, the single implementation every surface
+calls, so a finding in JetBrains is the same finding in VS Code, on the same
+line.
+
+**Code smell** - a pattern that is not a defect but makes a defect more likely.
+
+**Dependency audit** - the separate act of checking package manifests against
+OSV advisories. This is the one place "audit" survives as a verb, because
+auditing dependencies is genuinely not the same act as scanning source.
+
+**Audit trail** - the record of what ran, on which commit, under which policy
+version. A record, not an act.
+
+## Spelling
+
+The product is **Iris Code**, with a space, in all prose. Never `IrisCode`,
+never bare `Iris`.
+
+Machine forms are not prose and are unchanged: `iriscode.co`, `iris-code`,
+`iris` (the CLI binary), `iris.*` settings and command ids, `.irisconfig.json`,
+`@iris-code/core`, `@iris-code/cli`.

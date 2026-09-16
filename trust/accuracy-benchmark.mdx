@@ -60,7 +60,7 @@ blocks a push. Being precise about that matters, because an earlier version of t
 page said enforcement rules were "the rules that feed the quality gate" and advisory
 rules "never block anything", and neither half was quite true.
 
-What actually decides a block is the gate, which has nine rules of its own:
+What actually decides a block is the gate, which has nine thresholds of its own:
 
 - **The health-score threshold** (`minHealthScore`). Every finding costs points,
   advisory ones included, so any rule can contribute to a failing score.
@@ -201,7 +201,7 @@ believe about its strong ones.
   The TypeScript implementation measures clean at 100%; the JavaScript one does not, and
   the honest fix needs to know a string is SQL bound for a query call rather than a
   tighter pattern. Tightening the regex would trade a rare, harmless false alarm for the
-  risk of missing a real injection on a rule that feeds the quality gate, and recall
+  risk of missing a real injection on a rule that feeds the gate, and recall
   matters more here than precision. Recall stays at 100%: it has never missed a planted
   injection on this corpus.
 - **`parse-error` (JavaScript: one correct finding, one false alarm, no misses - 50%

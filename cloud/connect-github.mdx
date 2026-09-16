@@ -4,7 +4,7 @@ sidebarTitle: "Connecting GitHub"
 description: "Install the Iris Code GitHub App, choose which repositories it can audit, and understand exactly what it reads and what it never sees."
 ---
 
-Cloud audits need to read your code, so the connection is a GitHub App you install on the repositories you choose, and it asks for the narrowest set of permissions that makes an audit possible.
+Cloud scans need to read your code, so the connection is a GitHub App you install on the repositories you choose, and it asks for the narrowest set of permissions that makes an audit possible.
 
 ## Installing
 
@@ -37,7 +37,7 @@ There is no write permission of any kind. Iris Code cannot push, comment, open a
 
 ## What it subscribes to
 
-- **Push** - only for the default branch. A push to any other branch is ignored outright, so feature-branch work never triggers a cloud audit
+- **Push** - only for the default branch. A push to any other branch is ignored outright, so feature-branch work never triggers a cloud scan
 - **Pull request** - opened, reopened, and synchronised (a new commit pushed to the branch)
 - **Installation** and **Installation repositories** - so that removing access, suspending the App, or deselecting a repository stops audits straight away
 
@@ -47,7 +47,7 @@ There is no write permission of any kind. Iris Code cannot push, comment, open a
 
 ## What leaves your machine, and what leaves GitHub
 
-For a cloud audit, source is fetched from GitHub by the scanner, analysed, and discarded. What is stored is the report: scores, finding counts, severities, file paths, and the dependency list.
+For a cloud scan, source is fetched from GitHub by the scanner, analysed, and discarded. What is stored is the report: scores, finding counts, severities, file paths, and the dependency list.
 
 This is a real difference from the editor, where analysis happens locally and nothing is uploaded. If you would rather no source was ever fetched, do not connect a repository - the editor and the CLI work exactly as before.
 

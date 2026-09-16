@@ -34,10 +34,18 @@ No dependencies, so it runs in a fresh clone. Run it before every push, and then
 
 ## Terminology
 
-- The product is **Iris Code** in all prose. Never bare "Iris"
+The canonical list is `IRIS/TERMINOLOGY.md`, and the published version is
+`reference/terminology.mdx`. `scripts/check_terminology.mjs` fails CI on the
+slips that have actually happened here. The essentials:
+
+- The product is **Iris Code** in all prose. Never bare "Iris", never "IrisCode"
 - Technical identifiers stay as they are: `iris check`, `iris gate`, `.irisconfig.json`, `@iris-code/cli`, `iris.*` settings
-- "Workspace" for the open project, "file naming" not "filename conventions", "health score" not "quality score"
-- Findings are **blockers** or **warnings**; the enforcement mechanism is a **gate**
+- **Workspace** is the open project folder in the editor and nothing else. The entity that owns seats and billing is a **team**
+- The act of analysing is a **scan**, at every scope. Not a review, an audit or an analysis
+- Findings are **blockers** or **warnings**; the enforcement mechanism is a **gate**, never a "quality gate" outside the product category
+- A configured cap is a **threshold**, never a limit and never a gate rule
+- "file naming" not "filename conventions", "health score" not "quality score" or "Code Health"
+- `changelog.mdx` is exempt: it records what shipped under the names it shipped with
 
 ## Style preferences
 

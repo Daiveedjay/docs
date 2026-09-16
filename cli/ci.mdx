@@ -4,7 +4,7 @@ sidebarTitle: "CI Integration"
 description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
 ---
 
-Install the CLI, pass your licence as an environment variable, and run `iris gate` as your quality gate step.
+Install the CLI, pass your licence as an environment variable, and run `iris gate` as your gate step.
 
 There is no browser step, no interactive login, and nothing persisted on the runner. Analysis runs on your own infrastructure, so your code never leaves it.
 
@@ -92,7 +92,7 @@ A pipeline that only writes to the build log gets read by whoever opened the bui
           IRIS_SLACK_WEBHOOK: ${{ secrets.IRIS_SLACK_WEBHOOK }}
 ```
 
-The message is built and sent by your own runner and never passes through Iris servers, so it can name the failing files. It stays quiet on a passing run unless you add `--slack-on always`, and a Slack outage can never change the exit code. See [Slack notifications](/enforcement/slack-notifications) for the full setup.
+The message is built and sent by your own runner and never passes through Iris Code servers, so it can name the failing files. It stays quiet on a passing run unless you add `--slack-on always`, and a Slack outage can never change the exit code. See [Slack notifications](/enforcement/slack-notifications) for the full setup.
 
 ## GitLab CI
 

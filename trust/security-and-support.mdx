@@ -3,7 +3,7 @@ title: "Iris Code Security, Privacy, and Support"
 description: "Understand Iris Code's local-analysis boundary, network requests, workspace writes, credential storage, and private vulnerability-reporting process."
 ---
 
-Iris Code uses different data boundaries for local analysis and opt-in Cloud audits. This page explains what each workflow reads, which network requests it makes, and how to report a security issue privately.
+Iris Code uses different data boundaries for local analysis and opt-in Cloud scans. This page explains what each workflow reads, which network requests it makes, and how to report a security issue privately.
 
 ## Local analysis stays in your environment
 
@@ -11,7 +11,7 @@ Editor and CLI analysis happens in the process running on your computer. Your so
 
 The extension reads supported files in the open workspace to calculate scores, duplication, and security findings. The CLI uses the same engine for local checks, hooks, and CI.
 
-Cloud audits are different. When you explicitly connect a GitHub repository, the Cloud worker temporarily fetches its source, runs the audit, deletes the working copy, and retains the commit-pinned report. See [Cloud security and retention](/cloud/overview#security-and-retention) for that boundary.
+Cloud scans are different. When you explicitly connect a GitHub repository, the Cloud worker temporarily fetches its source, runs the audit, deletes the working copy, and retains the commit-pinned report. See [Cloud security and retention](/cloud/overview#security-and-retention) for that boundary.
 
 ## Network requests
 

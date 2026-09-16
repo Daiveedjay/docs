@@ -6,11 +6,11 @@ description: "Connect a GitHub repository once and Iris Code audits it on the ev
 
 The editor scores the code in front of you. A hook stops a bad push. Neither tells you what the default branch looks like on a Tuesday morning when nobody is looking at it.
 
-Cloud audits do. Connect a repository once and Iris Code scores it on the events you choose, keeping the result against the exact commit that produced it.
+Cloud scans do. Connect a repository once and Iris Code scores it on the events you choose, keeping the result against the exact commit that produced it.
 
 ## What it audits
 
-A cloud audit runs the same analysis as the editor and the CLI: health score, findings by severity, file coverage, and the dependency and CVE report. Nothing is scored differently because it ran in the cloud.
+A cloud scan runs the same analysis as the editor and the CLI: health score, findings by severity, file coverage, and the dependency and CVE report. Nothing is scored differently because it ran in the cloud.
 
 What differs is where the result lives. Every audit is stored against its commit SHA, so a report is a statement about one revision rather than about "now".
 
@@ -20,7 +20,7 @@ What differs is where the result lives. Every audit is stored against its commit
 
 ## What it does not do
 
-Iris Code never runs your code. A cloud audit downloads a source tarball, expands it, reads the files, and parses your dependency manifests. There is no clone, no `npm install`, no build step, and nothing from the repository is executed at any point.
+Iris Code never runs your code. A cloud scan downloads a source tarball, expands it, reads the files, and parses your dependency manifests. There is no clone, no `npm install`, no build step, and nothing from the repository is executed at any point.
 
 The extraction refuses symlinks and hardlinks, and the analysis stage has no network access.
 
@@ -40,19 +40,19 @@ The two cost very different amounts, and the setting says so rather than present
 
 Every audit keeps its full report for **400 days**. After that the report body is removed and the audit row is kept, so the record of what ran, on which commit, and with what outcome survives, while an old link resolves to an honest "the detail is no longer retained" rather than to nothing.
 
-In your Solo workspace, **Audit history** brings those audit rows together across every connected repository. It shows the repository, commit, branch, trigger, status, score and timestamp without requiring you to open each project separately. **Analytics** is the separate screen for recorded signals - workspace scans, gates, blocked pushes, and a row for each completed cloud audit - alongside your health trend.
+In your account, **Audit history** brings those audit rows together across every connected repository. It shows the repository, commit, branch, trigger, status, score and timestamp without requiring you to open each project separately. **Analytics** is the separate screen for recorded signals - workspace scans, gates, blocked pushes, and a row for each completed cloud scan - alongside your health trend.
 
 Disconnecting a repository deletes that workspace's cloud reports for it permanently and immediately. A record of the deletion is kept, nothing on GitHub is changed, and you would need to connect the repository again to run any audit against it.
 
 ## Personal and team repositories are separate
 
-A personal workspace and a Teams workspace each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
+A account and a team each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
 
 Being seated in a team does not let that team's allowance audit your own repositories, and your personal subscription does not audit theirs. See [Scan allowances](/cloud/allowances).
 
 ## What you need
 
-- **Iris Code Pro**, or a seat in a Teams workspace with an active subscription or trial
+- **Iris Code Pro**, or a seat in a team with an active subscription or trial
 - A GitHub account with permission to install an App on the repository you want audited
 
 <Tip>

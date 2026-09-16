@@ -6,7 +6,7 @@ description: "A rollout guide for procurement, security reviewers, workspace own
 
 This is the page to send to two different people. The first half answers what procurement and security ask before anything is bought. The second half is what an engineer follows on the day.
 
-Nothing here is a separate product from what an individual developer uses. A Teams workspace gives every member the same Pro, publishes one standard the repositories are measured against, and keeps a record of what was audited and when.
+Nothing here is a separate product from what an individual developer uses. A team gives every member the same Pro, publishes one standard the repositories are measured against, and keeps a record of what was audited and when.
 
 ## For procurement and security
 
@@ -22,7 +22,7 @@ Two answers, because there are two different things running.
 
 **The editor extension, the CLI and the git hook analyse locally.** Source never leaves the machine. That is true on Free and on Pro, and it is why Iris Code can be used on a repository nobody is allowed to upload.
 
-**Cloud audits are opt-in per repository and run on our infrastructure.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those. Each audit clones, scans, and deletes the clone whatever the outcome. No source, file paths or finding text is retained; what is stored is the score, the counts, the commit and the branch.
+**Cloud scans are opt-in per repository and run on our infrastructure.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those. Each audit clones, scans, and deletes the clone whatever the outcome. No source, file paths or finding text is retained; what is stored is the score, the counts, the commit and the branch.
 
 If you never connect a repository, no code ever reaches us.
 
@@ -91,7 +91,7 @@ permissions:
 
 jobs:
   iris-code:
-    name: Iris Code quality gate
+    name: Iris Code gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +127,7 @@ Turning enforcement on everywhere on day one produces a wall of findings on code
 1. **Measure first.** Install, commit the config, and leave the gate in report-only for a sprint. The score and the finding counts are the argument for the thresholds.
 2. **Set thresholds you already pass.** A gate that fails on the first run teaches people to bypass it. Set the limit at roughly where you are, then tighten.
 3. **Enforce on new code.** The hook and the CI check both act on what is being pushed now, which is the code someone can still change.
-4. **Then connect cloud audits** if you want the trend and the history without anyone remembering to run something.
+4. **Then connect cloud scans** if you want the trend and the history without anyone remembering to run something.
 
 ## What to expect afterwards
 
