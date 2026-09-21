@@ -6,6 +6,8 @@ description: "Full reference for all seventeen Iris Code CLI commands: iris init
 
 Seventeen commands cover setup, code checks, safe fixes, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
 
+Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned. Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
+
 `iris init` sets a project up. After that, `iris check` gives a score and `iris gate` enforces one in CI.
 
 ---
@@ -328,6 +330,7 @@ IRIS_SLACK_WEBHOOK="$SLACK_WEBHOOK_URL" iris gate .
 | `0` | All rules pass |
 | `1` | One or more rules fail |
 | `2` | Bad arguments or config error |
+| `3` | Licence could not be verified, so the gate did not run |
 
 ---
 

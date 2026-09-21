@@ -135,6 +135,13 @@ Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as fail
 | `0` | Passed, workflow continues |
 | `1` | Failed, merge blocked |
 | `2` | Bad arguments or a broken config |
+| `3` | Your Iris Code licence could not be verified, so the gate did not run |
+
+Exit `3` is not a gate failure. It means the gate could not establish that you are
+entitled to run it - the licence server unreachable, or rate limiting a repeated caller -
+so it stops rather than reporting a pass it has not earned. Treat it as retryable
+infrastructure trouble rather than a code problem. A repository with no Pro licence is a
+different case and still exits `0`.
 
 <Note>
   Not on GitHub? **Iris Code: Add CI Pipeline Snippet** generates the equivalent for GitLab CI, Bitbucket Pipelines, an npm script, or a plain shell step. Inline annotations are GitHub-only; everywhere else the exit code does the work.

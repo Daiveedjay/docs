@@ -8,6 +8,41 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.29.0 - 2026-09-21
+
+<Note>**change** - a gate that cannot verify your licence now fails instead of quietly passing</Note>
+
+### Two changes that alter what CI reports
+
+Both move it towards the truth, and both can turn a currently-green pipeline red. That is the intended outcome in each case, but it is worth knowing before you upgrade rather than meeting it in a failed build.
+
+- **Changed** a Pro command whose licence cannot be verified to exit **3** instead of `0`. It used to skip and report success, so a brief licence-server outage turned `iris gate` into a silent no-op and let a build through that should have been blocked. Exit 3 is deliberately separate from 1 so a pipeline can distinguish "the gate failed" from "the gate never ran". See [CI exit codes](/cli/ci).
+- **Unchanged** for users without a Pro licence. That case is *known*, not unverified, so those commands still skip and exit `0` and your build stays green. Only a licence that exists but could not be checked fails closed.
+- **Fixed** `--config` so it decides the rules rather than only `minHealthScore` and the printed summary. `iris gate --config shared.json` applied one field from the file you named; every other threshold came from whatever `.irisconfig.json` sat in the scanned project, while the table displayed the values you had asked for. A config named explicitly now wins, and a project without the flag still resolves its own as before. `iris check` and `iris report` had the same fault.
+
+### The dependency table
+
+- **Fixed** the table not scanning when you open it. It showed "No scan yet" and waited for a click even on a project it had scanned before, because a cached scan older than 24 hours was read as no cache at all.
+- **Changed** the first open to still show the Scan button, so the network-access prompt follows a click rather than appearing because you opened a panel. Every open after that scans by itself.
+- **Fixed** clearing the cache reading as "nothing here" while the rescan it had just started was already running.
+
+### JetBrains
+
+- **Fixed** the Trends and Git History Secrets tables opening blank. The panel delivered a table's first state before the page was listening, and Trends sends its state exactly once, so it was lost for good.
+- **Fixed** the sixth and later tables opening blank when several were open at once. Each table held a connection for as long as its tab existed and the embedded browser allows only six, so which table failed depended on the order you opened them.
+
+### Licences and the CLI
+
+- **Fixed** a sign-in through a development build replacing your real credentials. Both wrote to the same file, so a token issued by a local backend overwrote the production one and every command afterwards failed to validate.
+- **Fixed** every command re-checking your licence over the network. A successful check is now reused for ten minutes, so a script or CI job that runs several commands makes one request instead of one per command. `iris auth status` and `iris auth login` always check for real, and signing out clears it.
+
+### Accuracy
+
+- **Added** `deep-nesting` to the measured corpus, taking it to [38 rules and 174 rule-language pairs](/trust/accuracy-benchmark). The rule now counts control blocks rather than indentation, so a widely-indented file is no longer reported as deeply nested and a minified one no longer escapes.
+- **Fixed** file naming not being checked on a file whose contents fail to parse. The parse-error path reported "no naming problem" rather than "never looked", so those files silently passed the rule.
+
+---
+
 ## v1.28.0 - 2026-09-16
 
 <Note>**change** - one name per concept, across the editors, the CLI and these docs</Note>
