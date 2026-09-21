@@ -10,13 +10,13 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ## v1.29.0 - 2026-09-21
 
-<Note>**change** - a gate that cannot verify your licence now fails instead of quietly passing</Note>
+<Note>**change** - a gate that cannot verify your licence now fails the build instead of passing it</Note>
 
-### Two changes that alter what CI reports
+### Two changes that affect CI results
 
-Both move it towards the truth, and both can turn a currently-green pipeline red. That is the intended outcome in each case, but it is worth knowing before you upgrade rather than meeting it in a failed build.
+Both can turn a passing pipeline red the first time you run them. In each case the old behaviour reported a pass it had not established, so the new failure is the accurate answer rather than a regression in Iris Code.
 
-- **Changed** a Pro command whose licence cannot be verified to exit **3** instead of `0`. It used to skip and report success, so a brief licence-server outage turned `iris gate` into a silent no-op and let a build through that should have been blocked. Exit 3 is deliberately separate from 1 so a pipeline can distinguish "the gate failed" from "the gate never ran". See [CI exit codes](/cli/ci).
+- **Changed** a Pro command whose licence cannot be verified to exit **3** instead of `0`. It used to skip and report success, so a brief licence-server outage turned `iris gate` into a silent no-op and let a build through that should have been blocked. Exit 3 is separate from 1 so a pipeline can distinguish "the gate failed" from "the gate never ran". See [CI exit codes](/cli/ci).
 - **Unchanged** for users without a Pro licence. That case is *known*, not unverified, so those commands still skip and exit `0` and your build stays green. Only a licence that exists but could not be checked fails closed.
 - **Fixed** `--config` so it decides the rules rather than only `minHealthScore` and the printed summary. `iris gate --config shared.json` applied one field from the file you named; every other threshold came from whatever `.irisconfig.json` sat in the scanned project, while the table displayed the values you had asked for. A config named explicitly now wins, and a project without the flag still resolves its own as before. `iris check` and `iris report` had the same fault.
 
