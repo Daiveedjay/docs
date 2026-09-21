@@ -17,6 +17,14 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 | `0` | All gate rules pass | Pipeline continues |
 | `1` | One or more gate rules failed: the `minHealthScore` threshold or any configured `gateMax*` limit (`gateMaxSecrets`, `gateMaxComplexity`, `gateMaxFileLength`, `gateMaxSmellsPerFile`, `gateMaxSecuritySmells`) | Fail the build |
 | `2` | Bad arguments or invalid config | Fix the workflow step |
+| `3` | Your Iris Code licence could not be verified, so the gate did not run | Fail the build, or retry |
+
+Exit `3` means the gate **did not run**, which is not the same as it finding nothing. It is
+returned when a licence exists but could not be checked - the licence server unreachable, or
+rate limiting a repeated caller. A gate that skipped silently and reported success would let a
+build through that should have been blocked, so it fails closed instead. A user with no Pro
+licence is a different case: that is known, so those commands skip and exit `0` and the
+pipeline stays green.
 
 ## Setting IRIS_LICENCE_TOKEN
 
