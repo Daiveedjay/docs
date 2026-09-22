@@ -1,0 +1,44 @@
+---
+title: "Code Map: see code health across a repository"
+sidebarTitle: "Code Map"
+description: "Open a health-coloured tree of a scanned workspace or cloud repository, then move directly from a score to the file behind it."
+---
+
+A workspace score tells you whether a repository needs attention. Code Map shows where that score comes from, so a weak area is visible as part of the folder that contains it.
+
+The tree uses the latest completed scan. It does not start a scan when you open it, which keeps the result honest about when the code was measured.
+
+## Opening the local map
+
+Run **Iris Code: Open Code Map** from the command palette, or select **Open Code Map** in the Workspace tab. Selecting a file from the ranked list opens the map with that file in view.
+
+Folders can be expanded and collapsed. Selecting a file opens it in the editor.
+
+Each row has ten separate health-score markers and a numeric score. Green is healthy, amber needs attention, and red is failing. A folder score is weighted by the line count of its measured files, so a large file has more influence than a short one.
+
+<Note>
+  Files that Iris Code cannot measure are labelled **Not measured**. They are not shown as failing, because the absence of a score is not evidence that code is unhealthy.
+</Note>
+
+## Scan states
+
+Code Map always shows which result it is displaying:
+
+- **Not scanned yet**: the repository structure is visible and the map provides a **Scan** button.
+- **Scanning**: the current workspace scan is in progress.
+- **Scanned**: scores come from the last completed scan.
+- **Stale**: the saved scan is more than a day old. Run a new scan before treating it as a current picture of the repository.
+
+Ignored and unsupported files are omitted in every state. The file count and the legend at the bottom make the measured scope visible.
+
+## Free and Pro
+
+Code Map structure is available on Free. The focused file's folder can show its saved colour, while workspace-wide colouring needs **Iris Code Pro** because it depends on a full workspace scan.
+
+## Cloud Code Map
+
+Connected GitHub repositories have a **Code Map** tab in their project page. It reads the completed cloud scan selected by the URL and shows the commit SHA, branch and scan time above the tree.
+
+The cloud tree is a record of that one revision, not a live view of your local workspace. It reports skipped files and tells you if detailed findings were truncated.
+
+See [Workspace analysis](/features/workspace-analysis) to run a local scan, or [Cloud overview](/cloud/overview) to connect a repository.

@@ -29,6 +29,7 @@
               "features/file-analysis",
               "features/change-review",
               "features/workspace-analysis",
+              "features/code-map",
               "features/hardcoded-secrets",
               "features/security-smells",
               "features/duplicate-detection",

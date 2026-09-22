@@ -14,6 +14,8 @@ A cloud scan runs the same analysis as the editor and the CLI: health score, fin
 
 What differs is where the result lives. Every audit is stored against its commit SHA, so a report is a statement about one revision rather than about "now".
 
+Each completed project report also has a [Code Map](/features/code-map) tab. It shows the repository tree and the per-file scores from that same commit.
+
 <Note>
   This matters most for pull requests. A PR audit records the PR head, so reviewing a branch never overwrites your default branch's score. The two live side by side, and each says which commit it describes.
 </Note>
