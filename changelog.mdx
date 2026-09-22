@@ -8,6 +8,25 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.29.2 - 2026-09-22
+
+<Note>**fix** - text written between tags is content, and is no longer counted as code</Note>
+
+### Finishing what 1.29.1 started
+
+1.29.1 stopped an apostrophe in a React component being read as the start of a string. That fixed one character. This release fixes the category: **text between tags is a string literal, delimited by tags instead of quotes**, and is never counted as code.
+
+- **Fixed** a bracket written as text being counted in the bracket balance. Markup that renders a code sample - a page showing a JSON snippet, written as `<span>]</span>` - put that bracket into the count, so the file was reported as a syntax error and **every finding in it was discarded**.
+- **Fixed** a regular expression inside a `${...}` template swallowing the rest of the file. The scanner knew about strings, backticks and braces inside a template but not regular expressions, so the quote in an everyday CSV escape - `` `"${String(cell).replace(/"/g, '""')}"` `` - opened a string and ran on to the next quote.
+- **Changed** a code sample rendered as markup so it is no longer counted as a declaration. A component displaying `export async function cancelOrder(...)` as text on the page had that counted as a real function in the file.
+- **Changed**, same as 1.29.1 and in the same direction: **your gate result may change on upgrade**, because files that were silently scoring 0 now report what is in them.
+
+### How it was checked
+
+The fix was measured rather than argued: 1,258 real files from four codebases were analysed before and after, and diffed file by file. Files reported as syntax errors went from **two to none**, and exactly **three** other files changed, each one explained - the two that had been scoring 0, and the component that had been counting a function out of a code sample.
+
+The two gaps [v1.29.1](#v1-29-1-2026-09-22) recorded as known and unfixed are both closed by this, because prose stops being code once the analyser knows where the markup region is.
+
 ## v1.29.1 - 2026-09-22
 
 <Note>**fix** - an apostrophe in ordinary prose was hiding whole files from the analyser</Note>
