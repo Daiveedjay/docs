@@ -8,6 +8,26 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.29.1 - 2026-09-22
+
+<Note>**fix** - an apostrophe in ordinary prose was hiding whole files from the analyser</Note>
+
+### A file that scored 0 looked exactly like a clean file
+
+JSX children are not quoted, so a sentence written as ordinary text inside a React component put a bare `'` into the analyser's scanner every time it contained a possessive or a contraction: `this project's limits`, `each rule's threshold`, `agents don't read them`. That apostrophe was read as the start of a string, and everything after it - up to the next apostrophe or the end of the file - stopped being treated as code.
+
+The consequence was not a wrong finding. It was **no findings at all**: the file's brackets no longer balanced, so it was reported as a syntax error, scored 0, and every real finding in it was discarded. Two of Iris Code's own screens had been in that state.
+
+- **Fixed** a quote directly preceded by a letter or digit opening a string. No valid JavaScript or TypeScript string literal is ever written that way, so this costs nothing and is decided by a single character. Backticks are exempt, because a backtick after a name is a tagged template.
+- **Fixed** an unterminated quote being honoured to the end of the file. A quote that never closes was not a string opener, and the scan now resumes after it instead of blanking everything below.
+- **Changed**, and worth expecting: **your gate result may change on upgrade.** Files that were silently scoring 0 now report what is actually in them, so a project can move from pass to fail without a line of its code changing. Those files were never being measured; the new number is the honest one.
+
+The same fix reaches the [Playground](https://www.iriscode.co/playground) and the Config Studio, which run the real engine in your browser.
+
+### Known, and deliberately not fixed here
+
+A bracket written as literal text in JSX - `<span>]</span>`, which happens when markup renders a code sample - is still counted as a delimiter and can still report a false syntax error. It has the same root cause: this scanner is lexical and has no concept of a JSX text region. Closing it properly is its own change.
+
 ## v1.29.0 - 2026-09-21
 
 <Note>**change** - a gate that cannot verify your licence now fails the build instead of passing it</Note>
