@@ -10,15 +10,25 @@ The tree uses the latest completed scan. It does not start a scan when you open 
 
 ## Opening the local map
 
-Run **Iris Code: Open Code Map** from the command palette, or select **Open Code Map** in the Workspace tab. Selecting a file from the ranked list opens the map with that file in view.
+Run **Iris Code: Open Code Map** from the command palette in VS Code or from **Find Action** in JetBrains IDEs, or select **Open Code Map** in the Workspace tab. Each file in the Workspace tab's **Ranked** lists has a map button beside it, which opens the map with that file in view. Selecting the file name itself still opens the file.
 
 Folders can be expanded and collapsed. Selecting a file opens it in the editor.
 
-Each row has ten separate health-score markers and a numeric score. Green is healthy, amber needs attention, and red is failing. A folder score is weighted by the line count of its measured files, so a large file has more influence than a short one.
+Each row has ten separate health-score markers and a numeric score. Green is healthy, amber needs attention, and red is failing. A folder score is the ordinary average of its measured files, matching the workspace score. Line count is shown as context, not used as a score weight.
 
 <Note>
   Files that Iris Code cannot measure are labelled **Not measured**. They are not shown as failing, because the absence of a score is not evidence that code is unhealthy.
 </Note>
+
+## Files below the minimum
+
+An average can hide the file that fails. Ten files at 98 and one at 60 average 94, so the folder reads as healthy, while the gate blocks the push on the file at 60. Code Map keeps the folder average and marks the failing files separately.
+
+A red caution badge appears beside any file that would fail the gate's score rule, showing how many points it is short. Each folder above it shows a badge with the number of failing files inside it. Hovering a folder's badge lists those files, furthest below first, with each one's score against its minimum; hovering a file's badge shows its score, the minimum and the shortfall. The header shows the total for the whole map, and hovering it lists every failing file.
+
+The minimum is the one the gate uses: `minHealthScore` from `.irisconfig.json`, or 70 when it is not set. With `gateBaselineMode` on, each file is compared against its own locked baseline, so a file scoring 90 carries the badge if its baseline is 95. Scores are rounded down before the comparison, as they are in the gate, so 69.9 is below a minimum of 70. Files that are not measured never carry the badge.
+
+The caution appears in the local map in VS Code and JetBrains, and in the cloud map. The cloud map uses the minimum that audit was scored against, which may come from a fallback preset or your workspace standard rather than the repository's own config. Audits run before the cloud map could record a minimum show a note saying failing files are not marked; running a new audit adds them.
 
 ## Scan states
 
@@ -33,12 +43,14 @@ Ignored and unsupported files are omitted in every state. The file count and the
 
 ## Free and Pro
 
-Code Map structure is available on Free. The focused file's folder can show its saved colour, while workspace-wide colouring needs **Iris Code Pro** because it depends on a full workspace scan.
+Code Map structure is available on Free. The focused file's folder can show its saved colour, while workspace-wide colouring needs **Iris Code Pro** because it depends on a full workspace scan. The below-minimum caution follows the same rule: on Free it appears only for files in the focused folder.
 
 ## Cloud Code Map
 
 Connected GitHub repositories have a **Code Map** tab in their project page. It reads the completed cloud scan selected by the URL and shows the commit SHA, branch and scan time above the tree.
 
-The cloud tree is a record of that one revision, not a live view of your local workspace. It reports skipped files and tells you if detailed findings were truncated.
+The cloud tree is a record of that one revision, not a live view of your local workspace. It reports how many files were scored, excluded and skipped, and tells you if detailed findings were truncated.
+
+Folder scores match the workspace score exactly. Both average measured files equally, use the same colour bands and mark files below the minimum the same way, because the tree, the bands and the minimum rule all come from the shared analysis engine rather than from each surface separately.
 
 See [Workspace analysis](/features/workspace-analysis) to run a local scan, or [Cloud overview](/cloud/overview) to connect a repository.
