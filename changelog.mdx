@@ -8,6 +8,34 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.31.0 - 2026-09-25
+
+<Note>**feature** - Code Map shows how your files import each other, and exports as a picture, Mermaid or a table</Note>
+
+### The import graph
+
+Switch the [Code Map](/features/code-map) from **Tree** to **Graph** to see how files import each other. Each line is an import; selecting it lists the lines it came from and opens them in the editor, and cycles are marked. The workspace scan that scores the tree also maps the imports, so there is nothing separate to build.
+
+- **Added** the Graph for TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust. A Go or Java package, or a C# namespace, is drawn as its folder, because that is what the import names.
+- **Added** a list of every import Iris Code could not resolve, each with its reason, rather than a guess.
+- **Added** the same Graph to the account dashboard's Code Map for each cloud audit.
+- Free shows the focused file with its direct imports and importers; Pro adds Folder and Workspace scope.
+
+An import graph only shows imports. Files in the same Go or Java package, C# namespace or Rust module can use each other without one, so those uses are not drawn, and the canvas says so.
+
+### Export
+
+- **Added** export for the Tree and the Graph: PNG, SVG, Mermaid, a Markdown table, CSV and JSON. An export is exactly what is on screen. Mermaid and Markdown can also be copied to the clipboard; GitHub draws Mermaid when it is pasted into a README or pull request.
+- Export is free, and a Free export contains only what a Free user can see.
+
+### CLI 1.22.0
+
+- **Added** [`iris graph`](/cli/commands#iris-graph): the same graph as text or JSON. `--focus <file>` is free; the whole graph needs Pro. Unresolved imports never change the exit code.
+
+### JetBrains
+
+- **Fixed** the progress bars not appearing during a workspace or folder scan.
+
 ## v1.29.2 - 2026-09-22
 
 <Note>**fix** - text written between tags is content, and is no longer counted as code</Note>

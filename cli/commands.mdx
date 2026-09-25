@@ -1,10 +1,10 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all seventeen Iris Code CLI commands: iris init, iris fix, iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all eighteen Iris Code CLI commands: iris init, iris fix, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Seventeen commands cover setup, code checks, safe fixes, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
+Eighteen commands cover setup, code checks, safe fixes, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
 
 Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned. Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
 
@@ -69,6 +69,39 @@ Three cases qualify:
 Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do. A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
 
 The same three cases are offered as a Quick Fix in VS Code and through `iris_fix_safe` on the [MCP server](/agents/mcp). All three share one planner, so they agree on what is safe.
+
+---
+
+### iris graph
+
+Prints the import graph that the [Code Map](/features/code-map) draws, as text or JSON. It exists so an agent or a CI job can read the same edges, cycles and unresolved imports you see in the editor, without opening one. **Free** for one file with `--focus`; the whole graph requires **Pro**.
+
+| Flag | Description |
+|---|---|
+| `--root <dir>` | Project root (defaults to current directory) |
+| `--focus <file>` | One file: what it imports and what imports it **(Free)**. Without it, the whole graph **(Pro)** |
+| `--format <fmt>` | `text` (default) or `json` |
+| `--include-external` | With `--focus`, also list packages and built-in modules |
+
+```bash
+# One file's imports and importers (free)
+iris graph --focus src/app.ts
+
+# The whole graph as JSON, for an agent or CI (Pro)
+iris graph --format json
+```
+
+It reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust, with the same resolver and the same `ignoreFiles` as the editor. An import Iris Code cannot resolve is listed with its reason, for example `missing-file` or `ambiguous-target`, and is never guessed at. Go and Java packages and C# namespaces appear as their folders, because that is what those imports name.
+
+An import graph only shows imports. Files in the same Go or Java package, C# namespace or Rust module can use each other without one, so those uses do not appear, and the text output says so when the project has such files.
+
+The JSON carries `schemaVersion: 1`. The whole graph is `{ schemaVersion, root, graph }`; with `--focus` it is `{ schemaVersion, root, focus, view, unresolved }`, and `unresolved` holds only that file's entries.
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Graph printed, whether or not some imports were unresolved |
+| `1` | The graph could not be built |
+| `2` | Bad arguments, a `--focus` file outside the root, or a file the graph does not read |
 
 ---
 

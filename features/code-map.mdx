@@ -30,6 +30,46 @@ The minimum is the one the gate uses: `minHealthScore` from `.irisconfig.json`, 
 
 The caution appears in the local map in VS Code and JetBrains, and in the cloud map. The cloud map uses the minimum that audit was scored against, which may come from a fallback preset or your workspace standard rather than the repository's own config. Audits run before the cloud map could record a minimum show a note saying failing files are not marked; running a new audit adds them.
 
+## The import graph
+
+The tree shows where health is weak. **Graph** shows how files depend on each other, which is what you need before changing one: the files that import it are the ones a change can break.
+
+Switch the map from **Tree** to **Graph**. The workspace scan that scores the tree also maps the imports, so there is nothing separate to build. Each line is an import. Selecting one lists the import lines it came from and opens them in the editor, and cycles are marked.
+
+<Frame caption="The app folder of a Next.js project in Folder scope, exported from the Graph. Folders outside the scope show how many imports reach them.">
+  <img className="block dark:hidden" src="/images/code-map/import-graph-light.svg" alt="Code Map import graph: the app folder's route groups, layout file and queries, with their imports into components, hooks and lib" />
+  <img className="hidden dark:block" src="/images/code-map/import-graph-dark.svg" alt="Code Map import graph: the app folder's route groups, layout file and queries, with their imports into components, hooks and lib" />
+</Frame>
+
+The graph reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust. Ruby is not drawn. A Go or Java package, or a C# namespace, is drawn as its folder, because the import names the package rather than a file.
+
+An import Iris Code cannot resolve is not guessed at. It is listed under **unresolved** with a reason, such as `missing-file` for a path no file matches, or `ambiguous-target` when two files declare the same Java class.
+
+<Note>
+  The graph draws imports, and only imports. Files in the same Go or Java package, C# namespace or Rust module can use each other without one, so those uses are not drawn. A Java project with every class in one package can show few lines for that reason.
+</Note>
+
+Imports of external packages and built-in modules are hidden by default; **Filters** turns them on, along with type-only imports and assets. The same graph is available as text or JSON from [`iris graph`](/cli/commands#iris-graph).
+
+## Exporting the map
+
+A map is most useful when the people who need to see it do not have to open an editor. **Export**, in the top bar of both views, saves exactly what is on screen: the current scope, filters and expanded folders.
+
+| Format | Tree | Graph | For |
+| --- | :-: | :-: | --- |
+| PNG image | Yes | Yes | Slides, chat and documents |
+| SVG image | Yes | Yes | A picture that stays sharp at any size |
+| Mermaid | | Yes | Pasting into a GitHub README, pull request or issue, where GitHub draws it |
+| Markdown table | Yes | | Pasting into a pull request or issue |
+| CSV | Yes | | Spreadsheets |
+| JSON | Yes | Yes | Scripts and other tools |
+
+Mermaid and Markdown also have **Copy**, which puts the text on the clipboard ready to paste. GitHub stops drawing Mermaid diagrams past about 500 connections, so a larger graph keeps its most-used imports and says in a comment how many it left out.
+
+Pictures, Mermaid and Markdown end with a short "Made with Iris Code" line naming the project and the scan date. CSV has none, because an extra line breaks spreadsheet imports. The cloud map's exports also name the branch and commit, in the file name and in the picture.
+
+An export contains what you can see and nothing more, so a Free export includes scores for the focused folder only, and says so.
+
 ## Scan states
 
 Code Map always shows which result it is displaying:
@@ -45,11 +85,13 @@ Ignored and unsupported files are omitted in every state. The file count and the
 
 Code Map structure is available on Free. The focused file's folder can show its saved colour, while workspace-wide colouring needs **Iris Code Pro** because it depends on a full workspace scan. The below-minimum caution follows the same rule: on Free it appears only for files in the focused folder.
 
+In the graph, Free shows the focused file with the files it imports and the files that import it. Folder and workspace scope need **Iris Code Pro**. Exporting is free on both plans.
+
 ## Cloud Code Map
 
 Connected GitHub repositories have a **Code Map** tab in their project page. It reads the completed cloud scan selected by the URL and shows the commit SHA, branch and scan time above the tree.
 
-The cloud tree is a record of that one revision, not a live view of your local workspace. It reports how many files were scored, excluded and skipped, and tells you if detailed findings were truncated.
+The cloud tree is a record of that one revision, not a live view of your local workspace. The tab has the same **Tree** and **Graph** switch, and the graph is the one the cloud scan mapped for that commit. It reports how many files were scored, excluded and skipped, and tells you if detailed findings were truncated.
 
 Folder scores match the workspace score exactly. Both average measured files equally, use the same colour bands and mark files below the minimum the same way, because the tree, the bands and the minimum rule all come from the shared analysis engine rather than from each surface separately.
 
