@@ -18,8 +18,19 @@ It opens in its own editor tab with:
 - filters by severity, and a search box
 - a health score for each changed file
 - click-to-open on every finding
+- an expandable list of files that import each changed file
 
 The Workspace tab switches to a change review view of the same result, and Issues and TODOs fill in from it. All on Free.
+
+## Import impact
+
+A changed file can affect code outside the diff. Change Review uses the Code Map import graph to show how many mapped files import each changed file. Expand the count to open an importer. Files in the change set still appear in each other's lists.
+
+On Free, the focused file's direct importers are available. **Iris Code Pro** adds a transitive dependent count, capped at **500+**, and a one-line summary of the distinct files outside the change set that directly import changed files. Impact is information for review. It does not change a health score, gate decision or exit code.
+
+In Go, and for a C# `using`, a Java wildcard import or a Python namespace package, an import names the package rather than a file. Those importers count for every file in the package's folder, and Change Review labels them **through its package**.
+
+If the graph has not been built, Change Review builds it when the review opens and shows **Mapping imports...** until it finishes. In a very large workspace it asks first, and if you decline it offers **Build import graph** instead. An unread, ignored or unsupported file is marked **Not mapped**, rather than given a zero count. The graph lists unresolved imports separately with their reasons; its counts cover resolved edges only. See [Code Map](/features/code-map) for the graph's scope and limits.
 
 ## Scoped honestly
 

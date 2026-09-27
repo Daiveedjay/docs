@@ -43,6 +43,8 @@ Switch the map from **Tree** to **Graph**. The workspace scan that scores the tr
 
 The graph reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust. Ruby is not drawn. A Go or Java package, or a C# namespace, is drawn as its folder, because the import names the package rather than a file.
 
+The same resolved graph supplies [Change Review](/features/change-review) and `iris_check` with import impact. A direct importer is a file with an import edge to the checked file, or to the package that contains it: in Go, and for a C# `using`, a Java wildcard import or a Python namespace package, the import names the package, and it reaches every file in that folder. Focusing a file in the Graph draws those importers pointing at the file. Pro also counts files that reach it through a chain, stopping at **500+** and terminating on cycles. `iris check --changed` and `--staged` include impact in their JSON reports and pretty output. These counts help choose what to re-check; they do not alter the gate.
+
 An import Iris Code cannot resolve is not guessed at. It is listed under **unresolved** with a reason, such as `missing-file` for a path no file matches, or `ambiguous-target` when two files declare the same Java class.
 
 <Note>
