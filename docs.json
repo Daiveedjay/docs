@@ -87,6 +87,7 @@
             "tag": "New",
             "pages": [
               "agents/project-rules",
+          "agents/package-guard",
               "agents/mcp"
             ]
           },

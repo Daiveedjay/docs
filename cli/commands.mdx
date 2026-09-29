@@ -4,7 +4,7 @@ sidebarTitle: "Commands"
 description: "Full reference for all eighteen Iris Code CLI commands: iris init, iris fix, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Eighteen commands cover setup, code checks, safe fixes, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
+Twenty commands cover setup, code checks, safe fixes, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
 
 Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned. Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
 
@@ -275,6 +275,74 @@ iris cve --severity low
 | `1` | One or more CVEs at or above the threshold |
 | `2` | Invalid arguments or no manifest found |
 
+A package reported in the OpenSSF malicious-packages feed fails the run at every `--severity`
+threshold and is listed under its own **MALICIOUS** heading. Those reports carry no severity score
+of their own, so without this rule they ranked below `low`.
+
+---
+
+### iris install
+
+**Free.** Checks each package before it is installed, then installs it with the project's own package
+manager, found from its lockfile. Known vulnerabilities, malicious-package reports, yanked,
+deprecated and prerelease versions, and brand-new releases are all checked. See the
+[package guard](/agents/package-guard) for what each verdict means.
+
+With no package names it checks the whole project first: every package the lockfile would install,
+and the repository's own install scripts, which it shows and asks about before running the install.
+This is the check to run on a repository you have cloned and do not yet trust. See
+[Installing a whole project](/agents/package-guard#installing-a-whole-project). `iris add` and `iris i`
+are other names for the same command.
+
+| Flag | Description |
+|---|---|
+| `<package[@version]...>` | One or more packages, with an optional version, range or tag. Omit to check and install the whole project |
+| `--ignore-scripts` | Whole project: install without running the project's own install scripts |
+| `--yes`, `-y` | Whole project: run the project's install scripts without asking |
+| `-r`, `--requirement <file>` | Whole project, pip and uv: the requirements file to install |
+| `--manager <name>` | Use this package manager instead of the detected one |
+| `--check` | Check only; install nothing |
+| `--force` | Install even when a package is blocked, printing what was overridden |
+| `--format json` | Print the verdicts as JSON, with every advisory |
+| `--verbose` | List every known vulnerability, with links. Otherwise the five worst are shown and the rest counted |
+| `--no-cache` | Ignore the local package cache |
+| `--allow-network` / `--revoke-network` | Turn network lookups on or off |
+
+```bash
+iris install lodash@4.17.20
+iris install requests --check
+iris install                  # the whole project
+iris install --check          # the whole project, install nothing
+```
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Installed, or clean with `--check` |
+| `1` | Blocked; nothing was installed |
+| `2` | Invalid arguments or no package manager found |
+
+### iris remove
+
+**Free.** Removes packages with the project's own package manager: `npm uninstall`, `pip uninstall`,
+`cargo remove`, `bundle remove`, `dotnet remove package`, `go get <module>@none` and so on. Nothing is
+checked, because removing a package is never the risk the guard is for. A version is ignored, so the
+spec you passed to `iris install` works as it is. `iris uninstall` and `iris rm` do the same.
+
+| Flag | Description |
+|---|---|
+| `<package...>` | One or more packages |
+| `--manager <name>` | Use this package manager instead of the detected one |
+| `--dry-run` | Print the command without running it |
+
+```bash
+iris remove lodash
+iris rm requests==2.19.0
+```
+
+The package manager's own exit code is passed through.
+
+If the package manager itself fails, its exit code is passed through.
+
 ---
 
 ### iris sbom
@@ -465,6 +533,12 @@ Installs and removes the git pre-push hook and the build gate hook - equivalent 
 | `iris hook build status [path]` | Show whether the build hook is installed **(free)** |
 | `iris hook build install [path]` | Wire Iris Code into the project build command **(Pro)** |
 | `iris hook build uninstall [path]` | Remove the Iris Code build entry **(Pro)** |
+| `iris hook agent install [path]` | Add the [package guard](/agents/package-guard) hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI or Windsurf **(free)** |
+| `iris hook agent uninstall [path]` | Remove the package guard hook **(free)** |
+| `iris hook agent status [path]` | Show whether the package guard hook is installed **(free)** |
+
+`iris hook agent` takes `--target claude`, `--target cursor` or `--target all`, `--yes` to skip the
+confirmation when a settings file already exists, and `--dry-run`.
 
 ```bash
 # Check current hook status (free)

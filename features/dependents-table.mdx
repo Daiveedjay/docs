@@ -54,7 +54,7 @@ For each package, the table displays the installed version, the latest available
 | `express` | 4.18.2 → 4.21.2 | CVE-2024-29041 |
 | `jsonwebtoken` | 8.5.1 → 9.0.2 | CVE-2022-23529, CVE-2022-23540 |
 
-Each advisory shows a severity badge, the advisory id, a **confidence label**, and the **fixed-in version** where one exists.
+Each advisory shows a severity badge, the advisory id, a **confidence label**, and the **fixed-in version** where one exists. A package reported in the OpenSSF malicious-packages feed (an advisory id starting `MAL-`) is badged **malicious** rather than by severity, because those reports carry no severity score. To stop such a package being added in the first place, see the [package guard](/agents/package-guard).
 
 ## Confidence labels
 
@@ -81,7 +81,7 @@ It reads only from the local cache, so opening the sidebar never triggers a netw
 
 ## Caching
 
-Results are cached for 24 hours in `.iris-cache/dependents.json`, so reopening the panel is immediate. `.iris-cache/` is added to your `.gitignore` on first write, since it is a local cache rather than something to commit.
+Results are cached for 24 hours, so reopening the panel is immediate. The cache is kept per user, under `~/.iris/cache/`, and never inside the project: a cache file committed to a repository could otherwise decide what a scan reports. Iris Code does not write into your project or its `.gitignore` for this.
 
 ## No token required
 

@@ -20,8 +20,11 @@ Iris Code makes bounded network requests for:
 - sign-in, licence validation, billing, and configuration sync
 - limited product-use events, controlled from account settings
 - dependency version and advisory lookups after consent
+- anonymous package guard counts, when you are not signed in and have allowed dependency lookups
 
 Dependency lookups send only the package ecosystem, name, and version to package registries and [OSV.dev](https://osv.dev). They do not include source code, file paths, project names, or organisation names.
+
+The package guard needs no account, so most people who use it never sign in. To know how often it runs, it sends an anonymous daily count of its checks for those users: the ecosystem, the verdict, which surface ran it (the agent hook, `iris install`, the MCP tool, the editor or a push) and, for a hook, which coding agent. Never a package name, version, path or project, and nothing that identifies you. The server stores daily totals only. These counts are sent only after you have allowed dependency lookups, and never when the `DO_NOT_TRACK` or `IRIS_TELEMETRY=off` environment variable is set; VS Code's own telemetry setting also turns them off. Signed-in users report through their account instead, and the account's analytics setting applies.
 
 The CLI asks before its first dependency lookup and remembers the choice in `~/.iris/preferences.json`. Revoke consent at any time:
 

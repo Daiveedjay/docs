@@ -76,7 +76,8 @@ file naming, suppressions, and what blocks a push. A project with a 250-line fil
 kebab-case convention produces rules that say exactly that.
 
 Only what is configured appears. Turn off magic-number detection and that rule is absent rather than
-stated and contradicted. Set no naming policy and there is no naming section. Set gate limits and
+stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file
+also tells agents to check a dependency before adding it and not to retry a blocked version. Set no naming policy and there is no naming section. Set gate limits and
 they appear under **What blocks a push**, because that is the part an agent most needs to know before
 it finishes.
 

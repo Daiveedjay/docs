@@ -276,6 +276,23 @@ Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook
 
 Unknown language keys, such as an `elixir` block written for a newer Iris Code release, produce a warning and are skipped, so a forward-looking config does not break an older installation. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
 
+## Package guard (Free)
+
+The `packageGuard` block sets what the [package guard](/agents/package-guard) blocks when a coding agent, `iris install` or a push adds a package. It is a safety policy rather than a threshold, so it works on every plan and presets do not restrict it.
+
+```jsonc
+{
+  "packageGuard": {
+    "onUnchecked": "warn",
+    "blockSeverity": "high",
+    "minimumReleaseAgeDays": 7,
+    "allow": [{ "name": "left-pad@1.3.0", "reason": "Pinned by the legacy build, SEC-41" }]
+  }
+}
+```
+
+`onUnchecked` (`"warn"` or `"block"`) decides what happens to a package the guard could not check. `blockSeverity` sets the lowest advisory severity that blocks; a malicious-package report always blocks. `minimumReleaseAgeDays` blocks versions newer than that many days. Each `allow` entry needs a `reason`, or it is ignored and reported as an error. `prePush: true` adds the lockfile check to the git hook, which needs Pro.
+
 ## Severity overrides
 
 Override the severity of any warning type on a per-project basis using the `severityOverrides` object. Each key accepts `"error"`, `"warning"`, or `"info"`.

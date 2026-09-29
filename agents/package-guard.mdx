@@ -1,0 +1,380 @@
+---
+title: "Package Guard: Check a Package Before It Is Installed"
+sidebarTitle: "Package guard"
+description: "Stop a coding agent installing a known-vulnerable, malicious, yanked or brand-new package version, and get the version to use instead. Works as a hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf, an MCP tool, and the iris install command."
+---
+
+A coding agent that needs a library runs the install command itself. Nobody reads that command
+before it runs, the agent can mistype a package name as easily as a person, and it has no reason to
+prefer a patched version over the first one that resolves. By the time a dependency scan reports the
+problem, the package is installed, its install scripts have run, and the agent has written code
+against it.
+
+The package guard checks a package at the moment it is added. It works out which version the command
+would actually install, checks it against public vulnerability and malicious-package data, and blocks
+it with the exact command to run instead when it should not go in. It is free.
+
+## What it checks
+
+Each package gets one verdict:
+
+| Verdict | Meaning | What happens |
+| --- | --- | --- |
+| `ok` | No known vulnerability, a stable release, not deprecated | The install goes ahead |
+| `warn` | A prerelease, a deprecated version, a release under three days old, or an advisory below your block severity | The install goes ahead, and the agent is told why |
+| `block` | A known vulnerability at or above your block severity, a yanked version, or a release younger than your minimum age | The install is stopped |
+| `malicious` | The package or version is in the OpenSSF malicious-packages feed | The install is stopped, whatever your block severity |
+| `unchecked` | The guard could not check it: offline, a registry error, a git or local dependency, or a version range it cannot read | Your policy decides; the default is to warn |
+
+A package the guard could not check is never reported as safe. The verdict says `unchecked` and
+names the reason.
+
+The registry and OSV.dev are separate services, so one being down does not hide the other. If the
+registry does not answer but you asked for an exact version, that version is still checked against
+OSV.dev, and a known serious vulnerability still blocks. Only the checks that need the registry, such
+as release age, are reported as not run. For Maven, when Maven Central's search API is slow, versions
+are read from the repository's own `maven-metadata.xml`, which has no publish dates, so release age is
+not checked for that lookup.
+
+When a version is blocked, the guard names a replacement: the newest stable release with no advisory
+at or above your block severity, preferring one in the same major version as the one requested, since
+that is the upgrade least likely to break code already written against it. When no safe version
+exists it says so, and when every published version is a prerelease or deprecated it says that too.
+
+Advisories come from [OSV.dev](https://osv.dev), which includes the OpenSSF malicious-packages
+feed. Versions, publish times and deprecation notices come from the registry itself: npm, PyPI,
+crates.io, the Go module proxy, RubyGems, NuGet and Maven Central.
+
+## Installing for coding agents
+
+The strongest layer is a hook the agent runs before every shell command. It works whether or not the
+agent follows any instructions, because it runs outside the agent.
+
+<CodeGroup>
+
+```bash CLI
+iris hook agent install
+```
+
+```text VS Code
+Sidebar → Hooks → Package guard → Install now
+Command palette → Iris Code: Check Packages Before Agents Install Them
+```
+
+```text JetBrains
+Iris Code panel → Hooks → Package guard → Install now
+Find Action → Iris Code: Check Packages Before Agents Install Them
+```
+
+</CodeGroup>
+
+The **Hooks** section of the sidebar shows whether the hook is installed, on every plan, beside the
+git and build hooks. It reads the hook files themselves, so it stays right however the hook was
+installed. A hook with its settings entry but no launcher, or the reverse, checks nothing and is
+shown as incomplete, with a **Repair** button.
+
+With no `--target`, the command installs for the agents your project already shows signs of using
+(a `CLAUDE.md`, `GEMINI.md` or `.github/copilot-instructions.md` file, or a `.claude/`, `.cursor/`,
+`.codex/`, `.gemini/`, `.windsurf/` or `.devin/` folder), or Claude Code when there are none. Pass
+`--target` with one agent, a comma-separated list such as `--target claude,codex`, or `all`. In VS Code
+and JetBrains IDEs the picker is multi-select, with the agents the project already uses ticked.
+
+| Agent | `--target` | Hook file | Hook |
+| --- | --- | --- | --- |
+| Claude Code | `claude` | `.claude/settings.json` | `PreToolUse` on `Bash` |
+| Cursor | `cursor` | `.cursor/hooks.json` | `beforeShellExecution` |
+| Codex | `codex` | `.codex/hooks.json` | `PreToolUse` on `Bash` |
+| GitHub Copilot | `copilot` | `.github/hooks/iris-package-guard.json` | `preToolUse` |
+| Gemini CLI | `gemini` | `.gemini/settings.json` | `BeforeTool` on `run_shell_command` |
+| Windsurf | `windsurf` | `.devin/hooks.json` and `.windsurf/hooks.json` | `pre_run_command` |
+
+Each also gets a small launcher in a `hooks` folder beside its hook file, such as
+`.claude/hooks/iris-package-guard.cjs`. Existing settings are kept: Iris Code adds its own entry and
+touches nothing else, and running the install again changes nothing. A hook file that is not valid
+JSON is refused rather than rewritten.
+
+Some agents need one step of their own before a project hook runs:
+
+- **Codex** runs hooks only when they are switched on. Add `hooks = true` under `[features]` in
+  `~/.codex/config.toml`, then approve the project hook once with `/hooks`.
+- **GitHub Copilot**: one file serves Copilot CLI, the Copilot cloud agent and VS Code agent mode. The
+  cloud agent reads hooks from the default branch, so there it applies once the file is merged.
+- **Gemini CLI** asks once before it runs a new or changed project hook.
+- **Windsurf** became Devin Desktop and reads `.devin/hooks.json`, falling back to
+  `.windsurf/hooks.json` in older builds. Both are written, and the hook never runs twice.
+
+Agents without a hook that runs before a shell command, such as Zed and JetBrains AI Assistant, can
+still ask before installing through the [`iris_check_package`](#asking-from-an-agent) MCP tool.
+
+`iris init` offers the hook as one of its questions, and defaults to yes when it finds signs of a
+coding agent in the project.
+
+### Committing it
+
+Commit the settings files and the launchers so your team gets the guard too. They hold no paths or
+secrets.
+
+The launcher runs the guard installed on each person's machine at `~/.iris/bin/guard.js`, which the
+VS Code extension, the JetBrains plugin and `iris hook agent install` keep up to date. On a machine
+without Iris Code the launcher lets every command through, so a teammate who has not installed it is
+never blocked by it. The launcher needs Node.js on the `PATH`.
+
+The hook files are read from the project root, so install the hook there and start the agent there.
+Claude Code, for example, reads `.claude/settings.json` from the root of the git repository, or from
+the folder it was started in when there is no repository. Started in a subfolder of a project that
+is not a git repository, it does not see the hook, and installs it runs are not checked.
+
+### What the agent sees
+
+For a command that installs nothing, which is almost every command an agent runs, the hook exits in
+the time it takes Node.js to start, with no network request.
+
+For a blocked install, the agent is stopped before anything is installed and given the reason and
+the replacement:
+
+```text
+Iris Code package guard blocked this command before anything was installed.
+- lodash@4.17.20: Known vulnerability CVE-2020-28500 (medium, fixed in 4.17.21): Regular Expression Denial of Service (ReDoS) in lodash. Known vulnerability CVE-2021-23337 (high, fixed in 4.17.21): Command Injection in lodash. Known vulnerability CVE-2025-13465 (medium, fixed in 4.18.0): lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`. Install 4.18.1 instead: `npm install lodash@4.18.1`
+Run this instead: `npm install lodash@4.18.1`. Do not retry the blocked version.
+```
+
+That is real output for `npm install lodash@4.17.20`. The high-severity advisory blocks it at the
+default policy; the two medium ones are listed so the agent has the whole picture.
+
+A warning lets the install run and adds a note to the agent's context, for example that it installed
+a prerelease and which stable release exists.
+
+The hook never approves a command on the user's behalf. It blocks, warns, stays silent, or hands the
+decision to the person (see [Installing a whole project](#installing-a-whole-project)), so the
+permission prompts you have configured for your agent still apply.
+
+### Which commands it recognises
+
+`npm install`, `pnpm add`, `yarn add`, `bun add`, `pip install` (including `python -m pip`),
+`uv add`, `uv pip install`, `poetry add`, `cargo add`, `go get`, `go install`, `gem install`,
+`bundle add` and `dotnet add package`, including chained commands (`cd web && npm i x`) and command
+substitution. It also recognises installs that name no package and install a whole project: `npm
+install`, `npm ci`, `pnpm install`, `yarn`, `bun install`, `pip install -r <file>`, `uv sync`, `poetry
+install`, `bundle install`, `dotnet restore`, `go mod download` and `cargo fetch`. Those are covered in
+[Installing a whole project](#installing-a-whole-project).
+
+An install from a git URL, a tarball or a local path cannot be looked up in a registry, so it is
+reported as `unchecked` rather than ignored.
+
+## Checking a package yourself
+
+npm, pnpm and the other package managers have no hook that runs before `install <name>` and is told
+which package is being added. So a command you type yourself cannot be intercepted, and the guard does
+not pretend otherwise. For your own installs, use `iris install`:
+
+```bash
+iris install lodash@4.17.20
+iris install requests --check        # check only, install nothing
+```
+
+`iris install` checks every package you name, prints the verdicts, and then runs your project's own
+package manager, found from its lockfile, with the same packages. A blocked package stops the whole
+run before anything is installed. `--force` installs anyway and prints what was overridden.
+
+| Exit code | Meaning |
+| --- | --- |
+| 0 | Installed, or clean with `--check` |
+| 1 | Blocked |
+| 2 | Usage error |
+
+If the package manager itself fails, its exit code is passed through.
+
+Each verdict lists the five most serious advisories and counts the rest by severity; `--verbose` lists
+them all with links, and `--format json` always includes every one. `iris remove` is the counterpart:
+it removes packages with the same package manager, and checks nothing. `iris add` and `iris i` are
+accepted as other names for `iris install`.
+
+## Installing a whole project
+
+A common attack on developers is a fake job interview or "take-home task": clone this repository and
+run `npm install`. The repository needs nothing unusual to do harm. Either its lockfile pulls in a
+malicious package, or its own `package.json` has a `preinstall` or `postinstall` script, which runs
+the moment the install starts. A per-package check never sees either, because the command names no
+package.
+
+`iris install` with no package names checks the whole project before installing it:
+
+```bash
+git clone https://example.com/take-home-task.git
+cd take-home-task
+iris install
+```
+
+It reads every package the lockfile would install, including dependencies of dependencies, and checks
+them all against OSV in one batch request, then looks up the direct dependencies and anything OSV
+flagged in full. A known-malicious package anywhere in the tree stops the install before anything
+runs.
+
+Known vulnerabilities do not stop a whole-project install. A package already pinned in a lockfile
+with a published CVE is the normal state of most real projects, and blocking it would stop `npm
+install` almost everywhere. They are listed as warnings instead, and [`iris cve`](/cli/commands#iris-cve)
+is where they are dealt with. A package you name, as in `iris install lodash@4.17.20`, is still
+blocked for a known vulnerability.
+
+Before running the install, it shows the repository's own install scripts word for word and asks
+whether to run them, install with them turned off (`--ignore-scripts`), or cancel. The default is to
+turn them off. With no terminal to ask in (a CI job, or `--format json`), they are turned off unless
+you pass `--yes`. Dependencies that run install scripts of their own are named as well.
+
+```bash
+iris install --check            # check the whole project, install nothing
+iris install --ignore-scripts   # install without running the project's scripts
+iris install -r requirements/dev.txt
+```
+
+The agent hook uses the same check when an agent runs a bare install. A malicious package blocks the
+command. When nothing is blocked but the repository runs its own install scripts, Claude Code, Cursor
+and GitHub Copilot show the person a confirmation naming the scripts. Codex, Gemini CLI and Windsurf
+have no way to ask, so the agent is told to show the scripts to the user before going on.
+
+A lockfile is needed to check the full tree. Without one, only the declared dependencies are checked,
+at the newest version their ranges allow, and the output says so. For Go, the list comes from
+`go.mod`, which already names every module the build uses. Install scripts are an npm, pnpm, Yarn and
+Bun concept; the other package managers have no equivalent to show.
+
+## Asking from an agent
+
+Agents connected to the [Iris Code MCP server](/agents/mcp) can ask before they install, with the
+`iris_check_package` tool. It takes an `ecosystem`, a `name` and an optional `version` (exact, a
+range or a tag), returns the verdict with a one-paragraph summary written for the agent, and a
+`suggestedCommand` when a safer version exists. It is the same check the hook runs.
+
+When the hook is installed, [project rules](/agents/project-rules) generated by `iris rules` gain a
+short section telling agents to check dependencies before adding them and not to retry a blocked
+version.
+
+## In the editor
+
+When a manifest or lockfile changes on disk, VS Code and the JetBrains IDEs check the packages that
+were added or changed and show one notice if any would be blocked. This happens seconds after an
+install someone typed, so the notice says the package was "just added". Each package version is
+reported once: per workspace in VS Code, per session in JetBrains IDEs.
+
+Every project folder in the workspace counts, not just the top one: a `go.mod` in `services/gateway`
+or a `requirements.txt` in `analytics` raises the notice the same way. Installed packages and build
+output (`node_modules`, `vendor`, `target`, virtual environments) are never read.
+
+A Python requirement is a pinned version only when it uses `==`. `requests>=2.19.0` is checked as a
+range, against the newest release it allows, because that is what pip installs.
+
+The notice needs network lookups. If this machine has not answered that question yet, the first
+manifest change asks it, naming the packages that changed and what is sent: package names and
+versions only, never your code. Answer yes and those packages are checked straight away, with a
+result either way. Close the dialog and it asks again next session. In VS Code, **Don't ask again** stops it.
+The answer is shared with `iris install` and the agent hook.
+
+## Before a push
+
+<Note>
+This requires **Iris Code Pro**.
+</Note>
+
+With `packageGuard.prePush` set to `true`, the [git hook](/enforcement/git-hook) also checks the
+packages added or changed in your lockfiles since the upstream branch, and blocks the push on a
+blocked or malicious one. It reads `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `poetry.lock`,
+`uv.lock`, `Pipfile.lock`, `Gemfile.lock`, `packages.lock.json`, `Cargo.lock` and `go.sum`.
+
+It uses the same check as the agent hook, so a package the hook blocked cannot get in by being added
+by hand and pushed. A push that changes more than 300 packages at once checks the first 300 and says
+how many it did not check.
+
+A git hook installed before Iris Code 1.33.0 does not run this step. Run `iris hook git install`
+again to update it.
+
+## Configuration
+
+The policy lives in `.irisconfig.json` under `packageGuard`, so it travels with the repository.
+Every field is optional.
+
+```jsonc
+{
+  "packageGuard": {
+    "onUnchecked": "warn",
+    "blockSeverity": "high",
+    "minimumReleaseAgeDays": 7,
+    "allow": [
+      { "name": "left-pad@1.3.0", "reason": "Pinned by the legacy build, tracked in SEC-41" }
+    ],
+    "prePush": false
+  }
+}
+```
+
+| Field | Default | Effect |
+| --- | --- | --- |
+| `onUnchecked` | `"warn"` | `"block"` stops packages the guard could not check. The default is to warn, so an offline laptop does not stop an agent working |
+| `blockSeverity` | `"high"` | Advisories at or above this severity block; lower ones warn. An advisory with no published severity warns |
+| `minimumReleaseAgeDays` | unset | Blocks versions published more recently than this. When unset, a version under three days old warns |
+| `allow` | `[]` | Reviewed exceptions: `name` or `name@version`, each with a required `reason` |
+| `prePush` | `false` | Pro: the pre-push lockfile check above |
+
+A freshly published version of a popular package is the usual window for a hijacked publish, which
+is why very new releases warn by default and `minimumReleaseAgeDays` can make them block.
+
+An `allow` entry without a `reason` is ignored and reported as an error, the same rule as an
+[`iris-ignore` suppression](/enforcement/suppressions). An allowed package still appears in the
+guard's output, naming the entry and its reason, so a bypass is never silent.
+
+The Free presets do not restrict this block: it is a safety policy, available on every plan.
+
+The [Config Studio](/configuration/config-studio) sets `onUnchecked`, `blockSeverity`,
+`minimumReleaseAgeDays` and `prePush`. The `allow` list is edited in the file itself, because its
+entries belong to one repository, and syncing from the studio keeps it.
+
+## Network and privacy
+
+Checking a package needs the registry and OSV.dev. Only package names and versions are sent, never
+your code, file paths or project name. Network lookups are asked about once, by `iris install`,
+`iris hook agent install` or the editor command, and can be turned off with
+`iris install --revoke-network`.
+
+Registry data is cached for 24 hours and advisory data for 6 hours, per user under `~/.iris/cache/` and never inside the project, so a repository cannot ship an answer with its code. Advisories are
+cached for less time than elsewhere in Iris Code because a package newly reported as malicious should
+not keep passing for a day.
+
+The hook itself never prompts. If network lookups have not been allowed on a machine, its verdicts
+are `unchecked` with that reason, and `onUnchecked` decides.
+
+When you are not signed in, the guard also sends an anonymous daily count of its checks: the
+ecosystem, the verdict, the surface and, for a hook, the coding agent. It never sends a package, a
+path or anything about the project, and it sends nothing before network lookups are allowed. Set
+`DO_NOT_TRACK=1` or `IRIS_TELEMETRY=off` to turn it off. See
+[Network requests](/trust/security-and-support#network-requests).
+
+## What this does not do
+
+- It does not intercept a package-manager command you type yourself. Use `iris install`, or rely on the
+  editor notice and the pre-push check.
+- It does not guess at typosquats. It reports a package as malicious when OSV's malicious-packages
+  feed does, and does not suggest a "did you mean" of its own.
+- It does not check licences, and it does not judge what an install script does. It shows the
+  repository's own scripts before they run and names the dependencies that have them.
+- A named install checks the packages the command names. A whole-project install checks the full
+  lockfile, and so does the pre-push step.
+- A whole-project install stops only on a malicious package, not on a known vulnerability; see
+  [Installing a whole project](#installing-a-whole-project).
+- Maven Central and several other registries do not report deprecation, so for those the deprecation
+  check does not run. A clean result says which checks it could not run.
+- Java projects get the editor notice (`pom.xml`, `build.gradle`, `build.gradle.kts` and
+  `gradle/libs.versions.toml`) and the `iris_check_package` tool, but not `iris install` or the pre-push
+  step: Maven and Gradle do not commit a lockfile by default, so there is no resolved list to compare.
+
+## Free and Pro
+
+The agent hooks, `iris install`, `iris_check_package` and the editor notice are free. The pre-push
+lockfile check needs Iris Code Pro.
+
+## Uninstalling
+
+```bash
+iris hook agent uninstall
+```
+
+Or run **Iris Code: Remove the Package Guard Hook** in either editor. Only Iris Code's own entry and
+launcher are removed; other hooks in the same files are left alone, and a settings file that held
+nothing else is deleted.

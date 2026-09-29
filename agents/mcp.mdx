@@ -147,6 +147,7 @@ outside development.
 | `iris_check` | Free | Findings for a path, with rule ids, lines and severities |
 | `iris_config` | Free | The project's resolved thresholds, weights and gate limits |
 | `iris_fix_safe` | Free | Preview, then apply, only the fixes Iris Code can prove safe |
+| `iris_check_package` | Free | Whether one package is safe to add, and the version to use instead. See the [package guard](/agents/package-guard) |
 | `iris_explain` | Pro | Findings plus the rule detail behind them |
 | `iris_gate` | Pro | Whether the configured gate would pass, and which files fail which rule |
 | `iris_check_dependency` | Pro | OSV advisories with severity, confidence and fix version |
@@ -237,9 +238,11 @@ link pointing outside the workspace is refused rather than followed.
 
 Secret values are never returned, only the masked form every other Iris Code surface shows.
 
-`iris_check_dependency` is the one tool that reaches the network, querying public package registries
-and OSV.dev. It requires `allow_network: true`, discloses what it is about to do, and falls back to a
-local 24-hour cache.
+`iris_check_dependency` and `iris_check_package` are the tools that reach the network, querying
+public package registries and OSV.dev. Both require `allow_network: true` on each call unless you have
+already allowed network lookups from the CLI, disclose what they are about to do, and fall back to a
+local cache. The agent's flag is never saved as your consent, and it cannot override lookups you
+have turned off with `iris deps --revoke-network`.
 
 ## Licensing
 

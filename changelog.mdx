@@ -8,6 +8,36 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.33.0 - 2026-09-29
+
+<Note>**feature** - The [package guard](/agents/package-guard) checks a package before it is installed, by you or by a coding agent</Note>
+
+### The package guard
+
+The package guard works out which version an install would actually add, then blocks a known-vulnerable, malicious, yanked or, if you choose, too-new version and names the version to use instead. A package it could not check is reported as not checked, never as safe. It is free on every plan.
+
+- **Added** hooks for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf. Run **Iris Code: Check Packages Before Agents Install Them**, or `iris hook agent install`, and every package the agent tries to install is checked first.
+- **Added** whole-project checks. When an agent runs `npm install`, `pip install -r requirements.txt`, `bundle install` or another install that names no package, every package the lockfile would install is checked, and a malicious package blocks the install. The repository's own install scripts are shown and asked about.
+- **Added** `iris install` and `iris remove`, which check packages and then run the project's own package manager. With no package names, `iris install` checks the whole project first.
+- **Added** the `iris_check_package` MCP tool, which answers whether one package is safe to add.
+- **Added** a notice in VS Code and JetBrains IDEs when a manifest or lockfile gains a package that would be blocked, in any project folder of a monorepo.
+- **Added** `packageGuard` in `.irisconfig.json`: `onUnchecked`, `blockSeverity`, `minimumReleaseAgeDays`, reviewed `allow` exceptions and, on Pro, `prePush` to check packages added in pushed lockfiles. The Config Studio sets the policy.
+- **Added** a package guard row in the sidebar's Hooks section, which now appears on every plan.
+
+When you are not signed in, the guard sends an anonymous daily count of its checks: the ecosystem, the verdict, the surface and, for a hook, which agent. It never sends a package, path or project, and only after you have allowed dependency lookups. `DO_NOT_TRACK=1` or `IRIS_TELEMETRY=off` turns it off.
+
+### Changed
+
+- **Changed** the dependency cache location to `~/.iris/cache/`, per user, instead of `.iris-cache/` in the project. Iris Code no longer edits your `.gitignore` for it, and an existing `.iris-cache/` folder can be deleted.
+- **Changed** the Dependencies table, `iris deps` and `iris cve` to include nested Go, Python and Ruby projects, such as a monorepo's `services/gateway/go.mod`.
+
+### Fixed
+
+- **Fixed** a Python range being reported as the installed version. Only `==` pins a version now; without a lockfile, a ranged requirement is shown as not checked.
+- **Fixed** Config Studio sync removing `ignoreFiles`, `ignoreFunctions`, `testConvention` and the package guard's `allow` list from your config.
+- **Fixed** the Config Studio missing controls for naming rules, severity overrides, scoring weights and inline findings, and writing a cleared gate limit as `0`.
+- **Fixed** `iris cve` letting a malicious-package report pass at the default `--severity high`.
+
 ## v1.31.0 - 2026-09-25
 
 <Note>**feature** - Code Map shows how your files import each other, and exports as a picture, Mermaid or a table</Note>

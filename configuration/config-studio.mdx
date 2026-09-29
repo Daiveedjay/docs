@@ -6,31 +6,40 @@ description: "Config Studio is a visual editor in your account dashboard. Pick a
 
 Config Studio is a visual editor for `.irisconfig.json`, so you can configure Iris Code without knowing the key names.
 
-It lives at [iriscode.co/account/config](https://www.iriscode.co/account/config). Choose a preset, set your naming rules, and watch the JSON build up alongside your changes, then sync it to your editor. Presets and naming are free; Pro adds custom thresholds, gate limits and severity overrides.
+It lives at [iriscode.co/account/config](https://www.iriscode.co/account/config). Choose a preset, set your naming rules, and watch the JSON build up alongside your changes, then sync it to your editor. Presets, naming and the package guard are free; Pro adds custom thresholds, gate limits, scoring and severity overrides.
 
 In VS Code, run **Iris Code: Open Config Studio** from the Command Palette to open this page. The editor does not write a config until you review the sync diff and confirm it.
 
 ## What it covers
 
-Everything that counts as a shared team standard, in one place, with a live preview of the file you will actually get:
+Every setting that counts as a shared team standard, one section each, with a live preview of the file you will get:
 
-- **Preset selector** - choose from Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or switch to Custom mode.
-- **File naming** (Free) - choose a workspace fallback, absolute ignore globs, and ordered path/role rules; legacy language policies remain available as fallbacks.
-- **Detection matrix** - see at a glance which rule categories are on or off for the selected preset.
-- **minHealthScore bar** - the gate threshold used by the CLI and hooks is always visible at the top of the card.
-- **Gate limits** (Pro, Custom mode) - explicit hard caps including `gateMaxDuplicateBlocks` and `gateMaxNamingViolations`. Leave a field empty to impose no limit.
-- **Custom scoring** (Pro, Custom mode) - control exactly how many points each finding type deducts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights).
-- **Live JSON preview** - the right panel updates as you change values, showing the exact `.irisconfig.json` that will be written.
+| Section | Sets | Plan |
+| --- | --- | --- |
+| Overview | the preset: Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or Custom | Free |
+| Thresholds | function and file length, declarations and imports per file, parameters, complexity, duplicate block size, `minHealthScore` | Pro |
+| Detection rules | which finding types are detected | Pro |
+| Inline diagnostics | squiggles, which findings they show, Code Lens and the status bar | Pro |
+| Scoring | [scoring weights](/configuration/scoring-weights) and severity overrides | Pro |
+| Gate limits | hard caps such as `gateMaxSecrets` and `gateMaxDuplicateBlocks`. An empty field means no limit | Pro |
+| Retention | `trendRegressionThreshold`, `gateBaselineMode` and `ignoreSuppressions` | Pro |
+| File naming | the convention, ignored paths, rules for particular paths, and whether only new files are checked | Free |
+| Language settings | thresholds and gate caps for one language | Pro |
+| Package guard | what happens when a coding agent or `iris install` installs a risky package. `prePush` is Pro. See [Package guard](/agents/package-guard) | Free |
 
-<Warning>
-  **Sync replaces your entire `.irisconfig.json`.** It doesn't merge.
+On the Free plan, Pro sections are shown but locked. A Free config uses its preset for everything except file naming and the package guard, so a value typed into a locked field would be ignored by your editor.
 
-  Four settings aren't in the studio on purpose, because they describe one machine or one project rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention` and `sidebarFontSize`. If your current file sets any of them, syncing removes them.
+The preview on the right is the exact `.irisconfig.json` that Copy, Download and sync hand over. On a narrow screen it sits below the editor.
 
-  A diff is shown before anything is written, and every removed line appears in it. Review it before confirming.
+<Note>
+  **Sync replaces the settings the studio controls and keeps the rest of your file.**
 
-  To avoid the situation entirely, set those four in [VS Code settings](/configuration/vscode-settings) instead. Sync never touches them there.
-</Warning>
+  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged. They appear in the diff, and VS Code also lists them when the sync finishes.
+
+  Everything else comes from the studio. A setting the studio controls but you left empty, such as a gate limit, is removed from the file.
+
+  A diff is shown before anything is written. If your current file cannot be read as JSON, nothing can be carried over, and the editor asks before replacing it.
+</Note>
 
 ## Syncing to VS Code
 
@@ -41,7 +50,7 @@ The sync flow is designed to never write silently - every sync opens a diff in V
     Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris Code account.
   </Step>
   <Step title="Choose a preset or switch to Custom mode">
-    Select one of the six presets from the selector, or switch to Custom mode to tune individual metrics, detections, and gate thresholds.
+    Select one of the six presets on the Overview section, or Custom to start from an empty config. On Pro, change any setting in the sections that follow; the preset stays as the base for everything you leave alone.
   </Step>
   <Step title="Click 'Sync to VS Code'">
     Hit the **Sync to VS Code** button. Iris Code generates a short-lived one-time token and opens VS Code via a deep link.
@@ -127,16 +136,17 @@ iris init
     - Pick any preset from the selector
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
-    - Configure workspace-wide `fileNaming` and `fileNamingScope`, then add ordered path rules or fallback language policies
+    - Configure workspace-wide `fileNaming` and `fileNamingScope`, then add ordered path rules
+    - Set the [package guard](/agents/package-guard) policy, apart from `prePush`
 
     The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
   </Tab>
   <Tab title="Pro">
-    - Start from any preset and switch to **Custom mode** for full control
+    - Start from any preset, or from Custom, and change any setting
     - Override individual threshold values, detection toggles, diagnostic categories, and severity overrides
     - Configure custom scoring weights and gate limits
     - Sync to **Workspace** or **Global default** write targets
 
-    Custom mode gives you full control over every key in `.irisconfig.json`.
+    Every key in `.irisconfig.json` is available except the per-project ones listed under the sync note above, which sync keeps from your file.
   </Tab>
 </Tabs>
