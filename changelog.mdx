@@ -38,6 +38,25 @@ When you are not signed in, the guard sends an anonymous daily count of its chec
 - **Fixed** the Config Studio missing controls for naming rules, severity overrides, scoring weights and inline findings, and writing a cleared gate limit as `0`.
 - **Fixed** `iris cve` letting a malicious-package report pass at the default `--severity high`.
 
+## v1.32.0 - 2026-09-27
+
+<Note>**feature** - [Change Review](/features/change-review) shows which files import each file you changed</Note>
+
+### Import impact
+
+- **Added** import impact beside each changed file in Change Review. Expand the count to open the files that import it. Pro also shows the number of transitive dependents, capped at 500+, and a summary of other files the whole change set reaches.
+- **Added** import impact to `iris_check` for each checked file: direct importers on Free, plus the transitive count on Pro. `iris check --changed` and `--staged` include it in JSON and as one line per file in pretty output. Impact informs a review and does not change gate decisions or exit codes.
+- **Added** automatic import mapping. A review that opens without an import graph builds one, in VS Code and JetBrains IDEs, and asks first in a very large workspace. An unmapped file is never shown as having zero importers.
+- **Added** imports through a package. In Go, a C# `using`, a Java wildcard import or a Python namespace package, an import names the package rather than the file; those importers are counted and labelled "through its package".
+
+### Fixed
+
+- **Fixed** the focused [Code Map](/features/code-map) Graph and `iris graph --focus` drawing a file imported through its package as if nothing imported it.
+- **Fixed** a pause of about 5 seconds on the first Iris Code action after a JetBrains IDE starts. The language server was rewritten on every start, so Windows scanned it as a new program each session; it is now extracted once and reused.
+- **Fixed** Change Review hiding each finding's message on narrow panels.
+- **Fixed** Change Review showing Windows paths with backslashes.
+- **Fixed** `iris_check` reporting impact from imports as they were when the session started. It now re-reads files changed on disk.
+
 ## v1.31.0 - 2026-09-25
 
 <Note>**feature** - Code Map shows how your files import each other, and exports as a picture, Mermaid or a table</Note>
