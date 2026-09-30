@@ -45,6 +45,16 @@ The **Folder** tab shows the same stats, chart, rankings and tree as the workspa
   One full workspace scan is free without an account. Rescanning and folder scans are Pro. File reviews and click-to-open stay free forever.
 </Note>
 
+## Scanning again
+
+A second scan of the same workspace or folder in VS Code or a JetBrains IDE does not analyse every file from scratch. Iris Code reads each file again and reuses its earlier analysis when the file's contents, the settings that apply to it, its path and its baseline status are all unchanged. Everything else is worked out again from the current files: the totals, the workspace score, unused packages and duplicate findings. Duplicates always compare every current file, so code copied from an unchanged file into an edited one is still found.
+
+When a scan finishes, a notification says how many files were analysed and how many were reused, for example "Analysed 1 file, reused 3 unchanged." A change that affects every file, such as a new `duplicateBlockMinTokens`, analyses everything again, which is expected.
+
+**Rescan everything** in the Workspace tab, the folder view or the command palette ignores the reused results and analyses every file.
+
+Reused results are kept in memory for the editor session, within a fixed memory budget, and are discarded when the editor closes. The CLI, git hooks, CI, the MCP server and cloud audits analyse every file on each run.
+
 ## Issues and TODOs
 
 Both tabs fill from your most recent scan, whether that was a folder or the whole workspace. A label at the top tells you which ("Showing: folder · src"), with one click back to workspace-wide, so you're never reading folder results thinking they're the whole project.

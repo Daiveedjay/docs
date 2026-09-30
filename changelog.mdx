@@ -8,6 +8,19 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.34.0 - 2026-09-30
+
+<Note>**feature** - Repeat [workspace and folder scans](/features/workspace-analysis#scanning-again) reuse the analysis of files that have not changed</Note>
+
+- **Added** incremental scans in VS Code and JetBrains IDEs. A repeat workspace or folder scan reuses the analysis of every file whose contents and settings are unchanged, and works out the totals, unused packages and duplicate findings again from the current files. The result matches a full scan.
+- **Added** a notification after each scan saying how many files were analysed and how many were reused.
+- **Added** **Rescan everything**, in the Workspace tab, the folder view and the command palette, which analyses every file again.
+- **Added** the email of the account you are signed in with, on the licence card at the bottom of the sidebar.
+
+The CLI, git hooks, CI, the MCP server and cloud audits still analyse every file on each run.
+
+---
+
 ## v1.33.0 - 2026-09-29
 
 <Note>**feature** - The [package guard](/agents/package-guard) checks a package before it is installed, by you or by a coding agent</Note>
