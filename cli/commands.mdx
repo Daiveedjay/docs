@@ -600,3 +600,13 @@ iris config validate
 | `0` | Success / no validation issues |
 | `1` | `validate` found error-severity problems |
 | `2` | Bad arguments, or `init` found an existing file with no TTY to confirm overwrite |
+
+## `iris hook verify` (Pro)
+
+```sh
+npx @iris-code/cli@latest hook verify [path] --sha <full-commit-id> --format pretty
+```
+
+Checks Team evidence for a passing pre-push hook record. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers. A missing record warns and attempts to write **Push with no hook record**. This command is the exception to the general entitlement exit-code rule: it always exits `0`, including for missing licence, invalid arguments and network failures.
+
+See [Team governance](/teams/governance) for SHA resolution and every reason a check can be skipped.

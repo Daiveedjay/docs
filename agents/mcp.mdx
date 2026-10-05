@@ -251,3 +251,9 @@ The server resolves your licence from the same credentials the CLI uses, so sign
 
 A Free licence calling a Pro tool gets an explicit refusal naming the feature and where to upgrade,
 which your assistant can relay. It is never a silent empty result.
+
+## Organisation and repository restrictions
+
+The MCP server refuses repository tools with `HANDOFF_FORBIDDEN` when an organisation, project or committed `"agentHandoff": false` setting forbids the handoff. Tools stay listed and enforcement occurs on every call. The result names the restriction and has no upgrade link. `iris_check_package` keeps answering.
+
+See [Team governance](/teams/governance) for policy scope, session refresh, signed-out caching and the limits of these controls.

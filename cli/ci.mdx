@@ -133,3 +133,17 @@ iris gate
 <Tip>
   Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage - gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
 </Tip>
+
+## Check the pre-push hook record
+
+For a repository connected with `teamProjectId`, add a separate step after the gate:
+
+```yaml
+- name: Check pre-push hook record
+  if: always()
+  run: npx @iris-code/cli@latest hook verify . --format github
+  env:
+    IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+The gate keeps its existing exit code. Hook verification always exits `0` and gives visibility through a warning and the Team audit log. It checks the PR head SHA rather than GitHub's temporary merge commit. See [Team governance](/teams/governance) for skip conditions and evidence limits.

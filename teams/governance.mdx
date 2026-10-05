@@ -1,0 +1,86 @@
+---
+title: "Control the agent handoff and review hook records"
+sidebarTitle: "Governance"
+description: "Set organisation and project controls for the Iris Code MCP server, and review pushes with no pre-push hook record."
+---
+
+Owners and admins can decide whether coding agents may use the Iris Code MCP server. Separately, Team evidence can record that a pre-push hook passed and show when a pushed commit has no hook record.
+
+## The agent handoff
+
+The agent handoff is the Iris Code MCP server. It gives your coding agent findings, file paths and short code excerpts. Your agent's own provider and data policies govern what it does with those results. Turning the handoff off refuses every repository tool, including configuration and safe fixes, with `HANDOFF_FORBIDDEN`. The refusal explains who set the restriction.
+
+`iris_check_package` keeps answering because it checks a package name rather than handing over repository content. Package guard agent hooks and `iris rules` also keep working.
+
+## Policy levels
+
+| Level | Setting | What it covers |
+| --- | --- | --- |
+| Organisation | Allow the agent handoff | No organisation restriction; project and repository restrictions still apply. |
+| Organisation | Off for this team's projects | Repositories whose `.irisconfig.json` carries a registered Team `teamProjectId`. Unconnected repositories are outside this rule. |
+| Organisation | Off on members' machines | Every repository on a machine signed in as an active member, including personal projects. |
+| Project | Off for this project | An extra restriction for that registered Team project. Evidence being disabled does not remove it. |
+| Repository | `"agentHandoff": false` | Everyone using the Iris Code MCP server for this repository, including signed-out and Free users. |
+
+Open **Team settings > Agent handoff** to change organisation or project policy. Members can read it; changing it is an owner or admin action. Both tightening and loosening require confirmation. Workspace history records the actor and the old and new settings.
+
+A project can inherit the organisation policy or turn the handoff off. It cannot loosen the organisation policy. `"agentHandoff": true`, or an absent key, applies no repository restriction and cannot override a Team restriction.
+
+## When changes take effect
+
+The running VS Code extension refreshes organisation and project policies at startup, when the window regains focus, and every ten minutes while signed in and online. Each MCP tool call reads the saved policy, so changes apply within a running session after a successful refresh; already-running calls finish under their starting policy. The CLI can be signed out. Offline or signed-out editors retain remembered restrictions and the existing seven-day verification rule. The repository key is read on every tool call: adding `false` takes effect on the next call. A restriction in a parent config or the requested target folder also applies.
+
+All active memberships contribute policy, regardless of Pro entitlement or whether the member has an active seat. Any restricting membership wins. Invited members are not governed until they join.
+
+## Offline and signed-out behaviour
+
+A successful licence validation writes an environment-scoped policy cache shared by VS Code, the CLI and JetBrains in `~/.iris/governance.json`. A development host uses `governance.development.json`.
+
+Signing out retains that cache. Network failures, server errors and rate limiting keep the last confirmed policy. After seven days without successful confirmation, a machine that remembers any restriction refuses the handoff until it reconnects and validates. A successful sign-in after leaving all organisations clears the old restriction.
+
+A machine that has never seen a policy can enforce only the repository key. A different MCP server is outside these controls. The cache can be altered by someone who controls the machine. This is a policy control with an administrative record, not copy protection.
+
+## Pre-push hook records
+
+After the complete local check passes, the hook records `hook_passed` for the commit identifiers and branches Git supplied to the hook. A failed scan or package guard records no pass. The record contains commit identifier, branch and time; it carries no code, file paths or member identity. It is sent only with a licence and `teamProjectId` when project evidence is enabled.
+
+Records use normal Team evidence retention, currently 365 days. A pruned record is no longer found. The hook records up to ten pushed refs per invocation and reports when more were supplied. An unavailable evidence endpoint does not block an otherwise passing push.
+
+Older hooks without the hook-source marker must be reinstalled. `iris hook git status` explains when that is needed.
+
+## Verify in CI
+
+```sh
+npx @iris-code/cli@latest hook verify . --sha "$PUSHED_COMMIT_SHA" --format json
+```
+
+`iris hook verify` requires Pro and a Team project binding. It checks for `hook_passed` for the full 40 or 64 character commit identifier. A missing record produces a warning and attempts to record `hook_missing`, labelled **Push with no hook record**, in the Team audit log. It always exits `0`, including when a licence or network is unavailable.
+
+```yaml
+- name: Check pre-push hook record
+  if: always()
+  run: npx @iris-code/cli@latest hook verify . --format github
+  env:
+    IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
+```
+
+GitHub pull requests use `pull_request.head.sha` from the event file, not the merge SHA in `GITHUB_SHA`. GitHub pushes use `GITHUB_SHA`; GitLab uses `CI_COMMIT_SHA`; Bitbucket uses `BITBUCKET_COMMIT`. Other pipelines must pass `--sha`. An explicit SHA takes precedence.
+
+The command explains why it did not check when:
+
+- the run has no licence, including fork pull requests without secrets;
+- Pro entitlement cannot be established;
+- the repository has no Team project binding or has invalid config;
+- Team evidence is off or the run cannot access the project;
+- the GitHub push deletes a branch, is made by a bot, or uses the `web-flow` committer;
+- the event is unsupported, cannot be read, or contains no valid full commit identifier;
+- another CI system did not supply `--sha`;
+- Iris Code cannot be reached or the lookup response cannot be read.
+
+## Read the evidence carefully
+
+A missing record can mean `--no-verify`, an absent or older hook, disabled evidence, or a failed upload. It is a reason for a person to review the push. It does not prove someone skipped a check, and this release does not fail a build or send email or Slack alerts for it.
+
+The records are member-writable operational evidence, not signed attestations. An active member with a licence can submit a hook record without running the hook. The receipt records that a client reported a passing hook for the pushed identifier; it does not independently prove which files were analysed.
+
+Hook pass records are hidden in the audit event list by default. **Show hook passes** reveals them. They remain in CSV exports and project counts for the selected range.

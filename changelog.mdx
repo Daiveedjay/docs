@@ -8,6 +8,19 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.35.0 - 2026-10-05
+
+<Note>**feature** - Teams decide whether coding agents can use Iris Code, with [agent policy](/teams/governance)</Note>
+
+- **Added** agent policy for Teams. Owners and admins can turn off the Iris Code agent handoff on members' machines, in the team's projects or in one project. Every repository tool in the MCP server then refuses and names who turned it off. The package guard keeps working.
+- **Added** the `agentHandoff` setting. `"agentHandoff": false` in `.irisconfig.json` turns the handoff off for everyone who opens the repository, on every plan.
+- **Added** policy refresh while an agent runs. The VS Code extension refreshes the policy at startup, when the window regains focus and every ten minutes, and every MCP tool call reads it. Offline and signed-out editors keep a remembered restriction for up to seven days.
+- **Added** the policy on the licence card in VS Code and JetBrains IDEs, and policy changes in the Workspace history.
+- **Added** hook receipts for Team projects. A push that passes the pre-push check records a receipt.
+- **Added** `iris hook verify` (Pro), which warns in CI when a pushed commit has no hook receipt. It never fails the pipeline.
+
+---
+
 ## v1.34.0 - 2026-09-30
 
 <Note>**feature** - Repeat [workspace and folder scans](/features/workspace-analysis#scanning-again) reuse the analysis of files that have not changed</Note>

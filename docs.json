@@ -68,6 +68,7 @@
             "pages": [
               "teams/overview",
               "teams/rollout",
+                "teams/governance",
               "teams/seats-and-billing",
               "teams/entitlement"
             ]

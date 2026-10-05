@@ -308,3 +308,9 @@ Override the severity of any warning type on a per-project basis using the `seve
 <Tip>
   Only include keys you want to override - anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
 </Tip>
+
+## Agent handoff
+
+`agentHandoff` is a Free boolean key. Set `"agentHandoff": false` to turn off the Iris Code MCP server's repository tools for everyone using that repository. It is read directly on each call, including for Free users. `true` or an absent key adds no repository restriction and cannot loosen an organisation rule. The package guard remains available.
+
+See [Team governance](/teams/governance).
