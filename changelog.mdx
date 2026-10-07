@@ -8,6 +8,15 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.36.1 - 2026-10-07
+
+### Fixed
+
+- **Fixed** safe fixes so removing an unused import never stops its module loading. JavaScript keeps the load as `import './module'`, a TypeScript value import whose names are all unused is left for you because whether it loads depends on `verbatimModuleSyntax`, and `import type` is still removed.
+- **Fixed** refactor verification so an `.irisconfig.json` edited, added or removed after the plan reports `regressed`, because a loosened limit could hide a new finding. The plan's `refactor` settings are kept until you request a new plan.
+- **Fixed** MCP refactor plans and verification so files in a folder where the agent handoff is off are left out, with only a count reported.
+- **Fixed** verification so unsaved editor buffers are compared by content, including files other than the planned one.
+
 ## v1.36.0 - 2026-10-07
 
 <Note>**feature** - The [refactor playbook](/refactor/overview) gives a long file a concrete plan and checks the result</Note>

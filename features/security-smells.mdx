@@ -1,7 +1,7 @@
 ---
-title: "Security Smell Detection: Nine Patterns Across Nine Languages"
-sidebarTitle: "Security Smells"
-description: "Iris Code detects nine security anti-patterns in every supported language. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
+title: "Security smell detection: nine patterns across ten supported languages"
+sidebarTitle: "Security smells"
+description: "Iris Code checks nine security anti-patterns where they apply across ten supported languages. Each finding reduces the health score, surfaces as a sidebar blocker, and can emit a squiggle via inline diagnostics."
 badge: "New"
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "ASP.NET", "Java", "Spring", "Rust", "Cargo", "catch-all exception", "async void", "process execution", "unwrap", "panic", "SQL injection", "open redirect", "weak hashing", "insecure random", "TLS verification"]
 ---
@@ -67,7 +67,7 @@ Use `crypto.randomBytes` in Node, `crypto/rand` in Go, or `secrets` in Python fo
 
 Regular expressions with nested quantifiers (`(a+)+`, `(a|aa)+`), which can backtrack catastrophically on certain inputs. A short crafted string can occupy a CPU core for minutes, so any regex applied to untrusted input becomes a denial-of-service route.
 
-Detected in all four languages. Iris Code flags the pattern itself; the fix is to rewrite it without the nesting, or to use a regex engine that does not backtrack.
+Iris Code flags the pattern itself in languages covered by the detector; the fix is to rewrite it without the nesting, or to use a regex engine that does not backtrack.
 
 ---
 

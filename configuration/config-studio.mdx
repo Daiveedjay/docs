@@ -1,5 +1,5 @@
 ---
-title: "Config Studio: Build and Sync Your Iris Code Config Visually"
+title: "Config Studio: build and sync your Iris Code config visually"
 sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
@@ -25,16 +25,18 @@ Every setting that counts as a shared team standard, one section each, with a li
 | Retention | `trendRegressionThreshold`, `gateBaselineMode` and `ignoreSuppressions` | Pro |
 | File naming | the convention, ignored paths, rules for particular paths, and whether only new files are checked | Free |
 | Language settings | thresholds and gate caps for one language | Pro |
+| Agents | repository `agentHandoff`; turning it on cannot override a Team restriction. See [governance](/teams/governance) | Free |
+| Refactor playbook | shared suggestion, verification and correction settings; destination paths stay local. See [refactor configuration](/refactor/configuration) | Free |
 | Package guard | what happens when a coding agent or `iris install` installs a risky package. `prePush` is Pro. See [Package guard](/agents/package-guard) | Free |
 
-On the Free plan, Pro sections are shown but locked. A Free config uses its preset for everything except file naming and the package guard, so a value typed into a locked field would be ignored by your editor.
+On the Free plan, Pro sections are shown but locked. A Free config uses its preset for everything except file naming, the package guard, agent handoff and top-level refactor policy, so a value typed into a locked field would be ignored by your editor.
 
 The preview on the right is the exact `.irisconfig.json` that Copy, Download and sync hand over. On a narrow screen it sits below the editor.
 
 <Note>
   **Sync replaces the settings the studio controls and keeps the rest of your file.**
 
-  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged. They appear in the diff, and VS Code also lists them when the sync finishes.
+  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, `refactor.destinations`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged. They appear in the diff, and VS Code also lists them when the sync finishes.
 
   Everything else comes from the studio. A setting the studio controls but you left empty, such as a gate limit, is removed from the file.
 

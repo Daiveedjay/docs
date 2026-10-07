@@ -1,5 +1,6 @@
 ---
 title: "Using refactor plans with an agent"
+sidebarTitle: "Agent integration"
 description: "An agent needs the repository standard, a concrete move and feedback on the result. Iris Code supplies those deterministically through MCP, CLI and project rules, while the agent or human remains responsible for editing the code."
 ---
 
@@ -14,7 +15,7 @@ An agent needs the repository standard, a concrete move and feedback on the resu
 | `iris_check` | Adds `refactorPlanAvailable`, a hint and a session baseline for size or complexity failures |
 | `iris_fix_safe` | Existing preview, `preview_token` and apply flow for mechanical fixes |
 
-File scope is free. Folder and workspace scope require **Iris Code Pro**. Both native and SDK MCP servers enforce the current agent governance policy before planning or verification. Agent-supplied before-source content is refused.
+File scope is free. Folder and workspace scope require **Iris Code Pro**. Both native and SDK MCP servers enforce the current agent governance policy before planning or verification. Agent-supplied before-source content is refused. Files in a folder where the [agent handoff](/agents/mcp#organisation-and-repository-restrictions) is off are left out of a plan or verification result, which reports only how many were withheld as `withheldByPolicy`.
 
 ## CLI scanning
 

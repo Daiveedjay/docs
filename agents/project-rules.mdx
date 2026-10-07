@@ -1,5 +1,5 @@
 ---
-title: "Project Rules: Generate Agent Instructions from Your Iris Code Config"
+title: "Project rules: generate agent instructions from your Iris Code config"
 sidebarTitle: "Project rules"
 description: "Use iris rules to write the project's configured limits, naming conventions, and gate rules into the instruction files supported coding agents already read."
 ---
@@ -74,6 +74,11 @@ left exactly as it was.
 Imperatives with your numbers in them, grouped into sections: size and shape, things not to write,
 file naming, suppressions, and what blocks a push. A project with a 250-line file limit and a
 kebab-case convention produces rules that say exactly that.
+
+When size or complexity limits are set, a section on refactoring an over-limit file describes the
+[refactor playbook](/refactor/agents) loop: run `iris refactor` or `iris_refactor_plan`, apply proved
+fixes first, verify after each move, and stop after the configured `maxCorrections` to show you the
+verdict and diff. It works without MCP.
 
 Only what is configured appears. Turn off magic-number detection and that rule is absent rather than
 stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file

@@ -24,7 +24,7 @@ Full list in the style guide. These are the ones to hold in your head:
 
 ## Structural rules
 
-- Six nav groups: Start here, What Iris Code finds, Blocking bad code, Configuration, Editors, Reference. "Finds" is detection, "Blocking" is enforcement. A new page goes in whichever verb fits.
+- Nav groups: Start here, What Iris Code finds, Blocking bad code, Refactor playbook, Cloud scanning, Teams, Configuration, Working with AI agents, Editors, Reference. "Finds" is detection, "Blocking" is enforcement. A new page goes in whichever group fits; a feature with several pages of its own gets its own group, with short `sidebarTitle` labels.
 - **Every new page needs an inbound link** from a related page. Sidebar-only pages are invisible to readers who navigate by links.
 - **Moving a page requires a redirect** in `docs.json` plus updating every internal link.
 - **`changelog.mdx` is a historical record.** Never restyle existing entries.

@@ -1,5 +1,6 @@
 ---
 title: "Verifying a refactor"
+sidebarTitle: "Verification"
 description: "Fewer physical lines do not prove a better refactor. Iris Code compares the owned baseline with the current workspace, checks touched helpers and explains whether the change improved the file or introduced a regression."
 ---
 
@@ -44,6 +45,12 @@ An exact certified mechanical result is exempt from the packing penalty. Iris Co
 | Git HEAD fallback | The baseline is the last commit; the comparison includes your existing uncommitted changes. |
 
 A standalone CLI process cannot carry its in-memory baseline into a later process. An unknown baseline ID is refused rather than substituted with HEAD. Every verdict reports `disabledChecks` and `packingRatioUsed`; disabled checks reduce the evidence available.
+
+A session baseline keeps the `refactor` settings that were in force when the plan was made, including `maxCorrections` and every `verify` switch. The agent being verified can edit `.irisconfig.json`, so a change made after the plan cannot loosen its own verdict. When the settings have changed, the result reports `policyChangedSincePlan: true` and keeps the plan's settings; request a new plan to apply the new ones. The agent handoff policy is still read on every call.
+
+The analysis limits in `.irisconfig.json` decide which findings exist, so loosening one could hide a new finding from the `newFindings` check. If any `.irisconfig.json` that applies to the workspace is edited, added or removed after a session plan, verification reports `regressed` with `configChangedSincePlan: true` and a correction asking for the file to be restored or a new plan requested. Verifying against git HEAD is not affected, because there a config edit is ordinary uncommitted work.
+
+Over MCP, a changed file in a folder where the agent handoff is off is left out of the results and the correction. The result reports only how many were withheld, as `withheldByPolicy`, and the verdict still counts them.
 
 Verification is advisory and cannot prove behaviour equivalence. A regression or failed check does not change CLI verification's exit status; argument and baseline errors still fail normally. The correction gives a concrete next move and names failed checks or omitted evidence.
 

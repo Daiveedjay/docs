@@ -1,5 +1,5 @@
 ---
-title: "Iris Code CLI Command Reference"
+title: "Iris Code CLI command reference"
 sidebarTitle: "Commands"
 description: "Full reference for all twenty-one Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
@@ -14,7 +14,7 @@ Every **Pro** command shares one extra exit code. If a licence exists but could 
 
 ### iris init
 
-Sets up a project: asks three short questions, recommends a preset, writes `.irisconfig.json`, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows it. **Free**, except the hook step, which is Pro and is reported as skipped rather than failing the run.
+Sets up a project: asks three short questions, recommends a preset, writes `.irisconfig.json`, installs the pre-push hook where the licence allows it, offers the [package guard](/agents/package-guard) for coding agents, and creates or refreshes the `AGENTS.md` rules block. **Free**, except the git hook step, which is Pro and is reported as skipped rather than failing the run.
 
 | Flag | Description |
 |---|---|
@@ -27,12 +27,15 @@ npx -y @iris-code/cli init
 
 The questions cover what kind of project this is, what matters most right now, and whether Iris Code should enforce before push or only report. The answers map to one of the shipped presets, and the recommendation is shown with its reason before anything is written. Choosing another preset from the list is always offered.
 
+The package guard question defaults to yes when the project already shows a coding agent in use, such as a `CLAUDE.md` file or a `.cursor/` folder. With `--yes`, the guard is added only in that case.
+
 Each step reports what it did:
 
 ```
 Iris Code setup
   config: created .irisconfig.json with the Balanced preset
   git hook: skipped - Pro installs the pre-push gate; run `iris hook git install` after upgrading
+  package guard: ready
   agent rules: created or refreshed Iris Code blocks
 ```
 
@@ -64,7 +67,7 @@ Five kinds of fix qualify, and each can span several lines:
 |---|---|---|
 | A debug statement on its own | `console.log("debug", user)`, including a call split over several lines | All ten |
 | An unused variable inside a function, assigned a literal | `const unused = 1` | JavaScript, TypeScript, Vue and Svelte scripts, Go, Python |
-| A whole unused import | `import { a } from './a'`, `import java.util.List;` | JavaScript, TypeScript, Java |
+| A whole unused import | `import { a } from './a'` becomes `import './a'`, `import type { A } from './a'` and `import java.util.List;` are removed | JavaScript, TypeScript (`import type` only), Java |
 | An unused name in an import that is otherwise used | `import { used, unused } from './a'` becomes `import { used } from './a'` | JavaScript, TypeScript |
 | Two compatible imports from the same module | Two named imports from `./a` become one | JavaScript, TypeScript, Vue and Svelte scripts, Python, Rust |
 
@@ -75,6 +78,7 @@ The fixer also refuses whenever removing something could change what the program
 - `console.error` is never removed, because it reports real errors.
 - A debug statement is kept when its arguments could do work, such as an assignment, an increment, an `await` or a call to anything other than a simple formatter, when it is the whole body of an `if`, `else`, loop or arrow function, when it is the last expression of a Ruby method, or when removing it would leave an unused Go import or variable or an empty Python block.
 - A Python class attribute or module variable, a Go package variable, and a top-level variable in a JavaScript or TypeScript file without imports or exports are kept, because other code can read them. Function locals, and top-level variables in a module, are removed.
+- A TypeScript value import whose names are all unused is kept, because whether the module still loads depends on `verbatimModuleSyntax`. JavaScript keeps the load as `import './a'`.
 - Imports in Vue and Svelte components are not removed, because the template can use a name the script check cannot see.
 - Type-only TypeScript imports are not merged, and nor are Rust `use` statements that carry an attribute or doc comment.
 
@@ -252,9 +256,9 @@ iris security ./src --format json
 
 ### iris deps
 
-**Pro.** Audits dependencies in `package.json`, `go.mod`, `requirements.txt`, or `pyproject.toml` for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database.
+**Pro.** Audits the dependencies of npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
 
-Installed versions are resolved from your lockfile when one is present (`package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `poetry.lock`, `Pipfile.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version. Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
+Installed versions are resolved from your lockfile when one is present (for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version. Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
 
 | Flag | Description |
 |---|---|
@@ -343,7 +347,7 @@ are other names for the same command.
 | `--yes`, `-y` | Whole project: run the project's install scripts without asking |
 | `-r`, `--requirement <file>` | Whole project, pip and uv: the requirements file to install |
 | `--manager <name>` | Use this package manager instead of the detected one |
-| `--check` | Check only; install nothing |
+| `--check` | Check only; install nothing. `--dry-run` is accepted as another name |
 | `--force` | Install even when a package is blocked, printing what was overridden |
 | `--format json` | Print the verdicts as JSON, with every advisory |
 | `--verbose` | List every known vulnerability, with links. Otherwise the five worst are shown and the rest counted |
@@ -360,7 +364,7 @@ iris install --check          # the whole project, install nothing
 | Exit code | Meaning |
 |---|---|
 | `0` | Installed, or clean with `--check` |
-| `1` | Blocked; nothing was installed |
+| `1` | Blocked or cancelled; nothing was installed |
 | `2` | Invalid arguments or no package manager found |
 
 ### iris remove
@@ -380,8 +384,6 @@ spec you passed to `iris install` works as it is. `iris uninstall` and `iris rm`
 iris remove lodash
 iris rm requests==2.19.0
 ```
-
-The package manager's own exit code is passed through.
 
 If the package manager itself fails, its exit code is passed through.
 
@@ -503,7 +505,7 @@ Writes this project's configured thresholds into the file your coding agent read
 | `--dry-run` | Print what would be written instead of writing it |
 | `--yes`, `-y` | Do not ask before updating a file that already exists |
 
-A project running two agents needs two files: Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is what Codex, Cursor and Copilot read. Each file is written independently, so one damaged file is reported and skipped while the rest still update.
+A project running two agents needs two files: Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the default shared target; Cursor and Copilot also have dedicated target files. Each file is written independently, so one damaged file is reported and skipped while the rest still update.
 
 The block sits between `iris-rules` markers, so regenerating updates only Iris Code's own section and never your text. Full behaviour, including what the file contains and what happens to a damaged marker, is in [Project rules](/agents/project-rules).
 
@@ -511,7 +513,7 @@ The block sits between `iris-rules` markers, so regenerating updates only Iris C
 
 ### iris mcp
 
-Runs Iris Code as a Model Context Protocol server over standard input and output, so an AI agent can query the project's real findings, rules and gate status. **Free and Pro:** single-file `iris_check`, `iris_config` and single-file `iris_fix_safe` are Free; folder and workspace scope, `iris_explain`, `iris_gate` and `iris_check_dependency` are Pro.
+Runs Iris Code as a Model Context Protocol server over standard input and output, so an AI agent can query the project's real findings, rules and gate status. **Free and Pro:** single-file `iris_check`, `iris_config` and single-file `iris_fix_safe`, file-scope `iris_refactor_plan` and `iris_verify_refactor`, and `iris_check_package` are Free; folder and workspace scope, `iris_explain`, `iris_gate` and `iris_check_dependency` are Pro.
 
 | Flag | Description |
 |---|---|
@@ -570,8 +572,8 @@ Installs and removes the git pre-push hook and the build gate hook - equivalent 
 | Subcommand | Description |
 |---|---|
 | `iris hook git status [path]` | Show whether the git pre-push hook is installed **(free)** |
-| `iris hook git install [path]` | Write the Iris Code block to `.git/hooks/pre-push` **(Pro)** |
-| `iris hook git uninstall [path]` | Remove the Iris Code block from `.git/hooks/pre-push` **(Pro)** |
+| `iris hook git install [path]` | Write the Iris Code block to the active pre-push hook **(Pro)** |
+| `iris hook git uninstall [path]` | Remove the Iris Code block from the active pre-push hook **(Pro)** |
 | `iris hook build status [path]` | Show whether the build hook is installed **(free)** |
 | `iris hook build install [path]` | Wire Iris Code into the project build command **(Pro)** |
 | `iris hook build uninstall [path]` | Remove the Iris Code build entry **(Pro)** |
@@ -579,8 +581,9 @@ Installs and removes the git pre-push hook and the build gate hook - equivalent 
 | `iris hook agent uninstall [path]` | Remove the package guard hook **(free)** |
 | `iris hook agent status [path]` | Show whether the package guard hook is installed **(free)** |
 
-`iris hook agent` takes `--target claude`, `--target cursor` or `--target all`, `--yes` to skip the
-confirmation when a settings file already exists, and `--dry-run`.
+The active pre-push hook is `.git/hooks/pre-push`, unless git's `core.hooksPath` points elsewhere. With Husky, the block goes in `.husky/pre-push` rather than Husky's generated files.
+
+`iris hook agent` takes `--target` with `claude`, `cursor`, `codex`, `copilot`, `gemini`, `windsurf`, a comma-separated list of them, or `all`. Without it, install picks the agents the project already shows signs of, or Claude Code. It also takes `--yes` to skip the confirmation when a settings file already exists, `--dry-run`, and `--verify-on-finish`, which adds the optional [finish verification](/refactor/verification) hook for every agent except Windsurf.
 
 ```bash
 # Check current hook status (free)
@@ -626,7 +629,7 @@ Generates or validates `.irisconfig.json`.
 
 | Subcommand | Flag | Description |
 |---|---|---|
-| `init [path]` | - | Interactively pick a preset (`legacy`, `balanced`, `strict`) and write `.irisconfig.json`. Pro users are also prompted for gate limits. Falls back to a non-interactive `balanced` default when stdin is not a TTY (e.g. in CI). |
+| `init [path]` | - | Interactively pick a preset (`legacy`, `balanced`, `strict`, `security`, `typescript`, `ai-assisted`) and write `.irisconfig.json`. Pro users are also prompted for gate limits. Falls back to a non-interactive `balanced` default when stdin is not a TTY (e.g. in CI). |
 | `validate [path]` | - | Validate an existing `.irisconfig.json` and print any schema or value problems |
 
 ```bash
@@ -643,12 +646,12 @@ iris config validate
 | `1` | `validate` found error-severity problems |
 | `2` | Bad arguments, or `init` found an existing file with no TTY to confirm overwrite |
 
-## `iris hook verify` (Pro)
+### iris hook verify
 
 ```sh
 npx @iris-code/cli@latest hook verify [path] --sha <full-commit-id> --format pretty
 ```
 
-Checks Team evidence for a passing pre-push hook record. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers. A missing record warns and attempts to write **Push with no hook record**. This command is the exception to the general entitlement exit-code rule: it always exits `0`, including for missing licence, invalid arguments and network failures.
+**Pro.** Checks Team evidence for a passing pre-push hook record. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers. A missing record warns and attempts to write **Push with no hook record**. This command is the exception to the general entitlement exit-code rule: it always exits `0`, including for missing licence, invalid arguments and network failures.
 
 See [Team governance](/teams/governance) for SHA resolution and every reason a check can be skipped.

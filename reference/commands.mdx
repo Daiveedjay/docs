@@ -1,6 +1,6 @@
 ---
-title: "Iris Code VS Code Command Palette and Context Menu Reference"
-sidebarTitle: "VS Code Commands"
+title: "Iris Code VS Code Command Palette and context menu reference"
+sidebarTitle: "VS Code commands"
 description: "All Iris Code commands available via the VS Code command palette (Ctrl+Shift+P) and right-click context menus in the Explorer and editor."
 ---
 
@@ -23,7 +23,7 @@ Several also appear in right-click context menus, in the Explorer file tree and 
 | `Iris Code: Scan This Folder` | Right-click a folder in Explorer to scan it |
 | `Iris Code: Scan Current Folder` | Scan the folder of the currently open file |
 | `Iris Code: Open in Panel` | Pop the sidebar out into a full editor panel beside your code |
-| `Iris Code: Open Code Map` | Open the latest workspace scan as a collapsible health tree |
+| `Iris Code: Open Code Map` | Open the health tree and import graph, with [map exports](/features/code-map#exporting-the-map) |
 | `Iris Code: Export Scan Report as HTML` | Save the current analysis as a standalone HTML report |
 | `Iris Code: Install Git Hook` | Install the pre-push hook. Follows Git's `core.hooksPath`, so a Husky project gets `.husky/pre-push` |
 | `Iris Code: Uninstall Git Hook` | Remove the Iris Code block from the pre-push hook |
@@ -33,6 +33,27 @@ Several also appear in right-click context menus, in the Explorer file tree and 
 | `Iris Code: Open Config Studio` | Open the browser Config Studio to build or edit `.irisconfig.json` |
 | `Iris Code: Open Dependents Table` | Open the dependency audit panel (versions + CVEs) |
 | `Iris Code: Show Welcome Page` | Open the Getting Started welcome page |
+| `Iris Code: Review My Changes` | Scan staged, unstaged and untracked changes, with direct import impact. Free |
+| `Iris Code: Select Workspace Folder to Scan` | Choose which folder a multi-root workspace scan covers |
+| `Iris Code: Restart First Scan` | Restart the first-scan onboarding flow |
+| `Iris Code: Sign In` | Sign in through the browser and refresh the editor licence |
+| `Iris Code: Sign Out` | Sign out of the editor; remembered organisation restrictions remain |
+| `Iris Code: Check License Status` | Refresh and show the current licence status |
+| `Iris Code: Sync Config from Dashboard` | Use a dashboard code to preview and confirm a shared config |
+| `Iris Code: Open Trends Table` | Open saved health-score snapshots. Free retains two; Pro retains all |
+| `Iris Code: Lock Trend Baseline` | Use the current workspace snapshot as the trend baseline |
+| `Iris Code: Clear Trend History` | Remove the current workspace trend history after confirmation |
+| `Iris Code: Close Panel` | Close the detached editor panel |
+| `Iris Code: Add GitHub Actions Workflow` | Generate the Iris Code GitHub Actions workflow |
+| `Iris Code: Add CI Pipeline Snippet` | Generate a pipeline snippet for another supported CI provider |
+| `Iris Code: Scan Git History for Secrets` | Scan Git history for leaked credentials. Pro |
+| `Iris Code: Check Packages Before Agents Install Them` | Choose coding agents and install the free package guard hook |
+| `Iris Code: Remove the Package Guard Hook` | Remove the package guard entries while preserving other hooks |
+| `Iris Code: Rename File to Naming Convention` | Preview and rename one file to its configured naming convention |
+| `Iris Code: Undo Last Rename` | Undo the last naming-convention rename |
+| `Iris Code: Dependency Network Access` | Manage consent for registry and advisory lookups |
+
+The [Refactor playbook](/refactor/overview) opens from **Refactor plan** in the File, Folder or Workspace tab. Its panel provides **Get plan**, **Apply mechanical fixes**, **Open agent instructions** and **Verify refactor**.
 
 ## Context menus
 

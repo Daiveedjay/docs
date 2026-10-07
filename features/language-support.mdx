@@ -1,11 +1,11 @@
 ---
-title: "Supported Languages: TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java, Rust"
-sidebarTitle: "Language Support"
+title: "Supported languages: TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java, Rust"
+sidebarTitle: "Language support"
 description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java, and Rust with per-language function detection, import tracking, and debug-print flagging."
 keywords: ["C#", "c sharp", "csharp", "c-sharp", ".NET", "dotnet", "dotnet core", "ASP.NET", "ASP.NET Core", ".cs", ".csproj", "MSBuild", "NuGet", "LINQ", "async void", "EF Core", "Entity Framework", "xUnit", "NUnit", "MSTest", "Java", "Spring", "Spring Boot", "Maven", "Gradle", ".java", ".properties", "Javadoc", "Rust", "Cargo", "crates.io", ".rs", "unwrap", "panic", "golang", "Rails", "ERB", "Gemfile", "single-file component", "SFC", "TSX", "JSX"]
 ---
 
-Eight languages, each with its own parser, plus Vue and Svelte components whose script blocks go through the JavaScript or TypeScript one.
+Ten supported languages include TypeScript, JavaScript, Go, Python, Ruby, C#, Java and Rust, plus Vue and Svelte components whose script blocks use the JavaScript or TypeScript analyser.
 
 The reason for separate parsers rather than one generic pass: a debug print is `console.log` in one language, `fmt.Println` in another, and `print()` in a third. A third-party import looks completely different in `go.mod` and `requirements.txt`. Analysis that doesn't know which language it's reading ends up counting lines and tokens, which tells you nothing.
 
@@ -19,7 +19,7 @@ The reason for separate parsers rather than one generic pass: a debug print is `
 
     **TypeScript / JavaScript-specific features:**
 
-    - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. This detection is **TS/JS only** - Go and Python handle unused imports at the compiler or runtime level.
+    - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. Java also has unused import detection. Other language analysers do not flag unused imports; see [file analysis](/features/file-analysis).
     - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript Metrics](/features/file-analysis#typescript-metrics) for the full breakdown.
     - **Debug prints** - `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
 

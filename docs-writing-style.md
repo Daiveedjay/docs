@@ -125,13 +125,17 @@ Consistency here matters more than finding a better word for one page.
 
 ## 7. Navigation
 
-Six groups, ordered by what a reader is trying to do:
+Ten groups, ordered by what a reader is trying to do:
 
 | Group | Contains |
 | --- | --- |
 | **Start here** | Home, Quick Start, Installation, Pro |
 | **What Iris Code finds** | Detection: file analysis, change review, workspace, secrets, security smells, duplicates, quality signals, diagnostics, dependencies, languages |
 | **Blocking bad code** | Enforcement: gate preview, git hook, build gate, CI, Slack, suppressions |
+| **Refactor playbook** | Overview, fixes and suggestions, conventions, verification, configuration, agent integration, language coverage |
+| **Cloud scanning** | Overview, GitHub connection, triggers and scan allowances |
+| **Teams** | Shared standards, rollout, governance, seats and entitlement |
+| **Working with AI agents** | Project rules, package guard and MCP |
 | **Configuration** | irisconfig, file naming, Config Studio, weights, VS Code settings |
 | **Editors** | Overview and parity matrix, VS Code, forks, JetBrains |
 | **Reference** | CLI, editor commands, scoring, accuracy, security, changelog |

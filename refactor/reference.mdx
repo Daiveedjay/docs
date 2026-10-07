@@ -1,5 +1,6 @@
 ---
 title: "Fixes and suggestions reference"
+sidebarTitle: "Fixes and suggestions"
 description: "Mechanical fixes and structural suggestions have different evidence requirements. The plan reports the exact ranges and refusals so you can review the change before applying it."
 ---
 
@@ -11,11 +12,11 @@ Mechanical fixes and structural suggestions have different evidence requirements
 |---|---|---|---|
 | `merge-imports` | File length or too many imports | JS/TS, Vue/Svelte scripts, Python, Rust | Two compatible imports from one module become one |
 | `remove-unused-import-name` | An unused imported binding | JS/TS | `{ used, unused }` becomes `{ used }` |
-| `remove-unused-import` | A whole unused import | JS/TS, Java | The isolated import is removed |
+| `remove-unused-import` | A whole unused import | JS/TS, Java | Java and `import type` are removed. JavaScript keeps the module load as `import './a'`. A TypeScript value import is left for you |
 | `remove-debug-statement` | An isolated debug call | All ten, where a statement is proved | A multiline debug statement is removed |
-| `remove-unused-literal-variable` | An unused literal-only variable inside a function | JS/TS, Vue/Svelte scripts, Go, Python | The declaration is removed without evaluating an expression |
+| `remove-unused-literal-variable` | An unused literal-only binding with proved local scope | JS/TS, Vue/Svelte scripts, Go, Python | The declaration is removed without evaluating an expression |
 
-Import merging refuses namespace/named combinations, mixed type-import styles, two type-only TypeScript imports, Rust `use` statements carrying an attribute or doc comment, side-effect imports and comments between statements. Imports in Vue and Svelte components are never removed, because the template can use a name the script check cannot see. Variables at class, module or package level are never removed. Debug removal refuses a shared-line statement, an unclosed call, arguments that could have side effects (assignments, increments, `await` or calls other than simple formatters), a statement that is the whole body of a braceless `if`, `else`, loop or arrow function, the last expression of a Ruby method, a removal that would leave a Go import or variable unused, and one that would leave a Python block empty. `console.error` is error reporting and is never eligible. Unused function deletion is a suggestion, not a mechanical fix.
+Import merging refuses namespace/named combinations, mixed type-import styles, two type-only TypeScript imports, Rust `use` statements carrying an attribute or doc comment, side-effect imports and comments between statements. Removing the last name from an import can stop its module loading, and a module can run code when it loads. JavaScript always loads an import, so the fix keeps that as a side-effect import. TypeScript removes an unused value import by default but keeps it under `verbatimModuleSyntax`, so no single edit is right for both, and the fix is left for you. Imports in Vue and Svelte components are never removed, because the template can use a name the script check cannot see. Python class or module attributes and Go package variables are kept. JavaScript and TypeScript top-level bindings are eligible only in a module; shared script bindings are kept. Debug removal refuses a shared-line statement, an unclosed call, arguments that could have side effects (assignments, increments, `await` or calls other than simple formatters), a statement that is the whole body of a braceless `if`, `else`, loop or arrow function, the last expression of a Ruby method, a removal that would leave a Go import or variable unused, and one that would leave a Python block empty. `console.error` is error reporting and is never eligible. Unused function deletion is a suggestion, not a mechanical fix.
 
 ## Structural suggestions
 

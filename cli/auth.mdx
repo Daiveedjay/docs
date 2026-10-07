@@ -1,5 +1,5 @@
 ---
-title: "Authenticate the Iris Code CLI with Browser or Token"
+title: "Authenticate the Iris Code CLI with browser or token"
 sidebarTitle: "Authentication"
 description: "Sign in to Iris Code CLI via browser OAuth for local development, or use IRIS_LICENCE_TOKEN for non-interactive CI runners. Credentials stored in ~/.iris/credentials."
 ---
@@ -24,6 +24,8 @@ iris auth status
 # Remove stored credentials
 iris auth logout
 ```
+
+`iris auth status` shows your plan, where the licence was read from, and whether an organisation or repository policy has turned the [agent handoff](/agents/mcp) off for you.
 
 ## How credentials are stored
 

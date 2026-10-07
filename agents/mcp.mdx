@@ -1,7 +1,7 @@
 ---
-title: "MCP Server: Give Coding Agents Your Project Rules and Findings"
+title: "MCP server: give coding agents your project rules and findings"
 sidebarTitle: "MCP server"
-description: "Use iris mcp to give supported coding agents the resolved project configuration, deterministic findings, gate result, dependency risk, explanations, and preview-first safe fixes."
+description: "Use iris mcp to give supported coding agents the resolved project configuration, deterministic findings, gate result, dependency risk, explanations, preview-first safe fixes, and refactor plans with verification."
 ---
 
 An AI agent asked to clean up a file has no way to know what your project counts as clean. It can
@@ -147,13 +147,16 @@ outside development.
 | `iris_check` | Free | Findings for a path, with rule ids, lines and severities |
 | `iris_config` | Free | The project's resolved thresholds, weights and gate limits |
 | `iris_fix_safe` | Free | Preview, then apply, only the fixes Iris Code can prove safe |
+| `iris_refactor_plan` | Free | A refactor plan for a file: proved mechanical fixes, then suggestions ordered by risk, with a session `baseline_id`. See [agent integration](/refactor/agents) |
+| `iris_verify_refactor` | Free | Whether a refactor improved, did not improve or regressed against the session baseline or git HEAD, with a correction |
 | `iris_check_package` | Free | Whether one package is safe to add, and the version to use instead. See the [package guard](/agents/package-guard) |
 | `iris_explain` | Pro | Findings plus the rule detail behind them |
 | `iris_gate` | Pro | Whether the configured gate would pass, and which files fail which rule |
 | `iris_check_dependency` | Pro | OSV advisories with severity, confidence and fix version |
 
-`iris_check` and `iris_fix_safe` are Free on a single file. Folder and workspace scope are Pro, as
-they are in every other Iris Code surface.
+`iris_check`, `iris_fix_safe`, `iris_refactor_plan` and `iris_verify_refactor` are Free on a single
+file. Folder and workspace scope are Pro, as they are in every other Iris Code surface. When
+`iris_check` fails a file for size or complexity, the result says a refactor plan is available.
 
 Pro tools stay in the tool list and describe themselves as Pro rather than being hidden, so your
 assistant can tell you what an upgrade would add. Entitlement is checked when a tool runs, not when
@@ -200,6 +203,8 @@ Writing requires `apply: true` and that token. It is single-use, expires after t
 authorises exactly the change set the preview showed, so Iris Code only ever applies edits that have
 already been put in front of you. A confirmation flag alone would not give you that, because the
 model sets the flag.
+
+For unused JavaScript imports, removing the last binding keeps the module load as `import './a'`. Whole TypeScript value imports are left for review because the load depends on compiler settings; `import type` can be removed. See [fixes and suggestions](/refactor/reference).
 
 Eligible fixes can span several lines: a debug statement on its own, an unused variable inside a
 function that is assigned a literal, a whole unused import or an unused name in an import, and two

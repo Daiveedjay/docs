@@ -1,5 +1,5 @@
 ---
-title: "Iris Code Pro: Rescan Workspaces and Enforce Project Standards"
+title: "Iris Code Pro: rescan workspaces and enforce project standards"
 sidebarTitle: "Iris Code Pro"
 description: "Iris Code Pro adds repeatable workspace scans, configured gates, hooks, CI workflows, dependency intelligence, and opt-in Cloud scans. Start a 14-day trial without a card."
 ---
@@ -17,6 +17,11 @@ Everything in Free, plus:
 - **Cloud scans** - connect a GitHub repository and it is audited without your editor open, with every report pinned to the commit that produced it. Includes **50 scans a month**; see [Cloud overview](/cloud/overview) and [Scan allowances](/cloud/allowances)
 - **Fresh workspace reviews** - rescan the whole project whenever it changes, rather than relying on one saved snapshot
 - **Folder analysis** - scoped scans for any directory in your project
+- **Refactor playbook at folder and workspace scope** - deterministic plans and verification in either editor or over MCP; file plans, safe fixes and finish verification are Free. See [Refactor playbook](/refactor/overview)
+- **Code Map at folder and workspace scope** - the import graph and health colouring beyond the focused file. Exporting remains Free
+- **MCP explanations, gates and dependency scans** - `iris_explain`, `iris_gate` and `iris_check_dependency`, plus folder and workspace scope for file tools. See [MCP tools](/agents/mcp#tools)
+- **Package guard before push** - check the lockfile before a push when `packageGuard.prePush` is enabled; agent install hooks remain Free
+- **Git history secrets scans** and **batch file naming** - review old credentials and rename several files to the configured convention
 - **Gate Preview drilldown** - which files fail each preset, with their scores
 - **Git hook enforcement** - blocks a push when any file falls below your threshold
 - **Build hook enforcement** - stops a failing build before compilation begins
@@ -28,7 +33,7 @@ Everything in Free, plus:
 - **Custom scoring weights** - control how many points each finding type deducts
 - **Config Studio** - build, preview and sync a config visually
 - **Unlimited trend history**, rather than two rolling snapshots
-- **The full CLI**: `iris gate` for CI, `iris deps` and `iris cve` for dependencies, `iris sbom`, `iris todos`, `iris hook install`, and `iris check` on directories and staged files
+- **The full CLI**: `iris gate` for CI, `iris deps` and `iris cve` for dependencies, `iris sbom`, `iris todos`, git and build hook installation, and `iris check` on directories and staged or changed files. Package guard and finish hooks are Free
 - **Account Analytics** - your health trend plus a private timeline of scans, hook results, blocked pushes, completed cloud scans and other recorded signals
 - **Personal audit history** - one commit-pinned history of cloud scans across all repositories connected to your account
 

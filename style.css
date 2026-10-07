@@ -1,0 +1,5 @@
+/* Preserve the authored sentence case instead of the theme's title casing. */
+#sidebar-content .sidebar-title,
+#header .eyebrow {
+  text-transform: none !important;
+}

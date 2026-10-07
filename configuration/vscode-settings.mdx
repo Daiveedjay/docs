@@ -1,6 +1,6 @@
 ---
-title: "Iris Code VS Code Settings Reference - All iris.* Options"
-sidebarTitle: "VS Code Settings"
+title: "Iris Code VS Code settings reference - all iris.* options"
+sidebarTitle: "VS Code settings"
 description: "All iris.* settings available in VS Code's settings UI (Ctrl+,). Configure thresholds, detection toggles, and display options per machine."
 ---
 
@@ -30,6 +30,9 @@ That makes them suitable for personal preferences and unsuitable for team standa
 | `iris.enableTodoDetection` | `true` | Flag `TODO` / `FIXME` / `HACK` comments |
 | `iris.enableLongParamDetection` | `true` | Flag functions with too many parameters |
 | `iris.enableUnusedDetection` | `true` | Flag unused variables and functions |
+| `iris.enableSecretsDetection` | `true` | Detect possible hardcoded credentials, with values masked in results |
+| `iris.enableSecuritySmells` | `true` | Detect security patterns where they apply to the file language |
+| `iris.enableDuplicateDetection` | `true` | Detect duplicated code within and across files |
 | `iris.enableMissingReturnTypeWarnings` | `true` | Flag exported functions missing return types (TS/JS only) |
 
 ### Display
@@ -38,6 +41,16 @@ That makes them suitable for personal preferences and unsuitable for team standa
 |---------|---------|-------------|
 | `iris.enableCodeLens` | `true` | Show inline Code Lens hints |
 | `iris.enableStatusBar` | `true` | Show the Iris Code item in the status bar |
+| `iris.sidebarFontSize` | `14` | Base sidebar font size in pixels; also configurable in `.irisconfig.json` |
+| `iris.enableInlineDiagnostics` | `false` | Opt in to squiggles and Problems panel entries |
+| `iris.inlineDiagnostics` | `{}` | Per-category diagnostic switches; omitted keys use built-in defaults. See [inline diagnostics](/features/inline-diagnostics) |
+
+### Duplicate and test settings
+
+| Setting | Default | Description |
+|---|---|---|
+| `iris.duplicateBlockMinTokens` | `40` | Minimum normalised token run for a duplicate block; minimum accepted value is `10` |
+| `iris.testConvention` | `"colocated"` | Look for `foo.test.ts` beside `foo.ts`, in `__tests__` with `"dedicated"`, or in either location with `"both"` |
 
 ### Ignore and override rules
 
