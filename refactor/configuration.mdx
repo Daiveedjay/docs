@@ -1,0 +1,49 @@
+---
+title: "Refactor configuration"
+description: "Refactor policy controls the changes Iris Code may propose and the evidence it checks afterwards. Top-level policy is free and independent of scoring presets; language overrides require Iris Code Pro."
+---
+
+Refactor policy controls the changes Iris Code may propose and the evidence it checks afterwards. Top-level policy is free and independent of scoring presets; language overrides require Iris Code Pro.
+
+## Configuration
+
+| Key | Default | Behaviour |
+|---|---|---|
+| `disable` | `[]` | Suppress named fix or suggestion IDs |
+| `destinations` | `{}` | Override constants, types, components, hooks and utils paths; kept local |
+| `allowNewFiles` | `true` | Permit proposed destinations that need new files |
+| `publicApiRequiresApproval` | `true` | Mark public API changes as needing approval |
+| `ranking` | `["local", "cross-file", "changes-public-api"]` | Order risk tiers; include every tier once |
+| `packing.minTokenRatio` | `0.6` | Number between 0 and 1 used by packing detection |
+| `verify.packing` | `true` | Detect artificial line packing |
+| `verify.commentOnly` | `true` | Refuse improvement credited only to comments or whitespace |
+| `verify.importsResolve` | `true` | Check imports in touched files and new helpers |
+| `verify.importCycles` | `true` | Check newly introduced cycles |
+| `verify.removedExports` | `true` | Check removed imported exports and warn on API changes |
+| `verify.newFindings` | `true` | Compare finding identities and severity |
+| `maxCorrections` | `2` | Integer from 0 to 4 controlling finish-hook retries per baseline |
+
+Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by key. Config Studio exposes every shared policy field and lets Pro users edit language overrides. Resetting a language field restores inherited values; local destination paths remain in the repository.
+
+```json
+{
+  "refactor": {
+    "disable": ["early-return", "merge-imports"],
+    "allowNewFiles": false,
+    "publicApiRequiresApproval": true,
+    "packing": { "minTokenRatio": 0.8 },
+    "maxCorrections": 2
+  },
+  "languages": {
+    "go": { "refactor": { "disable": ["options-object"] } },
+    "python": { "refactor": { "verify": { "importCycles": false } } }
+  }
+}
+```
+
+Free users keep top-level refactor policy through its separate resolver. Language overrides are stripped with a warning. The accepted language keys are `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java` and `rust`; Vue and Svelte use their declared script language. Malformed refactor policy is refused rather than silently replaced with defaults.
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

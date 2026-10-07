@@ -1,0 +1,50 @@
+---
+title: "Project conventions"
+description: "A useful refactor should fit the repository that will contain it. Iris Code detects conventions from the workspace sources and distinguishes that evidence from a configured override or a new proposal."
+---
+
+A useful refactor should fit the repository that will contain it. Iris Code detects conventions from the workspace sources and distinguishes that evidence from a configured override or a new proposal.
+
+## Detected evidence
+
+| Convention | Used by |
+|---|---|
+| Constants location | Constant extraction and named numeric values |
+| State library | State consolidation |
+| File naming | Proposed module names |
+| Components, hooks and utils layout | Cluster and component destinations |
+| Barrel modules | Export wiring instructions |
+| Test placement | Related test moves |
+| Native package, namespace or module layout | Go, Python, Ruby, C#, Java and Rust moves |
+| Type location | Type moves |
+
+A convention needs support from at least three distinct candidate files and more than 60% of candidates. Exactly 60% does not qualify. A result below either threshold says **No project convention detected** and labels its destination `proposal`.
+
+| Origin | Meaning |
+|---|---|
+| `detected` | The repository evidence meets both thresholds |
+| `configured` | A `refactor.destinations` override wins over detection |
+| `proposal` | There is insufficient evidence; review the suggested location |
+
+## Configuration
+
+```json
+{
+  "refactor": {
+    "destinations": {
+      "constants": "src/shared/constants",
+      "types": "src/types",
+      "components": "src/components",
+      "hooks": "src/hooks",
+      "utils": "src/utils"
+    }
+  }
+}
+```
+
+These paths stay relative to the workspace and cannot climb outside it. They are local repository layout, so Config Studio omits them and editor sync preserves the destination repository's existing values. Vue and Svelte retain their component layout while using their declared script language for language policy.
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

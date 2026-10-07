@@ -8,6 +8,37 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.36.0 - 2026-10-07
+
+<Note>**feature** - The [refactor playbook](/refactor/overview) gives a long file a concrete plan and checks the result</Note>
+
+### The refactor playbook
+
+**Refactor plan** on the File, Folder and Workspace tabs opens the Refactor Playbook panel in VS Code and JetBrains IDEs. **Get plan** reads the sources locally, detects the conventions the repository already follows, and returns mechanical fixes Iris Code can prove safe plus ranked structural suggestions. **Verify refactor** compares the result with the snapshot taken at planning time. Iris Code does not call a model. Planning and verifying one file is free; folder and workspace plans require **Iris Code Pro**.
+
+- **Added** **Apply mechanical fixes**, which makes the safe fixes as one undoable editor change. Structural suggestions carry their evidence, risk and destination and are never applied automatically.
+- **Added** **Open agent instructions**, which shows the plan as readable instructions and exact JSON for a coding agent.
+- **Added** verification that reports improved, not improved or regressed, and catches lines saved only by packing code or deleting comments, broken imports, new import cycles, removed exports that are still imported and new findings. **Copy correction for your agent** turns a regression into the next step.
+- **Added** the `iris_refactor_plan` and `iris_verify_refactor` MCP tools, free for one file and Pro for a folder or workspace.
+- **Added** `iris refactor <file>`, which prints a plan, and `iris refactor <file> --verify`, which compares the file with git HEAD.
+- **Added** optional finish verification for Claude Code, Codex, GitHub Copilot, Gemini CLI and Cursor with `iris hook agent install --verify-on-finish`.
+- **Added** the [`refactor` block](/refactor/configuration) in `.irisconfig.json`. Top-level settings are free; per-language settings require Pro.
+
+Suggestion coverage differs by language. The [language coverage table](/refactor/language-coverage) lists which suggestions are available for each one.
+
+### Changed
+
+- **Changed** safe fixes to handle debug statements, literal-only variables and imports that span several lines, to merge compatible imports from the same module, and to remove an unused name from an import that is otherwise used.
+- **Changed** safe fixes to leave more changes for you to make by hand when removing them could change behaviour, including class attributes, script-wide globals and Go package variables, imports in Vue and Svelte components, and debug statements whose arguments do work.
+- **Changed** `console.error` so it is no longer removed by a safe fix, because it reports real errors.
+
+### Fixed
+
+- **Fixed** agent policy in edge cases, including a repository whose `.irisconfig.json` cannot be read and brief file-access errors on Windows.
+- **Fixed** `iris_check` failing on an oversized file outside the project root.
+
+---
+
 ## v1.35.0 - 2026-10-05
 
 <Note>**feature** - Teams decide whether coding agents can use Iris Code, with [agent policy](/teams/governance)</Note>

@@ -1,0 +1,52 @@
+---
+title: "Refactor language coverage"
+description: "Language support depends on the evidence each detector can prove. The generated table separates implemented suggestions from inapplicable syntax and omissions found during real-source review."
+---
+
+Language support depends on the evidence each detector can prove. The generated table separates implemented suggestions from inapplicable syntax and omissions found during real-source review.
+
+## Coverage
+
+`built` means implemented, not behaviour-preserving. Component rows for TypeScript and JavaScript require JSX/TSX; they are inapplicable to ordinary non-component files. Vue and Svelte use their native component structure. A built suggestion can still refuse an ambiguous range.
+
+{/* >>> iris-refactor-coverage-start <<< */}
+
+| Suggestion | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust | Vue | Svelte |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `extract-constants` | left-out | left-out | built | left-out | built | left-out | left-out | built | built | left-out |
+| `move-function-cluster` | built | built | left-out | built | built | left-out | built | built | built | built |
+| `move-types` | built | not-applicable | built | built | not-applicable | built | built | built | built | left-out |
+| `split-declarations` | built | built | built | built | built | built | built | left-out | built | built |
+| `delete-unused-function` | built | built | left-out | left-out | built | built | built | built | built | built |
+| `extract-function` | left-out | left-out | left-out | left-out | left-out | left-out | left-out | left-out | left-out | built |
+| `early-return` | built | built | built | left-out | built | built | built | built | left-out | built |
+| `lookup-table` | built | left-out | left-out | left-out | left-out | left-out | built | left-out | left-out | built |
+| `options-object` | built | built | built | built | built | built | built | built | built | built |
+| `move-imports-with-code` | built | built | left-out | built | left-out | left-out | built | built | built | built |
+| `extract-duplicate` | left-out | left-out | left-out | built | built | left-out | built | left-out | built | left-out |
+| `name-magic-numbers` | left-out | left-out | left-out | left-out | left-out | left-out | built | left-out | left-out | left-out |
+| `consolidate-state` | left-out | built | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | built | left-out |
+| `derive-without-effect` | built | built | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | built | built |
+| `extract-component` | built | built | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | not-applicable | built | left-out |
+
+{/* >>> iris-refactor-coverage-end <<< */}
+
+## Omissions and review
+
+Every `left-out` cell above has a measured reason, which each plan reports in its coverage for that language. The table below explains the omissions that are most often asked about.
+
+| Suggestion | Language | Reason |
+|---|---|---|
+| `lookup-table` | Ruby and Rust | Class/pattern arms, payload bindings and guards are not scalar lookup entries |
+| `move-imports-with-code` | Ruby | Require statements do not identify imported bindings, so exclusive use cannot be proved |
+| `name-magic-numbers` | Ruby and Svelte | Opcode data and chart observations already carry domain meaning |
+| `extract-function` | Java | Small early-exit guards in large files exceeded the review threshold |
+| `move-types` | JavaScript and Ruby | No separate type-declaration syntax; classes use split-declarations |
+| State/effect/component suggestions | Non-component source | These suggestions need React JSX, Vue or Svelte component code |
+
+The review threshold removes a suggestion from a language when more than one in ten observed suggestions is definite nonsense. The [generated review evidence](/trust/accuracy-benchmark#refactor-suggestion-evidence) records observations and omissions from a review of 200 plans across the ten languages. No overall suggestion accuracy is claimed.
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

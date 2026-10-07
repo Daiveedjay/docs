@@ -1,0 +1,58 @@
+---
+title: "Using refactor plans with an agent"
+description: "An agent needs the repository standard, a concrete move and feedback on the result. Iris Code supplies those deterministically through MCP, CLI and project rules, while the agent or human remains responsible for editing the code."
+---
+
+An agent needs the repository standard, a concrete move and feedback on the result. Iris Code supplies those deterministically through MCP, CLI and project rules, while the agent or human remains responsible for editing the code.
+
+## MCP
+
+| Tool | Contract |
+|---|---|
+| `iris_refactor_plan` | Read-only plan; returns a session `baseline_id`, fixes, ranked suggestions and coverage |
+| `iris_verify_refactor` | Uses the session ID or disclosed Git HEAD fallback; returns reasons, metrics, disabled checks and correction |
+| `iris_check` | Adds `refactorPlanAvailable`, a hint and a session baseline for size or complexity failures |
+| `iris_fix_safe` | Existing preview, `preview_token` and apply flow for mechanical fixes |
+
+File scope is free. Folder and workspace scope require **Iris Code Pro**. Both native and SDK MCP servers enforce the current agent governance policy before planning or verification. Agent-supplied before-source content is refused.
+
+## CLI scanning
+
+```bash
+iris refactor src/handlers.ts
+iris refactor src/handlers.ts --format json
+iris refactor src/handlers.ts --verify
+iris fix --safe src/handlers.ts
+```
+
+CLI planning is read-only. A later standalone invocation verifies against Git HEAD because the planning process's memory has ended. Generated project rules describe the same loop, honour disabled IDs and work without MCP: apply proved fixes, review suggestions in order, preserve behaviour and exports, stop when the file passes, then verify and test.
+
+## Finish verification
+
+```bash
+iris hook agent install --target claude,codex --verify-on-finish
+iris hook agent status
+iris hook agent uninstall --target claude,codex --verify-on-finish
+```
+
+The CLI flag adds opt-in finish verification alongside the package guard. In either editor, **Hooks** has a separate **Enable** control with the same multi-select agent choice; it can be configured or removed independently.
+
+| Agent | Event | Continuation |
+|---|---|---|
+| Claude Code | `Stop` | JSON `decision: block` with `reason` |
+| Codex | `Stop` | JSON only; the hook exits zero and returns `decision: block` |
+| Copilot CLI and VS Code | `agentStop` / `Stop` | One response carries both CLI fields and `hookSpecificOutput` |
+| Gemini CLI | `AfterAgent` | JSON `decision: deny` with `reason` |
+| Cursor | `stop` | `followup_message` requests another turn |
+| Windsurf / Devin | Observe-only finish event | No finish hook installed; use rules, MCP or CLI |
+
+The hook verifies only a baseline ID already found in the current agent transcript and matched to a live MCP server for the same workspace. Source snapshots remain in server memory; the local registry contains connection metadata and IDs. Missing, null or compacted transcripts leave the hook inactive, with no guessed baseline or HEAD fallback.
+
+Only `regressed` requests a correction turn. `not-improved` is a warning, never a block. The shared counter permits at most `maxCorrections` blocks for a baseline, then asks the agent to stop and show the verdict and diff. Host loop signals provide a second backstop. Cursor warnings use stderr because its stop JSON has no advisory field. The hook does not call a model or change push/build enforcement.
+
+Codex also needs hooks enabled in its local configuration and project-hook approval. Vendor transcript formats are best-effort interfaces; explicit verification remains available when automatic matching is inactive.
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

@@ -63,6 +63,7 @@ These commands are available without an Iris Code Pro licence:
 
 - **`iris init`** - set a project up: asks three short questions, recommends a preset, writes `.irisconfig.json`, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows
 - **`iris fix --safe <file>`** - remove findings Iris Code can prove are safe to remove, on a single file; previews by default and never writes without confirmation
+- **`iris refactor <file>`** - a refactor plan for one file, with `--verify` to compare the result with git HEAD; see the [refactor playbook](/refactor/overview)
 - **`iris check <file>`** - single-file health scan; scores and prints findings for one source file
 - **`iris secrets`** - scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
 - **`iris security`** - scans the whole project for security smells (eval usage, SQL injection, insecure RNG, weak hashing, and more); no authentication required
@@ -95,7 +96,7 @@ These commands require an active Iris Code Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all eighteen Iris Code CLI commands, flags, and exit codes.
+    Full reference for all twenty-one Iris Code CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as the gate in GitHub Actions, GitLab CI, or any shell pipeline.

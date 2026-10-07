@@ -1,10 +1,10 @@
 ---
 title: "Iris Code CLI Command Reference"
 sidebarTitle: "Commands"
-description: "Full reference for all eighteen Iris Code CLI commands: iris init, iris fix, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for all twenty-one Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Twenty commands cover setup, code checks, safe fixes, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
+Twenty-one commands cover setup, code checks, safe fixes, refactor plans, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
 
 Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned. Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
 
@@ -58,17 +58,59 @@ iris fix --safe src/auth.ts
 iris fix --safe src/auth.ts --apply
 ```
 
-Three cases qualify:
+Five kinds of fix qualify, and each can span several lines:
 
-| Case | Example |
-|---|---|
-| A line holding nothing but a debug statement | `console.log("debug")` |
-| A variable that is unused and assigned a literal | `const unused = 1` |
-| A standalone unused Java import | `import java.util.List;` |
+| Case | Example | Languages |
+|---|---|---|
+| A debug statement on its own | `console.log("debug", user)`, including a call split over several lines | All ten |
+| An unused variable inside a function, assigned a literal | `const unused = 1` | JavaScript, TypeScript, Vue and Svelte scripts, Go, Python |
+| A whole unused import | `import { a } from './a'`, `import java.util.List;` | JavaScript, TypeScript, Java |
+| An unused name in an import that is otherwise used | `import { used, unused } from './a'` becomes `import { used } from './a'` | JavaScript, TypeScript |
+| Two compatible imports from the same module | Two named imports from `./a` become one | JavaScript, TypeScript, Vue and Svelte scripts, Python, Rust |
 
 Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do. A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
 
-The same three cases are offered as a Quick Fix in VS Code and through `iris_fix_safe` on the [MCP server](/agents/mcp). All three share one planner, so they agree on what is safe.
+The fixer also refuses whenever removing something could change what the program does or leave it incomplete:
+
+- `console.error` is never removed, because it reports real errors.
+- A debug statement is kept when its arguments could do work, such as an assignment, an increment, an `await` or a call to anything other than a simple formatter, when it is the whole body of an `if`, `else`, loop or arrow function, when it is the last expression of a Ruby method, or when removing it would leave an unused Go import or variable or an empty Python block.
+- A Python class attribute or module variable, a Go package variable, and a top-level variable in a JavaScript or TypeScript file without imports or exports are kept, because other code can read them. Function locals, and top-level variables in a module, are removed.
+- Imports in Vue and Svelte components are not removed, because the template can use a name the script check cannot see.
+- Type-only TypeScript imports are not merged, and nor are Rust `use` statements that carry an attribute or doc comment.
+
+The same fixes are offered as a Quick Fix in VS Code, through **Apply mechanical fixes** in the [refactor playbook](/refactor/overview), and through `iris_fix_safe` on the [MCP server](/agents/mcp). They share one planner, so they agree on what is safe.
+
+---
+
+### iris refactor
+
+Prints a refactor plan for one file: the conventions the repository already follows, the mechanical fixes above, and ranked structural suggestions with their evidence, risk and destination. It gives a coding agent or a reviewer a concrete next step for a file that is too long or too complex. **Free**. The plan is read-only; nothing is written.
+
+| Flag | Description |
+|---|---|
+| `<file>` | Required. The source file to plan for |
+| `--verify` | Compare the file with git HEAD and report `improved`, `not-improved` or `regressed`, with a correction |
+| `--format <fmt>` | `text` (default) or `json` |
+
+```bash
+# Plan a refactor
+iris refactor src/handlers.ts
+
+# The full plan, for an agent
+iris refactor src/handlers.ts --format json
+
+# After editing, compare with the last commit
+iris refactor src/handlers.ts --verify
+```
+
+Each run of the CLI is a separate process, so it cannot keep the snapshot it planned against for a later `--verify`. Verification therefore compares with git HEAD, and the comparison includes any uncommitted changes you already had. To verify against the exact snapshot taken at planning time, use `iris_refactor_plan` and `iris_verify_refactor` on the [MCP server](/agents/mcp), or **Verify refactor** in the editor. See [verifying a refactor](/refactor/verification).
+
+Verification is advisory: a `regressed` verdict does not change the exit code.
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Plan or verdict printed |
+| `2` | Bad arguments, a missing file or a plan that could not be built |
 
 ---
 

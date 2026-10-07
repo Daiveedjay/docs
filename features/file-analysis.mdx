@@ -95,3 +95,6 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
 <Note>
   Unused *import* detection runs for TypeScript, JavaScript, and Java. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that. Ruby resolves constants at runtime, where static analysis cannot tell an unused require from one loaded through `send` or Rails autoloading, and C# resolves types through dependency injection, reflection, and source generators for the same reason. Rust is excluded because a trait must be imported for its methods to be callable and its name is then never written again, so the usage is invisible to a static read. Java is the one addition where the verdict is safe: an import there is a compile-time type alias and javac itself warns, and the check reads Javadoc so a `{@link}` reference counts as usage.
 </Note>
+
+
+The [refactor playbook](/refactor/overview) turns size and complexity failures into a deterministic plan, mechanical fixes and verification.

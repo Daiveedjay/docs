@@ -37,7 +37,12 @@
               "features/quality-signals",
               "features/inline-diagnostics",
               "features/dependents-table",
-              "features/language-support"
+              "features/language-support",
+              "refactor/overview",
+              "refactor/reference",
+              "refactor/conventions",
+              "refactor/verification",
+              "refactor/language-coverage"
             ]
           },
           {
@@ -77,6 +82,7 @@
             "group": "Configuration",
             "pages": [
               "configuration/irisconfig",
+              "refactor/configuration",
               "configuration/file-naming",
               "configuration/config-studio",
               "configuration/scoring-weights",
@@ -89,7 +95,8 @@
             "pages": [
               "agents/project-rules",
           "agents/package-guard",
-              "agents/mcp"
+              "agents/mcp",
+              "refactor/agents"
             ]
           },
           {

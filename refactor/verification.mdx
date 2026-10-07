@@ -1,0 +1,53 @@
+---
+title: "Verifying a refactor"
+description: "Fewer physical lines do not prove a better refactor. Iris Code compares the owned baseline with the current workspace, checks touched helpers and explains whether the change improved the file or introduced a regression."
+---
+
+Fewer physical lines do not prove a better refactor. Iris Code compares the owned baseline with the current workspace, checks touched helpers and explains whether the change improved the file or introduced a regression.
+
+## Acting on the results
+
+| Verdict | Worked example | Next action |
+|---|---|---|
+| `improved` | Move ten constant declarations from a twenty-code-line file into a resolving helper; a failing metric decreases without new findings | Run tests and the configured gate; continue only if the gate still fails |
+| `not-improved` | Join twenty declaration lines into one while keeping the same tokens, or remove only comments and blanks | Restore useful formatting and make a structural change |
+| `regressed` | A moved file imports a missing module, or an export is removed while a consumer still imports it | Restore the reported regression, then verify again |
+
+## Verification checks
+
+| Check | Evidence | Setting |
+|---|---|---|
+| V1 | A failing file/function code-line metric, function/import count, complexity or health score improves | Always reported |
+| V2 | Packing: token-drop proportion divided by code-line-drop proportion is below the configured ratio | `verify.packing` |
+| V3 | Only comments or whitespace changed | `verify.commentOnly` |
+| V4 | A relative import fails to resolve, including imports in new helpers | `verify.importsResolve` |
+| V5 | A new import cycle appears | `verify.importCycles` |
+| V6 | An imported export is removed; consumers are checked against both snapshots | `verify.removedExports` |
+| V7 | A public export is removed without an observed importer; review the API change | `verify.removedExports` |
+| V8 | A changed file cannot be analysed, or new findings appear | Parse refusal is always reported; findings use `verify.newFindings` |
+| V9 | Before/after health score, code lines and tokens for every touched file | Always reported |
+
+The comparison includes added, changed and deleted source files, even when the caller omits a new helper. Each helper uses its own resolved analysis configuration. Existing finding identity and severity are compared; merely keeping the same total finding count does not hide a different finding.
+
+## Packing detection
+
+If code lines fall from 100 to 50 but tokens fall from 1,000 to 950, the ratio is `0.05 / 0.50 = 0.10`. The default threshold is `0.6`, so that reduction is attributed mainly to packing. The verdict reports the attributable lines and the ratio used. Verification counts code without comments; ordinary file-length findings keep their existing total-line metric.
+
+An exact certified mechanical result is exempt from the packing penalty. Iris Code recomputes the fixes from its owned baseline and requires the entire current source to match one certified fix or the complete certified batch. Extra packing or other source edits do not qualify. Imports, exports, parse failures and new findings are still checked; the result discloses the exemption and configured ratio.
+
+## Baselines
+
+| Baseline | Lifetime and disclosure |
+|---|---|
+| `baseline_id` from an MCP plan or failing `iris_check` | Source snapshot held only in the live server session; no before-source file is accepted |
+| Editor plan | Includes unsaved editor buffers and persists for that editor host session |
+| Git HEAD fallback | The baseline is the last commit; the comparison includes your existing uncommitted changes. |
+
+A standalone CLI process cannot carry its in-memory baseline into a later process. An unknown baseline ID is refused rather than substituted with HEAD. Every verdict reports `disabledChecks` and `packingRatioUsed`; disabled checks reduce the evidence available.
+
+Verification is advisory and cannot prove behaviour equivalence. A regression or failed check does not change CLI verification's exit status; argument and baseline errors still fail normally. The correction gives a concrete next move and names failed checks or omitted evidence.
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

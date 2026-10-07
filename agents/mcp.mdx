@@ -201,9 +201,12 @@ authorises exactly the change set the preview showed, so Iris Code only ever app
 already been put in front of you. A confirmation flag alone would not give you that, because the
 model sets the flag.
 
-Three cases are eligible: a line holding nothing but a debug statement, a variable that is unused and
-assigned a literal, and a standalone unused Java import. The same three are offered as a Quick Fix in
-VS Code and by `iris fix --safe`, from one shared planner, so the three surfaces agree.
+Eligible fixes can span several lines: a debug statement on its own, an unused variable inside a
+function that is assigned a literal, a whole unused import or an unused name in an import, and two
+compatible imports merged into one. The [`iris fix` reference](/cli/commands#iris-fix) lists the
+languages and refusals for each. The same fixes are offered as a Quick Fix in VS Code and by
+`iris fix --safe`, from one shared planner, so the surfaces agree. `console.error` is never removed,
+because it reports real errors.
 
 Refusals are per finding, with a reason, and one refusal does not block the rest. Iris Code declines
 anything it cannot prove:
@@ -257,3 +260,6 @@ which your assistant can relay. It is never a silent empty result.
 The MCP server refuses repository tools with `HANDOFF_FORBIDDEN` when an organisation, project or committed `"agentHandoff": false` setting forbids the handoff. Tools stay listed and enforcement occurs on every call. The result names the restriction and has no upgrade link. `iris_check_package` keeps answering.
 
 See [Team governance](/teams/governance) for policy scope, session refresh, signed-out caching and the limits of these controls.
+
+
+[Refactor agent integration](/refactor/agents) describes deterministic plans, session baselines and opt-in finish verification.

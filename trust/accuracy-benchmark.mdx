@@ -132,7 +132,7 @@ are in the [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.js
 you want the arithmetic rather than the ratio.
 
 {/* >>> iris-benchmark-start <<< */}
-_Generated from the benchmark corpus in `@iris-code/core` 0.4.15. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
+_Generated from the benchmark corpus in `@iris-code/core` 0.5.0. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
 
 **38 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 27 advisory. 174 measured rule-language pairs over 361 fixture files (245 positive, 186 negative). Unmeasured rules: 0.
 
@@ -252,3 +252,70 @@ verdict, and nothing else. No source code, file paths, or line contents ever
 leave your machine, and the feedback respects the analytics setting in your
 account. Confirmed false positives become permanent negative fixtures in this
 corpus, so reporting one directly hardens the rule.
+
+
+{/* >>> iris-refactor-review-start <<< */}
+
+## Refactor suggestion evidence
+
+Suggestions are separate from the findings benchmark above. Built coverage describes implemented detectors; it does not establish semantic correctness or behaviour preservation.
+
+Real-source review status: **complete**. Recorded observations cover **220 distinct plans**. The completed corpus covers 20 plans for each of ten languages and 20 supplementary React plans. Per-observation inspection scope is recorded in the ledger; declaration seams do not certify a behavioural rewrite, and zero emissions do not prove detector accuracy.
+
+| Language | Omitted suggestion | Observations | Definite nonsense | Reason |
+|---|---|---:|---:|---|
+| ruby | `lookup-table` | 30 | 8 | Real-source review exceeded the nonsense threshold: duplicate enclosing-function evidence, pattern guards, class matching, bound values and partial case-label ranges do not provide a complete single-value lookup transformation. |
+| rust | `lookup-table` | 14 | 11 | Real-source review exceeded the nonsense threshold: duplicate enclosing-function evidence, pattern guards, class matching, bound values and partial case-label ranges do not provide a complete single-value lookup transformation. |
+| ruby | `name-magic-numbers` | 436 | 50 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| svelte | `name-magic-numbers` | 473 | 50 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| svelte | `extract-constants` | 12 | 9 | Real-source review exceeded the nonsense threshold: component-local reactive declarations are not module constants, and repeated expression fragments are not complete extractable blocks. |
+| svelte | `extract-duplicate` | 2 | 2 | Real-source review exceeded the nonsense threshold: component-local reactive declarations are not module constants, and repeated expression fragments are not complete extractable blocks. |
+| java | `extract-function` | 26 | 6 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| vue | `extract-function` | 617 | 70 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| python | `extract-function` | 570 | 65 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| javascript | `extract-function` | 150 | 25 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| go | `extract-function` | 246 | 26 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| rust | `extract-function` | 97 | 15 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| typescript | `extract-function` | 24 | 3 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| csharp | `extract-function` | 126 | 13 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| ruby | `extract-function` | 58 | 6 | Real-source review exceeded the nonsense threshold: tiny guards, handler blocks and native tail expressions are not useful large-block helper extractions. |
+| typescript | `name-magic-numbers` | 68 | 15 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| javascript | `name-magic-numbers` | 184 | 20 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| go | `lookup-table` | 104 | 13 | Real-source review exceeded the nonsense threshold: duplicate enclosing-function evidence, pattern guards, class matching, bound values and partial case-label ranges do not provide a complete single-value lookup transformation. |
+| typescript | `extract-constants` | 16 | 2 | Real-source review exceeded the nonsense threshold: effectful resource handles and mutable caches are not a movable constants block. |
+| go | `name-magic-numbers` | 170 | 22 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| java | `extract-constants` | 5 | 2 | Real-source review exceeded the nonsense threshold: effectful logger handles and runtime version reads are not a movable constants block. |
+| javascript | `extract-constants` | 15 | 2 | Real-source review exceeded the nonsense threshold: loaded module bindings, runtime schemas and class instances are not a standalone constants block. |
+| rust | `extract-duplicate` | 8 | 1 | Real-source review exceeded the nonsense threshold: repeated native initializer fragments do not prove complete extractable statements. |
+| rust | `split-declarations` | 1 | 1 | Real-source review exceeded the nonsense threshold: struct-only ranges omit implementation blocks that use their private fields, so moving them does not establish a native module boundary. |
+| rust | `name-magic-numbers` | 60 | 12 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| typescript | `consolidate-state` | 17 | 2 | Real-source React review exceeded the nonsense threshold: ordinary independent position, copy-feedback, filter and query hooks do not establish a useful state consolidation. |
+| csharp | `extract-constants` | 12 | 3 | Real-source review exceeded the nonsense threshold: readonly resource placeholders, generic type metadata and mutable caches are not an independent constants block. |
+| csharp | `move-function-cluster` | 1 | 1 | Real-source review exceeded the nonsense threshold: nested local helpers collapsed into one enclosing method instead of independent movable declarations. |
+| csharp | `lookup-table` | 45 | 5 | Real-source review exceeded the nonsense threshold: incomplete condition chains and else-if fragments omit default or subsequent branches, so they do not prove a complete lookup transformation. |
+| csharp | `name-magic-numbers` | 24 | 3 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| javascript | `extract-duplicate` | 22 | 4 | Real-source review exceeded the nonsense threshold: duplicate ranges detached an unbraced control body or omitted an attached else branch, so complete shared-helper boundaries were not proved. |
+| csharp | `extract-duplicate` | 9 | 1 | Real-source review exceeded the nonsense threshold: duplicate ranges detached an unbraced control body or omitted an attached else branch, so complete shared-helper boundaries were not proved. |
+| javascript | `lookup-table` | 8 | 1 | Real-source review exceeded the nonsense threshold: duplicate enclosing-function evidence, pattern guards, class matching, bound values and partial case-label ranges do not provide a complete single-value lookup transformation. |
+| python | `name-magic-numbers` | 165 | 17 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| go | `delete-unused-function` | 20 | 4 | Real-source review exceeded the nonsense threshold: unexported Go functions and generated rewrite entry points have native package callers outside the selected source set; file-local absence does not prove they are unused. |
+| go | `move-function-cluster` | 7 | 1 | Real-source review exceeded the nonsense threshold: a generated compiler rewrite cluster is owned by its generator, which recreates the original module; moving emitted functions without changing that generator duplicates definitions on regeneration. |
+| go | `move-imports-with-code` | 0 | 0 | Reviewed function-cluster moves are left out; no proved cluster can carry an exclusively used import. |
+| go | `extract-duplicate` | 25 | 3 | Real-source review exceeded the nonsense threshold: generated rewrite blocks are recreated by the native generator, and a partial loop-body range omits its return; a durable complete helper extraction is not proved. |
+| python | `lookup-table` | 17 | 2 | Real-source review exceeded the nonsense threshold: conditional tuple unpacking and stateful seek operations are multi-action branches rather than a complete single-value lookup. |
+| python | `delete-unused-function` | 2 | 2 | Real-source review exceeded the nonsense threshold: underscore-prefixed native helpers are imported by other standard-library modules and tests outside the selected sources; absence in that subset does not prove dead code. |
+| python | `extract-constants` | 14 | 3 | Real-source review exceeded the nonsense threshold: sentinel instances, parser token objects and runtime flag registration are effectful bindings, not an independent constants block. |
+| python | `early-return` | 30 | 4 | Real-source review exceeded the nonsense threshold: a single guarded raise or first/last-child return is already a tiny guard; inverting it adds code without a useful nesting reduction. |
+| vue | `lookup-table` | 4 | 1 | Real-source review exceeded the nonsense threshold: keyboard branches mutate input, selection, decoder and model state; they are multi-action handlers rather than a single-value lookup. |
+| vue | `early-return` | 164 | 17 | Real-source review exceeded the nonsense threshold: single-action guarded lifecycle and event callbacks are already tiny guards; inversion adds an early return without useful nesting reduction. |
+| vue | `name-magic-numbers` | 54 | 6 | Real-source review exceeded the nonsense threshold: named policy constants, protocol enums, coefficient tables, opcode data, array indices, tuple ordinals and chart observations already carry domain meaning; naming their values again is redundant. |
+| svelte | `consolidate-state` | 4 | 1 | Real-source review exceeded the nonsense threshold: command visibility, highlighted value, delayed mounting and search have separate lifecycles; nearby state declarations do not prove a useful combined state object. |
+| svelte | `extract-component` | 19 | 2 | Real-source review exceeded the nonsense threshold: selecting the whole render of an already extracted presentation component only adds another wrapper, without identifying a useful smaller boundary. |
+| svelte | `move-types` | 5 | 1 | Real-source review exceeded the nonsense threshold: moving a tiny component-only one-flag Props alias adds a separate module without establishing a useful shared type contract. |
+| typescript | `extract-duplicate` | 3 | 2 | Real-source review exceeded the nonsense threshold: duplicate JSX token ranges span unmatched closing and opening elements rather than complete helper boundaries. |
+
+The omission threshold is more than one definite nonsense suggestion in ten observations for that suggestion and language. Structural edits still need review, tests and verification.
+
+[Language coverage](/refactor/language-coverage) lists every implemented, inapplicable and omitted suggestion.
+
+{/* >>> iris-refactor-review-end <<< */}

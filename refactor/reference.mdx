@@ -1,0 +1,47 @@
+---
+title: "Fixes and suggestions reference"
+description: "Mechanical fixes and structural suggestions have different evidence requirements. The plan reports the exact ranges and refusals so you can review the change before applying it."
+---
+
+Mechanical fixes and structural suggestions have different evidence requirements. The plan reports the exact ranges and refusals so you can review the change before applying it.
+
+## Mechanical fixes
+
+| ID | Trigger | Languages | Before and after |
+|---|---|---|---|
+| `merge-imports` | File length or too many imports | JS/TS, Vue/Svelte scripts, Python, Rust | Two compatible imports from one module become one |
+| `remove-unused-import-name` | An unused imported binding | JS/TS | `{ used, unused }` becomes `{ used }` |
+| `remove-unused-import` | A whole unused import | JS/TS, Java | The isolated import is removed |
+| `remove-debug-statement` | An isolated debug call | All ten, where a statement is proved | A multiline debug statement is removed |
+| `remove-unused-literal-variable` | An unused literal-only variable inside a function | JS/TS, Vue/Svelte scripts, Go, Python | The declaration is removed without evaluating an expression |
+
+Import merging refuses namespace/named combinations, mixed type-import styles, two type-only TypeScript imports, Rust `use` statements carrying an attribute or doc comment, side-effect imports and comments between statements. Imports in Vue and Svelte components are never removed, because the template can use a name the script check cannot see. Variables at class, module or package level are never removed. Debug removal refuses a shared-line statement, an unclosed call, arguments that could have side effects (assignments, increments, `await` or calls other than simple formatters), a statement that is the whole body of a braceless `if`, `else`, loop or arrow function, the last expression of a Ruby method, a removal that would leave a Go import or variable unused, and one that would leave a Python block empty. `console.error` is error reporting and is never eligible. Unused function deletion is a suggestion, not a mechanical fix.
+
+## Structural suggestions
+
+| ID | Trigger and proposed change | Languages where built | Typical risk | Before and after |
+|---|---|---|---|---|
+| `extract-constants` | A large file with proved constants; move them to the observed constants location | Go, Ruby, Rust, Vue | Cross-file or public API | Inline declarations become a module with preserved exports |
+| `move-function-cluster` | Related proved functions in a large file; move the cluster together | TS, JS, Python, Ruby, Java, Rust, Vue, Svelte | Cross-file or public API | A cluster becomes a module, with explicit imports and forwarding APIs |
+| `move-types` | Type declarations in a large file; move them to the observed type location | TS, Go, Python, C#, Java, Rust, Vue | Cross-file or public API | Inline types become shared types |
+| `split-declarations` | Independent proved declarations in a large file | All except Rust | Cross-file or public API | A file is split at complete declaration boundaries |
+| `delete-unused-function` | A private or local function with no detected use | TS, JS, Ruby, C#, Java, Rust, Vue, Svelte | Local | Review and remove the complete function |
+| `extract-function` | A proved executable block in a long function | Svelte | Local | Inline work becomes a helper with explicit inputs and outputs |
+| `early-return` | A whole function body inside one condition | All except Python and Vue | Local | An outer condition becomes a guard and early return |
+| `lookup-table` | A proved repeated condition or switch on the same value | TS, Java, Svelte | Local | Repeated scalar choices become a lookup |
+| `options-object` | An ordered argument list exceeds its threshold | All ten | Public API | Positional arguments become a named options object |
+| `move-imports-with-code` | Imports used exclusively by a moving cluster | TS, JS, Python, Java, Rust, Vue, Svelte | Cross-file | Imports move with the code that needs them |
+| `extract-duplicate` | Two located executable duplicate blocks | Python, Ruby, Java, Vue | Cross-file | Both use a helper in their nearest common folder |
+| `name-magic-numbers` | Located numeric code observations | Java | Cross-file | Values gain names chosen for their domain meaning |
+| `consolidate-state` | Many local state hooks in a component | React JSX, Vue | Local | Related state becomes a coherent state object or reducer |
+| `derive-without-effect` | A proved effect whose work is derived state | React JSX/TSX, Vue and Svelte | Local | A derived value is calculated without an effect |
+| `extract-component` | A proved child markup subtree | React JSX/TSX and Vue | Cross-file | Markup becomes a component with explicit props |
+
+The reported risk, rather than the typical risk above, governs each observation. Existing exports and changed signatures can produce `changes-public-api`; approval is required by default. Estimated effect is a structural estimate, not a promise that the gate will pass. Nested ranges are counted once.
+
+Reflected or framework entry points, metadata outside a proved range, ambiguous boundaries and unsupported syntax are refused. Every suggestion is subject to the [language coverage table](/refactor/language-coverage).
+
+
+## Related pages
+
+[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).

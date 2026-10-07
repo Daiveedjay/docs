@@ -293,6 +293,24 @@ The `packageGuard` block sets what the [package guard](/agents/package-guard) bl
 
 `onUnchecked` (`"warn"` or `"block"`) decides what happens to a package the guard could not check. `blockSeverity` sets the lowest advisory severity that blocks; a malicious-package report always blocks. `minimumReleaseAgeDays` blocks versions newer than that many days. Each `allow` entry needs a `reason`, or it is ignored and reported as an error. `prePush: true` adds the lockfile check to the git hook, which needs Pro.
 
+## Refactor policy (Free)
+
+The `refactor` block controls which fixes and suggestions the [refactor playbook](/refactor/overview) may propose, where moved code goes, and which checks verification runs afterwards. Top-level settings work on every plan and are resolved independently of presets, so a preset never overrides them. A `refactor` block inside a `languages` entry requires Pro.
+
+```jsonc
+{
+  "refactor": {
+    "disable": ["early-return"],
+    "destinations": { "types": "src/types" },
+    "packing": { "minTokenRatio": 0.6 },
+    "verify": { "importCycles": true },
+    "maxCorrections": 2
+  }
+}
+```
+
+A malformed `refactor` block is reported rather than replaced with defaults. [Refactor configuration](/refactor/configuration) lists every key and its default.
+
 ## Severity overrides
 
 Override the severity of any warning type on a per-project basis using the `severityOverrides` object. Each key accepts `"error"`, `"warning"`, or `"info"`.
