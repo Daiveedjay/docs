@@ -4,15 +4,12 @@ sidebarTitle: "Package guard"
 description: "Stop a coding agent installing a known-vulnerable, malicious, yanked or brand-new package version, and get the version to use instead. Works as a hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf, an MCP tool, and the iris install command."
 ---
 
-A coding agent that needs a library runs the install command itself. Nobody reads that command
-before it runs, the agent can mistype a package name as easily as a person, and it has no reason to
-prefer a patched version over the first one that resolves. By the time a dependency scan reports the
-problem, the package is installed, its install scripts have run, and the agent has written code
-against it.
+A package is code written by someone else that your project uses. A coding agent can install one before you have reviewed its name or version. The free package guard checks the requested version before installation and can stop packages with known risks.
 
-The package guard checks a package at the moment it is added. It works out which version the command
-would actually install, checks it against public vulnerability and malicious-package data, and blocks
-it with the exact command to run instead when it should not go in. It is free.
+<Frame caption="A failed lookup has its own result, so you can see when a check did not run.">
+  <img className="block dark:hidden" src="/images/guides/package-check-light.svg" alt="A requested package version is checked against known risks and your policy, then allowed, blocked or reported as not checked." width="480" />
+  <img className="hidden dark:block" src="/images/guides/package-check-dark.svg" alt="A requested package version is checked against known risks and your policy, then allowed, blocked or reported as not checked." width="480" />
+</Frame>
 
 ## What it checks
 
@@ -29,17 +26,13 @@ Each package gets one verdict:
 A package the guard could not check is never reported as safe. The verdict says `unchecked` and
 names the reason.
 
-The registry and OSV.dev are separate services, so one being down does not hide the other. If the
-registry does not answer but you asked for an exact version, that version is still checked against
-OSV.dev, and a known serious vulnerability still blocks. Only the checks that need the registry, such
-as release age, are reported as not run. For Maven, when Maven Central's search API is slow, versions
-are read from the repository's own `maven-metadata.xml`, which has no publish dates, so release age is
-not checked for that lookup.
+The registry and OSV.dev are separate services, so one being down does not hide the other. If the registry does not answer but you asked for an exact version, that version is still checked against OSV.dev, and a known serious vulnerability still blocks.
 
-When a version is blocked, the guard names a replacement: the newest stable release with no advisory
-at or above your block severity, preferring one in the same major version as the one requested, since
-that is the upgrade least likely to break code already written against it. When no safe version
-exists it says so, and when every published version is a prerelease or deprecated it says that too.
+Only the checks that need the registry, such as release age, are reported as not run. For Maven, when Maven Central's search API is slow, versions are read from the repository's own `maven-metadata.xml`, which has no publish dates, so release age is not checked for that lookup.
+
+When a version is blocked, the guard names a replacement: the newest stable release with no advisory at or above your block severity, preferring one in the same major version as the one requested, since that is the upgrade least likely to break code already written against it.
+
+When no safe version exists it says so, and when every published version is a prerelease or deprecated it says that too.
 
 Advisories come from [OSV.dev](https://osv.dev), which includes the OpenSSF malicious-packages
 feed. Versions, publish times and deprecation notices come from the registry itself: npm, PyPI,
@@ -73,11 +66,9 @@ git and build hooks. It reads the hook files themselves, so it stays right howev
 installed. A hook with its settings entry but no launcher, or the reverse, checks nothing and is
 shown as incomplete, with a **Repair** button.
 
-With no `--target`, the command installs for the agents your project already shows signs of using
-(a `CLAUDE.md`, `GEMINI.md` or `.github/copilot-instructions.md` file, or a `.claude/`, `.cursor/`,
-`.codex/`, `.gemini/`, `.windsurf/` or `.devin/` folder), or Claude Code when there are none. Pass
-`--target` with one agent, a comma-separated list such as `--target claude,codex`, or `all`. In VS Code
-and JetBrains IDEs the picker is multi-select, with the agents the project already uses ticked.
+With no `--target`, the command installs for the agents your project already shows signs of using (a `CLAUDE.md`, `GEMINI.md` or `.github/copilot-instructions.md` file, or a `.claude/`, `.cursor/`, `.codex/`, `.gemini/`, `.windsurf/` or `.devin/` folder), or Claude Code when there are none. Pass `--target` with one agent, a comma-separated list such as `--target claude,codex`, or `all`.
+
+In VS Code and JetBrains IDEs the picker is multi-select, with the agents the project already uses ticked.
 
 | Agent | `--target` | Hook file | Hook |
 | --- | --- | --- | --- |
@@ -119,10 +110,9 @@ VS Code extension, the JetBrains plugin and `iris hook agent install` keep up to
 without Iris Code the launcher lets every command through, so a teammate who has not installed it is
 never blocked by it. The launcher needs Node.js on the `PATH`.
 
-The hook files are read from the project root, so install the hook there and start the agent there.
-Claude Code, for example, reads `.claude/settings.json` from the root of the git repository, or from
-the folder it was started in when there is no repository. Started in a subfolder of a project that
-is not a git repository, it does not see the hook, and installs it runs are not checked.
+The hook files are read from the project root, so install the hook there and start the agent there. Claude Code, for example, reads `.claude/settings.json` from the root of the git repository, or from the folder it was started in when there is no repository.
+
+Started in a subfolder of a project that is not a git repository, it does not see the hook, and installs it runs are not checked.
 
 ### What the agent sees
 
@@ -150,13 +140,9 @@ permission prompts you have configured for your agent still apply.
 
 ### Which commands it recognises
 
-`npm install`, `pnpm add`, `yarn add`, `bun add`, `pip install` (including `python -m pip`),
-`uv add`, `uv pip install`, `poetry add`, `cargo add`, `go get`, `go install`, `gem install`,
-`bundle add` and `dotnet add package`, including chained commands (`cd web && npm i x`) and command
-substitution. It also recognises installs that name no package and install a whole project: `npm
-install`, `npm ci`, `pnpm install`, `yarn`, `bun install`, `pip install -r <file>`, `uv sync`, `poetry
-install`, `bundle install`, `dotnet restore`, `go mod download` and `cargo fetch`. Those are covered in
-[Installing a whole project](#installing-a-whole-project).
+`npm install`, `pnpm add`, `yarn add`, `bun add`, `pip install` (including `python -m pip`), `uv add`, `uv pip install`, `poetry add`, `cargo add`, `go get`, `go install`, `gem install`, `bundle add` and `dotnet add package`, including chained commands (`cd web && npm i x`) and command substitution.
+
+It also recognises installs that name no package and install a whole project: `npm install`, `npm ci`, `pnpm install`, `yarn`, `bun install`, `pip install -r <file>`, `uv sync`, `poetry install`, `bundle install`, `dotnet restore`, `go mod download` and `cargo fetch`. Those are covered in [Installing a whole project](#installing-a-whole-project).
 
 An install from a git URL, a tarball or a local path cannot be looked up in a registry, so it is
 reported as `unchecked` rather than ignored.
@@ -210,16 +196,13 @@ them all against OSV in one batch request, then looks up the direct dependencies
 flagged in full. A known-malicious package anywhere in the tree stops the install before anything
 runs.
 
-Known vulnerabilities do not stop a whole-project install. A package already pinned in a lockfile
-with a published CVE is the normal state of most real projects, and blocking it would stop `npm
-install` almost everywhere. They are listed as warnings instead, and [`iris cve`](/cli/commands#iris-cve)
-is where they are dealt with. A package you name, as in `iris install lodash@4.17.20`, is still
-blocked for a known vulnerability.
+Known vulnerabilities do not stop a whole-project install. A package already pinned in a lockfile with a published CVE is the normal state of most real projects, and blocking it would stop `npm install` almost everywhere. They are listed as warnings instead, and [`iris cve`](/cli/commands#iris-cve) is where they are dealt with.
 
-Before running the install, it shows the repository's own install scripts word for word and asks
-whether to run them, install with them turned off (`--ignore-scripts`), or cancel. The default is to
-turn them off. With no terminal to ask in (a CI job, or `--format json`), they are turned off unless
-you pass `--yes`. Dependencies that run install scripts of their own are named as well.
+A package you name, as in `iris install lodash@4.17.20`, is still blocked for a known vulnerability.
+
+Before running the install, it shows the repository's own install scripts word for word and asks whether to run them, install with them turned off (`--ignore-scripts`), or cancel. The default is to turn them off. With no terminal to ask in (a CI job, or `--format json`), they are turned off unless you pass `--yes`.
+
+Dependencies that run install scripts of their own are named as well.
 
 ```bash
 iris install --check            # check the whole project, install nothing
@@ -227,10 +210,9 @@ iris install --ignore-scripts   # install without running the project's scripts
 iris install -r requirements/dev.txt
 ```
 
-The agent hook uses the same check when an agent runs a bare install. A malicious package blocks the
-command. When nothing is blocked but the repository runs its own install scripts, Claude Code, Cursor
-and GitHub Copilot show the person a confirmation naming the scripts. Codex, Gemini CLI and Windsurf
-have no way to ask, so the agent is told to show the scripts to the user before going on.
+The agent hook uses the same check when an agent runs a bare install. A malicious package blocks the command. When nothing is blocked but the repository runs its own install scripts, Claude Code, Cursor and GitHub Copilot show the person a confirmation naming the scripts.
+
+Codex, Gemini CLI and Windsurf have no way to ask, so the agent is told to show the scripts to the user before going on.
 
 A lockfile is needed to check the full tree. Without one, only the declared dependencies are checked,
 at the newest version their ranges allow, and the output says so. For Go, the list comes from
@@ -262,11 +244,9 @@ output (`node_modules`, `vendor`, `target`, virtual environments) are never read
 A Python requirement is a pinned version only when it uses `==`. `requests>=2.19.0` is checked as a
 range, against the newest release it allows, because that is what pip installs.
 
-The notice needs network lookups. If this machine has not answered that question yet, the first
-manifest change asks it, naming the packages that changed and what is sent: package names and
-versions only, never your code. Answer yes and those packages are checked straight away, with a
-result either way. Close the dialog and it asks again next session. In VS Code, **Don't ask again** stops it.
-The answer is shared with `iris install` and the agent hook.
+The notice needs network lookups. If this machine has not answered that question yet, the first manifest change asks it, naming the packages that changed and what is sent: package names and versions only, never your code. Answer yes and those packages are checked straight away, with a result either way.
+
+Close the dialog and it asks again next session. In VS Code, **Don't ask again** stops it. The answer is shared with `iris install` and the agent hook.
 
 ## Before a push
 

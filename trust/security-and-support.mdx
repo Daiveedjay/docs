@@ -11,7 +11,7 @@ Editor and CLI analysis happens in the process running on your computer. Your so
 
 The extension reads supported files in the open workspace to calculate scores, duplication, and security findings. The CLI uses the same engine for local checks, hooks, and CI.
 
-Cloud scans are different. When you explicitly connect a GitHub repository, the Cloud worker temporarily fetches its source, runs the audit, deletes the working copy, and retains the commit-pinned report. See [Cloud security and retention](/cloud/overview#security-and-retention) for that boundary.
+Cloud scans are different. When you explicitly connect a GitHub repository, the Cloud worker temporarily fetches its source, runs the audit, deletes the working copy, and retains the commit-pinned report. See [Cloud security and retention](/cloud/overview#reports-and-retention) for that boundary.
 
 ## Network requests
 
@@ -24,7 +24,13 @@ Iris Code makes bounded network requests for:
 
 Dependency lookups send only the package ecosystem, name, and version to package registries and [OSV.dev](https://osv.dev). They do not include source code, file paths, project names, or organisation names.
 
-The package guard needs no account, so most people who use it never sign in. To know how often it runs, it sends an anonymous daily count of its checks for those users: the ecosystem, the verdict, which surface ran it (the agent hook, `iris install`, the MCP tool, the editor or a push) and, for a hook, which coding agent. Never a package name, version, path or project, and nothing that identifies you. The server stores daily totals only. These counts are sent only after you have allowed dependency lookups, and never when the `DO_NOT_TRACK` or `IRIS_TELEMETRY=off` environment variable is set; VS Code's own telemetry setting also turns them off. Signed-in users report through their account instead, and the account's analytics setting applies.
+The package guard needs no account, so most people who use it never sign in.
+
+To know how often it runs, it sends an anonymous daily count of its checks for those users: the ecosystem, the verdict, which surface ran it (the agent hook, `iris install`, the MCP tool, the editor or a push) and, for a hook, which coding agent.
+
+Never a package name, version, path or project, and nothing that identifies you. The server stores daily totals only. These counts are sent only after you have allowed dependency lookups, and never when the `DO_NOT_TRACK` or `IRIS_TELEMETRY=off` environment variable is set; VS Code's own telemetry setting also turns them off.
+
+Signed-in users report through their account instead, and the account's analytics setting applies.
 
 The CLI asks before its first dependency lookup and remembers the choice in `~/.iris/preferences.json`. Revoke consent at any time:
 
@@ -42,7 +48,7 @@ Iris Code writes project files only after an explicit user action, such as:
 - locking a trend baseline
 - installing a pre-push or build hook
 
-Trend snapshots and dependency caches stay local to the workspace.
+Trend snapshots stay in the project?s `.iris-snapshots/` folder. Dependency caches stay on your machine under `~/.iris/cache/`, where they can be reused across projects.
 
 ## Credentials
 

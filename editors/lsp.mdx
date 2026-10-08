@@ -4,9 +4,7 @@ sidebarTitle: "Other LSP editors"
 description: "Install iris-lsp, the standalone Iris Code language server, and get diagnostics, hover scores and quick fixes in any editor that speaks LSP."
 ---
 
-`iris-lsp` is a standalone language server carrying the whole Iris Code analysis engine. It is the same binary the JetBrains plugin runs, so a finding in Neovim is the same finding in VS Code, on the same line.
-
-It speaks stdio JSON-RPC and needs no Node installation. Analysis runs on your machine and the server makes no network call to analyse code.
+A language server connects code-checking tools to an editor through a shared protocol called LSP. The `iris-lsp` server lets editors such as Neovim use Iris Code findings without the VS Code extension. It runs locally and does not need Node.js or a network connection to analyse your code.
 
 ## Installing
 

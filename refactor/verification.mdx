@@ -1,10 +1,10 @@
 ---
 title: "Verifying a refactor"
 sidebarTitle: "Verification"
-description: "Fewer physical lines do not prove a better refactor. Iris Code compares the owned baseline with the current workspace, checks touched helpers and explains whether the change improved the file or introduced a regression."
+description: "Compare your edits with a saved starting point, understand the result and correct problems before running tests and the gate."
 ---
 
-Fewer physical lines do not prove a better refactor. Iris Code compares the owned baseline with the current workspace, checks touched helpers and explains whether the change improved the file or introduced a regression.
+Verification checks whether your edits helped without introducing new problems. It compares the code with a saved starting point, called a baseline, so putting the same code on fewer lines does not count as an improvement.
 
 ## Acting on the results
 
@@ -15,6 +15,15 @@ Fewer physical lines do not prove a better refactor. Iris Code compares the owne
 | `regressed` | A moved file imports a missing module, or an export is removed while a consumer still imports it | Restore the reported regression, then verify again |
 
 ## Verification checks
+
+<Frame caption="Verification compares the saved starting point with the code after your edits.">
+  <img className="block dark:hidden" src="/images/guides/verification-light.svg" alt="Compare saved code and settings with current code, check for real improvement and new problems, then read the verdict." width="480" />
+  <img className="hidden dark:block" src="/images/guides/verification-dark.svg" alt="Compare saved code and settings with current code, check for real improvement and new problems, then read the verdict." width="480" />
+</Frame>
+
+A helper is a new file or function that takes over some of the original work. Verification checks changed helpers as well as the original file. Imports and exports are the connections that let those files use each other's code.
+
+### Checks reference
 
 | Check | Evidence | Setting |
 |---|---|---|
@@ -32,11 +41,19 @@ The comparison includes added, changed and deleted source files, even when the c
 
 ## Packing detection
 
+A shorter file is not necessarily simpler. Joining several statements onto one line hides the length without reducing the work the code does. Iris Code calls this **packing**.
+
+Tokens are the pieces of code, such as names and operators. Comparing how much the line count and token count fall helps distinguish removed work from compressed formatting.
+
 If code lines fall from 100 to 50 but tokens fall from 1,000 to 950, the ratio is `0.05 / 0.50 = 0.10`. The default threshold is `0.6`, so that reduction is attributed mainly to packing. The verdict reports the attributable lines and the ratio used. Verification counts code without comments; ordinary file-length findings keep their existing total-line metric.
 
-An exact certified mechanical result is exempt from the packing penalty. Iris Code recomputes the fixes from its owned baseline and requires the entire current source to match one certified fix or the complete certified batch. Extra packing or other source edits do not qualify. Imports, exports, parse failures and new findings are still checked; the result discloses the exemption and configured ratio.
+An exact result of an offered mechanical fix is exempt from the packing penalty. Iris Code checks that the whole file matches either one offered fix or the complete batch, using the saved starting point. Extra edits or line packing do not qualify.
+
+The exemption does not skip the other checks. Broken imports, removed exports, code that cannot be analysed and new findings are still reported.
 
 ## Baselines
+
+The editor and MCP server can keep the plan's saved code in memory. A separate CLI command cannot: once that process ends, its saved copy is gone. The CLI therefore normally compares your edits with the last Git commit, called **Git HEAD**.
 
 | Baseline | Lifetime and disclosure |
 |---|---|
@@ -46,15 +63,27 @@ An exact certified mechanical result is exempt from the packing penalty. Iris Co
 
 A standalone CLI process cannot carry its in-memory baseline into a later process. An unknown baseline ID is refused rather than substituted with HEAD. Every verdict reports `disabledChecks` and `packingRatioUsed`; disabled checks reduce the evidence available.
 
-A session baseline keeps the `refactor` settings that were in force when the plan was made, including `maxCorrections` and every `verify` switch. The agent being verified can edit `.irisconfig.json`, so a change made after the plan cannot loosen its own verdict. When the settings have changed, the result reports `policyChangedSincePlan: true` and keeps the plan's settings; request a new plan to apply the new ones. The agent handoff policy is still read on every call.
+The saved starting point also keeps the plan's `refactor` settings, including `maxCorrections` and the verification switches. Changing those settings afterwards cannot make the same plan easier to pass.
 
-The analysis limits in `.irisconfig.json` decide which findings exist, so loosening one could hide a new finding from the `newFindings` check. If any `.irisconfig.json` that applies to the workspace is edited, added or removed after a session plan, verification reports `regressed` with `configChangedSincePlan: true` and a correction asking for the file to be restored or a new plan requested. Verifying against git HEAD is not affected, because there a config edit is ordinary uncommitted work.
+The result reports `policyChangedSincePlan: true` when those settings change. Get a new plan to use the new settings. Permission for an agent to use Iris Code is still checked on every call.
+
+Analysis settings decide which problems Iris Code reports. Loosening a threshold or turning off a detector could hide a problem introduced by the edit.
+
+If an applicable `.irisconfig.json` is changed, added or removed after an editor or MCP plan, verification reports `regressed` and `configChangedSincePlan: true`. Restore the config or get a new plan before verifying again.
+
+The Git HEAD comparison works differently: it treats a config edit as part of your uncommitted work.
 
 Over MCP, a changed file in a folder where the agent handoff is off is left out of the results and the correction. The result reports only how many were withheld, as `withheldByPolicy`, and the verdict still counts them.
 
-Verification is advisory and cannot prove behaviour equivalence. A regression or failed check does not change CLI verification's exit status; argument and baseline errors still fail normally. The correction gives a concrete next move and names failed checks or omitted evidence.
+Verification gives advice; it cannot prove that the program still behaves exactly the same. A `regressed` verdict does not make the CLI command exit with an error code, so read the verdict rather than treating a successful command as a successful refactor.
 
+Invalid arguments and baseline errors still fail the command. Corrections name the problems to address and any checks that could not run.
 
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Fixes and suggestions](/refactor/reference)
+- [Conventions](/refactor/conventions)
+- [Configuration](/refactor/configuration)
+- [Agent integration](/refactor/agents)
+- [Language coverage](/refactor/language-coverage)

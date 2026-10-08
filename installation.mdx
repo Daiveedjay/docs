@@ -25,7 +25,7 @@ Listing: [marketplace.visualstudio.com](https://marketplace.visualstudio.com/ite
     VS Code downloads and activates it immediately. No restart is required.
   </Step>
   <Step title="Confirm the install">
-    The Iris Code icon appears in the Activity Bar. Open a `.js`, `.ts`, `.vue`, `.svelte`, `.go` or `.py` file and the sidebar populates with no configuration.
+    The Iris Code icon appears in the Activity Bar. Open a file in a [supported language](/features/language-support) and the sidebar populates with no configuration.
   </Step>
 </Steps>
 
@@ -88,14 +88,16 @@ Works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CL
     In the same **Marketplace** tab, search for **Iris Code** and click Install.
   </Step>
   <Step title="Restart the IDE">
-    Use a full restart rather than a plugin reload. JetBrains registers file-type associations at startup, so a reload leaves `.irisconfig.json` handled incorrectly.
+    Use a full restart rather than a plugin reload.
+
+JetBrains registers file-type associations at startup, so a reload leaves `.irisconfig.json` handled incorrectly.
   </Step>
   <Step title="Confirm the install">
     Open a supported file. Findings appear as squiggles, and the **Iris Code** tool window on the right shows the full panel. Sign in from **Tools → Iris Code → Sign In**.
   </Step>
 </Steps>
 
-### "JSON standard does not allow comments"
+### JSON standard does not allow comments
 
 If `.irisconfig.json` reports this error, your IDE is holding a user-level override that cancels the file-type registration Iris Code ships.
 

@@ -4,11 +4,7 @@ sidebarTitle: "GitHub Actions"
 description: "Run iris gate on pushes and pull requests, publish GitHub annotations, and fail the workflow when configured limits are exceeded."
 ---
 
-A hook protects your machine. CI protects the branch, including from everyone who hasn't installed the hook.
-
-Add Iris Code to GitHub Actions and every push and pull request gets checked. When something falls below your threshold the workflow fails, the merge is blocked, and the offending lines get annotated right on the diff so nobody has to open a log.
-
-It runs on your own runners. Your code never leaves your infrastructure.
+GitHub Actions runs automated checks when you push code or update a pull request. Adding the Iris Code gate checks the changes against the same standards you use locally. The result appears in GitHub, where reviewers can see which thresholds passed or failed.
 
 ## The workflow
 
@@ -85,6 +81,12 @@ The action is a wrapper. If you would rather see the exact commands, or pin your
 
 **Iris Code: Add GitHub Actions Workflow** writes this version of the file for you, filled in with your current threshold.
 
+## Requiring a passing check before merge
+
+A failed workflow reports a problem, but it does not automatically prevent a merge. To enforce it, add the Iris Code job as a required status check in a GitHub branch protection rule or ruleset for your main branch. Run the workflow first so GitHub can list the check.
+
+See GitHub?s [required status checks guide](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging). Use the job name shown in your workflow, such as `iris` in the example above.
+
 ## Configuring the threshold
 
 A `.irisconfig.json` at your project root:
@@ -137,11 +139,9 @@ Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as fail
 | `2` | Bad arguments or a broken config |
 | `3` | Your Iris Code licence could not be verified, so the gate did not run |
 
-Exit `3` is not a gate failure. It means the gate could not establish that you are
-entitled to run it, because the licence server was unreachable or was rate limiting a
-repeated caller. It stops there instead of reporting a pass it never checked. Retry the
-job; the code is not the problem. A repository with no Pro licence is a different case
-and still exits `0`.
+Exit `3` is not a gate failure. It means the gate could not establish that you are entitled to run it, because the licence server was unreachable or was rate limiting a repeated caller. It stops there instead of reporting a pass it never checked. Retry the job; the code is not the problem.
+
+A repository with no Pro licence is a different case and still exits `0`.
 
 <Note>
   Not on GitHub? **Iris Code: Add CI Pipeline Snippet** generates the equivalent for GitLab CI, Bitbucket Pipelines, an npm script, or a plain shell step. Inline annotations are GitHub-only; everywhere else the exit code does the work.

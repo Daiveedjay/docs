@@ -4,9 +4,7 @@ sidebarTitle: "Gate Preview"
 description: "Compare the project with five built-in gate presets before writing configuration, installing a hook, or blocking a push."
 ---
 
-Installing enforcement without knowing what it will block is how a gate ends up being switched off a day later.
-
-Gate Preview scans your project and shows how it scores against all six presets at once, before anything is enabled. It is read-only: no config is written and no push is blocked until you choose to act on it.
+A gate decides whether code meets your project standards. Gate Preview shows whether the current project would pass and which thresholds would fail, without blocking a push or build. Use it to choose realistic settings before you enforce them.
 
 ## Opening it
 
@@ -32,7 +30,7 @@ Ordered from most lenient to most strict:
 - **Threshold card** - which presets you already pass, and the next one you would fail
 - **Recommendation** - the strictest preset you could adopt today with nothing blocked
 - **Focus card** - one preset in detail, with controls to step through the others and an **Apply** button
-- **Preset grid** - all five at a glance, each clickable
+- **Preset grid** - all six at a glance, each clickable
 
 The focus card shows the preset, its minimum score, how many files fail, and on Pro, which ones. **Apply** writes `presetId` into `.irisconfig.json` directly, without opening the file.
 

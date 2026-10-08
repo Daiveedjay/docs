@@ -38,11 +38,9 @@ const RULES = [
  * Keyed by "<file>:<line>" so a rule cannot be silenced file-wide by accident.
  */
 const ALLOW = new Set([
-  // Quotes what this page itself used to get wrong. Rewriting it destroys the point.
-  "trust/accuracy-benchmark.mdx:60",
   // The terminology page has to spell the forms it forbids in order to forbid them.
+  "reference/terminology.mdx:102",
   "reference/terminology.mdx:103",
-  "reference/terminology.mdx:104",
 ]);
 
 function walk(dir, out = []) {

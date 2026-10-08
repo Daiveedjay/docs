@@ -4,13 +4,7 @@ sidebarTitle: "Workspace analysis"
 description: "Review supported files across a workspace or folder, rank hotspots, inspect findings and TODOs, and track changes over time."
 ---
 
-Reviewing files one at a time tells you about each file. It does not tell you where the problems are concentrated.
-
-A workspace scan reads every supported file and ranks the results, so the parts of the codebase that need attention are listed rather than guessed at.
-
-Your **first full workspace scan is free** and needs no account. Iris Code saves it locally, so the rankings, issues, TODOs, security findings and duplicates stay available without scanning again. Rescanning requires Pro.
-
-The saved result also powers [Code Map](/features/code-map), a tree view in the Code Map panel that shows where the measured health scores sit in the repository.
+A workspace scan checks the supported files in your open project folder together. It gives you a project-wide view of health scores and findings, so you can choose where to start. Files excluded by your settings are left out of that view.
 
 ## Running one
 
@@ -47,7 +41,9 @@ The **Folder** tab shows the same stats, chart, rankings and tree as the workspa
 
 ## Scanning again
 
-A second scan of the same workspace or folder in VS Code or a JetBrains IDE does not analyse every file from scratch. Iris Code reads each file again and reuses its earlier analysis when the file's contents, the settings that apply to it, its path and its baseline status are all unchanged. Everything else is worked out again from the current files: the totals, the workspace score, unused packages and duplicate findings. Duplicates always compare every current file, so code copied from an unchanged file into an edited one is still found.
+A second scan of the same workspace or folder in VS Code or a JetBrains IDE does not analyse every file from scratch. Iris Code reads each file again and reuses its earlier analysis when the file's contents, the settings that apply to it, its path and its baseline status are all unchanged.
+
+Everything else is worked out again from the current files: the totals, the workspace score, unused packages and duplicate findings. Duplicates always compare every current file, so code copied from an unchanged file into an edited one is still found.
 
 When a scan finishes, a notification says how many files were analysed and how many were reused, for example "Analysed 1 file, reused 3 unchanged." A change that affects every file, such as a new `duplicateBlockMinTokens`, analyses everything again, which is expected.
 

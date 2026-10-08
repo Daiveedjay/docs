@@ -1,12 +1,16 @@
 ---
 title: "Using refactor plans with an agent"
 sidebarTitle: "Agent integration"
-description: "An agent needs the repository standard, a concrete move and feedback on the result. Iris Code supplies those deterministically through MCP, CLI and project rules, while the agent or human remains responsible for editing the code."
+description: "Connect a coding agent to refactor plans and verification, and check its work before it finishes."
 ---
 
-An agent needs the repository standard, a concrete move and feedback on the result. Iris Code supplies those deterministically through MCP, CLI and project rules, while the agent or human remains responsible for editing the code.
+A coding agent can use Iris Code to get a refactor plan and check its edits afterwards. Iris Code supplies the project rules and checks the result; you or the agent still make and review the code changes.
 
 ## MCP
+
+MCP is the connection that lets a coding agent call Iris Code tools. Set it up using the [MCP server guide](/agents/mcp), then ask the agent to get a plan, make one reviewed change and verify it before continuing.
+
+### Tools reference
 
 | Tool | Contract |
 |---|---|
@@ -15,7 +19,11 @@ An agent needs the repository standard, a concrete move and feedback on the resu
 | `iris_check` | Adds `refactorPlanAvailable`, a hint and a session baseline for size or complexity failures |
 | `iris_fix_safe` | Existing preview, `preview_token` and apply flow for mechanical fixes |
 
-File scope is free. Folder and workspace scope require **Iris Code Pro**. Both native and SDK MCP servers enforce the current agent governance policy before planning or verification. Agent-supplied before-source content is refused. Files in a folder where the [agent handoff](/agents/mcp#organisation-and-repository-restrictions) is off are left out of a plan or verification result, which reports only how many were withheld as `withheldByPolicy`.
+Planning or verifying one file is free. Folder and workspace plans require **Iris Code Pro**.
+
+Every MCP server checks the current permission for the agent to use Iris Code. The server keeps its own saved starting point; an agent cannot supply a replacement copy of the original code.
+
+Files in a folder where the [agent handoff](/agents/mcp#organisation-and-repository-restrictions) is off are hidden from plans and verification details. The result reports only the number withheld, as `withheldByPolicy`.
 
 ## CLI scanning
 
@@ -29,6 +37,8 @@ iris fix --safe src/handlers.ts
 CLI planning is read-only. A later standalone invocation verifies against Git HEAD because the planning process's memory has ended. Generated project rules describe the same loop, honour disabled IDs and work without MCP: apply proved fixes, review suggestions in order, preserve behaviour and exports, stop when the file passes, then verify and test.
 
 ## Finish verification
+
+A finish hook is an optional check that runs when an agent tries to stop. If it finds a regression against a matching live plan, it can ask the agent to correct the problem. It works alongside the package guard and does not replace your tests.
 
 ```bash
 iris hook agent install --target claude,codex --verify-on-finish
@@ -49,11 +59,19 @@ The CLI flag adds opt-in finish verification alongside the package guard. In eit
 
 The hook verifies only a baseline ID already found in the current agent transcript and matched to a live MCP server for the same workspace. Source snapshots remain in server memory; the local registry contains connection metadata and IDs. Missing, null or compacted transcripts leave the hook inactive, with no guessed baseline or HEAD fallback.
 
-Only `regressed` requests a correction turn. `not-improved` is a warning, never a block. The shared counter permits at most `maxCorrections` blocks for a baseline, then asks the agent to stop and show the verdict and diff. Host loop signals provide a second backstop. Cursor warnings use stderr because its stop JSON has no advisory field. The hook does not call a model or change push/build enforcement.
+Only `regressed` asks the agent to continue with a correction. `not-improved` is a warning and does not block it from stopping.
+
+The hook allows at most `maxCorrections` correction attempts for one baseline. After that, it asks the agent to stop and show you the verdict and changes. The agent host's own loop controls add another safeguard.
+
+Cursor warnings are written to the error-output stream because its stop response has no warning field. The hook does not call an AI model or change the push or build gate.
 
 Codex also needs hooks enabled in its local configuration and project-hook approval. Vendor transcript formats are best-effort interfaces; explicit verification remains available when automatic matching is inactive.
 
-
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Fixes and suggestions](/refactor/reference)
+- [Conventions](/refactor/conventions)
+- [Verification](/refactor/verification)
+- [Configuration](/refactor/configuration)
+- [Language coverage](/refactor/language-coverage)

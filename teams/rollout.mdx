@@ -1,12 +1,10 @@
 ---
 title: "Roll Iris Code out across an engineering team"
 sidebarTitle: "Rollout guide"
-description: "A rollout guide for procurement, security reviewers, workspace owners, and engineers adopting Iris Code Teams."
+description: "A rollout guide for procurement, security reviewers, team owners, and engineers adopting Iris Code Teams."
 ---
 
-This is the page to send to two different people. The first half answers what procurement and security ask before anything is bought. The second half is what an engineer follows on the day.
-
-Nothing here is a separate product from what an individual developer uses. A team gives every member the same Pro, publishes one standard the repositories are measured against, and keeps a record of what was audited and when.
+This guide explains how to introduce Iris Code across a team. Procurement and security reviewers can check the data boundaries and access rules first; engineers can then follow the setup steps. Start by measuring your code before turning on checks that block changes.
 
 ## For procurement and security
 
@@ -22,13 +20,13 @@ Two answers, because there are two different things running.
 
 **The editor extension, the CLI and the git hook analyse locally.** Source never leaves the machine. That is true on Free and on Pro, and it is why Iris Code can be used on a repository nobody is allowed to upload.
 
-**Cloud scans are opt-in per repository and run on our infrastructure.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those. Each audit clones, scans, and deletes the clone whatever the outcome. No source, file paths or finding text is retained; what is stored is the score, the counts, the commit and the branch.
+**Cloud scans are opt-in per repository and run on our infrastructure.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those. Each scan downloads the source, reads it without running it, and deletes the working copy afterwards. The stored report includes scores, file paths, finding rule names, severity and line positions, plus dependency information. It does not retain source code or code snippets.
 
 If you never connect a repository, no code ever reaches us.
 
 ### What a team's record contains
 
-Team evidence is what the workspace keeps: which repository was audited, at which commit and branch, what it scored, how many findings were open, how many were high severity, and which version of the standard it was measured against.
+Team evidence is what the team keeps: which repository was audited, at which commit and branch, what it scored, how many findings were open, how many were high severity, and which version of the standard it was measured against.
 
 It contains no source, no file paths, no snippets, no finding text, and no member rankings or individual usage telemetry. A team can see that a gate failed and on which commit. It cannot see who ran how many scans.
 
@@ -36,19 +34,19 @@ It contains no source, no file paths, no snippets, no finding text, and no membe
 
 | Role | Can do |
 | --- | --- |
-| **Owner** | Everything, including billing, seat changes and deleting the workspace. Exactly one |
+| **Owner** | Everything, including billing, seat changes and deleting the team. Exactly one |
 | **Admin** | Invite and remove members, connect repositories, publish the standard |
-| **Member** | Use Pro, read the workspace and its audit trail |
+| **Member** | Use Pro, read the team and its audit trail |
 
 ### The audit trail
 
 Every audit, gate run and configuration change is recorded with the server's own timestamp, filterable by type and date, and exportable as CSV or JSON. Entries are append-only: no role, including the owner, can edit or delete one, and deleting a repository's reports is itself recorded as an event.
 
-Membership, role and billing changes are not written to that log yet. It is a record of what ran, not of who administered the workspace, and the page says so rather than implying a completeness it does not have.
+Membership, role and billing changes are not written to that log yet. It is a record of what ran, not of who administered the team, and the page says so rather than implying a completeness it does not have.
 
 ### If payment fails
 
-A failed renewal gives seven days before the workspace entitlement drops to read-only. Nothing is deleted, and restoring payment restores access.
+A failed renewal gives seven days before the team entitlement drops to read-only. Nothing is deleted, and restoring payment restores access.
 
 ## For engineers
 
@@ -110,11 +108,11 @@ jobs:
 
 **Start with `continue-on-error: true`.** The gate records a failed run without failing the pull request, so the team can see what it would have blocked before it blocks anything. Remove that line when the numbers are ones you are willing to enforce.
 
-To have those runs appear in the workspace's evidence, add the project's binding to the same `.irisconfig.json`:
+To have those runs appear in the team's evidence, add the project's binding to the same `.irisconfig.json`:
 
 ```json
 {
-  "teamProjectId": "<from the project's page in your workspace>"
+  "teamProjectId": "<from the project's page in your team>"
 }
 ```
 

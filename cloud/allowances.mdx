@@ -1,7 +1,7 @@
 ---
 title: "Scan allowances: how many cloud scans you get, and how they are counted"
 sidebarTitle: "Scan allowances"
-description: "Pro includes 50 cloud scans a month and a team includes 100 per seat. Every audit counts one, whoever started it, and allowances never merge between workspaces."
+description: "Pro includes 50 cloud scans a month and a team includes 100 per seat. Every audit counts one, whoever started it, and allowances never merge between accounts or teams."
 ---
 
 A cloud scan costs one scan. The rule is deliberately that simple: **every audit counts one, whoever or whatever started it.**
@@ -35,11 +35,11 @@ And these do not count, because they produced no report:
 
 The allowance resets when you are charged, not on the first of the month. If you subscribed on the 14th, it resets on the 14th.
 
-A workspace with no subscription, a trial for instance, resets on a calendar month instead. The reset date is shown on your Projects screen either way, so you never have to work it out.
+An account or team with no subscription, a trial for instance, resets on a calendar month instead. The reset date is shown on your Projects screen either way, so you never have to work it out.
 
-## Allowances belong to a workspace, not to you
+## Personal and team allowances are separate
 
-This is the part that surprises people. Each workspace has its own pool, and pools never merge or transfer.
+Your personal account and each team have separate scan allowances. Unused scans cannot be transferred between them.
 
 - Your account spends your Pro allowance
 - Each team spends that team's allowance
@@ -51,9 +51,9 @@ This is the part that surprises people. Each workspace has its own pool, and poo
 
 ## Running out
 
-You are warned before the wall, not at it. Once four fifths of the allowance is spent, the card on your Projects screen turns amber and says so, while there is still enough left to act on.
+You are warned when 80% of the allowance has been used, the card on your Projects screen turns amber and says so, while there is still enough left to act on.
 
-If it does run out, automatic audits stop for every repository in that workspace and each one reports "allowance used". Your GitHub connection is untouched, existing reports are unaffected, and audits resume on their own when the allowance resets. The screen names the date.
+If it does run out, automatic audits stop for every repository in that account or team and each one reports "allowance used". Your GitHub connection is untouched, existing reports are unaffected, and audits resume on their own when the allowance resets. The screen names the date.
 
 ## Getting more
 
@@ -64,7 +64,7 @@ Three ways, depending on where you are:
 - **Auditing merges only**, rather than every pull request update, is the single setting that most reduces what you spend. See [Audit triggers](/cloud/triggers)
 
 <Note>
-  There is no scan top-up to buy yet. If a workspace runs out, the options are the three above or waiting for the reset.
+  There is no scan top-up to buy yet. If an account or team runs out, the options are the three above or waiting for the reset.
 </Note>
 
 ## Working out what you need

@@ -5,11 +5,7 @@ description: "Silence one finding on one line without switching the rule off, an
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "large-class", "catch-all-exception", "async-void", "linq-abuse", "method-missing", "god-class", "mass-assignment", "process-execution", "unwrap-abuse", "explicit-panic"]
 ---
 
-Some findings are correct and the code is still right. A `console.log` in a CLI entry point is the program's output. A long function sometimes reads worse when split. An `any` at a boundary you do not control is the honest type.
-
-Inline suppressions silence one finding on one line, rather than switching the rule off for the whole project. The requirement is that you record why.
-
-Suppressions are **free**. The two configuration fields that let a team put limits on them are Pro.
+A suppression tells Iris Code to ignore a particular finding that you have reviewed and accepted. It is useful when a reported pattern is intentional, such as a test credential that is not a real secret. Keep suppressions narrow so other problems in the same file are still reported.
 
 ## Writing one
 

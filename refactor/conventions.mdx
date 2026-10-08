@@ -1,10 +1,10 @@
 ---
 title: "Project conventions"
 sidebarTitle: "Conventions"
-description: "A useful refactor should fit the repository that will contain it. Iris Code detects conventions from the workspace sources and distinguishes that evidence from a configured override or a new proposal."
+description: "Understand how Iris Code uses your existing folder and naming patterns when it suggests where code should move."
 ---
 
-A useful refactor should fit the repository that will contain it. Iris Code detects conventions from the workspace sources and distinguishes that evidence from a configured override or a new proposal.
+A convention is the way your project already organises its code, such as keeping types in a types folder. Iris Code looks for these patterns so a refactor fits your project rather than introducing a different layout.
 
 ## Detected evidence
 
@@ -19,7 +19,9 @@ A useful refactor should fit the repository that will contain it. Iris Code dete
 | Native package, namespace or module layout | Go, Python, Ruby, C#, Java and Rust moves |
 | Type location | Type moves |
 
-A convention needs support from at least three distinct candidate files and more than 60% of candidates. Exactly 60% does not qualify. A result below either threshold says **No project convention detected** and labels its destination `proposal`.
+Iris Code only calls a layout a detected convention when at least three different files support it and more than 60% of the relevant files follow it. Exactly 60% is not enough.
+
+For example, four of five relevant files following the same layout can qualify; two of two cannot. Without enough evidence, the result says **No project convention detected** and labels the suggested location `proposal`, so you know it needs review.
 
 | Origin | Meaning |
 |---|---|
@@ -43,9 +45,15 @@ A convention needs support from at least three distinct candidate files and more
 }
 ```
 
-These paths stay relative to the workspace and cannot climb outside it. They are local repository layout, so Config Studio omits them and editor sync preserves the destination repository's existing values. Vue and Svelte retain their component layout while using their declared script language for language policy.
+Each path starts from your project folder and must stay inside it. These locations belong to that project, so Config Studio does not include them; syncing settings keeps the values already in the destination project.
 
+Vue and Svelte keep their component layout. Their language settings come from the language declared in the component's script.
 
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Fixes and suggestions](/refactor/reference)
+- [Verification](/refactor/verification)
+- [Configuration](/refactor/configuration)
+- [Agent integration](/refactor/agents)
+- [Language coverage](/refactor/language-coverage)

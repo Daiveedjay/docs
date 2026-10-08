@@ -4,15 +4,11 @@ sidebarTitle: "Inline diagnostics"
 description: "Put selected Iris Code findings in the editor as squiggles and in the Problems panel. Off by default, on purpose."
 ---
 
-Every Iris Code finding could be rendered as a squiggle, but that would make the Problems panel less useful rather than more.
-
-The Problems panel is where you look for what is broken right now: compiler errors and type failures. Filling it with forty TODOs and a magic number means it stops being read, which costs more than the TODOs do.
-
-Inline diagnostics are therefore **off by default**, and when enabled, only the categories most likely to need immediate attention are on.
+Inline diagnostics show findings beside the code, using editor underlines and the Problems panel. They help you see an issue while you are editing rather than waiting for a full project report. Each finding has a message and a location you can open.
 
 ## What is enabled by default
 
-Secrets, security smells, `@ts-ignore`, unused functions and `any` usage: findings that usually warrant fixing at the moment you see them.
+Inline diagnostics are off until you enable them. Once enabled, the default categories are secrets, security smells, `@ts-ignore`, unused functions and `any` usage, which usually need attention while you edit.
 
 Structural warnings such as file length stay off. A long file is a property of your project rather than an error, and it should not appear beside a type failure with the same urgency.
 

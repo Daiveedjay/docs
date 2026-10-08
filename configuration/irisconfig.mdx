@@ -5,6 +5,8 @@ description: "Drop a .irisconfig.json at your project root to share thresholds a
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "Java", "languages.java", ".properties", "Rust", "languages.rust", "Cargo", "per-language thresholds", "golang", "Gemfile"]
 ---
 
+The `.irisconfig.json` file stores your project settings, including what to check and which thresholds code must pass. Commit it with your code so everyone uses the same standard in the editor, command line and automated checks. Iris Code uses the nearest configuration file, allowing separate packages in a large repository to have different settings.
+
 <Note>
   This page documents **configurable keys**, not a rule inventory. It mixes gate limits,
   thresholds, scoring weights, severity overrides and suppressible rule ids, so counting
@@ -12,10 +14,6 @@ keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.cs
   [accuracy benchmark](/trust/accuracy-benchmark), which publishes every measured rule
   per language.
 </Note>
-
-A standard nobody agreed on isn't a standard. Drop a `.irisconfig.json` at your project root, commit it, and everyone runs the same thresholds, in every editor, on every machine, plus CI.
-
-Iris Code looks for the nearest one by walking up from the file it's analysing, so a monorepo can give each package its own rules without you configuring anything extra.
 
 <Note>
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
@@ -238,7 +236,11 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 ### Per-language config
 
-Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java`, and `rust` files independently; anything not stated falls back to the base config. `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript. A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`; a `csharp` block governs both `.cs` sources and `.csproj` project files; and a `java` block governs both `.java` sources and the `.properties` files Iris Code reads for credentials.
+Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java`, and `rust` files independently; anything not stated falls back to the base config.
+
+`.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript.
+
+A `ruby` block also governs the extensionless Ruby files Iris Code reads, such as `Gemfile` and `Rakefile`; a `csharp` block governs both `.cs` sources and `.csproj` project files; and a `java` block governs both `.java` sources and the `.properties` files Iris Code reads for credentials.
 
 ```jsonc
 {
@@ -266,7 +268,9 @@ Mixed-language repos rarely want one threshold set for everything - a 500-line P
 }
 ```
 
-Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout. The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris Code applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
+Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout.
+
+The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris Code applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
 
 Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
 

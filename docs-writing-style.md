@@ -115,6 +115,11 @@ Every page opens with **two or three sentences of context**, before any heading,
 
 Then: how to use it, then reference material, then edge cases and configuration.
 
+Assume the reader may be new to programming tools. Define a technical term when it first matters, then explain what the reader can do and what the result means. Keep exact commands, configuration keys and language-specific exceptions in the reference sections.
+
+Keep prose paragraphs to one idea, usually two or three sentences. Split a paragraph when it changes topic; use a list for separate conditions or exceptions. Shorter paragraphs must preserve the reason for a restriction, not just the restriction itself.
+
+
 **Headings that recur across pages, use these exact names:**
 
 `Installing` · `Configuring the threshold` · `Configuration` · `Uninstalling` · `CLI scanning` · `Insights tracking` · `Acting on the results` · `Free and Pro`
@@ -142,6 +147,8 @@ Ten groups, ordered by what a reader is trying to do:
 
 **The rule that keeps this clean:** "What Iris Code finds" is things Iris Code *detects*. "Blocking bad code" is things that *stop* something happening. When a new page could go in either, ask which verb it is.
 
+**Related pages:** use a Markdown bullet list, with one linked page per item. Use a descriptive page name and leave out the current page.
+
 **Every new page needs at least one inbound link** from a related page. A page reachable only from the sidebar is invisible to anyone who navigates by following links. This was a real gap: the Slack page shipped with zero inbound links.
 
 **Moving a page means adding a redirect** to `docs.json`, in the `redirects` array, plus updating every internal link. Old URLs appear in blog posts, the extension UI and marketplace listings.
@@ -150,6 +157,7 @@ Ten groups, ordered by what a reader is trying to do:
 
 ## 8. Mintlify components
 
+- Add a diagram when it explains a sequence, decision or data boundary more clearly than prose. Use a simple reading direction, short plain-language labels, readable text at phone width and an accessible description. Provide light and dark versions when colours depend on the theme. Keep detailed exceptions in the text beside the diagram.
 - `<Frame>` is **for images and screenshots only**. Wrapping a code block in it puts the text in the DOM without painting it visibly, so the page looks blank and only copy-paste reveals the content. This actually happened. Use a plain fenced code block.
 - `<Note>` for context worth pausing on, `<Tip>` for a recommendation, `<Warning>` for something that will cost the reader time or data.
 - `<Steps>` for ordered procedures. `<Tabs>` for per-platform or per-provider variants.

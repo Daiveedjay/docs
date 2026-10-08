@@ -5,9 +5,9 @@ description: "Understand the health score, complexity, functions, code smells, s
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".cs", "Java", ".java", "Rust", ".rs", "method detection", "unused imports", "language badge"]
 ---
 
-Iris Code analyses every supported file as you open or save it, with no command to run.
+A file scan checks the file you are working on and gives it a health score from 0 to 100. Findings explain what needs attention, such as a secret in the code, repeated code or a function that is difficult to follow. Use the findings to choose what to review rather than treating the score as a guarantee that the code works.
 
-The **File tab** is where that lands: a line-level picture of the current file, and where each problem sits.
+Iris Code scans supported files when you open or save them. Open the sidebar?s **File tab** to see the result for the current file.
 
 ## The File tab
 
@@ -93,8 +93,11 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
 </Tip>
 
 <Note>
-  Unused *import* detection runs for TypeScript, JavaScript, and Java. Go and Python handle unused imports at the compiler or runtime level, so Iris Code does not duplicate that. Ruby resolves constants at runtime, where static analysis cannot tell an unused require from one loaded through `send` or Rails autoloading, and C# resolves types through dependency injection, reflection, and source generators for the same reason. Rust is excluded because a trait must be imported for its methods to be callable and its name is then never written again, so the usage is invisible to a static read. Java is the one addition where the verdict is safe: an import there is a compile-time type alias and javac itself warns, and the check reads Javadoc so a `{@link}` reference counts as usage.
-</Note>
+  Unused *import* detection is available for TypeScript, JavaScript and Java. Other languages are not checked for unused imports by Iris Code; their compilers or linters may offer additional checks.
 
+  Some imports matter even when the name is never written again. Rust imports can make a trait?s methods available, while Ruby and C# can resolve names indirectly at runtime. Removing those imports needs language-specific review.
+
+  In Java, references in Javadoc links count as usage, so a name used only in documentation is kept.
+</Note>
 
 The [refactor playbook](/refactor/overview) turns size and complexity failures into a deterministic plan, mechanical fixes and verification.

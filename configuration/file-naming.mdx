@@ -73,10 +73,27 @@ Pro users can set `gateMaxNamingViolations` to cap the scan-total count in hooks
 
 ## Fixing names
 
-Iris Code renames files to the suggested convention for you:
+Iris Code can rename files to the suggested convention. Review the proposed name before applying it.
 
-- **One file (Free).** The naming CodeLens, the Quick Fix on the naming diagnostic, and the Explorer right-click menu all rename a file through an editable prompt. Iris Code updates TypeScript and JavaScript imports across the workspace, and every rename can be undone from the toast or the **Iris Code: Undo Last Rename** command. Renaming Python files does not rewrite `import` statements, renaming Ruby files does not rewrite `require_relative` paths or the constant names Rails derives from a filename, and renaming C# files does not rewrite type names, namespaces, or project references. Iris Code warns you in each case.
-- **Every file (Pro).** The **File Naming** panel (from the sidebar's File Naming section) lists every violation with an editable target name. Rename selected files, or all of them, in one import-updating pass; name collisions are skipped and disclosed. Committing before a large batch is recommended.
+### Rename one file (Free)
+
+Choose the naming hint above the code, the **Quick Fix** on the finding, or the Explorer right-click action. The prompt lets you edit the suggested name. Iris Code updates TypeScript and JavaScript imports across the workspace.
+
+Use the toast?s **Undo** action or **Iris Code: Undo Last Rename** to restore the previous name.
+
+Other languages need extra review because a file name can affect references that Iris Code does not update:
+
+- **Python:** check `import` statements.
+- **Ruby:** check `require_relative` paths and the constant names Rails derives from the file name.
+- **C#:** check type names, namespaces and project references.
+
+Iris Code warns you about these limitations before the rename.
+
+### Rename several files (Pro)
+
+Open the **File Naming** panel from the sidebar to see every violation and edit each target name. Rename selected files or all of them in one pass. Name collisions are skipped and reported.
+
+Commit your current work before a large batch so you have a clear point to return to.
 
 ## Adopting your existing convention
 

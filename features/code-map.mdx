@@ -4,9 +4,9 @@ sidebarTitle: "Code Map"
 description: "Open a health-coloured tree of a scanned workspace or cloud repository, then move directly from a score to the file behind it."
 ---
 
-A workspace score tells you whether a repository needs attention. Code Map shows where that score comes from, so a weak area is visible as part of the folder that contains it.
+The Code Map shows your project as a tree of folders and files, with a health score beside each supported file. It helps you find the parts that need attention before opening them one by one. Select a file to open its code and inspect the findings.
 
-The tree uses the latest completed scan. It does not start a scan when you open it, which keeps the result honest about when the code was measured.
+The map uses your latest completed scan. Opening it does not start a new scan.
 
 ## Opening the local map
 
@@ -24,11 +24,17 @@ Each row has ten separate health-score markers and a numeric score. Green is hea
 
 An average can hide the file that fails. Ten files at 98 and one at 60 average 94, so the folder reads as healthy, while the gate blocks the push on the file at 60. Code Map keeps the folder average and marks the failing files separately.
 
-A red caution badge appears beside any file that would fail the gate's score rule, showing how many points it is short. Each folder above it shows a badge with the number of failing files inside it. Hovering a folder's badge lists those files, furthest below first, with each one's score against its minimum; hovering a file's badge shows its score, the minimum and the shortfall. The header shows the total for the whole map, and hovering it lists every failing file.
+A red caution badge appears beside any file that would fail the gate's score rule, showing how many points it is short. Each folder above it shows a badge with the number of failing files inside it.
 
-The minimum is the one the gate uses: `minHealthScore` from `.irisconfig.json`, or 70 when it is not set. With `gateBaselineMode` on, each file is compared against its own locked baseline, so a file scoring 90 carries the badge if its baseline is 95. Scores are rounded down before the comparison, as they are in the gate, so 69.9 is below a minimum of 70. Files that are not measured never carry the badge.
+Hovering a folder's badge lists those files, furthest below first, with each one's score against its minimum; hovering a file's badge shows its score, the minimum and the shortfall. The header shows the total for the whole map, and hovering it lists every failing file.
 
-The caution appears in the local map in VS Code and JetBrains, and in the cloud map. The cloud map uses the minimum that audit was scored against, which may come from a fallback preset or your workspace standard rather than the repository's own config. Audits run before the cloud map could record a minimum show a note saying failing files are not marked; running a new audit adds them.
+The minimum is the one the gate uses: `minHealthScore` from `.irisconfig.json`, or 70 when it is not set. With `gateBaselineMode` on, each file is compared against its own locked baseline, so a file scoring 90 carries the badge if its baseline is 95.
+
+Scores are rounded down before the comparison, as they are in the gate, so 69.9 is below a minimum of 70. Files that are not measured never carry the badge.
+
+The caution appears in the local map in VS Code and JetBrains, and in the cloud map. The cloud map uses the minimum that audit was scored against, which may come from a fallback preset or your account or team standard rather than the repository's own config.
+
+Audits run before the cloud map could record a minimum show a note saying failing files are not marked; running a new audit adds them.
 
 ## The import graph
 
@@ -43,7 +49,13 @@ Switch the map from **Tree** to **Graph**. The workspace scan that scores the tr
 
 The graph reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust. Ruby is not drawn. A Go or Java package, or a C# namespace, is drawn as its folder, because the import names the package rather than a file.
 
-The same resolved graph supplies [Change Review](/features/change-review) and `iris_check` with import impact. A direct importer is a file with an import edge to the checked file, or to the package that contains it: in Go, and for a C# `using`, a Java wildcard import or a Python namespace package, the import names the package, and it reaches every file in that folder. Focusing a file in the Graph draws those importers pointing at the file. Pro also counts files that reach it through a chain, stopping at **500+** and terminating on cycles. `iris check --changed` and `--staged` include impact in their JSON reports and pretty output. These counts help choose what to re-check; they do not alter the gate.
+The same resolved graph supplies [Change Review](/features/change-review) and `iris_check` with import impact.
+
+A direct importer is a file with an import edge to the checked file, or to the package that contains it: in Go, and for a C# `using`, a Java wildcard import or a Python namespace package, the import names the package, and it reaches every file in that folder.
+
+Focusing a file in the Graph draws those importers pointing at the file. Pro also counts files that reach it through a chain, stopping at **500+** and terminating on cycles. `iris check --changed` and `--staged` include impact in their JSON reports and pretty output.
+
+These counts help choose what to re-check; they do not alter the gate.
 
 An import Iris Code cannot resolve is not guessed at. It is listed under **unresolved** with a reason, such as `missing-file` for a path no file matches, or `ambiguous-target` when two files declare the same Java class.
 

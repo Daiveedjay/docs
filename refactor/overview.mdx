@@ -1,33 +1,40 @@
 ---
 title: "Refactor playbook"
 sidebarTitle: "Overview"
-description: "A long file needs a concrete next step, not another request to make it shorter. Iris Code builds a deterministic plan, applies proved mechanical fixes and verifies the changes against an owned baseline."
+description: "Reorganise code with a plan, small fixes and a check against a saved starting point."
 ---
 
-A long file needs a concrete next step, not another request to make it shorter. Iris Code builds a deterministic plan, applies proved mechanical fixes and verifies the changes against an owned baseline.
+Refactoring means reorganising code to make it easier to understand and maintain while keeping what the program does the same. The Refactor Playbook gives you a plan, offers small fixes you can apply, and checks the result against a saved copy of the code.
 
 ## Acting on the results
 
-**Refactor plan** on the File, Folder or Workspace tab opens the Refactor Playbook panel, in VS Code and in JetBrains IDEs. Opening the panel reads nothing. **Get plan** reads the eligible sources locally, including unsaved editor changes, to detect conventions and import context, and keeps that snapshot in editor memory as the baseline for verification. Only the scope you chose is planned, and asking for a new plan replaces the baseline. File plans and verification are free; folder and workspace plans require **Iris Code Pro**, in the editor and over MCP.
+Open **Refactor plan** from the File, Folder or Workspace tab in VS Code or a JetBrains IDE. Opening the panel does not read your code; **Get plan** starts the scan.
 
-```mermaid
-flowchart LR
-  P[Plan with a session baseline] --> M[Apply mechanical fixes]
-  M --> E[Review and apply one suggestion]
-  E --> V[Verify every changed file]
-  V --> C[Use the correction when needed]
-  C --> E
-  V --> G[Run the configured gate and tests]
-```
+File plans and verification are free. Planning a folder or the whole workspace requires **Iris Code Pro**, in the editor and through an AI assistant.
+
+<Frame caption="Make one change at a time, then check it before continuing.">
+  <img className="block dark:hidden" src="/images/guides/refactor-flow-light.svg" alt="Get a plan and saved starting point, make one reviewed change, verify and correct problems, then run tests and the gate." width="480" />
+  <img className="hidden dark:block" src="/images/guides/refactor-flow-dark.svg" alt="Get a plan and saved starting point, make one reviewed change, verify and correct problems, then run tests and the gate." width="480" />
+</Frame>
+
+**Get plan** reads the files you selected and the surrounding code it needs to understand them. It includes unsaved editor changes and looks for the layout your project already uses.
+
+It also saves a copy in editor memory. This starting point is called the **baseline**: verification compares your later edits with it. Getting a new plan replaces that saved starting point.
 
 | Part | Purpose | Output |
 |---|---|---|
-| Mechanical fixes | Edit only where the lexical boundary and lack of side effects are proved | Previewable replacements or deletions |
-| Conventions | Prefer the repository's observed layout | Detected, configured or proposed destinations |
-| Suggestions | Give a human or coding agent an ordered structural plan | Risk, ranges, estimated effect and instructions |
-| Verification | Find regressions and artificial line reductions | Improved, not-improved or regressed, with reasons and correction |
+| Mechanical fixes | Small edits Iris Code can check before offering them | Changes you can preview and apply |
+| Conventions | Follow the way your project already organises files | Suggested locations for moved code |
+| Suggestions | Explain larger changes for you or an agent to review | What to move, where to move it and what could be affected |
+| Verification | Check whether an edit helped or introduced a problem | A verdict, reasons and suggested corrections |
 
-**Apply mechanical fixes** makes one undoable editor change and reports a summary with **Undo**. Structural suggestions are instructions to review; the editor does not apply them. **Open agent instructions** shows the plan as readable instructions and exact JSON for a coding agent, **Copy full plan** copies both, and **Verify refactor** and **Copy correction for your agent** close the loop.
+**Apply mechanical fixes** applies the offered small fixes as one change. **Undo** restores that change if you want to reconsider it.
+
+Larger structural suggestions, such as moving functions into another file, need review. You or your coding agent make those edits; Iris Code does not apply them automatically.
+
+Use **Open agent instructions** to read the plan, or **Copy full plan** to share its instructions and JSON with your coding agent. JSON is a structured version of the same plan that software can read.
+
+After editing, choose **Verify refactor**. If it finds a problem, **Copy correction for your agent** gives the agent the details to work on.
 
 ## Free and Pro
 
@@ -39,9 +46,15 @@ flowchart LR
 | Folder and workspace plans in the editor | Requires Pro | Available |
 | MCP folder and workspace scope | Requires Pro | Available |
 
-Iris Code does not call a model. Verification is advisory and cannot establish semantic equivalence; tests and a reviewed diff remain necessary. It does not change the gate or a push/build hook result. The Playground does not expose the refactor playbook.
+Iris Code does not call an AI model to create or check a plan. Verification can find problems, but it cannot prove that your program still behaves exactly the same. Review the changes, run your tests and run the gate before treating the work as complete.
 
+A verification verdict does not change whether a push or build passes its gate. The Playground does not include the Refactor Playbook.
 
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Fixes and suggestions](/refactor/reference)
+- [Conventions](/refactor/conventions)
+- [Verification](/refactor/verification)
+- [Configuration](/refactor/configuration)
+- [Agent integration](/refactor/agents)
+- [Language coverage](/refactor/language-coverage)

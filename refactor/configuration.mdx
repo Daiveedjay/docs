@@ -1,12 +1,18 @@
 ---
 title: "Refactor configuration"
 sidebarTitle: "Configuration"
-description: "Refactor policy controls the changes Iris Code may propose and the evidence it checks afterwards. Top-level policy is free and independent of scoring presets; language overrides require Iris Code Pro."
+description: "Choose the limits, destinations and verification checks used by your refactor plans."
 ---
 
-Refactor policy controls the changes Iris Code may propose and the evidence it checks afterwards. Top-level policy is free and independent of scoring presets; language overrides require Iris Code Pro.
+Refactor settings let you choose which fixes and suggestions Iris Code offers, and which checks run afterwards. Shared settings are free and separate from health-score presets; setting different values for individual languages requires Iris Code Pro.
 
 ## Configuration
+
+Use [Config Studio](/configuration/config-studio) to edit shared settings visually, or add a `refactor` block to your project's `.irisconfig.json`. Start with the defaults and change only what your project needs.
+
+For example, turn off a suggestion with `disable`, keep all work in existing files with `allowNewFiles: false`, or set where moved code belongs with `destinations`. A public API change affects code other files depend on, so approval is required by default.
+
+## Settings reference
 
 | Key | Default | Behaviour |
 |---|---|---|
@@ -42,9 +48,15 @@ Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by
 }
 ```
 
-Free users keep top-level refactor policy through its separate resolver. Language overrides are stripped with a warning. The accepted language keys are `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java` and `rust`; Vue and Svelte use their declared script language. Malformed refactor policy is refused rather than silently replaced with defaults.
+On Free, the shared `refactor` settings apply, but per-language overrides are ignored with a warning. The language keys are `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java` and `rust`. Vue and Svelte use the language declared in their script.
 
+Invalid refactor settings produce an error rather than silently using defaults. This helps you notice a setting that would otherwise appear to work.
 
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Fixes and suggestions](/refactor/reference)
+- [Conventions](/refactor/conventions)
+- [Verification](/refactor/verification)
+- [Agent integration](/refactor/agents)
+- [Language coverage](/refactor/language-coverage)

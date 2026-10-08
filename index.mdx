@@ -4,11 +4,9 @@ sidebarTitle: "Home"
 description: "Give coding agents your project rules, check their changes with deterministic analysis, and enforce the same standards in editors, hooks, CI, and opt-in cloud scans."
 ---
 
-AI assistants can change more code than a reviewer can inspect carefully. Iris Code gives the agent your project rules, checks the resulting code independently, and applies the same standard before review, push, or merge.
+Iris Code checks your code for problems and shows which parts need attention, whether you wrote the code yourself or used an AI assistant. You choose the project standards and decide whether failed checks should stop a push or build.
 
-Its deterministic analysis scores files and identifies hardcoded credentials, security smells, complexity, duplication, naming violations, and dependency risk. The editor explains findings while you work; hooks and CI can stop changes that cross your configured thresholds.
-
-It makes no judgement about who wrote the code. It checks what is there.
+It works in your editor, from the terminal and in automated checks. Findings can include passwords left in code, risky security patterns, repeated code and functions that are difficult to follow.
 
 <Note>
   Iris Code does not identify whether code was written by AI, and it makes no model calls. Editor, CLI, hook, and CI analysis runs in your environment. Opt-in Cloud scans temporarily fetch a selected GitHub repository, delete the working copy after the scan, and retain the report.
@@ -16,14 +14,11 @@ It makes no judgement about who wrote the code. It checks what is there.
 
 ## Four words used throughout
 
-A **finding** is one thing Iris Code reports about your code. Every finding is
-either a **blocker**, serious enough to stop a push, or a **warning**, which is
-not. A **threshold** is a cap you configure, such as a minimum health score. The
-**gate** is the decision about whether a change gets through, made by comparing
-a scan against those thresholds.
+A **finding** is one thing Iris Code reports about your code. A **blocker** is a serious finding; a **warning** is something to review.
 
-Those four carry most of the product. The rest are on the
-[terminology page](/reference/terminology).
+A **threshold** is a value you configure, such as a minimum health score or a maximum number of secrets. The **gate** compares a scan with those thresholds and decides whether the code passes. A finding?s label alone does not decide the gate result.
+
+See the [terminology page](/reference/terminology) for other terms used in the product.
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">

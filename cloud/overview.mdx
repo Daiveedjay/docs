@@ -4,11 +4,14 @@ sidebarTitle: "Cloud overview"
 description: "Connect a GitHub repository once and Iris Code audits it on the events you choose, keeping every report pinned to the commit that produced it."
 ---
 
-The editor scores the code in front of you. A hook stops a bad push. Neither tells you what the default branch looks like on a Tuesday morning when nobody is looking at it.
+Cloud scans check a GitHub repository even when nobody has it open in an editor. Connect a repository and choose when to scan it, such as after a change reaches the main branch. Each report records the exact version of the code it checked.
 
-Cloud scans do. Connect a repository once and Iris Code scores it on the events you choose, keeping the result against the exact commit that produced it.
+<Frame caption="The source is temporary; the scan report is retained.">
+  <img className="block dark:hidden" src="/images/guides/cloud-scan-light.svg" alt="Choose repositories, scan their source without running it, then discard the source and keep the report." width="480" />
+  <img className="hidden dark:block" src="/images/guides/cloud-scan-dark.svg" alt="Choose repositories, scan their source without running it, then discard the source and keep the report." width="480" />
+</Frame>
 
-## What it audits
+## What it checks
 
 A cloud scan runs the same analysis as the editor and the CLI: health score, findings by severity, file coverage, and the dependency and CVE report. Nothing is scored differently because it ran in the cloud.
 
@@ -44,11 +47,11 @@ Every audit keeps its full report for **400 days**. After that the report body i
 
 In your account, **Audit history** brings those audit rows together across every connected repository. It shows the repository, commit, branch, trigger, status, score and timestamp without requiring you to open each project separately. **Analytics** is the separate screen for recorded signals - workspace scans, gates, blocked pushes, and a row for each completed cloud scan - alongside your health trend.
 
-Disconnecting a repository deletes that workspace's cloud reports for it permanently and immediately. A record of the deletion is kept, nothing on GitHub is changed, and you would need to connect the repository again to run any audit against it.
+Disconnecting a repository permanently deletes its cloud reports from that account or team. A record of the deletion is kept, nothing on GitHub is changed, and you would need to connect the repository again to run any audit against it.
 
 ## Personal and team repositories are separate
 
-A account and a team each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
+A personal account and a team each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
 
 Being seated in a team does not let that team's allowance audit your own repositories, and your personal subscription does not audit theirs. See [Scan allowances](/cloud/allowances).
 

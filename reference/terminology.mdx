@@ -26,11 +26,11 @@ the whole corpus was read at once.
 **Finding** - one thing Iris Code reports about your code. Every finding is
 either a blocker or a warning. It is not called an issue.
 
-**Blocker** - a finding serious enough to stop a push: committed credentials and
-security smells.
+**Blocker** - a serious finding, such as a committed credential or security smell. Review it before sharing the code.
 
-**Warning** - a finding worth knowing about that does not stop a push: file
-length, function length, function count, import count, missing exports.
+**Warning** - a finding that needs attention, such as a long file or too many imports. A warning can still affect the health score or a configured threshold.
+
+The gate uses your thresholds to decide whether a push or build passes. The blocker or warning label alone does not decide that result.
 
 **Gate** - the decision about whether a change is allowed through, made by
 comparing a scan against your configured thresholds. There is one gate. "Quality
@@ -43,8 +43,7 @@ two is the single most common mistake made about enforcement, which is why
 [the accuracy benchmark](/trust/accuracy-benchmark) opens by separating them.
 
 **Health score** - a file's score out of 100. It starts at 100 and decreases as
-findings are applied, flooring at 0. It answers one question: is there something
-wrong with this file? See [Scoring](/reference/scoring).
+findings are applied, flooring at 0. Use it to find files that need attention; a high score does not prove that the code works correctly. See [Scoring](/reference/scoring).
 
 **Scan** - the act of analysing code, at any scope: a file scan, a folder scan,
 a workspace scan, a cloud scan. It is not called a review, an audit or an

@@ -4,16 +4,7 @@ sidebarTitle: "MCP server"
 description: "Use iris mcp to give supported coding agents the resolved project configuration, deterministic findings, gate result, dependency risk, explanations, preview-first safe fixes, and refactor plans with verification."
 ---
 
-An AI agent asked to clean up a file has no way to know what your project counts as clean. It can
-count lines and guess at a limit, and its guess changes between runs. Neither answer is the one your
-pre-push hook uses, so an agent can finish work that the gate then blocks.
-
-The MCP server closes that gap. Iris Code analyses the code locally and answers with the same numbers
-the gate enforces, so the agent is working against your committed standard rather than its own.
-
-[`iris rules`](/agents/project-rules) does something related and complementary: it writes your rules
-into `AGENTS.md` so an agent follows them while writing. MCP lets the agent ask questions while it
-works, and check its own output before you see it.
+MCP connects an AI coding agent to tools it can call while working. The Iris Code MCP server lets the agent scan your project, check a proposed package and verify a refactor without asking you to run each command. Your project and team permissions control whether the agent can access repository tools.
 
 ## Running the server
 
@@ -55,11 +46,9 @@ Most clients land on the right folder through step 2, which is why the commands 
 Leaving it off is the right default if you work in more than one project: register the server once,
 and each editor window roots itself in the project it has open.
 
-Pass `--root` when you want the boundary pinned regardless of client behaviour, such as a scripted or
-shared setup where the launch directory is not dependable. Pin it per project, though. A `--root`
-registered once for every workspace points every workspace at that one folder: an agent working in
-project B is then answered about project A, and `iris_fix_safe` writes into A. Iris Code cannot detect
-that for you, because a pinned root is a legitimate instruction.
+Pass `--root` when you want the boundary pinned regardless of client behaviour, such as a scripted or shared setup where the launch directory is not dependable. Pin it per project, though.
+
+A `--root` registered once for every workspace points every workspace at that one folder: an agent working in project B is then answered about project A, and `iris_fix_safe` writes into A. Iris Code cannot detect that for you, because a pinned root is a legitimate instruction.
 
 `--root .` is not a pin. It resolves to the directory the client launched the server in, which is what
 Iris Code would have used anyway, and passing it suppresses step 2. Omit the flag instead.
@@ -114,18 +103,13 @@ directory` both resolve correctly when that directory is the project.
 
 ### JetBrains IDEs
 
-The Iris Code JetBrains plugin bundles `iris-lsp`, so it can provide the same server without Node.js.
-With a project open, choose **Tools | Iris Code | Set Up MCP Server**. The action copies a complete
-stdio configuration with the bundled executable's absolute path and `--root` set to the open project.
-Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change
-an assistant's configuration itself.
+The Iris Code JetBrains plugin bundles `iris-lsp`, so it can provide the same server without Node.js. With a project open, choose **Tools | Iris Code | Set Up MCP Server**. The action copies a complete stdio configuration with the bundled executable's absolute path and `--root` set to the open project.
 
-This one pins the folder, and that is not a precaution - it is required. JetBrains AI Assistant
-reports no MCP roots, starts stdio servers from the IDE installation directory rather than the open
-project, and exposes no environment variable naming the project. A bare command there resolves to the
-IDE's own install folder, which is not your code. The plugin action fills in the pin so you never
-type a path, but it is per project: paste it into that project's settings rather than a global one,
-and generate it again for the next project.
+Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change an assistant's configuration itself.
+
+This one pins the folder, and that is not a precaution - it is required. JetBrains AI Assistant reports no MCP roots, starts stdio servers from the IDE installation directory rather than the open project, and exposes no environment variable naming the project.
+
+A bare command there resolves to the IDE's own install folder, which is not your code. The plugin action fills in the pin so you never type a path, but it is per project: paste it into that project's settings rather than a global one, and generate it again for the next project.
 
 The bare command resolves the current release each run, so agents pick up fixes without anyone
 editing a configuration file. Write `@latest` if you would rather that were explicit:
@@ -206,12 +190,9 @@ model sets the flag.
 
 For unused JavaScript imports, removing the last binding keeps the module load as `import './a'`. Whole TypeScript value imports are left for review because the load depends on compiler settings; `import type` can be removed. See [fixes and suggestions](/refactor/reference).
 
-Eligible fixes can span several lines: a debug statement on its own, an unused variable inside a
-function that is assigned a literal, a whole unused import or an unused name in an import, and two
-compatible imports merged into one. The [`iris fix` reference](/cli/commands#iris-fix) lists the
-languages and refusals for each. The same fixes are offered as a Quick Fix in VS Code and by
-`iris fix --safe`, from one shared planner, so the surfaces agree. `console.error` is never removed,
-because it reports real errors.
+Eligible fixes can span several lines: a debug statement on its own, an unused variable inside a function that is assigned a literal, a whole unused import or an unused name in an import, and two compatible imports merged into one. The [`iris fix` reference](/cli/commands#iris-fix) lists the languages and refusals for each.
+
+The same fixes are offered as a Quick Fix in VS Code and by `iris fix --safe`, from one shared planner, so the surfaces agree. `console.error` is never removed, because it reports real errors.
 
 Refusals are per finding, with a reason, and one refusal does not block the rest. Iris Code declines
 anything it cannot prove:
@@ -246,11 +227,9 @@ link pointing outside the workspace is refused rather than followed.
 
 Secret values are never returned, only the masked form every other Iris Code surface shows.
 
-`iris_check_dependency` and `iris_check_package` are the tools that reach the network, querying
-public package registries and OSV.dev. Both require `allow_network: true` on each call unless you have
-already allowed network lookups from the CLI, disclose what they are about to do, and fall back to a
-local cache. The agent's flag is never saved as your consent, and it cannot override lookups you
-have turned off with `iris deps --revoke-network`.
+`iris_check_dependency` and `iris_check_package` are the tools that reach the network, querying public package registries and OSV.dev. Both require `allow_network: true` on each call unless you have already allowed network lookups from the CLI, disclose what they are about to do, and fall back to a local cache.
+
+The agent's flag is never saved as your consent, and it cannot override lookups you have turned off with `iris deps --revoke-network`.
 
 ## Licensing
 
@@ -265,6 +244,5 @@ which your assistant can relay. It is never a silent empty result.
 The MCP server refuses repository tools with `HANDOFF_FORBIDDEN` when an organisation, project or committed `"agentHandoff": false` setting forbids the handoff. Tools stay listed and enforcement occurs on every call. The result names the restriction and has no upgrade link. `iris_check_package` keeps answering.
 
 See [Team governance](/teams/governance) for policy scope, session refresh, signed-out caching and the limits of these controls.
-
 
 [Refactor agent integration](/refactor/agents) describes deterministic plans, session baselines and opt-in finish verification.

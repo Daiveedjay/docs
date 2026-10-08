@@ -4,9 +4,7 @@ sidebarTitle: "Scoring weights"
 description: "Control how much each finding deducts from the health score via healthScoreWeights in .irisconfig.json. Amplify secrets, zero out noise. Requires Iris Code Pro."
 ---
 
-Every file starts at 100 and loses points as findings are added. A secret costs 10, a warning costs 3, and so on.
-
-Those defaults represent a judgement about what matters most, and yours may differ. A team publishing a public API might weight a missing return type more heavily than 2. A security-focused team might want a single `eval` to be enough to fail a file on its own. `healthScoreWeights` is how you express that.
+A scoring weight is the number of points a finding takes from a file?s health score. Custom weights let you make particular findings matter more or less for your project. For example, increasing the secret weight makes a detected access key reduce the score more strongly.
 
 <Note>
   Custom weights are Pro. Set `healthScoreWeights` in `.irisconfig.json`, or configure it visually in [Config Studio](/configuration/config-studio) under Custom Scoring.

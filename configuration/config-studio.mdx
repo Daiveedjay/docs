@@ -4,11 +4,9 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
 
-Config Studio is a visual editor for `.irisconfig.json`, so you can configure Iris Code without knowing the key names.
+Config Studio lets you choose your project settings in a visual form rather than editing JSON by hand. It produces a `.irisconfig.json` file that your editor, command line and gates can share. Use it to choose what Iris Code checks and what your project must pass.
 
-It lives at [iriscode.co/account/config](https://www.iriscode.co/account/config). Choose a preset, set your naming rules, and watch the JSON build up alongside your changes, then sync it to your editor. Presets, naming and the package guard are free; Pro adds custom thresholds, gate limits, scoring and severity overrides.
-
-In VS Code, run **Iris Code: Open Config Studio** from the Command Palette to open this page. The editor does not write a config until you review the sync diff and confirm it.
+Open **Account ? Config** on the Iris Code website to use Config Studio.
 
 ## What it covers
 
@@ -36,7 +34,9 @@ The preview on the right is the exact `.irisconfig.json` that Copy, Download and
 <Note>
   **Sync replaces the settings the studio controls and keeps the rest of your file.**
 
-  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, `refactor.destinations`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged. They appear in the diff, and VS Code also lists them when the sync finishes.
+  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, `refactor.destinations`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged.
+
+  They appear in the diff, and VS Code also lists them when the sync finishes.
 
   Everything else comes from the studio. A setting the studio controls but you left empty, such as a gate limit, is removed from the file.
 

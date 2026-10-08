@@ -6,11 +6,7 @@ badge: "New"
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "false positives", "precision", "recall", "async void", "LINQ", "unwrap", "panic"]
 ---
 
-A code-health tool is only worth running if you can trust what it flags. A rule that produces false positives gets ignored, and then disabled, and then it protects nothing at all.
-
-So every analysis rule in Iris Code is measured against a labelled corpus of real code. The results are recorded, and the build fails if any rule scores worse than its recorded baseline. It is a test that runs on every release rather than a claim about accuracy.
-
-This page covers what is measured, how, and where the current numbers live.
+The accuracy benchmark tests Iris Code against code examples with known expected results. It checks both whether real problems are found and whether harmless code is flagged by mistake. Use it to see the evidence for a particular rule and language, rather than relying on a single overall accuracy claim.
 
 ## What is measured
 
@@ -33,18 +29,12 @@ The benchmark lives in the analysis engine itself, versioned alongside the rules
 it measures, so a rule change and its expected-result change are always one
 commit.
 
-1. **A labelled corpus.** Every rule has a set of hand-written fixture files -
-   realistic code, not toy snippets - split into *positive* fixtures (the rule
-   should fire, with the exact line labelled) and *negative* fixtures (the rule
-   must stay silent). Negative fixtures deliberately encode the tricky
-   look-alikes: placeholder secrets, commented-out debug prints, parameterised
-   SQL, test-file credentials, uniform data tables that resemble duplication.
+1. **A labelled collection of examples.** Each rule has test files, called fixtures, with a known expected result. *Positive* examples contain a problem the rule should find; *negative* examples should produce no finding. Negative examples include fake secrets, debug prints inside comments and data tables that resemble repeated code. These test whether the rule can distinguish a problem from a harmless look-alike.
 2. **A deterministic run.** The harness analyses every fixture with the shipped
    `balanced` preset - never a machine-specific config - so the numbers are
    reproducible. A finding matches a label when the rule id matches and the line
    is within one line of the expected line.
-3. **Precision and recall per rule, per language**, computed from true
-   positives, false positives, and false negatives.
+3. **Precision and recall per rule, per language.** These are calculated from correct findings, false alarms and missed problems.
 
 Unmeasured rules are reported loudly, never hidden - a rule with no fixtures
 shows as unmeasured rather than silently counting as perfect.
@@ -55,44 +45,23 @@ Every rule carries a group in the benchmark data: **enforcement** for the
 high-confidence rules describing a defect worth stopping a push over, **advisory**
 for signals better suited to review - TODOs, magic numbers, `console.log`.
 
-This grouping is a confidence classification, and it is not the same thing as what
-blocks a push. Being precise about that matters, because an earlier version of this
-page said enforcement rules were "the rules that feed the quality gate" and advisory
-rules "never block anything", and neither half was quite true.
+The group describes how much confidence to place in a finding. Your gate settings separately decide whether it stops a change.
 
-What actually decides a block is the gate, which has nine thresholds of its own:
+The gate can check a minimum health score and specific thresholds, such as the number of secrets or duplicate blocks allowed. Advisory findings can contribute to the score, so they can still affect whether the gate passes. A dedicated threshold applies only when you configure it.
 
-- **The health-score threshold** (`minHealthScore`). Every finding costs points,
-  advisory ones included, so any rule can contribute to a failing score.
-- **Eight specific caps** - secrets, complexity, file length, smells per file,
-  security smells, suppressions, duplicate blocks and naming violations. Each has
-  its own configurable limit and is off unless you set it.
-
-So an advisory rule can help fail a score threshold, and an enforcement-group rule
-with no dedicated cap - `async-void`, for instance - reaches the gate only through
-the score like any other. The group tells you how much to trust a finding; the
-[gate configuration](/configuration/irisconfig) tells you what stops a push. Each
-rule's `gateRule`, where it has one, is in the
-[machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json).
+See [gate configuration](/configuration/irisconfig) for the full set of thresholds. The [machine-readable rule list](https://www.iriscode.co/benchmark/v1/rules.json) records each rule?s dedicated `gateRule`, where it has one.
 
 ## The regression tripwire
 
-The measured result is saved as a checked-in baseline. Iris Code's own test
-suite re-runs the benchmark on every change and **fails the build if any rule's
-precision or recall drops below its baseline**, or if a previously measured rule
-becomes unmeasured. Improvements never slip in silently either - regenerating the
-baseline is an explicit, reviewable step, so a rule getting better shows up in a
-diff.
+The measured result is saved as a checked-in baseline. Iris Code's own test suite re-runs the benchmark on every change and **fails the build if any rule's precision or recall drops below its baseline**, or if a previously measured rule becomes unmeasured.
 
-Because that test runs in the same suite gating every release, no release can
-ship an accuracy regression unnoticed.
+Improvements never slip in silently either - regenerating the baseline is an explicit, reviewable step, so a rule getting better shows up in a diff.
+
+The release checks block regressions on these measured cases. They cannot prove that every possible input will be detected correctly.
 
 ## What "rule count" means
 
-Four different numbers all get called "the rule count", and conflating them is the
-single most common mistake made about this page - including by AI agents summarising
-the site, one of which counted entries in the configuration schema and reported a
-different figure again. Each has a name here:
+A rule is one check, such as looking for a hardcoded secret. The same rule can run in several languages, so counting rules, languages and tested combinations produces different totals. These names explain which total each figure represents:
 
 | Term | What it counts | Where it lives |
 | --- | --- | --- |
@@ -118,12 +87,9 @@ with this page.
 **recall** is how many of the real issues the rule catches. Both groups are published,
 and so is the sample each percentage came from.
 
-Read the **Cases** column before reading any percentage. It is the number of labelled
-fixtures behind that row, and most rules sit between one and fifteen. At those sizes a
-single false alarm moves precision by tens of points, so every cell below 100% carries
-its own counts. There are two: `parse-error` in JavaScript is one correct finding and one
-false alarm, and `sql-concatenation` in JavaScript is two correct findings and one false
-alarm. Neither has ever missed a planted case.
+Read the **Cases** column before reading any percentage. It is the number of labelled fixtures behind that row, and most rules sit between one and fifteen. At those sizes a single false alarm moves precision by tens of points, so every cell below 100% carries its own counts.
+
+The imperfect cell is `sql-concatenation` in JavaScript: two correct findings and one false alarm. It caught every planted SQL-concatenation case in that sample.
 
 That cuts both ways - a row reading 100% on a single case is a much weaker claim than the
 same figure on fifteen. A `-` means the rule was not measured in that language, never
@@ -202,11 +168,9 @@ strong ones.
   assembled by concatenation. The TypeScript implementation measures 100% precision on
   the same corpus.
 
-  Tightening the pattern would trade a rare and harmless false alarm for the risk of
-  missing a real injection, and this rule feeds the gate, so recall matters more than
-  precision here. Recall has stayed at 100%: the rule has never missed a planted
-  injection on this corpus. A proper fix needs to know that a string is SQL bound for a
-  query call, which requires parsing rather than a narrower pattern.
+  Tightening the pattern would trade a rare and harmless false alarm for the risk of missing a real injection, and this rule feeds the gate, so recall matters more than precision here. Recall has stayed at 100%: the rule has never missed a planted injection on this corpus.
+
+  A proper fix needs to know that a string is SQL bound for a query call, which requires parsing rather than a narrower pattern.
 
 `parse-error` was listed here until core 0.4.6, at 50% precision in JavaScript. A regex
 literal such as `/{/` unbalanced the delimiter scan, so a file that parses correctly was
@@ -215,7 +179,7 @@ precision and 100% recall in all four languages that implement it.
 
 ## What is not published
 
-The corpus itself. It is 347 files of deliberately vulnerable code and
+The corpus itself. It is 361 files of deliberately vulnerable code and
 credential-shaped strings, so publishing it would mean distributing a library of exploit
 fixtures to make a point about openness. The results and the method are here; the
 fixtures stay in the engine.
@@ -225,11 +189,7 @@ language. Catch-all exception handling is one rule for both C# and Java: the sam
 defect with the same fix, so one severity setting and one suppression comment
 cover a codebase that uses both.
 
-The one sub-100% figure - SQL concatenation, where a sentence of prose containing
-a SQL keyword can occasionally read like a query - is a known, documented
-limitation kept honest rather than tuned away at the risk of missing a real
-injection. It affects the JavaScript implementation only; the figure shown is the
-average across all eight measured languages.
+The JavaScript SQL-concatenation check can mistake a sentence containing a SQL keyword for a query. Its precision cell records that false alarm directly. It is a result for JavaScript, not an average across languages.
 
 ## Known limitations
 
@@ -245,14 +205,9 @@ We would rather state these plainly than imply the benchmark is the last word:
 
 ## Tell us when a finding is wrong
 
-Every finding in the sidebar and Issues view has a small 👍 / 👎 control. If a
-rule flags something incorrectly - or nails something useful - rate it. The
-feedback is **count-only**: Iris Code records the rule id, the language, and your
-verdict, and nothing else. No source code, file paths, or line contents ever
-leave your machine, and the feedback respects the analytics setting in your
-account. Confirmed false positives become permanent negative fixtures in this
-corpus, so reporting one directly hardens the rule.
+Every finding in the sidebar and Issues view has a small 👍 / 👎 control. If a rule flags something incorrectly - or nails something useful - rate it. The feedback is **count-only**: Iris Code records the rule id, the language, and your verdict, and nothing else.
 
+No source code, file paths, or line contents ever leave your machine, and the feedback respects the analytics setting in your account. Confirmed false positives become permanent negative fixtures in this corpus, so reporting one directly hardens the rule.
 
 {/* >>> iris-refactor-review-start <<< */}
 

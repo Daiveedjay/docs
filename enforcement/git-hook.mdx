@@ -4,9 +4,7 @@ sidebarTitle: "Git hook"
 description: "Install a pre-push hook that runs Iris Code locally and blocks changes when the configured gate fails."
 ---
 
-The pre-push hook runs in front of `git push`. If any file in your project scores below your threshold, the push is blocked and the offending files are listed.
-
-Catching it here means nothing reaches the remote, so there is nothing to revert and no one else has to review it first.
+A pre-push hook is a command that runs automatically before Git sends your changes to a shared repository. The Iris Code hook runs your gate at that point, so a failed check can stop the push while the code is still on your machine. You choose the thresholds it must meet.
 
 <Note>
   The git pre-push hook requires **Iris Code Pro**.

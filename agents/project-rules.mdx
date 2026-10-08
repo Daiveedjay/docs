@@ -4,13 +4,7 @@ sidebarTitle: "Project rules"
 description: "Use iris rules to write the project's configured limits, naming conventions, and gate rules into the instruction files supported coding agents already read."
 ---
 
-An AI agent writing code in your repository does not know your file-length limit, your naming
-convention, or the score your pre-push hook blocks below. It finds out when something fails, which is
-after the work is done and after you have read the diff.
-
-`iris rules` writes those rules into the file your agent already reads. Nothing is analysed, nothing
-is sent anywhere, and no model is involved: the content is derived from `.irisconfig.json`, so it says
-what Iris Code actually enforces.
+Project rules are written instructions that tell a coding agent how your project should be built. Iris Code can generate these instructions from your configuration, so the agent sees the same standards that your scans and gates use. These instructions guide the agent; a gate provides the separate check that can stop a change.
 
 ## Generating the file
 
@@ -57,10 +51,9 @@ iris rules --refresh                         # update the ones this repo already
 In the editor the picker is multi-select: tick every file your team's agents read and they are all
 written from one confirmation.
 
-Each file gets the full rules rather than a pointer to another file. A `@AGENTS.md` import is
-Claude-specific syntax that reads as noise to every other tool, and a symlink does not survive a
-Windows checkout or a zip export. Every file owns its own block independently, so there is nothing to
-keep in sync by hand: run the command again and all of them update.
+Each file gets the full rules rather than a pointer to another file. A `@AGENTS.md` import is Claude-specific syntax that reads as noise to every other tool, and a symlink does not survive a Windows checkout or a zip export.
+
+Every file owns its own block independently, so there is nothing to keep in sync by hand: run the command again and all of them update.
 
 `--refresh` is the one to use in a script. It updates the files that already exist and creates
 nothing, so it cannot add an agent file to a repository whose conventions you do not own. If nothing
@@ -80,11 +73,9 @@ When size or complexity limits are set, a section on refactoring an over-limit f
 fixes first, verify after each move, and stop after the configured `maxCorrections` to show you the
 verdict and diff. It works without MCP.
 
-Only what is configured appears. Turn off magic-number detection and that rule is absent rather than
-stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file
-also tells agents to check a dependency before adding it and not to retry a blocked version. Set no naming policy and there is no naming section. Set gate limits and
-they appear under **What blocks a push**, because that is the part an agent most needs to know before
-it finishes.
+Only what is configured appears. Turn off magic-number detection and that rule is absent rather than stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file also tells agents to check a dependency before adding it and not to retry a blocked version. Set no naming policy and there is no naming section.
+
+Set gate limits and they appear under **What blocks a push**, because that is the part an agent most needs to know before it finishes.
 
 Gate limits and per-language blocks are included even on a Free licence. The file describes the
 config your project committed, which is what runs in your CI and on your teammates' machines, so

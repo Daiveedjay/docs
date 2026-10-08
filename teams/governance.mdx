@@ -28,7 +28,9 @@ A project can inherit the organisation policy or turn the handoff off. It cannot
 
 ## When changes take effect
 
-The running VS Code extension refreshes organisation and project policies at startup, when the window regains focus, and every ten minutes while signed in and online. Each MCP tool call reads the saved policy, so changes apply within a running session after a successful refresh; already-running calls finish under their starting policy. The CLI can be signed out. Offline or signed-out editors retain remembered restrictions and the existing seven-day verification rule. The repository key is read on every tool call: adding `false` takes effect on the next call. A restriction in a parent config or the requested target folder also applies.
+The running VS Code extension refreshes organisation and project policies at startup, when the window regains focus, and every ten minutes while signed in and online. Each MCP tool call reads the saved policy, so changes apply within a running session after a successful refresh; already-running calls finish under their starting policy.
+
+The CLI can be signed out. Offline or signed-out editors retain remembered restrictions and the existing seven-day verification rule. The repository key is read on every tool call: adding `false` takes effect on the next call. A restriction in a parent config or the requested target folder also applies.
 
 All active memberships contribute policy, regardless of Pro entitlement or whether the member has an active seat. Any restricting membership wins. Invited members are not governed until they join.
 

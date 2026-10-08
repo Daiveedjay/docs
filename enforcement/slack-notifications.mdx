@@ -4,15 +4,13 @@ sidebarTitle: "Slack notifications"
 description: "Send Iris Code gate results to a Slack channel. Your CI builds the message and sends it, so your file paths never touch our servers."
 ---
 
-A failed build is only visible to whoever opens the build log. Everyone else finds out later.
-
-Sending the result to a Slack channel makes it visible to the team at the moment it happens. One command sets it up:
+Slack notifications send a gate result to a channel your team already reads. They help people see a failed check without opening the build log. Run the setup command to connect the channel:
 
 ```bash
 iris slack setup
 ```
 
-It asks for a webhook URL, sends a test message so you watch it arrive, and tells you the one secret to add to your CI. Your existing Iris Code step doesn't change.
+A webhook URL is a private address that lets a tool post to your Slack channel. The setup asks for that URL, sends a test message so you watch it arrive, and tells you the one secret to add to your CI. Your existing Iris Code step doesn't change.
 
 ## What lands in the channel
 
@@ -40,9 +38,11 @@ A red stripe runs down the left edge on failure and a green one on success, so t
 
 **It stays quiet when the gate passes.** A message on every successful build trains people to ignore the channel. Add `--slack-on always` if you would rather have the confirmation.
 
-## What it does not send
+## What the message contains
 
-File names, scores, rule names and counts. Nothing else.
+Messages contain file names, scores, rule names and counts.
+
+## What it does not send
 
 It does not include your code, the text of a finding, the value of a detected secret (masked or otherwise), or the line it appeared on. When more than ten files break the same rule, the message shows ten and states how many were omitted rather than silently shortening the list.
 

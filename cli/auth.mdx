@@ -4,11 +4,7 @@ sidebarTitle: "Authentication"
 description: "Sign in to Iris Code CLI via browser OAuth for local development, or use IRIS_LICENCE_TOKEN for non-interactive CI runners. Credentials stored in ~/.iris/credentials."
 ---
 
-How you authenticate depends on where the CLI is running.
-
-**On your own machine**, run `iris auth login` and sign in through the browser.
-
-**On a CI runner**, set `IRIS_LICENCE_TOKEN` as a secret instead. The CLI reads it directly, so there is no login step in the pipeline.
+Signing in lets the command line use your Iris Code Pro licence. On your own machine, run `iris auth login` and choose browser sign-in or token entry. On an automated runner, store the licence as the `IRIS_LICENCE_TOKEN` secret so the check can run without a login prompt.
 
 ## The commands
 

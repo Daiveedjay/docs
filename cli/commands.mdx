@@ -4,9 +4,23 @@ sidebarTitle: "Commands"
 description: "Full reference for all twenty-one Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Twenty-one commands cover setup, code checks, safe fixes, refactor plans, the import graph, dependency audits, CVE gating, SBOM export, project rules, MCP, enforcement, reporting, authentication, and hooks. Anything marked **Pro** needs a licence; the rest work without an account.
+Use these terminal commands to set up Iris Code, scan code and check whether your project passes its standards. Anything marked **Pro** needs a licence; the other commands work without an account. The tables below explain each command?s options and exit codes.
 
-Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned. Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
+## Common tasks
+
+| Goal | Command | Next step |
+|---|---|---|
+| Set up a project | `iris init` | Review the generated settings |
+| Scan one file | `iris check path/to/file.ts` | Review its score and findings |
+| Check the project standard | `iris gate .` | Correct any failed thresholds; directory gates require Pro |
+| Plan a refactor | `iris refactor path/to/file.ts` | Review suggestions before changing code |
+| Check a package before installing | `iris install <package> --check` | Replace `<package>` with its name; this check installs nothing |
+
+## Understanding command results
+
+Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned.
+
+Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
 
 `iris init` sets a project up. After that, `iris check` gives a score and `iris gate` enforces one in CI.
 
@@ -71,13 +85,17 @@ Five kinds of fix qualify, and each can span several lines:
 | An unused name in an import that is otherwise used | `import { used, unused } from './a'` becomes `import { used } from './a'` | JavaScript, TypeScript |
 | Two compatible imports from the same module | Two named imports from `./a` become one | JavaScript, TypeScript, Vue and Svelte scripts, Python, Rust |
 
-Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do. A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
+Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do.
+
+A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
 
 The fixer also refuses whenever removing something could change what the program does or leave it incomplete:
 
 - `console.error` is never removed, because it reports real errors.
-- A debug statement is kept when its arguments could do work, such as an assignment, an increment, an `await` or a call to anything other than a simple formatter, when it is the whole body of an `if`, `else`, loop or arrow function, when it is the last expression of a Ruby method, or when removing it would leave an unused Go import or variable or an empty Python block.
-- A Python class attribute or module variable, a Go package variable, and a top-level variable in a JavaScript or TypeScript file without imports or exports are kept, because other code can read them. Function locals, and top-level variables in a module, are removed.
+- A debug statement is kept if its arguments could do work, such as assigning a value, incrementing a counter, using `await` or calling something other than a simple formatter.
+- It is also kept if it is the whole body of an `if`, `else`, loop or arrow function, or the last expression of a Ruby method.
+- A removal is refused if it would leave a Go import or variable unused, or a Python block empty.
+- A Python class attribute or module variable, a Go package variable, and a top-level variable in a JavaScript or TypeScript file without imports or exports are kept, because other code can read them. Unused literal-only function locals and eligible module variables can be removed.
 - A TypeScript value import whose names are all unused is kept, because whether the module still loads depends on `verbatimModuleSyntax`. JavaScript keeps the load as `import './a'`.
 - Imports in Vue and Svelte components are not removed, because the template can use a name the script check cannot see.
 - Type-only TypeScript imports are not merged, and nor are Rust `use` statements that carry an attribute or doc comment.
@@ -107,7 +125,9 @@ iris refactor src/handlers.ts --format json
 iris refactor src/handlers.ts --verify
 ```
 
-Each run of the CLI is a separate process, so it cannot keep the snapshot it planned against for a later `--verify`. Verification therefore compares with git HEAD, and the comparison includes any uncommitted changes you already had. To verify against the exact snapshot taken at planning time, use `iris_refactor_plan` and `iris_verify_refactor` on the [MCP server](/agents/mcp), or **Verify refactor** in the editor. See [verifying a refactor](/refactor/verification).
+Each run of the CLI is a separate process, so it cannot keep the snapshot it planned against for a later `--verify`. Verification therefore compares with git HEAD, and the comparison includes any uncommitted changes you already had.
+
+To verify against the exact snapshot taken at planning time, use `iris_refactor_plan` and `iris_verify_refactor` on the [MCP server](/agents/mcp), or **Verify refactor** in the editor. See [verifying a refactor](/refactor/verification).
 
 Verification is advisory: a `regressed` verdict does not change the exit code.
 
@@ -218,7 +238,9 @@ iris secrets --history
 iris secrets --history --depth 0
 ```
 
-`--history` finds secrets that were committed and later removed: every file version introduced by each commit (committed `.env` files included) runs through the same two-layer detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, the commits and files involved, and whether the secret is still in HEAD. Merge-commit content is covered, and coverage limits - depth, size caps, shallow clones - are always disclosed rather than implying a clean full history. Everything runs against local git; nothing leaves the machine. Rotation is the real fix: a secret that reached history should be rotated even if it was removed later.
+`--history` finds secrets that were committed and later removed: every file version introduced by each commit (committed `.env` files included) runs through the same two-layer detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, the commits and files involved, and whether the secret is still in HEAD.
+
+Merge-commit content is covered, and coverage limits - depth, size caps, shallow clones - are always disclosed rather than implying a clean full history. Everything runs against local git; nothing leaves the machine. Rotation is the real fix: a secret that reached history should be rotated even if it was removed later.
 
 | Exit code | Meaning |
 |---|---|
@@ -258,7 +280,9 @@ iris security ./src --format json
 
 **Pro.** Audits the dependencies of npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
 
-Installed versions are resolved from your lockfile when one is present (for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version. Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
+Installed versions are resolved from your lockfile when one is present (for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version.
+
+Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
 
 | Flag | Description |
 |---|---|
@@ -280,7 +304,9 @@ iris deps --no-cache --format json
 
 The first network lookup asks for consent and discloses exactly what is sent: package names and versions, nothing else. Your choice is persisted in `~/.iris/preferences.json`. Run with `--revoke-network` to disable lookups later, or `--allow-network` to re-enable them. When results come from the 24-hour cache, the output prints the age of the cached scan.
 
-No token or rate-limit setup is needed - OSV.dev lookups are unauthenticated and only the package name, ecosystem, and version are sent. Each advisory in the output carries a confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) plus the fixed-in version where one exists. Advisories without a verifiable id or severity are never shown - they are dropped and the skip count is disclosed in the output. Dependencies whose lookup errored are marked "not checked", never assumed clean.
+No token or rate-limit setup is needed - OSV.dev lookups are unauthenticated and only the package name, ecosystem, and version are sent. Each advisory in the output carries a confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) plus the fixed-in version where one exists.
+
+Advisories without a verifiable id or severity are never shown - they are dropped and the skip count is disclosed in the output. Dependencies whose lookup errored are marked "not checked", never assumed clean.
 
 | Exit code | Meaning |
 |---|---|
@@ -292,7 +318,9 @@ No token or rate-limit setup is needed - OSV.dev lookups are unauthenticated and
 
 ### iris cve
 
-**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found. This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise. Each matched advisory row shows its confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and the fixed-in version where one exists.
+**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found.
+
+This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise. Each matched advisory row shows its confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and the fixed-in version where one exists.
 
 | Flag | Description |
 |---|---|
@@ -334,11 +362,9 @@ manager, found from its lockfile. Known vulnerabilities, malicious-package repor
 deprecated and prerelease versions, and brand-new releases are all checked. See the
 [package guard](/agents/package-guard) for what each verdict means.
 
-With no package names it checks the whole project first: every package the lockfile would install,
-and the repository's own install scripts, which it shows and asks about before running the install.
-This is the check to run on a repository you have cloned and do not yet trust. See
-[Installing a whole project](/agents/package-guard#installing-a-whole-project). `iris add` and `iris i`
-are other names for the same command.
+With no package names it checks the whole project first: every package the lockfile would install, and the repository's own install scripts, which it shows and asks about before running the install. This is the check to run on a repository you have cloned and do not yet trust. See [Installing a whole project](/agents/package-guard#installing-a-whole-project).
+
+`iris add` and `iris i` are other names for the same command.
 
 | Flag | Description |
 |---|---|
@@ -395,7 +421,9 @@ If the package manager itself fails, its exit code is passed through.
 
 Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
 
-Some dependencies have no version to report: a NuGet `PackageReference` with no version and no Central Package Management entry, or two projects pinning different versions of the same package. Those components are still listed, because an SBOM that quietly omits a dependency is worse than one that admits it does not know the version. They carry a version-less `purl` such as `pkg:nuget/CsvHelper`, no `version` field, and an `iris:version-unresolved` property naming the reason. A purl with an invented version would be well-formed, so a scanner reading it would fail to match the package without reporting a problem.
+Some dependencies have no version to report: a NuGet `PackageReference` with no version and no Central Package Management entry, or two projects pinning different versions of the same package. Those components are still listed, because an SBOM that quietly omits a dependency is worse than one that admits it does not know the version.
+
+They carry a version-less `purl` such as `pkg:nuget/CsvHelper`, no `version` field, and an `iris:version-unresolved` property naming the reason. A purl with an invented version would be well-formed, so a scanner reading it would fail to match the package without reporting a problem.
 
 | Flag | Description |
 |---|---|

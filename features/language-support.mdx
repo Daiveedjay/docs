@@ -5,12 +5,10 @@ description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, 
 keywords: ["C#", "c sharp", "csharp", "c-sharp", ".NET", "dotnet", "dotnet core", "ASP.NET", "ASP.NET Core", ".cs", ".csproj", "MSBuild", "NuGet", "LINQ", "async void", "EF Core", "Entity Framework", "xUnit", "NUnit", "MSTest", "Java", "Spring", "Spring Boot", "Maven", "Gradle", ".java", ".properties", "Javadoc", "Rust", "Cargo", "crates.io", ".rs", "unwrap", "panic", "golang", "Rails", "ERB", "Gemfile", "single-file component", "SFC", "TSX", "JSX"]
 ---
 
-Ten supported languages include TypeScript, JavaScript, Go, Python, Ruby, C#, Java and Rust, plus Vue and Svelte components whose script blocks use the JavaScript or TypeScript analyser.
-
-The reason for separate parsers rather than one generic pass: a debug print is `console.log` in one language, `fmt.Println` in another, and `print()` in a third. A third-party import looks completely different in `go.mod` and `requirements.txt`. Analysis that doesn't know which language it's reading ends up counting lines and tokens, which tells you nothing.
+Iris Code scans ten programming languages, including the script sections of Vue and Svelte components. The checks available depend on the language because each has different syntax and risks. Use this page to see what your language supports and where the scan has limits.
 
 <Note>
-  **Don't compare scores across languages.** A TypeScript file carries deductions that simply don't exist in Go, Python, Ruby, C#, Java, or Rust: `any`, `@ts-ignore`, missing return types, non-null assertions. An 80 in Go and an 80 in TypeScript are not the same 80, and ranking a mixed codebase by score across languages will mislead you.
+  **Compare scores within the same language and settings.** A TypeScript file carries deductions that simply don't exist in Go, Python, Ruby, C#, Java, or Rust: `any`, `@ts-ignore`, missing return types, non-null assertions. An 80 in Go and an 80 in TypeScript are not the same 80, and ranking a mixed codebase by score across languages will mislead you.
 </Note>
 
 <Tabs>
@@ -20,7 +18,7 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     **TypeScript / JavaScript-specific features:**
 
     - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. Java also has unused import detection. Other language analysers do not flag unused imports; see [file analysis](/features/file-analysis).
-    - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript Metrics](/features/file-analysis#typescript-metrics) for the full breakdown.
+    - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript-specific checks](/features/file-analysis#typescript-specific-checks) for the full breakdown.
     - **Debug prints** - `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
 
     <Note>
@@ -85,7 +83,9 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.ruby` overrides all apply to Ruby the same way they apply to every other language.
 
     <Note>
-      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind. Dependency and CVE scanning does cover RubyGems when versions can be pinned from `Gemfile.lock`; unpinned Gemfile-only entries are reported as not checked rather than clean.
+      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind.
+
+      Dependency and CVE scanning does cover RubyGems when versions can be pinned from `Gemfile.lock`; unpinned Gemfile-only entries are reported as not checked rather than clean.
     </Note>
   </Tab>
 
@@ -106,7 +106,9 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     - **Test projects** - C# has no filename separator for tests, so `OrdersControllerTests.cs`, `OrderSpec.cs` and anything inside a `<Project>.Tests`, `.IntegrationTests` or `.UnitTests` directory are recognised as tests. Fixture credentials and `localhost` URLs there are not reported as production findings.
     - **Renaming** - a rename does not update type names, namespaces, or project references. Iris Code warns you when a `.cs` file is renamed.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.csharp` overrides all apply to C# the same way they apply to every other language. Secrets are read from `string` and `var` declarations, from property initialisers, and from project XML: `<UserSecretsId>` and MSBuild references such as `$(ApiTokenFromCi)` are the correct way to keep a credential out of the repository, and are never flagged.
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.csharp` overrides all apply to C# the same way they apply to every other language.
+
+    Secrets are read from `string` and `var` declarations, from property initialisers, and from project XML: `<UserSecretsId>` and MSBuild references such as `$(ApiTokenFromCi)` are the correct way to keep a credential out of the repository, and are never flagged.
 
     <Note>
       **No unused-code detection in C#.** Dependency injection, reflection, partial classes and source generators all reference code in ways static analysis cannot see, so Iris Code reports no unused members or unused packages for C# rather than reporting ones it cannot stand behind. NuGet dependency and CVE scanning is available through the [dependency table](/features/dependents-table); projects without `packages.lock.json` expose direct package declarations only.
@@ -128,7 +130,9 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     - **Test source sets** - Gradle lets a project declare any number of test source sets, and the convention is a `Test`-suffixed name. `src/test`, `src/integTest`, `src/javaRestTest`, `src/internalClusterTest`, `src/testFixtures` and their siblings are all recognised, as are `*Tests.java`, `*TestCase.java`, and Maven's failsafe `*IT.java` convention. Fixture credentials and `localhost` URLs there are not reported as production findings.
     - **Framework-reserved file names** - `application.properties`, `application-dev.properties`, and `messages.properties` are exempt from file-naming conventions, because Spring and `ResourceBundle` resolve them by exact filename. Renaming them would break the application.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.java` overrides all apply to Java the same way they apply to every other language. Credentials are read from field and local declarations, from setter calls such as `setPassword("...")`, from `Properties.put` entries, and from `.properties` keys. A committed `spring.datasource.password` is the most common Java credential leak and has no recognisable token format, so the name-based check is what catches it.
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.java` overrides all apply to Java the same way they apply to every other language. Credentials are read from field and local declarations, from setter calls such as `setPassword("...")`, from `Properties.put` entries, and from `.properties` keys.
+
+    A committed `spring.datasource.password` is the most common Java credential leak and has no recognisable token format, so the name-based check is what catches it.
   </Tab>
 
   <Tab title="Rust">
@@ -149,7 +153,11 @@ The reason for separate parsers rather than one generic pass: a debug print is `
     Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.rust` overrides all apply to Rust the same way they apply to every other language. Credentials are read from `let`, `const`, and `static` bindings and from struct literal fields, which is how Rust configuration is usually written.
 
     <Note>
-      **No unused-import detection in Rust.** A trait must be imported for its methods to be callable, and its name is then never written again: `use gpui::Styled;` is what makes `.bg(...)` compile. That usage is invisible to static analysis and rustc does not warn about it, so Iris Code reports no unused imports for Rust rather than reporting ones it cannot stand behind. Measured against a real Rust codebase, the check produced roughly three findings per file and nearly all of them were correct code. Cargo dependency and CVE scanning is available through the [dependency table](/features/dependents-table), and `Cargo.lock` gives the full resolved transitive tree.
+      **No unused-import detection in Rust.** A trait must be imported for its methods to be callable, and its name is then never written again: `use gpui::Styled;` is what makes `.bg(...)` compile.
+
+      That usage is invisible to static analysis and rustc does not warn about it, so Iris Code reports no unused imports for Rust rather than reporting ones it cannot stand behind. Measured against a real Rust codebase, the check produced roughly three findings per file and nearly all of them were correct code.
+
+      Cargo dependency and CVE scanning is available through the [dependency table](/features/dependents-table), and `Cargo.lock` gives the full resolved transitive tree.
     </Note>
   </Tab>
 </Tabs>

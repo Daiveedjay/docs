@@ -4,13 +4,13 @@ sidebarTitle: "Overview"
 description: "Use @iris-code/cli to run the same deterministic checks and gates from a terminal, git hook, build script, or CI pipeline."
 ---
 
-The same analysis, without an editor. Install it, point it at a file or a directory, and you get the scores and findings the sidebar would show you.
+The command-line interface (CLI) lets you use Iris Code by typing commands in a terminal. It can scan code, check packages and run a gate without opening an editor. This makes it useful for scripts, automated checks and developers who prefer the terminal.
 
 ## When to use which
 
 The extension is interactive. It scores files as you work and puts findings next to the code you are writing.
 
-The CLI is not. It scans, prints a result, and exits with a status code another tool can act on. That makes it the right choice for hooks, build scripts and CI pipelines, where no one is watching a sidebar and the only meaningful output is whether to continue.
+The CLI scans, prints a result and returns a status code that another tool can read. Hooks, build scripts and automated pipelines use that code to decide whether to continue.
 
 ## Installing
 

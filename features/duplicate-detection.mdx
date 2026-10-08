@@ -4,11 +4,7 @@ sidebarTitle: "Duplicate detection"
 description: "Finds copy-pasted blocks even after renaming and reformatting, shows both sides, and can fail a build on them."
 ---
 
-Copy-pasted code rarely stays identical. Variables get renamed, literals change, formatting shifts, and a plain text search stops finding it.
-
-Iris Code normalises source before comparing it: identifier names, string and number literals, whitespace and comments are ignored, while keywords and structure are kept verbatim. Two blocks that differ only in naming still match, and two genuinely different constructs still do not.
-
-Detection is **free**. The side-by-side diff view and the gate cap are Pro.
+Duplicate detection looks for code blocks that repeat across your project. Repeated code can make a change harder to maintain because the same fix may be needed in several places. Iris Code points out matching blocks so you can decide whether sharing the code would make it clearer.
 
 ## What counts as a duplicate
 

@@ -1,10 +1,10 @@
 ---
 title: "Fixes and suggestions reference"
 sidebarTitle: "Fixes and suggestions"
-description: "Mechanical fixes and structural suggestions have different evidence requirements. The plan reports the exact ranges and refusals so you can review the change before applying it."
+description: "See which small fixes Iris Code can offer, which larger changes need review, and why some edits are left for you."
 ---
 
-Mechanical fixes and structural suggestions have different evidence requirements. The plan reports the exact ranges and refusals so you can review the change before applying it.
+A refactor plan contains two kinds of change. Mechanical fixes are small edits you can preview and apply; structural suggestions are larger changes that you or a coding agent must review and make.
 
 ## Mechanical fixes
 
@@ -16,7 +16,40 @@ Mechanical fixes and structural suggestions have different evidence requirements
 | `remove-debug-statement` | An isolated debug call | All ten, where a statement is proved | A multiline debug statement is removed |
 | `remove-unused-literal-variable` | An unused literal-only binding with proved local scope | JS/TS, Vue/Svelte scripts, Go, Python | The declaration is removed without evaluating an expression |
 
-Import merging refuses namespace/named combinations, mixed type-import styles, two type-only TypeScript imports, Rust `use` statements carrying an attribute or doc comment, side-effect imports and comments between statements. Removing the last name from an import can stop its module loading, and a module can run code when it loads. JavaScript always loads an import, so the fix keeps that as a side-effect import. TypeScript removes an unused value import by default but keeps it under `verbatimModuleSyntax`, so no single edit is right for both, and the fix is left for you. Imports in Vue and Svelte components are never removed, because the template can use a name the script check cannot see. Python class or module attributes and Go package variables are kept. JavaScript and TypeScript top-level bindings are eligible only in a module; shared script bindings are kept. Debug removal refuses a shared-line statement, an unclosed call, arguments that could have side effects (assignments, increments, `await` or calls other than simple formatters), a statement that is the whole body of a braceless `if`, `else`, loop or arrow function, the last expression of a Ruby method, a removal that would leave a Go import or variable unused, and one that would leave a Python block empty. `console.error` is error reporting and is never eligible. Unused function deletion is a suggestion, not a mechanical fix.
+### Imports that need review
+
+An **import** lets one file use code from another. Loading that other file can also run code, such as registering a plugin. Removing an unused name must not accidentally stop that work.
+
+JavaScript keeps the module loading with a side-effect import, such as `import './a'`. TypeScript behaves differently depending on `verbatimModuleSyntax`, so Iris Code leaves a whole unused value import for you to review. A type-only import, written with `import type`, does not load a module and can be removed.
+
+Vue and Svelte imports are kept because a component's template may use a name that appears unused in its script.
+
+Iris Code also leaves these import combinations unchanged:
+
+- A namespace import combined with a named import.
+- Mixed type-import styles, or two type-only TypeScript imports.
+- Rust `use` statements with an attribute or documentation comment.
+- Side-effect imports, or imports with comments between the statements being merged.
+
+### Variables that need review
+
+A variable may be used by code outside the part Iris Code can check. Python class or module attributes and Go package variables are therefore kept.
+
+JavaScript and TypeScript declarations at the top of a file are eligible only when the file is a module. Shared script declarations are kept because another script may use them.
+
+### Debug statements that need review
+
+A debug statement prints information while you work. Iris Code only offers to remove one when it can identify the complete statement without removing other work.
+
+The fix is left for you when:
+
+- The statement shares a line with other code, or its call is unfinished.
+- Its arguments may do work, such as assigning a value, incrementing a counter, using `await` or calling something other than a simple formatter.
+- It is the entire body of an `if`, `else`, loop or arrow function without braces.
+- It is the last expression of a Ruby method, which can determine the return value.
+- Removing it would leave a Go import or variable unused, or a Python block empty.
+
+`console.error` reports errors and is never removed. Removing an unused function is a suggestion to review, rather than an automatic mechanical fix.
 
 ## Structural suggestions
 
@@ -38,11 +71,21 @@ Import merging refuses namespace/named combinations, mixed type-import styles, t
 | `derive-without-effect` | A proved effect whose work is derived state | React JSX/TSX, Vue and Svelte | Local | A derived value is calculated without an effect |
 | `extract-component` | A proved child markup subtree | React JSX/TSX and Vue | Cross-file | Markup becomes a component with explicit props |
 
-The reported risk, rather than the typical risk above, governs each observation. Existing exports and changed signatures can produce `changes-public-api`; approval is required by default. Estimated effect is a structural estimate, not a promise that the gate will pass. Nested ranges are counted once.
+Check the risk shown on your actual suggestion. The table gives typical risks, but the effect depends on your code.
 
-Reflected or framework entry points, metadata outside a proved range, ambiguous boundaries and unsupported syntax are refused. Every suggestion is subject to the [language coverage table](/refactor/language-coverage).
+A **public API** is code that other files or projects depend on. Changing an exported name or the arguments a function accepts can be marked `changes-public-api`; by default, this needs approval.
 
+The estimated effect is a guide to the size of the change. It does not promise that the gate will pass, and overlapping parts of the code are counted only once.
+
+Iris Code leaves a change for review when it cannot identify the complete code to move. This includes some functions called indirectly by a framework, related metadata outside the identified code, and syntax it does not support.
+
+See the [language coverage table](/refactor/language-coverage) before relying on a particular suggestion.
 
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Conventions](/refactor/conventions)
+- [Verification](/refactor/verification)
+- [Configuration](/refactor/configuration)
+- [Agent integration](/refactor/agents)
+- [Language coverage](/refactor/language-coverage)

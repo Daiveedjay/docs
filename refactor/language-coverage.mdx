@@ -1,14 +1,22 @@
 ---
 title: "Refactor language coverage"
 sidebarTitle: "Language coverage"
-description: "Language support depends on the evidence each detector can prove. The generated table separates implemented suggestions from inapplicable syntax and omissions found during real-source review."
+description: "See which refactor fixes and suggestions are available for each language, and why some are left out."
 ---
 
-Language support depends on the evidence each detector can prove. The generated table separates implemented suggestions from inapplicable syntax and omissions found during real-source review.
+Not every refactor suggestion is available in every language. Use this table to check what Iris Code can suggest for your files and where a change still needs to be handled without a suggestion.
 
 ## Coverage
 
-`built` means implemented, not behaviour-preserving. Component rows for TypeScript and JavaScript require JSX/TSX; they are inapplicable to ordinary non-component files. Vue and Svelte use their native component structure. A built suggestion can still refuse an ambiguous range.
+The table uses three labels:
+
+- **`built`**: Iris Code can offer this suggestion in the language. You still need to review it and test the change.
+- **`left-out`**: Iris Code does not offer this suggestion in the language.
+- **`not-applicable`**: the language or kind of file does not have the feature this suggestion needs.
+
+TypeScript and JavaScript component suggestions need JSX or TSX component code. They do not apply to ordinary files. Vue and Svelte use their own component structure.
+
+Even a `built` suggestion may be left out of a particular plan when Iris Code cannot clearly identify the code to change.
 
 {/* >>> iris-refactor-coverage-start <<< */}
 
@@ -47,7 +55,11 @@ Every `left-out` cell above has a measured reason, which each plan reports in it
 
 The review threshold removes a suggestion from a language when more than one in ten observed suggestions is definite nonsense. The [generated review evidence](/trust/accuracy-benchmark#refactor-suggestion-evidence) records observations and omissions from a review of 200 plans across the ten languages. No overall suggestion accuracy is claimed.
 
-
 ## Related pages
 
-[Overview](/refactor/overview), [fixes and suggestions](/refactor/reference), [conventions](/refactor/conventions), [verification](/refactor/verification), [configuration](/refactor/configuration), [agent integration](/refactor/agents), and [language coverage](/refactor/language-coverage).
+- [Overview](/refactor/overview)
+- [Fixes and suggestions](/refactor/reference)
+- [Conventions](/refactor/conventions)
+- [Verification](/refactor/verification)
+- [Configuration](/refactor/configuration)
+- [Agent integration](/refactor/agents)
