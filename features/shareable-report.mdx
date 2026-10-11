@@ -1,0 +1,65 @@
+---
+title: "Shareable scan reports"
+description: "Export a saved Iris Code scan as a private summary card or PDF."
+---
+
+A shareable report gives someone a readable snapshot of a project's health score and checked categories. The card leaves out code, paths, secret values and vulnerable package names.
+
+## Export a saved scan
+
+In VS Code or JetBrains, select the download icon in the Iris Code sidebar header. You can also run **Iris Code: Share Report** from the VS Code command palette or the JetBrains **Tools > Iris Code** menu, or select **Share report** on the **Workspace** tab after a scan. In the dashboard, select a completed cloud scan and use **Share report** beside its summary. The preview offers **Portrait**, **Landscape**, **Save PNG**, **Save SVG**, **Save PDF**, **Copy image** and a caption with alternative text for the image.
+
+Pro can export completed scans and run a fresh scan when needed. Free can export its saved first workspace scan, without running it again. A stale warning tells you when the selected snapshot may no longer describe the current files.
+
+The portrait card is 1080 by 1350 pixels; landscape is 1200 by 675. Both use embedded fonts. SVG is a vector image that stays sharp when resized, and PDF provides the supporting pages you select, with continuation pages when needed.
+
+## Read the numbers
+
+The health score is the whole-project score already shown by the surface that ran the scan. The six card tiles count shipped code, which is the code your users run. Counts from test and example files are labelled separately.
+
+Tests are test files. Examples are demo and sample code in folders such as `examples`, `demos`, `samples`, `playgrounds`, `integrations` or `sandbox`. Neither changes the shipped-code tiles.
+
+The band legend shows all three score ranges in their own colours: green for 80-100, amber for 60-79 and red for 0-59. The range that contains the scan's score is filled.
+
+**Not checked** means that the scan cannot establish a count. It never means zero. Saved cloud scans currently lack some of the coverage and threshold information needed by this report, so those fields stay **Not checked** even when the findings list is empty.
+
+**Passes its own standard** or **Below its own standard** appears only when the exact configuration used for the scan is committed in that repository. Local settings and defaults do not establish that verdict. Static analysis reads the code; it does not run the program or its tests, and the score does not prove that the program is correct.
+
+## Choose what to share
+
+The **PDF pages** section is always visible. Each dialog opens with **Full** selected and **Include file names** off. These choices affect the PDF; portrait and landscape cards keep the same content.
+
+| Choice | Pages included |
+| --- | --- |
+| **Summary** | Summary only |
+| **Full** | Summary, Findings by category, Where to look, The standard used, and Score trend when available |
+| **Custom** | Your selected whole pages, with Summary always included |
+
+**Summary** is ticked and locked. Selecting or clearing another page makes a custom selection; an exact match to Summary or Full activates that button again. The standard's continuation pages always travel with that section, and page numbers have no gaps.
+
+**Score trend** needs more than one saved scan. **Dependencies** needs a saved dependency audit and is off in every preset. Selecting it includes package names, versions, statuses and advisory IDs on separate PDF pages. Statuses use the Dependencies table colours: red for vulnerable, amber for outdated, green for up to date and grey when the status is unknown. Each advisory ID links to its public page on [OSV.dev](https://osv.dev). Unavailable pages are disabled with a reason; an export also tells you if a requested page was left out.
+
+**Where to look** groups low-scoring areas and duplicated blocks by folder. Select that page to enable **Include file names**, which adds relative file names. Cards always omit file paths and package identities. Source code and secret values stay out of all formats.
+
+Every report identifies the saved scan's date, Iris Code version and available provenance. A report made from a downloaded copy says so rather than claiming a Git commit. Score trend appears only when saved history supplies a comparison.
+
+## Export from the terminal
+
+HTML remains the default for `iris report`. A new whole-directory scan requires Pro. Image and PDF formats reuse a Free user's saved first workspace scan, or run a fresh scan with Pro.
+
+```bash
+iris report --format png --size portrait
+iris report --format svg --size landscape --output summary.svg
+iris report --format pdf --pages summary
+iris report --format pdf --pages full
+iris report --format pdf --pages standard,trend --output selected.pdf
+iris report --format pdf --pages areas,dependencies --include-paths
+```
+
+The PDF defaults to Full. Summary writes `iris-report-summary.pdf`, Full writes `iris-report.pdf`, and a custom selection writes `iris-report-custom.pdf` unless you supply `--output`. Each unavailable requested page prints a reason to stderr without changing a successful exit code. `--pages` with HTML, PNG or SVG exits with code 2. The command prints the output location after the export succeeds. The existing HTML output remains available for a single-file report.
+
+## Related pages
+
+- [Workspace scans](/features/workspace-analysis)
+- [Health score and thresholds](/configuration/irisconfig)
+- [Cloud scans](/cloud/overview)

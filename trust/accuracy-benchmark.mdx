@@ -23,6 +23,8 @@ figure would average away exactly the detail that matters - a rule can be
 excellent at catching secrets and mediocre at flagging open redirects, and you
 deserve to see that per rule. The published tables are per-rule and per-language.
 
+The gate uses the configured `minHealthScore` threshold and optional category thresholds. An advisory finding can reduce the health score enough to fail that check. The `async-void` rule belongs to the enforcement group, but affects the gate through the score because it has no separate category threshold.
+
 ## How it works
 
 The benchmark lives in the analysis engine itself, versioned alongside the rules
@@ -98,7 +100,7 @@ are in the [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.js
 you want the arithmetic rather than the ratio.
 
 {/* >>> iris-benchmark-start <<< */}
-_Generated from the benchmark corpus in `@iris-code/core` 0.5.1. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
+_Generated from the benchmark corpus in `@iris-code/core` 0.6.0. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
 
 **38 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 27 advisory. 174 measured rule-language pairs over 361 fixture files (245 positive, 186 negative). Unmeasured rules: 0.
 

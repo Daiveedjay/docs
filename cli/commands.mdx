@@ -569,14 +569,20 @@ Tool-by-tool behaviour, the preview-token write gate, and the response caps are 
 
 ### iris report
 
-Runs a workspace scan and exports the results as a standalone HTML file. The output mirrors the export produced by the editor extension. **Free.**
+Exports HTML by default, or a PNG/SVG card or selected PDF pages. Free can export its saved first workspace scan as a card or PDF. A fresh directory scan requires Pro; a single-file HTML report remains Free. The editor uses the same card and PDF builder.
 
 | Flag | Description |
 |---|---|
 | `[path]` | File or directory to scan (defaults to current directory) |
 | `--output <path>` | Output file path (default: `./iris-report.html`) |
 | `--config <path>` | Use a specific `.irisconfig.json` |
-| `--min-score <n>` | Health score threshold 0–100 |
+| `--min-score <n>` | Health score threshold 0-100 |
+| `--format <format>` | `html` (default), `png`, `svg` or `pdf` |
+| `--size <size>` | Card layout: `portrait` (default) or `landscape` |
+| `--pages <selection>` | PDF only: `summary`, `full` (default), or comma-separated page IDs |
+| `--include-paths` | Include relative file names when Where to look is selected |
+
+Page IDs, in output order: `summary`, `findings`, `areas`, `standard`, `trend`, `dependencies`. Summary is always included. Full includes the first four sections and an available trend; Dependencies is opt-in. Standard continuation pages keep their section number. Trend needs more than one saved scan, and Dependencies needs a saved dependency audit.
 
 ```bash
 # Export a report to the default location
@@ -584,7 +590,15 @@ iris report
 
 # Export a report to a custom path
 iris report --output ./reports/latest.html
+
+# Export one PDF page
+iris report --format pdf --pages summary
+
+# Export selected sections, with Summary included automatically
+iris report --format pdf --pages standard,trend
 ```
+
+Full writes `iris-report.pdf`, Summary writes `iris-report-summary.pdf`, and Custom writes `iris-report-custom.pdf` unless you use `--output`. Cards are named by size, such as `iris-report-portrait.png`. A page you list in `--pages` that the scan cannot provide prints `Left out <id>: <reason>` to stderr. Full includes the score trend only when there is saved history, and does not print a notice when it leaves it out. The export still exits 0 if it succeeds. An unknown page ID, or `--pages` with HTML, PNG or SVG, exits 2.
 
 | Exit code | Meaning |
 |---|---|

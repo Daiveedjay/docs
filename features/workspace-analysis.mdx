@@ -78,26 +78,11 @@ How it works:
   Free keeps 2 rolling snapshots, so about two days. Pro keeps them all, which is what you need for week-over-week or month-over-month.
 </Tip>
 
-## Exporting it
+## Sharing a report
 
-Turn the current analysis into a single dark-themed HTML file you can send someone, attach to a PR, or keep.
+A completed workspace scan can be shared as a summary card or a PDF report. Select the download icon in the Iris Code sidebar header, or run **Iris Code: Share Report** from the command palette, to open the export options.
 
-<Steps>
-  <Step title="Run a scan">
-    File, folder or workspace. There has to be something to export.
-  </Step>
-  <Step title="Run the command">
-    **Iris Code: Export Scan Report as HTML** from the command palette.
-  </Step>
-  <Step title="Pick where it goes">
-    Defaults to `iris-report.html` in your project root.
-  </Step>
-  <Step title="Look at it">
-    **Open in Browser** on the confirmation.
-  </Step>
-</Steps>
-
-The file is self-contained. No assets, no internet, no build step; it opens on any machine you send it to. It includes only the scans you actually ran.
+The card leaves out file paths, source code and secret values, so it is safe to post or attach to a pull request. [Shareable scan reports](/features/shareable-report) explains each format and what the numbers mean.
 
 From the terminal:
 
@@ -105,8 +90,8 @@ From the terminal:
 iris report
 ```
 
-Writes `iris-report.html` to the current directory. `--output <path>` puts it elsewhere, and you can pass a directory to scan.
+Writes `iris-report.html` to the current directory. `--output <path>` puts it elsewhere, and you can pass a directory to scan. In the next release, fresh directory scans require Pro.
 
 <Note>
-  Export is free on every plan. It's a snapshot, so rerun the scan and export again for fresh numbers.
+  The next release adds [shareable scan cards and PDFs](/features/shareable-report). Free shares its saved first workspace scan; Pro can refresh it.
 </Note>

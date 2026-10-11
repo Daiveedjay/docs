@@ -8,6 +8,23 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.37.0 - 2026-10-11
+
+### Added
+
+- **Added** shareable reports: a portrait or landscape card (PNG or SVG), a copied image with a ready-written caption, or a PDF report of your last workspace scan. Open it from the download icon in the sidebar header, **Share report** on the **Workspace** tab, the dashboard or `iris report`. Free shares its saved first project review; Pro can refresh the scan. See [shareable scan reports](/features/shareable-report).
+- **Added** PDF page choices. **Summary** is a one-page overview and **Full** includes every page the scan supports. Changing any switch makes a custom selection, and each switch explains what it adds.
+- **Added** status colours and a link to each advisory on the PDF's dependency pages. **Open Dependency Audit** in the dialog runs the audit if you have not.
+- **Added** `--format png|svg|pdf`, `--size` and `--pages` to `iris report`. HTML stays the default.
+
+### Changed
+
+- **Changed** the workspace score in the sidebar, the JetBrains panel and Code Map to round down, as the push hook and `iris gate` do. It can read one point lower than before, and it no longer counts files that could not be analysed.
+
+### Removed
+
+- **Removed** the editor's HTML scan report. The download icon in the sidebar header now opens the shareable report; `iris report` still writes HTML by default.
+
 ## v1.36.1 - 2026-10-07
 
 ### Fixed
