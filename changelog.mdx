@@ -427,7 +427,7 @@ Version 1.23.2 followed the same day with a fix to the release process itself an
 
 ### Java and Rust join the same engine
 
-Java and Rust are analysed everywhere Iris Code runs - the editor, the CLI, hooks, and CI - which brings the total to nine languages. Both arrive with the full rule set rather than a subset: functions and methods, imports, nesting, complexity, magic numbers, debug output, TODOs, secrets, security smells, duplicate detection, suppressions, file naming, scoring, and gates. Ships alongside `@iris-code/cli` 1.15.0. See [Language support](/features/language-support).
+Java and Rust are analysed everywhere Iris Code runs - the editor, the CLI, hooks, and CI - which brings the total to ten languages. Both arrive with the full rule set rather than a subset: functions and methods, imports, nesting, complexity, magic numbers, debug output, TODOs, secrets, security smells, duplicate detection, suppressions, file naming, scoring, and gates. Ships alongside `@iris-code/cli` 1.15.0. See [Language support](/features/language-support).
 
 - **Added** Java analysis for `.java` source and `.properties` configuration. A `.properties` file is read as configuration rather than code: it is scanned for committed credentials, and its ports and log levels are not reported as unexplained numbers.
 - **Added** Rust analysis, covering functions, modules, imports, complexity, secrets, suppressions, naming, scoring, gates, and duplicate detection.
