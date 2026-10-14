@@ -8,6 +8,20 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.38.0 - 2026-10-14
+
+### Added
+
+- **Added** the [Schema graph](/features/schema-graph): your database tables, columns and the links between them, read from your code. It reads Prisma, SQL migrations (PostgreSQL, MySQL and SQLite), Drizzle, Django, Rails and Diesel. A solid line is a foreign key the database checks; a dashed line was found in code only. Open it with **Iris Code: Open Schema** or the **Schema** tab in Code Map.
+- **Added** a **Tables** view, an inspector, and a side-by-side comparison when two sources describe the same table differently. When more than one source declares a table, switch between them to see each one's columns and types.
+- **Added** PNG, SVG, JSON, Mermaid and DBML exports of the schema. Images embed the panel's fonts, so they look the same wherever they are opened.
+- **Added** `iris schema` in the CLI and `iris_schema` for coding agents, so an agent can check real table and column names before writing a query or migration.
+- **Added** a **Schema** tab to the cloud Code Map and to the [Playground](https://www.iriscode.co/playground).
+
+### Plans
+
+- The whole schema, its exports and usage for one table are Free. Usage and warnings across all tables at once require Pro.
+
 ## v1.37.0 - 2026-10-11
 
 ### Added

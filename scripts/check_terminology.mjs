@@ -38,6 +38,8 @@ const RULES = [
  * Keyed by "<file>:<line>" so a rule cannot be silenced file-wide by accident.
  */
 const ALLOW = new Set([
+  // Phase 10.7 requires this exact code-only relation disclosure.
+  "features/schema-graph.mdx:24",
   // The terminology page has to spell the forms it forbids in order to forbid them.
   "reference/terminology.mdx:102",
   "reference/terminology.mdx:103",
@@ -79,3 +81,4 @@ if (failures.length > 0) {
 }
 
 console.log("Terminology guard: every page uses one name per thing.");
+

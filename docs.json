@@ -31,6 +31,7 @@
               "features/workspace-analysis",
               "features/shareable-report",
               "features/code-map",
+              "features/schema-graph",
               "features/hardcoded-secrets",
               "features/security-smells",
               "features/duplicate-detection",
@@ -191,3 +192,4 @@
     }
   }
 }
+

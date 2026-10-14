@@ -1,7 +1,7 @@
 ---
 title: "Iris Code CLI command reference"
 sidebarTitle: "Commands"
-description: "Full reference for all twenty-one Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
+description: "Full reference for Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris schema, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
 Use these terminal commands to set up Iris Code, scan code and check whether your project passes its standards. Anything marked **Pro** needs a licence; the other commands work without an account. The tables below explain each command?s options and exit codes.
@@ -171,6 +171,26 @@ The JSON carries `schemaVersion: 1`. The whole graph is `{ schemaVersion, root, 
 
 ---
 
+### iris schema
+
+Available from CLI 1.28.0. Prints the [Schema graph](/features/schema-graph), with real database table and column names read from code. Whole-schema structure is **Free**. Usage for one table is Free; aggregate usage requires **Pro**.
+
+```bash
+iris schema . --format json
+iris schema . --table users --usage
+iris schema . --format dbml
+```
+
+| Argument or flag | Meaning |
+| --- | --- |
+| `[path]` | Project directory, defaults to the current directory |
+| `--format <format>` | `text` (default), `json`, `mermaid` or `dbml` |
+| `--table <name>` | Focus a database name, model name or canonical table ID and its neighbours |
+| `--usage` | Include usage and warnings; without `--table`, Pro is required |
+
+JSON carries `schemaVersion: 1`. Unresolved references, conflicts and not-read statements are informational: success exits 0. Invalid arguments or unknown/ambiguous tables exit 2; a build error exits 1. Free aggregate usage prints the standard Pro warning and exits 0 without exporting aggregate data.
+
+---
 ### iris check
 
 Scores source files and prints health findings. Single-file scans are free; scanning a directory or using `--staged` / `--changed` requires Pro.
@@ -697,3 +717,4 @@ npx @iris-code/cli@latest hook verify [path] --sha <full-commit-id> --format pre
 **Pro.** Checks Team evidence for a passing pre-push hook record. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers. A missing record warns and attempts to write **Push with no hook record**. This command is the exception to the general entitlement exit-code rule: it always exits `0`, including for missing licence, invalid arguments and network failures.
 
 See [Team governance](/teams/governance) for SHA resolution and every reason a check can be skipped.
+

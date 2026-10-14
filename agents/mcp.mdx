@@ -129,6 +129,7 @@ outside development.
 | Tool | Tier | What it returns |
 |---|---|---|
 | `iris_check` | Free | Findings for a path, with rule ids, lines and severities |
+| `iris_schema` | Free | Database tables, columns and declared relations, with focused-table usage; aggregate usage is Pro |
 | `iris_config` | Free | The project's resolved thresholds, weights and gate limits |
 | `iris_fix_safe` | Free | Preview, then apply, only the fixes Iris Code can prove safe |
 | `iris_refactor_plan` | Free | A refactor plan for a file: proved mechanical fixes, then suggestions ordered by risk, with a session `baseline_id`. See [agent integration](/refactor/agents) |
@@ -246,3 +247,11 @@ The MCP server refuses repository tools with `HANDOFF_FORBIDDEN` when an organis
 See [Team governance](/teams/governance) for policy scope, session refresh, signed-out caching and the limits of these controls.
 
 [Refactor agent integration](/refactor/agents) describes deterministic plans, session baselines and opt-in finish verification.
+
+## iris_schema
+
+Before writing a query, migration or model change, call `iris_schema` to get the real names instead of guessing. It reads the [Schema graph](/features/schema-graph) from the server's current project root and refreshes files between calls.
+
+Parameters are `table` (optional database name, model name or table ID), `format` (`json`, `mermaid` or `dbml`, defaults to JSON), and `include_usage` (optional boolean). Whole-schema structure and one table's usage are Free. Aggregate usage is refused with `PRO_REQUIRED` on Free. Repository governance is checked before entitlement, including when a client cached the tool list.
+
+JSON carries `schemaVersion: 1`. The result discloses capped output and unresolved references rather than guessing. Schema information does not change scores or gates.

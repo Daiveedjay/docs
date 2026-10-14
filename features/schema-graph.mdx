@@ -1,0 +1,94 @@
+---
+title: "Schema graph"
+description: "Read real database table names, columns and declared relations from your project before changing a query, migration or model."
+---
+
+Schema graph draws the database tables and relations declared in your code. It helps you find the actual table and column names before changing a query or migration, without connecting to a database or running your application.
+
+<Note>
+  Schema graph is available from version 1.38.0. The whole schema, its exports and usage for one focused table are Free. Usage and warnings across all tables require Pro.
+</Note>
+
+## Opening the graph
+
+In VS Code or JetBrains, run **Iris Code: Open Schema**, or select **Schema** in Code Map. The cloud Code Map also has a **Schema** tab for the selected completed scan. In the [Playground](/playground), **Open Schema** opens an editable Prisma sample; changes redraw in your browser and nothing you type is uploaded.
+
+Use **Find a table** (or press `/`) to search database names or model names. Select a table to inspect the files that use it, its relations, columns and declaring files, then open a source location to review the declaration. **Whole database** shows every table. The second button, named after the selected table (for example **orders + related**), shows only that table and the tables it links to, which keeps a large diagram readable; the inspector's **Show only ... and its related tables** does the same, and a note above the diagram says which table you are focused on. When a project has more than one source or database schema, **Show tables from** beside the search narrows the diagram to one of them.
+
+**Diagram** and **Tables** switch how the same tables are shown. **Tables** works like a database tool: a filterable list of tables on the left and, for the selected table, where each source declares it, counts of columns, references and files that use it, and tabs for its **Columns** (key, type, nullability, default and the column each one references), **Relations** (direction, cardinality, whether a database foreign key enforces it, and on-delete behaviour) and **Indexes**.
+
+When two sources disagree about a table, **Compare side by side** shows each source's definition in its own column, lined up row by row, with the values that differ highlighted and anything only one source declares marked. It opens from the conflict count above the diagram, the table's banner in **Tables**, and the inspector. Each difference is also written out as a sentence, for example `users.planted_extra is declared in SQL migrations but not in Prisma.`
+
+A source only disagrees about something it can express. Diesel's `schema.rs` and Drizzle's `relations()` have no way to declare an on-delete rule or mark a database foreign key, so when a SQL migration declares `ON DELETE CASCADE` for the same link, that is not reported as a disagreement, and the diagram uses the migration's foreign key. Iris Code does not pick a side; check which definition matches your database and change the other.
+
+Each table card lists its columns with their types and key markers (`PK`, `FK`, `UQ`, and `?` for nullable), and the file it is declared in with that file's health score when the file is scored. A card initially shows up to 12 columns; select **+N more columns** to see the rest. Diagrams above 150 tables open on one table and its neighbours rather than squeezing every table into the canvas.
+
+## Reading relations
+
+A relation links specific columns between tables, from the column row on one card to the column row on the other. Line ends use crow's-foot notation: a fork marks the "many" end and a bar marks the "one" end. A foreign key is a database constraint that requires a referenced row to exist. Solid lines mean Iris Code found a database foreign key declaration. Dashed lines carry this disclosure:
+
+> Found in code only. Iris Code did not find a database foreign key for it.
+
+Dashed lines include Drizzle soft relations, Prisma `relationMode = "prisma"`, and Diesel `joinable!` when no matching SQL foreign key was read. Missing migrations can explain a dashed line, so it does not establish the live database's enforcement policy.
+
+One-to-one, one-to-many, self-relations and composite column tuples are drawn from their declarations. Many-to-many relations keep the join table visible, including Prisma's implicit join table. A column named `customer_id` alone never creates a relation.
+
+## Sources and limits
+
+Iris Code reads six source kinds. Django user models usually inherit from Django's own classes (`AbstractBaseUser`, `PermissionsMixin`, `AbstractUser`), whose columns and join tables are not in your code; Iris Code knows those classes, so `password`, `last_login`, `is_superuser` and the `groups` and `user_permissions` join tables appear on your user table. `settings.AUTH_USER_MODEL` follows the model your settings name.
+
+When your code links to one of Django's own tables (`auth_user`, `auth_group`, `auth_permission`, and `django_content_type`, which `auth_permission` needs), Iris Code draws it from Django's definition as a dashed card marked **Django's own table**, and draws the links to it. Only the Django tables your code links to appear. They are not declared in your code, so they have no health score and no usage, and **Linked from** points at the line in your code that links to them. Django's join tables between its own tables (such as `auth_group_permissions`) are not drawn.
+
+| Source | Reads | Does not read |
+| --- | --- | --- |
+| Prisma | `schema.prisma`, mapped names, keys, explicit and implicit relations | Views, application data or computed declarations |
+| SQL | PostgreSQL, MySQL and SQLite table/key declarations, `ALTER TABLE` changes including `ADD COLUMN IF NOT EXISTS` and column defaults, and ordered migrations | Views, expression indexes, partial unique indexes, functions that create tables, or rollback files |
+| Drizzle | Literal table builders, `.references()`, `relations()` and readable `defineRelations()` | Dynamic factories or references that cannot be resolved statically |
+| Django | `models.py` models and fields, `ForeignKey`, `OneToOneField`, `ManyToManyField` (including `through`), `Meta.db_table`, unique and index declarations, abstract and multi-table inheritance, and the fields Django's own user classes add | Computed values. Django's own tables are drawn from Django's definition only when your code links to them |
+| Rails | `db/schema.rb` and `db/structure.sql`, foreign keys and literal custom inflections | Model associations without schema evidence, computed inflection rules or live database state |
+| Diesel | `table!`, `joinable!` and versioned `migrations/*/up.sql` | Rollbacks or a guessed relation from an `_id` column |
+
+The source strip states the reader, SQL dialect, whether that dialect was inferred, and file count. Choose an explicit dialect when inference is unsuitable. SQL migration ordering, gaps and duplicate versions are reported separately.
+
+A `CHECK` rule limits which values a column accepts, such as `CHECK (price >= 0)`. It does not add a table, column or link, so the diagram does not show it and it is not listed as unread.
+
+Triggers, comments, extensions and data changes such as `INSERT` or `UPDATE` are not listed either, because they never change a table. A function is listed only when its body creates, alters or drops a table, since running it could change what the diagram should show.
+
+Some projects keep one migration folder per database, such as `migrations/cms` and `migrations/ecommerce`, each numbered from 1. When sibling folders reuse the same version numbers, Iris Code reads each folder as its own database and shows them together. Folders that never reuse a number are read as one database, so a version used twice within one database is still reported.
+
+A reference Iris Code cannot establish appears under **unresolved** with a reason. Statements outside the reader's supported syntax appear under **not read**. Conflicting declarations remain visible as conflicts; Iris Code does not silently pick a winner. These results are information only and do not alter health scores or gate decisions.
+
+## Usage and warnings
+
+The inspector can list files using a table and warnings from those files: a score below its configured minimum or a SQL concatenation security finding. Usage follows source-specific code evidence. Raw SQL and Rails usage is unavailable in this wave, and the inspector explains that boundary.
+
+Free receives this overlay only for the focused table. Pro receives it for all tables. A capped cloud report or agent response discloses omissions; a short list does not imply complete coverage.
+
+## Exporting
+
+**Export** saves PNG, SVG, JSON, Mermaid or DBML from the current view. Mermaid is diagram text suitable for GitHub; DBML is database diagram text suitable for dbdiagram.io. Both have **Copy**. Images and diagram text include Iris Code branding, and exports preserve the same Free/Pro overlay boundary as the view.
+
+## Configuration
+
+The `schemaGraph` setting is Free and honours project configuration layers and ignored files. Omit `sources` for automatic discovery. An explicit list selects source paths relative to the project:
+
+```json
+{
+  "schemaGraph": {
+    "enabled": true,
+    "sources": [
+      { "source": "prisma", "paths": ["prisma/schema.prisma"] },
+      { "source": "sql", "paths": ["db/migrations"], "dialect": "postgres" }
+    ]
+  }
+}
+```
+
+Set `enabled` to `false` to turn it off. Source IDs are `prisma`, `sql`, `drizzle`, `django`, `rails` and `diesel`; SQL dialects are `postgres`, `mysql` and `sqlite`. Paths must stay inside the project.
+
+## Related pages
+
+- [Code Map](/features/code-map)
+- [CLI commands](/cli/commands#iris-schema)
+- [Agent tools](/agents/mcp#iris_schema)
+- [Project configuration](/configuration/irisconfig#schema-graph-free)
