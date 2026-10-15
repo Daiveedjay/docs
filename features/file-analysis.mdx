@@ -7,7 +7,7 @@ keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".cs", "Java", ".java", 
 
 A file scan checks the file you are working on and gives it a health score from 0 to 100. Findings explain what needs attention, such as a secret in the code, repeated code or a function that is difficult to follow. Use the findings to choose what to review rather than treating the score as a guarantee that the code works.
 
-Iris Code scans supported files when you open or save them. Open the sidebar?s **File tab** to see the result for the current file.
+Iris Code scans supported files when you open or save them. Open the sidebar's **File tab** to see the result for the current file.
 
 ## The File tab
 
@@ -95,7 +95,7 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
 <Note>
   Unused *import* detection is available for TypeScript, JavaScript and Java. Other languages are not checked for unused imports by Iris Code; their compilers or linters may offer additional checks.
 
-  Some imports matter even when the name is never written again. Rust imports can make a trait?s methods available, while Ruby and C# can resolve names indirectly at runtime. Removing those imports needs language-specific review.
+  Some imports matter even when the name is never written again. Rust imports can make a trait's methods available, while Ruby and C# can resolve names indirectly at runtime. Removing those imports needs language-specific review.
 
   In Java, references in Javadoc links count as usage, so a name used only in documentation is kept.
 </Note>

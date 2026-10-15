@@ -16,7 +16,7 @@ It works in your editor, from the terminal and in automated checks. Findings can
 
 A **finding** is one thing Iris Code reports about your code. A **blocker** is a serious finding; a **warning** is something to review.
 
-A **threshold** is a value you configure, such as a minimum health score or a maximum number of secrets. The **gate** compares a scan with those thresholds and decides whether the code passes. A finding?s label alone does not decide the gate result.
+A **threshold** is a value you configure, such as a minimum health score or a maximum number of secrets. The **gate** compares a scan with those thresholds and decides whether the code passes. A finding's label alone does not decide the gate result.
 
 See the [terminology page](/reference/terminology) for other terms used in the product.
 
@@ -122,15 +122,19 @@ Pro keeps project-wide evidence current over time, and turns the score into some
     - Hardcoded secrets detection
     - Squiggles and Problems panel entries
     - Status bar and Code Lens
-    - Detached panel and HTML export
+    - Detached panel and shareable PNG, SVG or PDF reports from your saved first workspace scan
     - Trend history, 2 snapshots
     - Preset configs via `presetId`
     - Gate Preview, read-only
     - Single-file safe fixes and refactor plans with verification
     - Project rules, package guard agent hooks and opt-in finish verification
     - Focused Code Map graph and map exports
+    - Schema structure, exports and usage for one table
     - MCP file tools and package checks
-    - CLI: `iris check` on a file, `iris secrets`, `iris security`, `iris report`, `iris slack`, `iris hook status`, `iris config`
+    - CLI setup: `iris init`, `iris auth`, `iris config`, `iris rules` and `iris hook status`
+    - CLI file checks: `iris check`, `iris fix --safe`, `iris refactor` and focused `iris graph`
+    - CLI exports and scans: `iris schema` structure and one table's usage, `iris secrets`, `iris security` and `iris report`
+    - CLI integrations: `iris install`, `iris remove`, `iris slack` and file tools through `iris mcp`
   </Card>
   <Card title="Pro - $6/month" icon="bolt">
     - Everything in Free
@@ -139,7 +143,7 @@ Pro keeps project-wide evidence current over time, and turns the score into some
     - Pre-push hook enforcement
     - Build hook enforcement
     - Dependency versions and CVE scanning
-    - Issues tab with blocker and warning filters
+    - Findings tab with blocker and warning filters
     - TODOs tab
     - Your own thresholds in `.irisconfig.json`
     - Hard limits on secrets, complexity, file size, smell density, security smells
@@ -147,6 +151,7 @@ Pro keeps project-wide evidence current over time, and turns the score into some
     - Config Studio, to build and share a config visually
     - Unlimited trend history
     - Folder and workspace refactor plans and Code Map graph
+    - Schema usage and warnings across all tables
     - MCP explanations, gates and dependency scans
     - Git history secrets scans, batch naming and package checks before push
     - Full CLI: `iris gate`, `iris deps`, `iris todos` and git/build hook installation

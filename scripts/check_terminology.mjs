@@ -21,6 +21,9 @@ const SKIP_DIRS = new Set(["node_modules", ".git", "sources", "scripts", ".githu
 const SKIP_FILES = new Set(["changelog.mdx"]);
 
 const RULES = [
+  { pattern: /\b[A-Za-z]+\?s\b/g, use: "an apostrophe in possessives and contractions" },
+  { pattern: /Issues tab/g, use: "Findings tab" },
+  { pattern: /Detached panel and HTML export/g, use: "Detached panel and shareable scan reports" },
   { pattern: /IrisCode/g, use: "Iris Code (with a space)" },
   { pattern: /\bIris\b(?!\s+Code)(?![-\w])/g, use: "Iris Code - never bare Iris" },
   { pattern: /quality score/gi, use: "health score" },

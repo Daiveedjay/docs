@@ -69,13 +69,14 @@ These commands are available without an Iris Code Pro licence:
 - **`iris install` / `iris remove`** - check packages with the [package guard](/agents/package-guard) before installing them, or check a whole cloned project before its install runs; `iris remove` removes packages with the project's package manager
 - **`iris secrets`** - scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
 - **`iris security`** - scans the whole project for security smells (eval usage, SQL injection, insecure RNG, weak hashing, and more); no authentication required
-- **`iris report`** - export a standalone HTML health report for the workspace
+- **`iris schema`** - read schema structure, export it, or inspect usage for one table; usage and warnings across all tables require Pro
+- **`iris report`** - export an HTML health report, a PNG or SVG card, or a PDF with `--format`
 - **`iris config init` / `iris config validate`** - interactively generate `.irisconfig.json` from a preset, or validate an existing one
 - **`iris hook git status` / `iris hook build status`** - show whether the git pre-push hook and build hook are currently installed
 - **`iris hook agent install|uninstall|status`** - add the package guard hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI or Windsurf
 - **`iris slack setup|test|manifest`** - configure and test Slack notifications sent directly from your own CI
 - **`iris rules`** - write this project's configured thresholds into the file your coding agent already reads, generated from `.irisconfig.json`
-- **`iris mcp`** - run Iris Code as a Model Context Protocol server, so an agent can query real findings, thresholds and gate status
+- **`iris mcp`** - run Iris Code as a Model Context Protocol server, so an agent can request file findings, project configuration and package checks; folder and workspace tools, gate status and dependency risk require Pro
 - **`iris auth login|status|logout`** - manage authentication credentials
 
 ## Pro commands
@@ -101,7 +102,7 @@ These commands require an active Iris Code Pro licence:
     Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for all twenty-one Iris Code CLI commands, flags, and exit codes.
+    Full reference for Iris Code CLI commands, flags, and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
     Use `iris gate` as the gate in GitHub Actions, GitLab CI, or any shell pipeline.
