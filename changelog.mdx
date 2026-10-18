@@ -8,6 +8,18 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.38.2 - 2026-10-16
+
+**Some files may score lower after upgrading**, because previously hidden long functions now count. Files with false function-length warnings may score higher. The corrected measurements apply to the editor extensions and CLI, including `iris gate`, with core 0.7.2 and CLI 1.28.2.
+
+### Fixed
+
+- **Fixed** JavaScript and TypeScript function-length checks missing long functions when a regular expression contained a quote.
+- **Fixed** short arrow functions including unrelated code after their expression, including arrows that return a multiline template literal.
+- **Fixed** function-length warnings pointing to the line above the function. They now point to its starting line.
+- **Fixed** config sync asking for a new code after a temporary licence-check failure or rate limit. It now tells you to retry with the same code, which has not been used.
+- **Fixed** VS Code analytics losing queued events after temporary service failures. Events are retried in smaller batches, with a cap on the saved queue.
+
 ## v1.38.1 - 2026-10-14
 
 ### Fixed
