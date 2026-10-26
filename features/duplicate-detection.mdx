@@ -53,7 +53,7 @@ Every row has **Open diff**, titled with both sides the way GitHub would: `scann
 | `enableDuplicateDetection` | `true` | Master toggle for duplicate detection |
 | `duplicateBlockMinTokens` | `40` | Minimum normalised-token run length for a match, minimum 10 |
 | `gateMaxDuplicateBlocks` | unset | Gate fails when the total exceeds this (Pro) |
-| `healthScoreWeights.duplicateCode` | `3` | Points deducted per duplicate block (Pro to customise) |
+| `healthScoreWeights.duplicateCode` | `3` | Points deducted per duplicate block; customisable when signed in |
 | `inlineDiagnostics.duplicateCode` | `false` | Squiggle within-file duplicate blocks in the editor |
 
 See the [.irisconfig.json reference](/configuration/irisconfig) for the full config surface.

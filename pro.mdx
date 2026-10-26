@@ -1,41 +1,28 @@
 ---
 title: "Iris Code Pro: rescan workspaces and enforce project standards"
 sidebarTitle: "Iris Code Pro"
-description: "Iris Code Pro adds repeatable workspace scans, configured gates, hooks, CI workflows, dependency intelligence, and opt-in Cloud scans. Start a 14-day trial without a card."
+description: "Iris Code Pro adds continuous enforcement and applicable local project access beyond Free monthly actions. Paid cloud allocations remain separate."
 ---
 
-Free explains findings in the code you are reviewing. Pro adds repeatable project-wide checks and enforcement at push, build, and CI boundaries.
+Free includes basic file checks and recurring signed-in project actions. Pro adds continuous enforcement and applicable local project work without the Free monthly action constraint.
 
-Free gives you unlimited file scores, clickable findings, secrets detection and one saved workspace scan, which is enough to review your own work properly. What it does not give you is the ability to rescan the whole project whenever it changes, or to put a gate in front of a push.
+Your account shows your current local and cloud allowances. Completed results stay available after exhaustion or expiry, and signed-in custom configuration remains effective. See [Free allowances](/free) for the boundary between a new action and opening an earned result.
 
 A **14-day trial** unlocks everything, and does not require a card.
 
 ## What you get
 
-Everything in Free, plus:
+Everything in Free, plus applicable local project work without the Free monthly action constraint and paid automation:
 
-- **Cloud scans** - connect a GitHub repository and it is audited without your editor open, with every report pinned to the commit that produced it. Includes **50 scans a month**; see [Cloud overview](/cloud/overview) and [Scan allowances](/cloud/allowances)
-- **Fresh workspace reviews** - rescan the whole project whenever it changes, rather than relying on one saved snapshot
-- **Folder analysis** - scoped scans for any directory in your project
-- **Refactor playbook at folder and workspace scope** - deterministic plans and verification in either editor or over MCP; file plans, safe fixes and finish verification are Free. See [Refactor playbook](/refactor/overview)
-- **Code Map at folder and workspace scope** - the import graph and health colouring beyond the focused file. Exporting remains Free
-- **MCP explanations, gates and dependency scans** - `iris_explain`, `iris_gate` and `iris_check_dependency`, plus folder and workspace scope for file tools. See [MCP tools](/agents/mcp#tools)
-- **Package guard before push** - check the lockfile before a push when `packageGuard.prePush` is enabled; agent install hooks remain Free
-- **Git history secrets scans** and **batch file naming** - review old credentials and rename several files to the configured convention
-- **Gate Preview drilldown** - which files fail each preset, with their scores
-- **Git hook enforcement** - blocks a push when any file falls below your threshold
-- **Build hook enforcement** - stops a failing build before compilation begins
-- **Dependents table** - version audit and CVE scanning for every dependency
-- **Findings tab** - every blocker and warning from the latest scan, filterable
-- **TODOs tab**, aggregating every TODO, FIXME and HACK in the project
-- **Custom `.irisconfig.json`** - override individual thresholds, detections and severities per rule
-- **Custom enforcement limits** - hard caps on secret count, complexity, file size, smell density and security smells
-- **Custom scoring weights** - control how many points each finding type deducts
-- **Config Studio** - build, preview and sync a config visually
-- **Unlimited trend history**, rather than two rolling snapshots
-- **The full CLI**: `iris gate` for CI, `iris deps` and `iris cve` for dependencies, `iris sbom`, `iris todos`, git and build hook installation, and `iris check` on directories and staged or changed files. Package guard and finish hooks are Free
-- **Account Analytics** - your health trend plus a private timeline of scans, hook results, blocked pushes, completed cloud scans and other recorded signals
-- **Personal audit history** - one commit-pinned history of cloud scans across all repositories connected to your account
+- **Git and build hooks** enforce configured thresholds before a push or build.
+- **CI enforcement** applies the configured standard in your pipeline. Automatic cloud triggers are also available to Free accounts within their cloud allowance, after explicit opt-in.
+- **Paid cloud allocation** remains separate from local actions; see [Cloud overview](/cloud/overview) and [Scan allowances](/cloud/allowances).
+- **Git history secrets scans** and **batch file naming** remain paid workflows.
+- **Package guard before push** can check changed lockfiles; the package guard before installation remains Free.
+
+Project scans, [refactor plans](/refactor/overview), Code Map and schema evidence, dependency audits, findings, TODOs and reports are also available to Free accounts within their applicable allowances. Opening earned results is Free. Signed-in custom configuration, scoring weights and Config Studio do not require an unspent project action.
+
+The CLI and [MCP tools](/agents/mcp#tools) keep inspection, saved reads and enforcement separate. `iris check . --inspect` requests a project inspection; `iris gate` enforces a standard. Account Analytics and audit history show recorded activity and do not prove current source passed.
 
 ## The trial
 
@@ -69,7 +56,7 @@ Request a 14-day trial from your Iris Code account. Requests are reviewed before
     You are redirected back automatically, with no token to copy. One sign-in covers your editors and the `iris` CLI. JetBrains IDEs refresh in place, so no restart is needed.
   </Step>
   <Step title="Pro features activate">
-    Pro unlocks immediately. The sidebar updates, and workspace scans, hooks and the Pro tabs become available.
+Paid access is confirmed by the server. The sidebar updates its applicable enforcement and local-work permissions; Free actions and saved-result reads remain distinct.
   </Step>
 </Steps>
 
@@ -104,10 +91,10 @@ Your licence key, settings and history survive a lapse. Paying again restores Pr
 
 ## Working with a team
 
-Pro covers one developer. If you want the same standard held across a team, [Iris Code Teams](/teams/overview) adds a shared workspace on top: a seat gives every member Pro, one published standard your repositories are measured against, an audit trail a reviewer can read, and 100 cloud scans per seat per month.
+Pro covers one developer. If you want the same standard held across a team, [Iris Code Teams](/teams/overview) adds a shared workspace on top: a seat gives every member Pro, one published standard your repositories are measured against, an audit trail a reviewer can read, and a separate paid cloud allowance that scales with seats. The [pricing page](https://iriscode.co/pricing) shows the current configured plan quantities.
 
 Teams is billed per seat from three seats up, and a **14-day trial** with 3 seats needs no card. See [Seats and billing](/teams/seats-and-billing).
 
 <Note>
-  A team seat grants Pro in your editor, so most members need nothing else. A personal Pro subscription is still the only thing that cloud-audits your **own** repositories, which is why Iris Code does not cancel one when you join a team. See [Team entitlement](/teams/entitlement).
+A paid team seat grants applicable editor and command-line capabilities for that team. Your own repositories use your personal cloud allowance separately, so joining a team does not cancel an existing personal subscription. See [Team entitlement](/teams/entitlement).
 </Note>

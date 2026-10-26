@@ -16,7 +16,7 @@ Iris Code is available in several editors and uses the same analysis engine acro
 | Code lens on long functions | Yes | Yes | Yes | Host dependent |
 | File analysis panel | Sidebar | Sidebar | Tool window | No |
 | Workspace and folder scans | Yes | Yes | Yes | No |
-| Issues and TODO tabs | Yes | Yes | Yes | No |
+| Findings and TODO tabs | Yes | Yes | Yes | No |
 | Suppressions, duplicates, naming, dependency and trend tables | Yes | Yes | Yes | No |
 | Duplicate diff view | Yes | Yes | Yes | No |
 | Review My Changes | Yes | Yes | Yes | No |
@@ -53,3 +53,20 @@ Native binaries are published for six platforms with checksums, and need no Node
 ## Reporting a problem
 
 Because the same symptom usually has a different cause per host, say which editor and which version you are using. Report it at [iriscode.co/support](https://iriscode.co/support) or email [hello@iriscode.co](mailto:hello@iriscode.co).
+
+
+## Navigating the extension
+
+VS Code, its compatible forks and JetBrains share the redesigned Iris Code panel. Its main navigation has five areas:
+
+| Area | Where to go |
+| --- | --- |
+| **Home** | See the open project, current file and the next useful action. |
+| **Review** | Review a file or project, inspect Findings and follow TODOs. File, Folder and Workspace choose the review scope. |
+| **Improve** | Preview your gate results or open the Refactor Playbook to plan and verify a change. |
+| **Explore** | Open Code Map, Schema Graph, Dependency Audit and Trends. Schema Graph needs supported backend schema declarations. |
+| **Configure** | Set Configuration, Hooks & CI and Agent rules. Saving rules does not install enforcement. |
+
+Use **Search Iris Code…** to find a tool without remembering its area. The Review scope tabs are **File**, **Folder**, **Workspace**, **Findings** and **TODOs**. On short or narrow panels the scope tabs can scroll away to preserve reading room; the main navigation stays available.
+
+Opening an existing result does not spend an action or scan changed source. Fresh project work checks the applicable allowance before starting. See [Free allowances](/free). The generic LSP host supplies diagnostics and actions, rather than this extension-owned navigation.

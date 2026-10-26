@@ -15,14 +15,14 @@ Every setting that counts as a shared team standard, one section each, with a li
 | Section | Sets | Plan |
 | --- | --- | --- |
 | Overview | the preset: Balanced, Strict, Legacy, Security, TypeScript, AI-assisted, or Custom | Free |
-| Thresholds | function and file length, declarations and imports per file, parameters, complexity, duplicate block size, `minHealthScore` | Pro |
-| Detection rules | which finding types are detected | Pro |
-| Inline diagnostics | squiggles, which findings they show, Code Lens and the status bar | Pro |
-| Scoring | [scoring weights](/configuration/scoring-weights) and severity overrides | Pro |
-| Gate limits | hard caps such as `gateMaxSecrets` and `gateMaxDuplicateBlocks`. An empty field means no limit | Pro |
-| Retention | `trendRegressionThreshold`, `gateBaselineMode` and `ignoreSuppressions` | Pro |
+| Thresholds | function and file length, declarations and imports per file, parameters, complexity, duplicate block size, `minHealthScore` | Signed in |
+| Detection rules | which finding types are detected | Signed in |
+| Inline diagnostics | squiggles, which findings they show, Code Lens and the status bar | Signed in |
+| Scoring | [scoring weights](/configuration/scoring-weights) and severity overrides | Signed in |
+| Gate limits | hard caps such as `gateMaxSecrets` and `gateMaxDuplicateBlocks`. An empty field means no limit | Signed in |
+| Retention | `trendRegressionThreshold`, `gateBaselineMode` and `ignoreSuppressions` | Signed in |
 | File naming | the convention, ignored paths, rules for particular paths, and whether only new files are checked | Free |
-| Language settings | thresholds and gate caps for one language | Pro |
+| Language settings | thresholds and gate caps for one language | Signed in |
 | Agents | repository `agentHandoff`; turning it on cannot override a Team restriction. See [governance](/teams/governance) | Free |
 | Refactor playbook | shared suggestion, verification and correction settings; destination paths stay local. See [refactor configuration](/refactor/configuration) | Free |
 | Package guard | what happens when a coding agent or `iris install` installs a risky package. `prePush` is Pro. See [Package guard](/agents/package-guard) | Free |
@@ -52,7 +52,7 @@ The sync flow is designed to never write silently - every sync opens a diff in V
     Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris Code account.
   </Step>
   <Step title="Choose a preset or switch to Custom mode">
-    Select one of the six presets on the Overview section, or Custom to start from an empty config. On Pro, change any setting in the sections that follow; the preset stays as the base for everything you leave alone.
+Select a preset, or Custom to start from an empty configuration. When signed in, you can change individual settings; the preset remains the base for values you leave unchanged. Saving a draft is Free. An explicit project-impact measurement is separate project work and may use one action.
   </Step>
   <Step title="Click 'Sync to VS Code'">
     Hit the **Sync to VS Code** button. Iris Code generates a short-lived one-time token and opens VS Code via a deep link.
@@ -103,7 +103,7 @@ When you click **Sync to VS Code**, choose where the config is written:
     Writes `.irisconfig.json` to the project root. Available to all users - Free and Pro. Commit it and the whole team runs the same config automatically.
   </Card>
   <Card title="Global default" icon="user" color="#f59e0b">
-    **Pro only.** Writes to your personal default config path so every new project on your machine starts with the same settings. Useful for personal standards you maintain across repositories.
+Writes your personal default configuration so new projects on this machine can start with the same settings. Sign-in is required; this permission remains available after monthly action exhaustion.
   </Card>
 </CardGroup>
 

@@ -56,15 +56,17 @@ The `ai-assisted` preset uses stricter explicit limits for teams reviewing AI-as
 Generated configs show the active detection and gate choices with one-line comments. Team-specific items such as naming conventions, ignore lists, and language overrides remain commented examples until the project chooses them.
 
 <Tabs>
-  <Tab title="Free">
-    Iris Code applies the shipped preset values as the source of truth. Local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
+  <Tab title="Without sign-in">
+    Iris Code applies the shipped preset values as the source of truth. Without signed-in custom-configuration access, local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
   </Tab>
-  <Tab title="Pro">
-    The preset acts as a base layer. Any threshold you override locally is merged on top, giving your team a customisable baseline without starting from scratch.
+  <Tab title="Signed in">
+    The preset acts as a base layer. Signed-in Free users can override thresholds as well as paid users. Overrides remain effective after monthly project actions run out; configuration edits and saves do not spend an action.
   </Tab>
 </Tabs>
 
-## Full custom config (Pro)
+<a id="full-custom-config-pro" />
+
+## Full custom configuration
 
 For complete control over every rule, write out the full config. Every key is optional - include only the ones you want to override.
 
@@ -111,16 +113,16 @@ For complete control over every rule, write out the full config. Every key is op
 
   // Gate thresholds - used by the CLI and git pre-push hook
   "minHealthScore": 70,
-  "gateMaxSecrets": 0,         // Pro - max hardcoded secrets workspace-wide
-  "gateMaxComplexity": 12,     // Pro - max complexity score per file
-  "gateMaxFileLength": 500,    // Pro - max line count per file
-  "gateMaxSmellsPerFile": 8,   // Pro - max total smells in a single file
-  "gateMaxSecuritySmells": 0,  // Pro - max security smells workspace-wide
-  "gateMaxSuppressions": 5,    // Pro - max iris-ignore suppressions per file
-  "gateMaxDuplicateBlocks": 0, // Pro - max duplicate code blocks across the scan
-  "gateMaxNamingViolations": 0,// Pro - max naming violations across the scan
-  "gateMaxParseErrors": 0,     // Pro - max unparseable files (unset = report, never block)
-  "ignoreSuppressions": false, // Pro - treat all iris-ignore directives as inert
+  "gateMaxSecrets": 0,         // Signed-in configuration - max hardcoded secrets workspace-wide
+  "gateMaxComplexity": 12,     // Signed-in configuration - max complexity score per file
+  "gateMaxFileLength": 500,    // Signed-in configuration - max line count per file
+  "gateMaxSmellsPerFile": 8,   // Signed-in configuration - max total smells in a single file
+  "gateMaxSecuritySmells": 0,  // Signed-in configuration - max security smells workspace-wide
+  "gateMaxSuppressions": 5,    // Signed-in configuration - max iris-ignore suppressions per file
+  "gateMaxDuplicateBlocks": 0, // Signed-in configuration - max duplicate code blocks across the scan
+  "gateMaxNamingViolations": 0,// Signed-in configuration - max naming violations across the scan
+  "gateMaxParseErrors": 0,     // Signed-in configuration - max unparseable files (unset = report, never block)
+  "ignoreSuppressions": false, // Signed-in configuration - treat all iris-ignore directives as inert
 
   // Ignore rules - skip files or functions from analysis
   "ignoreFiles": [
@@ -143,7 +145,7 @@ For complete control over every rule, write out the full config. Every key is op
     "no-exports": "warning"
   },
 
-  // Scoring weights (Pro) - points deducted per finding type
+  // Scoring weights - points deducted per finding type
   "healthScoreWeights": {
     "hardcodedSecret": 10,
     "errorWarning": 5,
@@ -209,18 +211,18 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 | Key | Tier | What it controls |
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
-| `gateBaselineMode` | Pro | Gates existing files against their locked baseline score instead of `minHealthScore` - new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
-| `trendRegressionThreshold` | Pro | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris Code calls out as a notable regression. |
-| `gateMaxSecrets` | Pro | Max hardcoded secrets allowed workspace-wide - set to `0` to require a clean workspace |
-| `gateMaxComplexity` | Pro | Max complexity score per file; exceeding it fails the gate regardless of health score |
-| `gateMaxFileLength` | Pro | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
-| `gateMaxSmellsPerFile` | Pro | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
-| `gateMaxSecuritySmells` | Pro | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
-| `gateMaxSuppressions` | Pro | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
-| `gateMaxDuplicateBlocks` | Pro | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
-| `gateMaxNamingViolations` | Pro | Maximum [file naming](/configuration/file-naming) violations across the scan. |
-| `gateMaxParseErrors` | Pro | Maximum files Iris Code could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris Code adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
-| `ignoreSuppressions` | Pro | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
+| `gateBaselineMode` | Signed in | Gates existing files against their locked baseline score instead of `minHealthScore` - new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
+| `trendRegressionThreshold` | Signed in | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris Code calls out as a notable regression. |
+| `gateMaxSecrets` | Signed in | Max hardcoded secrets allowed workspace-wide - set to `0` to require a clean workspace |
+| `gateMaxComplexity` | Signed in | Max complexity score per file; exceeding it fails the gate regardless of health score |
+| `gateMaxFileLength` | Signed in | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
+| `gateMaxSmellsPerFile` | Signed in | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
+| `gateMaxSecuritySmells` | Signed in | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
+| `gateMaxSuppressions` | Signed in | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
+| `gateMaxDuplicateBlocks` | Signed in | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
+| `gateMaxNamingViolations` | Signed in | Maximum [file naming](/configuration/file-naming) violations across the scan. |
+| `gateMaxParseErrors` | Signed in | Maximum files Iris Code could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris Code adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
+| `ignoreSuppressions` | Signed in | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
 
 ### Ignore rules
 
@@ -270,7 +272,7 @@ A `ruby` block also governs the extensionless Ruby files Iris Code reads, such a
 
 Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout.
 
-The six length/complexity thresholds, `healthScoreWeights`, `severityOverrides`, and per-file gate caps remain Pro. On Free, Iris Code applies the naming policy and places a warning squiggle on each Pro-only sibling field it ignores. It does not discard the whole language block.
+Signed-in custom configuration includes language thresholds, `healthScoreWeights`, `severityOverrides` and gate caps. It remains effective for permitted file checks after your project allowance is exhausted. Defining a threshold does not grant paid enforcement or start a scan.
 
 Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
 
@@ -299,7 +301,7 @@ The `packageGuard` block sets what the [package guard](/agents/package-guard) bl
 
 ## Refactor policy (Free)
 
-The `refactor` block controls which fixes and suggestions the [refactor playbook](/refactor/overview) may propose, where moved code goes, and which checks verification runs afterwards. Top-level settings work on every plan and are resolved independently of presets, so a preset never overrides them. A `refactor` block inside a `languages` entry requires Pro.
+The `refactor` block controls proposed fixes, moved-code destinations and verification checks. Top-level settings work on every plan independently of presets. Sign-in enables per-language custom settings as well; saving them does not spend a project action.
 
 ```jsonc
 {

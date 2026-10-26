@@ -9,7 +9,7 @@ A shareable report gives someone a readable snapshot of a project's health score
 
 In VS Code or JetBrains, select the download icon in the Iris Code sidebar header. You can also run **Iris Code: Share Report** from the VS Code command palette or the JetBrains **Tools > Iris Code** menu, or select **Share report** on the **Workspace** tab after a scan. In the dashboard, select a completed cloud scan and use **Share report** beside its summary. The preview offers **Portrait**, **Landscape**, **Save PNG**, **Save SVG**, **Save PDF**, **Copy image** and a caption with alternative text for the image.
 
-Pro can export completed scans and run a fresh scan when needed. Free can export its saved first workspace scan, without running it again. A stale warning tells you when the selected snapshot may no longer describe the current files.
+Both Free and paid accounts can export their earned scans without running them again. A fresh project scan uses the applicable local project allowance or paid access. Read the captured time and coverage before treating a report as evidence about current files.
 
 The portrait card is 1080 by 1350 pixels; landscape is 1200 by 675. Both use embedded fonts. SVG is a vector image that stays sharp when resized, and PDF provides the supporting pages you select, with continuation pages when needed.
 
@@ -45,7 +45,7 @@ Every report identifies the saved scan's date, Iris Code version and available p
 
 ## Export from the terminal
 
-HTML remains the default for `iris report`. A new whole-directory scan requires Pro. Image and PDF formats reuse a Free user's saved first workspace scan, or run a fresh scan with Pro.
+HTML remains the default for `iris report`. Use `--evidence <evidence-id>` to export a retained result as HTML, an image or a PDF. Existing anonymous introductory cards and PDFs remain available. Requesting a fresh directory scan is separate work under [Free allowances](/free).
 
 ```bash
 iris report --format png --size portrait

@@ -1,0 +1,107 @@
+---
+title: "Free project actions and saved results"
+sidebarTitle: "Free allowances"
+description: "Understand monthly project actions, separate cloud scans, saved results, Free Teams and offline access."
+---
+
+Free lets you check a file while you work and use deeper project tools within a monthly allowance. An allowance is the amount of fresh work your account or team can run monthly. Your account shows the current amount, what you have used and when it resets.
+
+Basic file checks do not need an account. Sign in to use recurring project actions and cloud scans. The [browser Playground](/playground) is a separate free sandbox and does not spend account actions.
+
+## Launch allowances
+
+The launch offer provides **12 local project actions and 4 cloud scans monthly** for a personal Free account. A Free Team shares **36 local project actions and 12 cloud scans monthly**, with capacity for three collaborators and three active projects. Personal Free capacity is three active projects.
+
+These quantities are controlled by the backend policy, so your account remains authoritative if the offer changes or is paused. Free pools reset monthly, on the first at 00:00 UTC. Paid and trial pools are separate.
+
+## What stays Free without a monthly action
+
+- Supported-file health scores, blockers, warnings and secrets checks.
+- Safe fixes and refactor plans for one file.
+- Focused import information, schema structure and focused-table usage.
+- Project rules for coding agents and the package guard before installation.
+- Opening, filtering, explaining, comparing or exporting a result you have already earned.
+
+Signing in also lets your custom configuration affect permitted checks. Saving a configuration does not spend an action or enable a hook. Your configuration remains effective when your allowance is exhausted.
+
+## What uses a local project action
+
+A successful fresh folder, workspace or changed-file scan uses one local project action. A separate dependency audit refresh or a new multi-file refactor plan also uses one action. A scan can produce several views; opening its findings, TODOs, Code Map, schema usage or report does not spend again.
+
+A usable partial result can count, and its coverage must say what was omitted. A confirmed failure or cancellation releases the action. If the outcome cannot yet be confirmed, the action can remain awaiting confirmation instead of being charged again or assumed refunded.
+
+Unchanged inputs can reuse a valid saved result. Choosing an explicit refresh requests fresh work. A dependency audit's external advisory evidence has its own freshness window, so a refresh can differ even when the manifest has not changed.
+
+## Separate cloud allowance
+
+Cloud scans use a separate allowance from local project actions. Connecting GitHub is an explicit choice to let Iris Code read the selected repository; it is not part of a local file scan. A dependency audit included in a cloud scan does not spend another local action.
+
+Repositories start in manual mode. You can opt into automatic merge or pull request scans; they share the same monthly cloud allowance as manual scans and stop when it is used.
+
+Your [cloud allowance](/cloud/allowances) shows the current amount and reset date. Free allowances reset monthly, on the first at 00:00 UTC. Buying Pro or starting a trial does not refill a Free pool; paid and trial cloud allocations remain separate.
+
+## Keep your results
+
+Exhausting an allowance does not delete a completed scan or refactor baseline. The result keeps its captured files, configuration, engine identity, time and coverage. A later source change does not rewrite that snapshot.
+
+Opening a saved result does not silently scan your current files. Read its age and coverage before using it to decide what to change. A score or passing gate does not prove the program behaves correctly; keep running tests and reviewing the change.
+
+For a multi-file refactor plan, applying the approved same-plan fixes and verifying that baseline are included. A different plan or changed planning baseline is fresh work. Automatic correction attempts have a separate bounded counter; reopening the plan does not reset it.
+
+## Personal accounts and Free Teams
+
+Personal and team allowances are separate. A personal Pro subscription does not turn a Free Team into a paid team, and a paid team seat does not buy cloud scans for your personal repositories.
+
+A Free Team shares one local allowance and one cloud allowance. Its current collaborator and project capacity appears in **Members**. The owner counts, and pending invitations reserve capacity. Owners and admins choose the members and projects allowed to start fresh Free work.
+
+Leaving a member or project outside active capacity preserves membership, saved results, history and governance. Paid seats and Free capacity are different controls. After a downgrade, choose active capacity instead of deleting people or records.
+
+The optional Pro trial starts only when you request or explicitly activate it. Creating a Free Team does not automatically begin a trial.
+
+## Offline and temporarily paused work
+
+Basic local checks and previously confirmed owned results remain usable offline. Fresh Free project work needs an online allowance check. Paid offline permission is tied to the account, server and selected context and retains the existing seven-day grace after successful validation.
+
+An older CLI paid cache must complete one online validation before the upgrade trusts it. That validation creates the credential-bound record used for later offline grace.
+
+If fresh Free work is temporarily paused, the interface says so. Existing results remain readable; a service pause is not a new requirement to buy Pro.
+
+## Check usage from the terminal
+
+The CLI is the set of commands you run in a terminal. Run these from the project whose allowance you want to inspect:
+
+```bash
+iris usage status
+iris usage results
+iris usage result <evidence-id>
+iris usage recover
+```
+
+`status` reads the selected context. `results` lists locally retained results for your account, and `result` opens one without scanning again. `recover` reconciles recorded outcomes; it does not run analysis, guess a refund or charge a second action. A result's evidence ID identifies the saved snapshot.
+
+In the editor, open **Account**, then **Usage**, and choose **Reconcile interrupted actions**. If a request still needs review, the host asks before releasing it. Confirm only work that has stopped without a usable result; do not release an action still running.
+
+The terminal equivalent is `iris usage release <request-id> --confirm-failed`, using an unresolved request ID from `iris usage recover`. Saved artifacts are reconciled first. A successful operation cannot be released, and neither command starts another scan.
+
+Use the same captured result in supported CLI views:
+
+```bash
+iris graph --evidence <evidence-id>
+iris schema --evidence <evidence-id>
+iris todos --evidence <evidence-id>
+iris report --evidence <evidence-id> --format pdf
+```
+
+Local accounting requests contain identifiers and counters, not source code. They are separate from optional account analytics. Refactor baselines can contain source stored privately on your machine, so treat the local account storage with the same care as your project files.
+
+## What Pro adds
+
+Pro removes the Free monthly local action constraint and adds applicable continuous local enforcement, hooks, builds and CI. Paid cloud scans still have their own allocation. See [Iris Code Pro](/pro) for the paid features and [team entitlement](/teams/entitlement) for workspace-specific access.
+
+## Related pages
+
+- [Workspace scans](/features/workspace-analysis)
+- [Shareable scan reports](/features/shareable-report)
+- [Cloud allowances](/cloud/allowances)
+- [Refactor verification](/refactor/verification)
+- [Team members and billing](/teams/seats-and-billing)

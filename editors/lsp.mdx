@@ -89,7 +89,7 @@ Diagnostics, hover, code actions and renames come from the language server, so t
 - filename-convention renames
 - configuration read from the same `.irisconfig.json`, reloaded when that file changes
 
-The panels are not available here. Workspace and folder scans, the Issues and TODO tabs, Review My Changes, and the suppressions, duplicates, naming, dependency and trend tables are all interface that an editor extension builds, and LSP has no equivalent. The [support matrix](/editors/overview) sets out which host has what.
+The panels are not available here. Workspace and folder scans, the Findings and TODO tabs, Review My Changes, and the suppressions, duplicates, naming, dependency and trend tables are all interface that an editor extension builds, and LSP has no equivalent. The [support matrix](/editors/overview) sets out which host has what.
 
 Two of those gaps have a terminal equivalent. `iris-lsp --panel <dir>` serves the full Iris Code panel over local HTTP and prints its URL, and `iris-lsp --dashboard <dir>` serves a one-page workspace summary. Both bind to `127.0.0.1` behind a per-run random path.
 

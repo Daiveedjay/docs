@@ -1,19 +1,27 @@
 ---
 title: "Scan allowances: how many cloud scans you get, and how they are counted"
 sidebarTitle: "Scan allowances"
-description: "Pro includes 50 cloud scans a month and a team includes 100 per seat. Every audit counts one, whoever started it, and allowances never merge between accounts or teams."
+description: "Cloud scans use the selected personal or team allowance. Every accepted scan counts once, whoever started it, and paid, trial and Free pools remain separate."
 ---
 
 A cloud scan costs one scan. The rule is deliberately that simple: **every audit counts one, whoever or whatever started it.**
 
-## What you get
+## Free and paid allocations
+
+Your Projects screen shows the current allocation from the server. Signed-in Free personal accounts and Free Teams have recurring cloud allowances, separate from local project actions. [Free allowances](/free) explains active capacity and what remains readable after exhaustion.
+
+The [pricing page](https://iriscode.co/pricing) reads paid plan quantities from the same backend configuration used by cloud accounting. Paid Teams shows the included-seat total and the amount per seat. The allocation in your Projects screen also identifies your current pool, usage and exact reset date.
+
+Repositories start in manual mode. Free and paid users may explicitly enable merge or pull-request scans; automatic and manual scans spend the same applicable cloud pool.
+
+## Paid and trial allocations
 
 | | Window | Scans |
 | --- | --- | --- |
-| **Pro** | per billing month | **50** |
-| **Teams** | per billing month | **100 per seat** - 300 for the smallest team, 1,000 at ten seats |
-| **Pro trial** | 14 days | **40** |
-| **Teams trial** | 14 days, 3 seats | **100** |
+| **Pro** | per billing month | Current allocation shown in your account |
+| **Teams** | per billing month | Current shared allocation shown in team billing |
+| **Pro trial** | Trial period | As shown in your account |
+| **Teams trial** | Trial period | As shown in the team |
 
 ## What counts as one scan
 
@@ -31,22 +39,24 @@ And these do not count, because they produced no report:
 - One no scanner claimed, or that timed out
 - One stopped because the repository was paused or GitHub access ended
 
-## The window is your billing period, not the calendar month
+<a id="the-window-is-your-billing-period-not-the-calendar-month" />
 
-The allowance resets when you are charged, not on the first of the month. If you subscribed on the 14th, it resets on the 14th.
+## Reset dates by plan
 
-An account or team with no subscription, a trial for instance, resets on a calendar month instead. The reset date is shown on your Projects screen either way, so you never have to work it out.
+Free allowances reset monthly, on the first at 00:00 UTC. Paid allocations follow their billing period; if that period starts on the 14th, its reset follows that period.
+
+A trial has its own configured allocation and end date. Projects shows the exact date for the current pool. Starting paid access or a trial does not refill the underlying Free pool.
 
 ## Personal and team allowances are separate
 
 Your personal account and each team have separate scan allowances. Unused scans cannot be transferred between them.
 
-- Your account spends your Pro allowance
+- Your account spends its applicable personal allowance
 - Each team spends that team's allowance
 - Being in two teams means two separate pools, both usable, neither shared
 
 <Warning>
-  A team seat does **not** give you cloud scans for your own repositories. A seat covers that team's repositories; auditing your own needs your own Pro subscription. This is the one case where holding both is genuinely useful rather than duplicated - see [Team entitlement](/teams/entitlement).
+  A paid team seat does **not** add scans to your personal account. Team repositories use the team pool; personal repositories use your own Free, trial or paid allowance. You do not need a personal Pro subscription to use your personal Free scans. See [Team entitlement](/teams/entitlement).
 </Warning>
 
 ## Running out
@@ -59,7 +69,7 @@ If it does run out, automatic audits stop for every repository in that account o
 
 Three ways, depending on where you are:
 
-- **Adding seats** raises a team's allowance immediately, by 100 per seat
+- **Adding seats** adjusts the team's paid allocation according to its current billing configuration
 - **Subscribing** replaces a trial allowance straight away
 - **Auditing merges only**, rather than every pull request update, is the single setting that most reduces what you spend. See [Audit triggers](/cloud/triggers)
 
@@ -69,10 +79,10 @@ Three ways, depending on where you are:
 
 ## Working out what you need
 
-Count the changes that land, not the pushes you make. Merges are one audit each, so a team merging six pull requests a day across all its repositories spends roughly 120 a month and sits comfortably inside a three-seat allowance of 300.
+Estimate how many changes land and how often pull requests update, then compare that total with the current allocation in your workspace. Merges use one scan each. Keep manual mode if automatic activity would consume the allowance faster than you intend.
 
 Turning pull request auditing on multiplies that by however many times a branch is pushed before it merges, which is usually three to five. That is the number worth estimating before switching it on across every repository.
 
 <Tip>
-  The daily limit of 50 audits per repository is a runaway-loop breaker, not a budget. It sits far above a busy day and exists so a misconfigured CI job cannot spend a month's allowance in an afternoon. Hitting it means something is looping, not that you are working too hard.
+  The separately configured daily audit limit per repository is a runaway-loop breaker, not a budget. It sits far above a busy day and exists so a misconfigured CI job cannot spend a month's allowance in an afternoon. Hitting it means something is looping, not that you are working too hard.
 </Tip>

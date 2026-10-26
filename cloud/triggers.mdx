@@ -1,7 +1,7 @@
 ---
 title: "Audit triggers: merges, pull requests, and what each one costs"
 sidebarTitle: "Audit triggers"
-description: "Every repository chooses what it is audited on. A merge costs one audit; a pull request costs one per update. Merges are on by default and pull requests are opt-in."
+description: "Every repository chooses what it is audited on. A merge costs one audit; a pull request costs one per update. Both triggers are off by default; opt in within your cloud allowance, including Free."
 ---
 
 A trigger is an event that starts a cloud scan automatically, such as a change reaching the main branch. Each completed scan uses one scan from your allowance. Choose triggers for each repository to balance how quickly you see results with how many scans you use.
@@ -10,16 +10,16 @@ A trigger is an event that starts a cloud scan automatically, such as a change r
 
 <CardGroup cols={2}>
   <Card title="Audit merges" icon="git-merge">
-    **On by default.** One audit each time a change lands on your default branch. This is what keeps a project's score current.
+    **Off by default.** One audit each time a change lands on your default branch. This is what keeps a project's score current.
   </Card>
   <Card title="Audit pull requests" icon="git-pull-request">
     **Off by default.** One audit each time a pull request is updated, so an active branch costs several. Catches problems before they land.
   </Card>
 </CardGroup>
 
-## Why the defaults are asymmetric
+## Why repositories start in manual mode
 
-Because the two cost very different amounts, and the cheaper one is also the one that keeps your dashboard true.
+Both triggers start off so connecting a repository does not commit you to recurring scans. The import starts one requested scan. Afterwards, you decide when to scan manually or enable automatic events. Free users can enable either trigger within the same monthly cloud allowance; scans stop when it is exhausted.
 
 A merge fires once per change that lands. A pull request fires on every push to the branch, so a PR with eight commits pushed separately costs eight audits, and merging it costs one more.
 
@@ -63,5 +63,5 @@ An audit that produced no report does not count against your allowance:
 You can always run an audit by hand from the project screen, whatever the triggers say and even while the repository is paused. It costs one scan like any other.
 
 <Tip>
-  A good starting configuration for a team: merges on for every repository, and pull requests on only for the one or two repositories where review feedback matters most. That gives you a current score everywhere and pre-merge feedback where you will actually read it.
+  Start in manual mode while you learn your scan volume. If your cloud allowance covers it, enable merges for the repositories you want to track. Enable pull requests only where you need earlier feedback and have room for the extra scans.
 </Tip>

@@ -1,12 +1,12 @@
 ---
 title: "Review My Changes: check your Git changes before anyone else does"
 sidebarTitle: "Review My Changes"
-description: "Check exactly what you changed, before it reaches a teammate or a pull request. Free."
+description: "Inspect staged, unstaged and untracked source changes, with named findings and captured import impact."
 ---
 
 Before a change reaches a teammate or a pull request, Review My Changes reads every supported staged, unstaged and untracked file and reports what a reviewer would flag. Blockers first, then warnings, each one click from its source line.
 
-It is free, and it is the workflow most people use daily.
+A fresh changed-file scan uses one successful local project action from the selected personal or team context. Opening its saved findings and impact does not spend again. See [Free allowances](/free).
 
 ## Running it
 
@@ -20,17 +20,17 @@ It opens in its own editor tab with:
 - click-to-open on every finding
 - an expandable list of files that import each changed file
 
-The Workspace tab switches to a change review view of the same result, and Issues and TODOs fill in from it. All on Free.
+The Workspace tab can show the same changed-file result, and Findings and TODOs use its captured scope. Opening another view does not run a second scan.
 
 ## Import impact
 
 A changed file can affect code outside the diff. Change Review uses the Code Map import graph to show how many mapped files import each changed file. Expand the count to open an importer. Files in the change set still appear in each other's lists.
 
-On Free, the focused file's direct importers are available. **Iris Code Pro** adds a transitive dependent count, capped at **500+**, and a one-line summary of the distinct files outside the change set that directly import changed files. Impact is information for review. It does not change a health score, gate decision or exit code.
+The focused file's direct importers are Free. Wider import impact is captured with a project scan and can include a transitive dependent count, capped at **500+**, and the distinct files outside the change set that import changed files. Impact does not change a health score, gate decision or exit code.
 
 In Go, and for a C# `using`, a Java wildcard import or a Python namespace package, an import names the package rather than a file. Those importers count for every file in the package's folder, and Change Review labels them **through its package**.
 
-If the graph has not been built, Change Review builds it when the review opens and shows **Mapping imports...** until it finishes. In a very large workspace it asks first, and if you decline it offers **Build import graph** instead.
+Import impact uses the graph captured for that scan. An absent graph is reported as unavailable; opening a saved result does not rebuild it from later files. Very large fresh scans retain their confirmation and cancellation controls.
 
 An unread, ignored or unsupported file is marked **Not mapped**, rather than given a zero count. The graph lists unresolved imports separately with their reasons; its counts cover resolved edges only. See [Code Map](/features/code-map) for the graph's scope and limits.
 
@@ -43,7 +43,7 @@ A review of eleven files is not a review of the project, and the two are kept di
 - **Untracked files are included**, unless `.gitignore` excludes them.
 - **A workspace inside a larger repository reviews only its own changes.** Opening one package of a monorepo never surfaces findings from a sibling package you did not touch.
 
-Whole-project analysis, folder scans, `iris check --staged` in CI, and hook enforcement are [Pro](/pro).
+Fresh workspace, folder and changed-file inspections can use [Free project actions](/free). Blocking a push, build or CI job requires applicable [paid enforcement](/pro). Reporting findings and preventing an action remain separate capabilities.
 
 ## Real repositories
 

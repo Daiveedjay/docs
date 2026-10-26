@@ -1,13 +1,13 @@
 ---
 title: "Custom scoring weights: tune the health score for your team"
 sidebarTitle: "Scoring weights"
-description: "Control how much each finding deducts from the health score via healthScoreWeights in .irisconfig.json. Amplify secrets, zero out noise. Requires Iris Code Pro."
+description: "Control how findings affect the health score with signed-in custom healthScoreWeights settings in .irisconfig.json."
 ---
 
 A scoring weight is the number of points a finding takes from a file's health score. Custom weights let you make particular findings matter more or less for your project. For example, increasing the secret weight makes a detected access key reduce the score more strongly.
 
 <Note>
-  Custom weights are Pro. Set `healthScoreWeights` in `.irisconfig.json`, or configure it visually in [Config Studio](/configuration/config-studio) under Custom Scoring.
+Custom weights are available when signed in, independently of your monthly project balance. Set `healthScoreWeights` in `.irisconfig.json`, or use [Config Studio](/configuration/config-studio). The settings continue to affect permitted file checks after allowance exhaustion.
 </Note>
 
 ## What everything costs by default

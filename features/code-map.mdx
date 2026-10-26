@@ -67,7 +67,7 @@ Imports of external packages and built-in modules are hidden by default; **Filte
 
 ## Schema graph
 
-The **Schema** tab draws database tables, columns and declared relations from code. Its whole-schema structure and focused-table usage are Free; aggregate usage and warnings require Pro. See [Schema graph](/features/schema-graph) for sources, limits and exports.
+The **Schema** tab draws database tables, columns and declared relations from code. Schema structure, focused-table usage and exports are Free. Aggregate usage comes from an earned workspace result and stays readable without another action. See [Schema graph](/features/schema-graph) for sources and coverage.
 
 ## Exporting the map
 
@@ -86,7 +86,7 @@ Mermaid and Markdown also have **Copy**, which puts the text on the clipboard re
 
 Pictures, Mermaid and Markdown end with a short "Made with Iris Code" line naming the project and the scan date. CSV has none, because an extra line breaks spreadsheet imports. The cloud map's exports also name the branch and commit, in the file name and in the picture.
 
-An export contains what you can see and nothing more, so a Free export includes scores for the focused folder only, and says so.
+An export contains the selected view and its captured coverage. It does not quietly extend the scan to other files or refresh a saved result.
 
 ## Scan states
 
@@ -101,9 +101,9 @@ Ignored and unsupported files are omitted in every state. The file count and the
 
 ## Free and Pro
 
-Code Map structure is available on Free. The focused file's folder can show its saved colour, while workspace-wide colouring needs **Iris Code Pro** because it depends on a full workspace scan. The below-minimum caution follows the same rule: on Free it appears only for files in the focused folder.
+Code Map structure and focused-file connections are Free. A workspace scan can capture wider health colouring and below-threshold results within your project allowance. Those earned views remain readable after exhaustion or expiry; they keep the scope and configuration that produced them.
 
-In the graph, Free shows the focused file with the files it imports and the files that import it. Folder and workspace scope need **Iris Code Pro**. Exporting is free on both plans.
+Folder and workspace import views can use the shared captured workspace result. A fresh project inspection uses the applicable allowance; reopening or exporting it does not spend another action.
 
 ## Cloud Code Map
 

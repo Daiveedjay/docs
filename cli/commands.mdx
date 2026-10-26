@@ -125,9 +125,9 @@ iris refactor src/handlers.ts --format json
 iris refactor src/handlers.ts --verify
 ```
 
-Each run of the CLI is a separate process, so it cannot keep the snapshot it planned against for a later `--verify`. Verification therefore compares with git HEAD, and the comparison includes any uncommitted changes you already had.
+One-file verification without `--baseline` compares with git HEAD, including any uncommitted changes you already had. Multi-file plans save a private baseline across CLI invocations. Pass its returned ID with `--verify --baseline <baseline-id>` to verify that same workflow without another local action.
 
-To verify against the exact snapshot taken at planning time, use `iris_refactor_plan` and `iris_verify_refactor` on the [MCP server](/agents/mcp), or **Verify refactor** in the editor. See [verifying a refactor](/refactor/verification).
+For a multi-file plan, run `iris refactor ./src --format json` and retain its `baseline_id`. Verify with `iris refactor ./src --verify --baseline <baseline-id>`. The [MCP server](/agents/mcp) and **Verify refactor** in the editor also retain the planned baseline. See [verifying a refactor](/refactor/verification).
 
 Verification is advisory: a `regressed` verdict does not change the exit code.
 
@@ -140,12 +140,12 @@ Verification is advisory: a `regressed` verdict does not change the exit code.
 
 ### iris graph
 
-Prints the import graph that the [Code Map](/features/code-map) draws, as text or JSON. It exists so an agent or a CI job can read the same edges, cycles and unresolved imports you see in the editor, without opening one. **Free** for one file with `--focus`; the whole graph requires **Pro**.
+Prints the import graph drawn by [Code Map](/features/code-map), as text or JSON. Focused-file imports are Free. A fresh whole-project inspection uses the applicable project allowance. `--evidence <evidence-id>` reads a captured graph without rescanning.
 
 | Flag | Description |
 |---|---|
 | `--root <dir>` | Project root (defaults to current directory) |
-| `--focus <file>` | One file: what it imports and what imports it **(Free)**. Without it, the whole graph **(Pro)** |
+| `--focus <file>` | One file: what it imports and what imports it **(Free)**. Without it, a captured whole-project graph or a fresh project inspection |
 | `--format <fmt>` | `text` (default) or `json` |
 | `--include-external` | With `--focus`, also list packages and built-in modules |
 
@@ -153,7 +153,7 @@ Prints the import graph that the [Code Map](/features/code-map) draws, as text o
 # One file's imports and importers (free)
 iris graph --focus src/app.ts
 
-# The whole graph as JSON, for an agent or CI (Pro)
+# Inspect the whole graph as JSON, using project access
 iris graph --format json
 ```
 
@@ -173,7 +173,7 @@ The JSON carries `schemaVersion: 1`. The whole graph is `{ schemaVersion, root, 
 
 ### iris schema
 
-Available from CLI 1.28.0. Prints the [Schema graph](/features/schema-graph), with real database table and column names read from code. Whole-schema structure is **Free**. Usage for one table is Free; aggregate usage requires **Pro**.
+Prints the [Schema graph](/features/schema-graph) using table and column names read from declarations. Structure and focused-table usage are Free. Aggregate usage can read an earned workspace result with `--evidence <evidence-id>`; a fresh project inspection uses project access.
 
 ```bash
 iris schema . --format json
@@ -186,14 +186,14 @@ iris schema . --format dbml
 | `[path]` | Project directory, defaults to the current directory |
 | `--format <format>` | `text` (default), `json`, `mermaid` or `dbml` |
 | `--table <name>` | Focus a database name, model name or canonical table ID and its neighbours |
-| `--usage` | Include usage and warnings; without `--table`, Pro is required |
+| `--usage` | Include usage and warnings; all-table usage uses captured project evidence or a fresh project action |
 
-JSON carries `schemaVersion: 1`. Unresolved references, conflicts and not-read statements are informational: success exits 0. Invalid arguments or unknown/ambiguous tables exit 2; a build error exits 1. Free aggregate usage prints the standard Pro warning and exits 0 without exporting aggregate data.
+JSON carries `schemaVersion: 1`. Unresolved references, conflicts and not-read statements are informational: success exits 0. Invalid arguments or unknown/ambiguous tables exit 2; a build error exits 1. Use `--evidence <evidence-id>` for owned aggregate usage without rescanning. Without an evidence ID or `--table`, the command checks project access before starting a fresh inspection.
 
 ---
 ### iris check
 
-Scores source files and prints health findings. Single-file scans are free; scanning a directory or using `--staged` / `--changed` requires Pro.
+Scores source files and prints findings. Single-file checks remain Free. `iris check . --inspect` performs a deliberate project inspection using the applicable allowance. Enforcement with directory, staged or changed inputs remains paid; inspection does not install or run a blocking hook.
 
 | Flag | Description |
 |---|---|
@@ -298,7 +298,9 @@ iris security ./src --format json
 
 ### iris deps
 
-**Pro.** Audits the dependencies of npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
+A deliberate fresh dependency audit uses one successful local project action. A valid unchanged cached audit can be reused; `--no-cache` explicitly requests fresh evidence. Opening saved data does not refresh providers.
+
+Audits the dependencies of npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
 
 Installed versions are resolved from your lockfile when one is present (for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version.
 
@@ -437,7 +439,7 @@ If the package manager itself fails, its exit code is passed through.
 
 ### iris sbom
 
-**Pro.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, NuGet, Cargo, and Maven manifests in the project. The command is fully offline: no network requests are made and no consent prompt appears.
+**Free.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, NuGet, Cargo, and Maven manifests in the project. Manifest export performs no registry or advisory lookup and needs no lookup-consent prompt. Reusing an account-owned saved audit checks ownership when online; previously confirmed owned results can also be read offline.
 
 Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
 
@@ -468,7 +470,7 @@ iris sbom --stdout
 
 ### iris todos
 
-**Pro.** Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. This command is informational - it does not fail the run based on findings.
+Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. Use `--evidence <evidence-id>` to read a captured result without rescanning, or project access for a fresh scan. This command is informational; it does not enforce thresholds.
 
 | Flag | Description |
 |---|---|
@@ -561,7 +563,7 @@ The block sits between `iris-rules` markers, so regenerating updates only Iris C
 
 ### iris mcp
 
-Runs Iris Code as a Model Context Protocol server over standard input and output, so an AI agent can query the project's real findings, rules and gate status. **Free and Pro:** single-file `iris_check`, `iris_config` and single-file `iris_fix_safe`, file-scope `iris_refactor_plan` and `iris_verify_refactor`, and `iris_check_package` are Free; folder and workspace scope, `iris_explain`, `iris_gate` and `iris_check_dependency` are Pro.
+Runs Iris Code as an MCP server over standard input and output. Basic file checks, configuration, one-file fixes and plans, focused schema information and package guard remain Free. Fresh project inspections, dependency audits and multi-file plans use project access; earned result reads do not spend again. Fresh enforcement still requires paid access. See [MCP tools](/agents/mcp#tools).
 
 | Flag | Description |
 |---|---|
@@ -589,7 +591,7 @@ Tool-by-tool behaviour, the preview-token write gate, and the response caps are 
 
 ### iris report
 
-Exports HTML by default, or a PNG/SVG card or selected PDF pages. Free can export its saved first workspace scan as a card or PDF. A fresh directory scan requires Pro; a single-file HTML report remains Free. The editor uses the same card and PDF builder.
+Exports HTML by default, or a PNG/SVG card or selected PDF pages. `--evidence <evidence-id>` exports an owned captured result without scanning current files. Existing anonymous introductory cards and PDFs remain readable. A fresh directory scan uses project access; single-file HTML remains Free.
 
 | Flag | Description |
 |---|---|
@@ -629,16 +631,16 @@ Full writes `iris-report.pdf`, Summary writes `iris-report-summary.pdf`, and Cus
 
 ### iris hook
 
-Installs and removes the git pre-push hook and the build gate hook - equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` is **free**; `install` and `uninstall` require **Pro**.
+Installs and removes the git pre-push hook and the build gate hook - equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` and `uninstall` are **Free**, including after expiry or offline. Installing enforcement requires applicable paid access for the selected project.
 
 | Subcommand | Description |
 |---|---|
 | `iris hook git status [path]` | Show whether the git pre-push hook is installed **(free)** |
 | `iris hook git install [path]` | Write the Iris Code block to the active pre-push hook **(Pro)** |
-| `iris hook git uninstall [path]` | Remove the Iris Code block from the active pre-push hook **(Pro)** |
+| `iris hook git uninstall [path]` | Remove the Iris Code block from the active pre-push hook **(Free)** |
 | `iris hook build status [path]` | Show whether the build hook is installed **(free)** |
 | `iris hook build install [path]` | Wire Iris Code into the project build command **(Pro)** |
-| `iris hook build uninstall [path]` | Remove the Iris Code build entry **(Pro)** |
+| `iris hook build uninstall [path]` | Remove the Iris Code build entry **(Free)** |
 | `iris hook agent install [path]` | Add the [package guard](/agents/package-guard) hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI or Windsurf **(free)** |
 | `iris hook agent uninstall [path]` | Remove the package guard hook **(free)** |
 | `iris hook agent status [path]` | Show whether the package guard hook is installed **(free)** |
@@ -718,3 +720,17 @@ npx @iris-code/cli@latest hook verify [path] --sha <full-commit-id> --format pre
 
 See [Team governance](/teams/governance) for SHA resolution and every reason a check can be skipped.
 
+## iris usage
+
+Reads the selected account or team allowance and locally retained results. It does not start analysis.
+
+```bash
+iris usage status
+iris usage results
+iris usage result <evidence-id>
+iris usage recover
+```
+
+Recovery reconciles recorded outcomes and leaves unknown work awaiting confirmation. See [Free allowances](/free) for offline access and saved-result commands.
+
+Saved `--evidence` views keep their captured project root and configuration. If you also supply a path, it must match that root; omit it to read a result from another working directory. A graph `--focus` path is resolved inside the captured root when reading saved evidence.

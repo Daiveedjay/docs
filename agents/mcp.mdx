@@ -129,23 +129,21 @@ outside development.
 | Tool | Tier | What it returns |
 |---|---|---|
 | `iris_check` | Free | Findings for a path, with rule ids, lines and severities |
-| `iris_schema` | Free | Database tables, columns and declared relations, with focused-table usage; aggregate usage is Pro |
+| `iris_schema` | Free structure and focused usage | Aggregate usage can read an earned result with `evidence_id` |
 | `iris_config` | Free | The project's resolved thresholds, weights and gate limits |
 | `iris_fix_safe` | Free | Preview, then apply, only the fixes Iris Code can prove safe |
 | `iris_refactor_plan` | Free | A refactor plan for a file: proved mechanical fixes, then suggestions ordered by risk, with a session `baseline_id`. See [agent integration](/refactor/agents) |
 | `iris_verify_refactor` | Free | Whether a refactor improved, did not improve or regressed against the session baseline or git HEAD, with a correction |
 | `iris_check_package` | Free | Whether one package is safe to add, and the version to use instead. See the [package guard](/agents/package-guard) |
-| `iris_explain` | Pro | Findings plus the rule detail behind them |
-| `iris_gate` | Pro | Whether the configured gate would pass, and which files fail which rule |
-| `iris_check_dependency` | Pro | OSV advisories with severity, confidence and fix version |
+| `iris_explain` | Earned reads are Free | Use `evidence_id` to explain a captured result; fresh access remains separate |
+| `iris_gate` | Paid enforcement; earned inspection is Free | A saved result can explain its captured gate without enforcing current files |
+| `iris_check_dependency` | Project allowance for a fresh audit | Saved audits remain readable; lookups need consent |
 
 `iris_check`, `iris_fix_safe`, `iris_refactor_plan` and `iris_verify_refactor` are Free on a single
-file. Folder and workspace scope are Pro, as they are in every other Iris Code surface. When
-`iris_check` fails a file for size or complexity, the result says a refactor plan is available.
+file. New project inspections and multi-file plans use the applicable project allowance. An earned result ID reopens captured evidence without another scan.
+When `iris_check` reports a file-size or complexity finding, it can also identify the available refactor workflow.
 
-Pro tools stay in the tool list and describe themselves as Pro rather than being hidden, so your
-assistant can tell you what an upgrade would add. Entitlement is checked when a tool runs, not when
-it is listed, so a cached tool list cannot be replayed for Pro work.
+Tools remain discoverable. Effective scope, governance and permission are checked when a tool runs, not when it is listed. An earned result ID identifies a retained result; it does not bypass membership or grant fresh enforcement.
 
 ## Findings
 
@@ -252,6 +250,6 @@ See [Team governance](/teams/governance) for policy scope, session refresh, sign
 
 Before writing a query, migration or model change, call `iris_schema` to get the real names instead of guessing. It reads the [Schema graph](/features/schema-graph) from the server's current project root and refreshes files between calls.
 
-Parameters are `table` (optional database name, model name or table ID), `format` (`json`, `mermaid` or `dbml`, defaults to JSON), and `include_usage` (optional boolean). Whole-schema structure and one table's usage are Free. Aggregate usage is refused with `PRO_REQUIRED` on Free. Repository governance is checked before entitlement, including when a client cached the tool list.
+Parameters include `table`, `format` and `include_usage`. Structure and focused-table usage are Free. For aggregate usage, pass `evidence_id` from an owned workspace inspection. Without suitable captured evidence the tool asks for that inspection instead of silently scanning. Repository governance is checked before access, including when a client cached the tool list.
 
 JSON carries `schemaVersion: 1`. The result discloses capped output and unresolved references rather than guessing. Schema information does not change scores or gates.

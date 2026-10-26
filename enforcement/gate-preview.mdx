@@ -1,14 +1,16 @@
 ---
 title: "Gate Preview: compare project results before enabling enforcement"
 sidebarTitle: "Gate Preview"
-description: "Compare the project with five built-in gate presets before writing configuration, installing a hook, or blocking a push."
+description: "Compare the project with six built-in gate presets before writing configuration, installing a hook, or blocking a push."
 ---
 
 A gate decides whether code meets your project standards. Gate Preview shows whether the current project would pass and which thresholds would fail, without blocking a push or build. Use it to choose realistic settings before you enforce them.
 
 ## Opening it
 
-Scroll to the bottom of the **File tab** in the sidebar and click **Preview Gate**. Iris Code runs a background workspace scan and renders the results inline, respecting your `ignoreFiles` list.
+Open **Improve** and choose the gate preview. You can also open **Preview Gate** from the **File tab**.
+
+When a saved project scan is selected, the preview uses that captured result. It shows the saved scope and capture time, and does not rescan current source or spend another project action. Without an earned result, the basic preview checks the current workspace against the presets, respecting your `ignoreFiles` list.
 
 ## The six presets
 
@@ -25,24 +27,24 @@ Ordered from most lenient to most strict:
 
 ## What the preview shows
 
-- **Workspace average** - a single score across every file scanned
+- **Scan average** - a single score across the files in the displayed scope
 - **Files analysed** - how many were included
 - **Threshold card** - which presets you already pass, and the next one you would fail
 - **Recommendation** - the strictest preset you could adopt today with nothing blocked
 - **Focus card** - one preset in detail, with controls to step through the others and an **Apply** button
 - **Preset grid** - all six at a glance, each clickable
 
-The focus card shows the preset, its minimum score, how many files fail, and on Pro, which ones. **Apply** writes `presetId` into `.irisconfig.json` directly, without opening the file.
+The focus card shows the preset, its minimum score, how many files fail, and their file details when the result is earned or you have Pro access. **Apply** writes `presetId` into `.irisconfig.json` directly, without opening the file.
 
 ## Free and Pro
 
-The preview is free for everyone. Seeing the individual failing files, and enforcing the result, require Pro.
+The preview is Free. Opening earned file details does not spend another action. Enforcing a gate at push, build or CI boundaries requires applicable paid access; a preview does not install a hook or prevent a push.
 
 | | Free | Pro |
 | --- | --- | --- |
 | Gate Preview scan and results | ✓ | ✓ |
 | Pass/fail counts per preset | ✓ | ✓ |
-| Per-file drilldown with scores | - | ✓ |
+| Per-file drilldown with scores | From an earned scan | ✓ |
 | Hook enforcement | - | ✓ |
 
 ## Acting on the results

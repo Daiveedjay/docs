@@ -1,32 +1,12 @@
-# Mintlify Starter Kit
+# Iris Code documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+Public product and reference documentation, served at https://docs.iriscode.co with Mintlify. Navigation lives in `docs.json`; source pages are MDX. Read [the writing guide](docs-writing-style.md) and [project instructions](AGENTS.md) before editing.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
-
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
-
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## AI-assisted writing
-
-Set up your AI coding tool to work with Mintlify:
-
-```bash
-npx skills add https://mintlify.com/docs
-```
-
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
-
-See the [AI tools guides](/ai-tools) for tool-specific setup.
+The local recurring Free and UI rollout covers monthly project actions, retained results, manual-by-default cloud scans and opt-in automation. Backend configuration supplies current limits; historical release notes remain historical. Local changes are prepared for review, with deployment held.
 
 ## Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+Use Node 18-22; Mintlify does not support Node 25. Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
 
 ```
 npm i -g mint
@@ -35,10 +15,14 @@ npm i -g mint
 Run the following command at the root of your documentation, where your `docs.json` is located:
 
 ```
-mint dev
+mint dev --port 3003
 ```
 
-View your local preview at `http://localhost:3000`.
+View your local preview at `http://localhost:3003`.
+
+## Verification
+
+Run `npm test`, `node scripts/check-mdx-comments.mjs`, `mint validate` and `mint broken-links`, then inspect the changed pages locally. Local search uses the deployed index.
 
 ## Publishing changes
 
