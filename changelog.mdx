@@ -8,6 +8,24 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.39.0 - 2026-10-27
+
+The redesigned Iris Code interface organises tools under **Home, Review, Improve, Explore and Configure**. The website, account, Teams and browser Playground use the matching design family. This release uses Core 0.7.2, CLI 1.29.0 and MCP 0.2.0; analysis scoring rules are unchanged.
+
+### Added
+
+- Signed-in personal Free accounts receive 12 local project actions and 4 cloud scans monthly. Free Teams share 36 local actions and 12 cloud scans, with three active collaborators and three active projects. Runtime account/workspace policy supplies balances and reset dates.
+- Saved project results remain readable after the allowance is used. Reopening or exporting captured evidence does not silently run or charge another scan. Basic file analysis remains Free.
+- New cloud repositories start in manual mode. Free users may explicitly opt into automatic cloud scans within the same allowance. Continuous local hooks, builds and CI enforcement remain paid.
+- Clearer setup, findings, captured project evidence and recovery for interrupted actions across editor, CLI and MCP workflows. Custom configuration is available to signed-in Free accounts.
+
+### Fixed
+
+- Paid offline access now verifies a server-signed proof bound to the account, credential, API origin and workspace. Older unsigned caches require one online validation; valid paid access keeps the seven-day offline grace.
+- Cloud analysis stages exclude controller credentials and inherited runtime injection. Failed or cancelled scans clean up their temporary fallback configuration.
+
+JetBrains 1.39.0 is submitted separately for Marketplace review; its store availability depends on approval. Published channel versions are verified during the release.
+
 ## v1.38.2 - 2026-10-16
 
 **Some files may score lower after upgrading**, because previously hidden long functions now count. Files with false function-length warnings may score higher. The corrected measurements apply to the editor extensions and CLI, including `iris gate`, with core 0.7.2 and CLI 1.28.2.
