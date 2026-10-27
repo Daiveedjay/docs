@@ -110,6 +110,12 @@ Code Smells
 
 Everything: the sidebar with Home, Review, Improve, Explore and Configure, plus File, Folder, Workspace, Findings and TODOs review scopes, inline diagnostics, quick fixes, the onboarding tour, the Explorer file-naming badge, every table view, the duplicate diff, Review My Changes, hook and CI installation, and dashboard config sync over the `iris-code://` deep link.
 
+## Reporting a problem
+
+When an Iris Code action fails, such as a workspace scan, the error notification has two buttons. **Show details** opens the **Iris Code** output panel, where every failure is logged with the time, the action and the full error. **Report problem** opens a report form on iriscode.co with a short summary already filled in: the Iris Code and VS Code versions, your operating system, the action and the error message.
+
+Paths to your home folder and project folder are replaced with `~` and `<workspace>` before the form opens. The summary travels in the part of the link that browsers do not send to a server, so nothing reaches Iris Code until you review it, add what you were doing and press **Send report**. You can edit or delete any of it first.
+
 ## Settings
 
 Iris Code reads `.irisconfig.json` from your project first, then VS Code settings. Prefer the project file for anything a teammate should also get, since it travels with the repository.

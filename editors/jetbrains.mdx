@@ -55,6 +55,12 @@ Iris Code actions are available from **Find Action** (`Ctrl+Shift+A`), including
 
 Config sync from the dashboard works, but through a pasted one-time code rather than a link: JetBrains has no URL scheme a plugin can claim. Use **Tools > Iris Code: Sync Config from Dashboard** and paste the code the dashboard shows you. You get a real diff and a confirmation before anything is written.
 
+## Reporting a problem
+
+When an Iris Code action fails, such as a workspace or folder scan, the IDE notification offers **Show details** and **Report problem**. **Show details** shows the error with the time, the action and the stack trace; the full record is also written to the IDE log (**Help > Show Log in Explorer**, or **Show Log in Finder** on macOS). **Report problem** opens a report form on iriscode.co with a short summary already filled in: the Iris Code and IDE versions, your operating system, the action and the error message.
+
+Paths to your home folder and project folder are replaced with `~` and `<workspace>` before the form opens. The summary travels in the part of the link that browsers do not send to a server, so nothing reaches Iris Code until you review it, add what you were doing and press **Send report**.
+
 ## Panel appearance
 
 The panel follows your IDE theme and UI scale, including live theme switches. If it ever looks out of step with the rest of the IDE after changing your interface font, reopening the tool window re-applies the scale.
