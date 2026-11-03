@@ -53,3 +53,9 @@ The awkward cases are handled deliberately rather than left to fail:
 - **Git not installed:** reported as exactly that, rather than as a missing repository.
 - **A new repository with no commits:** staged and untracked files are still reviewed.
 - **Large untracked folders, paths with spaces or unicode, a merge in progress:** all handled.
+
+## Verification integrity
+
+The Free integrity group appears above the health score and filters in both editors. It includes deleted tests and weakened configuration, even when no supported source file remains to score. If a score scan cannot run, integrity remains available and the view says that no score scan ran.
+
+Use **This is intended** to record a reason for the current change. A subsequent edit invalidates it. This editor acknowledgement does not authorise hooks or CI; those need a reasoned commit trailer. See [verification integrity](/features/verification-integrity).

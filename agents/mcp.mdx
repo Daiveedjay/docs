@@ -253,3 +253,13 @@ Before writing a query, migration or model change, call `iris_schema` to get the
 Parameters include `table`, `format` and `include_usage`. Structure and focused-table usage are Free. For aggregate usage, pass `evidence_id` from an owned workspace inspection. Without suitable captured evidence the tool asks for that inspection instead of silently scanning. Repository governance is checked before access, including when a client cached the tool list.
 
 JSON carries `schemaVersion: 1`. The result discloses capped output and unresolved references rather than guessing. Schema information does not change scores or gates.
+
+## Checking verification integrity
+
+`iris_check` accepts `changed: true` for a Free comparison of the working tree against the last commit, including deleted tests and weakened configuration. It returns canonical findings in the `integrity` group and discloses unread inputs. It does not start a health score scan. Repository governance is checked first.
+
+```json
+{ "changed": true }
+```
+
+See [verification integrity](/features/verification-integrity) for signals, allowances and baseline rules.

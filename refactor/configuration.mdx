@@ -28,7 +28,7 @@ For example, turn off a suggestion with `disable`, keep all work in existing fil
 | `verify.importCycles` | `true` | Check newly introduced cycles |
 | `verify.removedExports` | `true` | Check removed imported exports and warn on API changes |
 | `verify.newFindings` | `true` | Compare finding identities and severity |
-| `maxCorrections` | `2` | Integer from 0 to 4 controlling finish-hook retries per baseline |
+| `maxCorrections` | `1` | Zero disables refactor retries; positive values permit at most one attempt per agent turn, shared with verification integrity |
 
 Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by key. Config Studio exposes every shared policy field and lets Pro users edit language overrides. Resetting a language field restores inherited values; local destination paths remain in the repository.
 
@@ -39,7 +39,7 @@ Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by
     "allowNewFiles": false,
     "publicApiRequiresApproval": true,
     "packing": { "minTokenRatio": 0.8 },
-    "maxCorrections": 2
+    "maxCorrections": 1
   },
   "languages": {
     "go": { "refactor": { "disable": ["options-object"] } },

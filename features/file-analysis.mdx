@@ -92,6 +92,21 @@ Five warning types, each with a threshold you set in `.irisconfig.json` and a se
   `severityOverrides` adjusts any of these. Promote `no-exports` to a warning where it matters on your project, or demote `file-too-long` from error to warning while working through a backlog.
 </Tip>
 
+### How length is counted
+
+A line limit is easy to meet without making code any shorter: join several statements onto one line. Coding agents do this when a file or function is just over its limit, and the result is harder to read and review.
+
+So `file-too-long`, `function-too-long` and the gate's `gateMaxFileLength` cap count every statement after the first on a line as one more line. `a(); b(); c()` written on one line measures as three lines, the same as writing it on three. When the count includes joined statements, the finding says how many, for example "File is 41 lines, 20 of them statements joined onto shared lines".
+
+Some things that make a line long are not joined statements, and they do not add to the count:
+
+- A long string, URL or comment.
+- A single long statement, such as a call with many arguments.
+- The parts of a `for (...)` loop header, and members of an inline type such as `{ rows: Row[]; total: number }`.
+- Short inline markup such as `<p>Text with <b>bold</b></p>`. Several JSX elements count separately only on a line longer than 100 characters.
+
+Splitting the code into smaller functions or files is what reduces a measured length.
+
 <Note>
   Unused *import* detection is available for TypeScript, JavaScript and Java. Other languages are not checked for unused imports by Iris Code; their compilers or linters may offer additional checks.
 

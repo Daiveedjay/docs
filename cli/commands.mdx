@@ -734,3 +734,11 @@ iris usage recover
 Recovery reconciles recorded outcomes and leaves unknown work awaiting confirmation. See [Free allowances](/free) for offline access and saved-result commands.
 
 Saved `--evidence` views keep their captured project root and configuration. If you also supply a path, it must match that root; omit it to read a result from another working directory. A graph `--focus` path is resolved inside the captured root when reading saved evidence.
+
+## Verification integrity
+
+`iris check . --integrity` compares current changes against the last commit for Free. `--from <revision>` changes the baseline; `--staged` reads the exact index blobs against the last commit. Those two baseline options cannot be combined. `--format json` adds an `integrity` report with findings, the blocking count and inputs not checked.
+
+Blocking integrity findings return exit 1. Clean comparisons return 0 and bad flags return 2. Score scans retain their existing access requirements. `iris gate . --from <revision>` also compares verification rules before score enforcement.
+
+See [verification integrity](/features/verification-integrity).

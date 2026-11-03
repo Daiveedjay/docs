@@ -133,3 +133,17 @@ The `strict` and `security` presets already set a cap (5 and 3 per file) and a h
 <Tip>
   Commit `.irisconfig.json` with `gateMaxSuppressions` set and the cap applies to everyone. Without it, a file can be brought under the gate by suppression rather than by fixing anything. See [Gate thresholds](/configuration/irisconfig#gate-thresholds).
 </Tip>
+
+## Verification integrity allowances
+
+The integrity rule IDs are `test-removed`, `test-disabled`, `assertions-weakened`, `checker-silenced`, `type-widened`, `error-swallowed`, `iris-suppressed`, `rules-loosened` and `code-packed`. A real trailing comment or block comment can carry a directive as well as a comment on the line above. Text inside a string is not a directive.
+
+A suppression targeting an integrity finding needs a reason. The finding stays visible as allowed, and the new suppression is itself reported as a warning. An agent should restore the check or explain a deliberate change to you, rather than silently add an escape.
+
+A removed file has no current line for a comment. Use a commit-message trailer for hooks or CI:
+
+```text
+Iris-Allow: test-removed tests/old.test.ts -- replaced by integration coverage
+```
+
+The path is repository-relative. Add `#<test name>` to restrict a test allowance to one named case. `code-packed` is file-level and rejects that suffix; use **This is intended** locally or `Iris-Allow: code-packed src/view.ts -- reviewed compact layout` for hooks and CI. Unknown rules, escaping paths and missing reasons do not grant an allowance. See [verification integrity](/features/verification-integrity).

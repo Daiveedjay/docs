@@ -29,6 +29,7 @@
             "pages": [
               "features/file-analysis",
               "features/change-review",
+              "features/verification-integrity",
               "features/workspace-analysis",
               "features/shareable-report",
               "features/code-map",

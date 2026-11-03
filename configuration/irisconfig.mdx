@@ -168,7 +168,7 @@ These keys set the structural size limits that trigger warnings in the editor an
 | Key | Default | What it controls |
 |-----|---------|-----------------|
 | `functionLengthThreshold` | `40` | Lines before a function is flagged. In `.jsx`/`.tsx`, JSX markup does not count toward this - a component is measured by its logic, the same way a Vue or Svelte `<template>` never counted. `fileLengthThreshold` still counts every line, so a large component is still flagged as a long file |
-| `fileLengthThreshold` | `300` | Lines before a file is flagged |
+| `fileLengthThreshold` | `300` | Lines before a file is flagged. Statements joined onto one line count as separate lines; see [how length is counted](/features/file-analysis#how-length-is-counted) |
 | `maxFunctionsPerFile` | `10` | Max functions before the file is flagged |
 | `maxImportsPerFile` | `8` | Max third-party imports before flagging |
 | `maxParameterCount` | `5` | Max parameters before a function is flagged |
@@ -310,7 +310,7 @@ The `refactor` block controls proposed fixes, moved-code destinations and verifi
     "destinations": { "types": "src/types" },
     "packing": { "minTokenRatio": 0.6 },
     "verify": { "importCycles": true },
-    "maxCorrections": 2
+    "maxCorrections": 1
   }
 }
 ```
@@ -332,6 +332,18 @@ Override the severity of any warning type on a per-project basis using the `seve
 <Tip>
   Only include keys you want to override - anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
 </Tip>
+
+## Packed code integrity (Free)
+
+`codePackedThreshold` sets the minimum number of newly joined statements in a file before [verification integrity](/features/verification-integrity#packed-code) reports `code-packed`. It defaults to `3` and accepts integers of at least `1`. Every preset and language uses the same top-level value; a `languages` block cannot override it.
+
+```json
+{
+  "codePackedThreshold": 5
+}
+```
+
+The comparison reads the baseline value, so raising the threshold in a change does not weaken that change's check. The increase is itself reported as `rules-loosened`. The rule warns by default; `severityOverrides["code-packed"]: "error"` makes it block for push and CI. Use `"info"` for the quietest severity, and `ignoreFiles` for generated files.
 
 ## Agent handoff
 

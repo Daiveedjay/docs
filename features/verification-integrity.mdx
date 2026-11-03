@@ -1,0 +1,92 @@
+---
+title: "Verification integrity: keep checks from getting weaker"
+sidebarTitle: "Verification integrity"
+description: "Compare changes against a saved starting point and report newly weakened tests, checkers and project rules."
+---
+
+A change can make checks pass by weakening the checks themselves. Verification integrity compares your changes with a baseline, a saved starting point, and reports each new weakening. Existing skipped tests or suppressions do not become new findings just because you run the check.
+
+Verification integrity is Free. Health score scans and score enforcement keep their existing access requirements.
+
+## Running it
+
+In a terminal, run:
+
+```bash
+iris check . --integrity
+iris check . --integrity --staged
+iris check . --integrity --from main --format json
+```
+
+The default baseline is your last commit. `--staged` compares the Git index, the exact version prepared for a commit, against that commit. `--from` selects a different revision for a working-tree comparison.
+
+**Review My Changes** shows integrity findings above the health score in VS Code and JetBrains. A refused score scan does not hide the Free integrity comparison. Deleted tests show their baseline path and line instead of a link to a missing file.
+
+Coding agents can call `iris_check` with `changed: true` through [MCP](/agents/mcp). Repository permissions still apply. This input compares current changes against the last commit without starting a score scan.
+
+## Acting on the results
+
+By default, removed tests, disabled tests and loosened project rules block. Fewer assertions, silenced checkers, widened types, swallowed errors and new Iris Code suppressions warn. Restore a weakened check, or explain why the change is deliberate.
+
+| Rule | What it reports |
+| --- | --- |
+| `test-removed` | A named test disappeared from the change and was not moved or covered by a Git rename |
+| `test-disabled` | A test gained a skip or focus marker |
+| `assertions-weakened` | A matched test contains fewer assertion calls |
+| `checker-silenced` | A new checker suppression appears in a real comment or supported attribute |
+| `type-widened` | A supported type escape was introduced in code |
+| `error-swallowed` | Supported error handling became empty or discarded an error |
+| `code-packed` | New statements were joined onto shared lines, measured against the baseline |
+| `iris-suppressed` | A new Iris Code suppression was added |
+| `rules-loosened` | A configured test, type, lint or Iris Code threshold became weaker |
+
+The comparison uses the baseline's resolved Iris Code configuration. Lowering `minHealthScore` in the same change cannot make that weakening pass unnoticed. Baseline severity overrides apply; lowering an override is itself a configuration finding.
+
+## Packed code
+
+`code-packed` warns when a file adds at least three statements joined onto shared lines. It compares new packed lines with the baseline and caps the count at the file's total increase. Moving existing packing or editing a word without increasing packing does not trigger it. Strings, comments, loop headers, inline type members and short inline markup are excluded.
+
+Set top-level `codePackedThreshold` to a positive integer to change the threshold. The default is `3` for every preset and language, including test files. The comparison reads this value from the baseline configuration. Raising it in the change is reported as `rules-loosened`.
+
+Push and CI treat this as a warning by default. Set `severityOverrides["code-packed"]` to `"error"` to make it block, or `"info"` for the quietest severity. There is no off switch; put generated files in `ignoreFiles`.
+
+At agent finish, an unallowed packing finding stops the agent once and asks it to split the lines or explain. This uses the same single correction as refactor verification. After that correction, or when the host's loop guard applies, it becomes a warning.
+
+## Confirming a deliberate change
+
+**This is intended** records your reason for the current change in the editor. Editing the change invalidates that acknowledgement. It does not authorise a push or a CI run.
+
+For hooks or CI, add a commit-message trailer with a known rule, repository-relative path and reason:
+
+```text
+Iris-Allow: test-removed tests/old.test.ts -- replaced by integration coverage
+Iris-Allow: code-packed src/generated-view.ts -- reviewed compact layout
+Iris-Allow: test-disabled tests/orders.test.ts#orders > refunds -- service maintenance
+```
+
+`code-packed` allowances apply to the whole file, without a `#test` suffix. Use **This is intended** for local editor review or the trailer above for hooks and CI.
+
+Allowed findings stay visible. A supported `iris-ignore` comment with a reason can also allow a line finding; the new suppression remains a warning. A coding agent should restore the check or explain the change to you rather than add a suppression itself.
+
+## Hooks and baselines
+
+The pre-push step checks each pushed ref against its remote starting revision, including when the ref differs from your checked-out branch. A new branch uses an upstream merge base. Commit trailers are read over the same range.
+
+Agent hook installation adds a turn-start snapshot where the host supports one. Dirty files at turn start are stored outside the repository under `~/.iris/turns`, capped at 5 MiB. Other source reads are capped at 1 MiB per file and 50 MiB per comparison. Every omitted path is disclosed.
+
+At finish, integrity runs even without a refactor plan. Integrity and refactor verification share one correction attempt per turn. If no turn baseline is available, integrity compares against your last commit and says so. Refactor verification retains its owned MCP baseline requirement. Windsurf / Devin has no controllable finish hook.
+
+## What is not checked
+
+The readers support named tests across TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust. Computed test names and unproved test boundaries are disclosed. Assertion counts do not establish that a replacement assertion is equally strong.
+
+Type widening has no equivalent here for JavaScript or Ruby. Java `Object` parameters are excluded because they are noisy, and Rust has no matching dynamic top type. Go and Rust error-returning calls cannot be identified without type information; their supported patterns are narrower.
+
+Configuration readers do not execute repository code. Computed coverage thresholds, executable or YAML lint configuration, malformed files and external `extends` targets are reported as **not checked** where they cannot be resolved safely.
+
+## Related pages
+
+- [Review My Changes](/features/change-review)
+- [Git hook](/enforcement/git-hook)
+- [Inline suppressions](/enforcement/suppressions)
+- [MCP server](/agents/mcp)

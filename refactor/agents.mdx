@@ -61,7 +61,7 @@ The hook verifies only a baseline ID already found in the current agent transcri
 
 Only `regressed` asks the agent to continue with a correction. `not-improved` is a warning and does not block it from stopping.
 
-The hook allows at most `maxCorrections` correction attempts for one baseline. After that, it asks the agent to stop and show you the verdict and changes. The agent host's own loop controls add another safeguard.
+The hook allows at most one correction per agent turn, shared with [verification integrity](/features/verification-integrity), however many refactors the turn verifies. `maxCorrections: 0` turns corrections off; a larger value does not add more. After that, it asks the agent to stop and show you the verdict and changes. The agent host's own loop controls add another safeguard.
 
 Cursor warnings are written to the error-output stream because its stop response has no warning field. The hook does not call an AI model or change the push or build gate.
 

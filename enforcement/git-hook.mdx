@@ -69,3 +69,9 @@ Every hook run is recorded as a pass or fail in your account Analytics, so enfor
 ## Uninstalling
 
 Run **Iris Code: Uninstall Git Hook**. Only the Iris Code block between the markers is removed. If that leaves nothing but a shebang, the hook file is deleted.
+
+## Verification integrity
+
+The integrity step is Free even when score enforcement is unavailable. It compares each pushed ref against its remote starting revision, rather than comparing the working tree against HEAD. A new branch uses an upstream merge base; deleted refs are skipped.
+
+Removed or disabled tests and loosened rules block by default. Reasoned `Iris-Allow` trailers are read from commits in the same pushed range. Existing generated Node and native hook blocks forward stdin, so this step does not require a hook-text change. See [verification integrity](/features/verification-integrity).

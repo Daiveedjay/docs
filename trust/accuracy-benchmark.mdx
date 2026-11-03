@@ -100,22 +100,27 @@ are in the [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.js
 you want the arithmetic rather than the ratio.
 
 {/* >>> iris-benchmark-start <<< */}
-_Generated from the benchmark corpus in `@iris-code/core` 0.7.2. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
+_Generated from the benchmark corpus in `@iris-code/core` 0.8.0. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
 
-**38 rules measured across 8 analysers, covering 10 supported languages.** 11 enforcement, 27 advisory. 174 measured rule-language pairs over 361 fixture files (245 positive, 186 negative). Unmeasured rules: 0.
+**47 rules measured across 8 analysers, covering 10 supported languages.** 14 enforcement, 33 advisory. 242 measured rule-language pairs over 371 fixture files (245 positive, 196 negative). Unmeasured rules: 0. Verification integrity adds 296 separate before/after pairs; its rule cells come from that paired benchmark.
 
 | Rule | Group | Cases | TypeScript | JavaScript | Go | Python | Ruby | C# | Java | Rust |
 | --- | --- | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
 | `any-usage` | advisory | 2 | 100% / 100% | - | - | - | - | - | - | - |
+| `assertions-weakened` | advisory | 9 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `bare-suppression` | advisory | 3 | 100% / 100% | 100% / 100% | - | 100% / 100% | - | - | - | - |
 | `catch-all-exception` | advisory | 6 | - | - | - | - | - | 100% / 100% | 100% / 100% | - |
+| `checker-silenced` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `code-packed` | advisory | 9 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `console-log` | advisory | 15 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `debug-flags-enabled` | advisory | 9 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `deep-nesting` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - |
+| `error-swallowed` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `explicit-panic` | advisory | 3 | - | - | - | - | - | - | - | 100% / 100% |
 | `god-class` | advisory | 1 | - | - | - | - | 100% / 100% | - | - | - |
 | `hardcoded-localhost` | advisory | 11 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `insecure-random` | advisory | 10 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `iris-suppressed` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `large-class` | advisory | 1 | - | - | - | - | - | 100% / 100% | - | - |
 | `linq-abuse` | advisory | 1 | - | - | - | - | - | 100% / 100% | - | - |
 | `long-param-list` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
@@ -129,6 +134,7 @@ _Generated from the benchmark corpus in `@iris-code/core` 0.7.2. Every cell is p
 | `todo` | advisory | 12 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `too-many-functions` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - | 100% / 100% | 100% / 100% |
 | `too-many-imports` | advisory | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - | 100% / 100% | 100% / 100% |
+| `type-widened` | advisory | 4 | 100% / 100% | - | 100% / 100% | 100% / 100% | - | 100% / 100% | - | - |
 | `unsafe-regex` | advisory | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - |
 | `unused-function` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - | - | - |
 | `unused-var` | advisory | 4 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - | - | - |
@@ -142,7 +148,10 @@ _Generated from the benchmark corpus in `@iris-code/core` 0.7.2. Every cell is p
 | `function-too-long` | enforcement | 6 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | - | - | 100% / 100% | 100% / 100% |
 | `hardcoded-secret` | enforcement | 22 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `mass-assignment` | enforcement | 2 | - | - | - | - | 100% / 100% | - | - | - |
+| `rules-loosened` | enforcement | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `sql-concatenation` | enforcement | 16 | 100% / 100% | 66% / 100%<br />_2 correct, 1 false alarm_ | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `test-disabled` | enforcement | 8 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
+| `test-removed` | enforcement | 10 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 | `weak-hashing` | enforcement | 14 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 {/* >>> iris-benchmark-end <<< */}
 

@@ -8,6 +8,27 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.40.0 - 2026-11-03
+
+Verification integrity compares changes with a saved starting point and reports newly weakened checks. It is Free in the editors, command-line tools, Git hooks and coding-agent workflows. This release uses core 0.8.0 and CLI 1.30.0; MCP remains 0.2.0.
+
+<Warning>
+  Reinstall the Git hook to see integrity warnings on a passing push. Some files may score lower after upgrading because statements joined onto one line now count separately in file and function lengths.
+</Warning>
+
+### Added
+
+- Nine verification integrity rules report removed or disabled tests, fewer assertions, silenced checkers, widened types, swallowed errors, new suppressions, loosened configuration and newly packed code. Deliberate changes remain visible with a reasoned allowance. See [verification integrity](/features/verification-integrity).
+- Packed code warns by default when a file adds at least three statements joined onto shared lines. The Free `codePackedThreshold` setting controls this threshold. Agent finish can ask for one correction, shared with refactor verification across the turn; `maxCorrections: 0` disables corrections.
+- VS Code and JetBrains offer to write agent rules when a configured project has none. JetBrains IDEs through 2026.3 are supported; Marketplace availability depends on approval.
+- Config Studio adds settings search, New badges, a New settings card, a wider sidebar and severity colours. Numeric fields show their actual default, including `3` for packed code and `70` for minimum health score.
+
+### Fixed
+
+- Review My Changes handles Windows drive-letter differences. Imports used after a side-effect import are no longer reported as unused.
+- Refactor verification explains a result that did not improve. Push integrity keeps its existing blocking behaviour and accepts an up-to-date force push without inventing a changed range.
+- Generated agent guidance uses the shared single correction attempt. Git hooks show integrity warnings even when the push passes.
+
 ## v1.39.0 - 2026-10-27
 
 The redesigned Iris Code interface organises tools under **Home, Review, Improve, Explore and Configure**. The website, account, Teams and browser Playground use the matching design family. This release uses Core 0.7.2, CLI 1.29.0 and MCP 0.2.0; analysis scoring rules are unchanged.
