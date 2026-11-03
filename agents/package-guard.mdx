@@ -26,7 +26,7 @@ Each package gets one verdict:
 A package the guard could not check is never reported as safe. The verdict says `unchecked` and
 names the reason.
 
-The registry and OSV.dev are separate services, so one being down does not hide the other. If the registry does not answer but you asked for an exact version, that version is still checked against OSV.dev, and a known serious vulnerability still blocks.
+The package registry, such as npm, and OSV.dev, a public database of known vulnerabilities, are separate services, so one being down does not hide the other. If the registry does not answer but you asked for an exact version, that version is still checked against OSV.dev, and a known serious vulnerability still blocks.
 
 Only the checks that need the registry, such as release age, are reported as not run. For Maven, when Maven Central's search API is slow, versions are read from the repository's own `maven-metadata.xml`, which has no publish dates, so release age is not checked for that lookup.
 
@@ -40,7 +40,7 @@ crates.io, the Go module proxy, RubyGems, NuGet and Maven Central.
 
 ## Installing for coding agents
 
-The strongest layer is a hook the agent runs before every shell command. It works whether or not the
+The strongest layer is a hook: a small program the agent runs automatically before every shell command. It works whether or not the
 agent follows any instructions, because it runs outside the agent.
 
 <CodeGroup>
@@ -159,7 +159,7 @@ iris install requests --check        # check only, install nothing
 ```
 
 `iris install` checks every package you name, prints the verdicts, and then runs your project's own
-package manager, found from its lockfile, with the same packages. A blocked package stops the whole
+package manager, found from its lockfile (the file that records the exact version of every installed package), with the same packages. A blocked package stops the whole
 run before anything is installed. `--force` installs anyway and prints what was overridden.
 
 | Exit code | Meaning |
@@ -232,7 +232,7 @@ version.
 
 ## In the editor
 
-When a manifest or lockfile changes on disk, VS Code and the JetBrains IDEs check the packages that
+When a manifest (the file listing your project's dependencies, such as `package.json`) or lockfile changes on disk, VS Code and the JetBrains IDEs check the packages that
 were added or changed and show one notice if any would be blocked. This happens seconds after an
 install someone typed, so the notice says the package was "just added". Each package version is
 reported once: per workspace in VS Code, per session in JetBrains IDEs.

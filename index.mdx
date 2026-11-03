@@ -1,22 +1,26 @@
 ---
-title: "Iris Code: quality control for AI-assisted development"
+title: "Iris Code: code checks for you and your coding agents"
 sidebarTitle: "Home"
-description: "Give coding agents your project rules, check their changes with deterministic analysis, and enforce the same standards in editors, hooks, CI, and opt-in cloud scans."
+description: "Iris Code checks your code for problems such as leaked passwords, risky patterns and hard-to-follow functions, gives coding agents your project rules, and can stop code that misses your standards before it ships."
 ---
 
-Iris Code checks your code for problems and shows which parts need attention, whether you wrote the code yourself or used an AI assistant. You choose the project standards and decide whether failed checks should stop a push or build.
+Code can look finished while it still contains a leaked password, a risky pattern or a function nobody can follow. That happens more easily when a coding assistant writes a lot of code quickly.
 
-It works in your editor, from the terminal and in automated checks. Findings can include passwords left in code, risky security patterns, repeated code and functions that are difficult to follow.
+Iris Code checks your code for these problems and shows which parts need attention, whether you wrote the code yourself or used an AI assistant. You choose the project standards and decide whether failed checks should stop a push or a build.
+
+It works in your editor, from the terminal and in automated checks that run when code is pushed. Findings can include passwords left in code, risky security patterns, repeated code and functions that are difficult to follow.
 
 <Note>
-  Iris Code does not identify whether code was written by AI, and it makes no model calls. Editor, CLI, hook, and CI analysis runs in your environment. Opt-in Cloud scans temporarily fetch a selected GitHub repository, delete the working copy after the scan, and retain the report.
+  Iris Code does not try to tell whether code was written by AI, and it never sends your code to an AI model. Checks in the editor, in the CLI (the commands you type in a terminal), in Git hooks and in CI all run in your own environment.
+
+  Cloud scans are the exception, and only if you turn them on. They temporarily copy a GitHub repository you choose, delete that copy after the scan and keep the report.
 </Note>
 
-## Four words used throughout
+## Words used throughout
 
 A **finding** is one thing Iris Code reports about your code. A **blocker** is a serious finding; a **warning** is something to review.
 
-A **threshold** is a value you configure, such as a minimum health score or a maximum number of secrets. The **gate** compares a scan with those thresholds and decides whether the code passes. A finding's label alone does not decide the gate result.
+A **threshold** is a limit you set, such as a minimum health score or a maximum number of secrets. The **gate** compares a scan with those limits and decides whether the code passes. Whether a finding is labelled a blocker or a warning does not, on its own, decide that result.
 
 See the [terminology page](/reference/terminology) for other terms used in the product.
 
@@ -25,73 +29,79 @@ See the [terminology page](/reference/terminology) for other terms used in the p
     Install Iris Code and read your first score, in about two minutes
   </Card>
   <Card title="Try the Playground" icon="play" href="/playground">
-    Edit a multi-file project and see the real Iris Code gate block or pass a simulated push
+    Edit a sample project in your browser and see the real Iris Code gate block or pass a pretend push
   </Card>
   <Card title="What it finds" icon="sparkles" href="/features/file-analysis">
-    Health scores, secrets, duplicate code and security smells
+    Health scores, secrets, duplicate code and risky security patterns
   </Card>
   <Card title="Blocking bad code" icon="shield-check" href="/enforcement/gate-preview">
-    Hooks and CI gates that block code below your threshold
+    Checks before a push and in CI that stop code below your threshold
   </Card>
   <Card title="Terminal and CI" icon="terminal" href="/cli/overview">
-    The same checks from a shell or a pipeline, with <code>@iris-code/cli</code>
+    The same checks from a terminal or an automated pipeline, with <code>@iris-code/cli</code>
   </Card>
   <Card title="Configuration" icon="sliders" href="/configuration/irisconfig">
-    One committed file so the whole team shares the same thresholds
+    One settings file, committed to your project, so the whole team uses the same thresholds
   </Card>
   <Card title="Iris Code Pro" icon="star" href="/pro">
-    Whole-project scans, hooks, CVE audits and the full CLI
+    Whole-project scans, hooks, checks for known security problems in packages, and the full CLI
   </Card>
 </CardGroup>
 
 ## What you get
 
-**A score on every file, on every save.** Zero to 100, reduced by long functions, deep nesting, leftover debug prints and hardcoded values. Nothing needs triggering.
+**A score on every file, on every save.** Each file gets a health score from 0 to 100. Long functions, deeply nested code, leftover debug prints and hardcoded values lower it. The score updates by itself when you save.
 
-**Secrets caught before they ship.** A real API key is flagged in the sidebar with its value masked. Free on every plan, no configuration required.
+**Secrets caught before they ship.** If a real API key is written into a file, the sidebar flags it and hides its value. This is free on every plan and needs no setup.
 
-**Copy-paste made visible.** When the same block appears in three files, Iris Code reports all three locations and can open them side by side.
+**Copy-paste made visible.** When the same block of code appears in three files, Iris Code reports all three places and can open them side by side.
 
-**A gate you turn on when you are ready.** Preview how your project scores against six presets first. When the result looks right, a pre-push hook or a CI step blocks anything below your threshold.
+**A gate you turn on when you are ready.** First, preview how your project scores against six presets, which are ready-made sets of standards. When the result looks right, a pre-push hook (a check Git runs before each push) or a CI step stops anything below your threshold.
 
 ## How it works
 
 <Steps>
   <Step title="Install the extension">
-    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the Marketplace. It is free, and the icon appears in your Activity Bar immediately.
+    Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the Marketplace. It is free, and its icon appears straight away in the Activity Bar, the strip of icons down the side of the editor.
   </Step>
   <Step title="Open a file">
-    JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java or Rust. The score appears in the sidebar with the findings below it. No configuration required.
+    Open a JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java or Rust file. Its score appears in the sidebar, with the findings below it. You do not need to set anything up.
   </Step>
-  <Step title="Preview your enforcement posture">
-    At the bottom of the File tab, click **Preview Gate**. It shows how your code scores against every preset without changing anything.
+  <Step title="Preview what would be blocked">
+    At the bottom of the File tab, click **Preview Gate**. It shows how your code scores against every preset, without changing anything.
   </Step>
-  <Step title="Enable enforcement">
-    Install the pre-push hook, or add `iris gate` to CI. Code below your threshold is then blocked before it ships.
+  <Step title="Turn on blocking">
+    Install the pre-push hook, or add `iris gate` to CI, the automated checks that run on your code after a push. Code below your threshold is then stopped before it ships.
   </Step>
 </Steps>
 
 ## Your code stays on your machine
 
-Analysis runs in the editor process, on your machine. Nothing you scan in the editor or the CLI is uploaded, and no AI model processes it.
+The checks run inside your editor, on your machine. Nothing you scan in the editor or the CLI is uploaded, and no AI model reads it.
 
-Iris Code does make network requests, and it is worth being specific about which: signing in, licence validation, dependency version and advisory lookups, and anonymous product-use events you can disable in your account settings. None of them carry source code, file contents or project structure.
+Iris Code does use the network for a few specific things:
 
-That local-first design gives you three things:
+- signing in and checking your licence
+- looking up package versions and known security advisories for the packages your project uses
+- anonymous product-use events, which you can turn off in your account settings
 
-- **Instant feedback** - milliseconds on save, with no round trip.
-- **Offline capability** - file analysis and CLI commands work without a connection.
-- **Privacy by design** - proprietary code, secrets and unreleased features stay on your machine.
+None of these requests carry source code, file contents or project structure.
+
+Keeping the checks on your machine gives you three things:
+
+- **Instant feedback** - results in milliseconds when you save, with no wait for a server.
+- **Offline use** - file checks and CLI commands work without a connection.
+- **Privacy** - private code, secrets and unreleased features stay on your machine.
 
 <Note>
-  **The one exception is a cloud scan, which you have to switch on.** If you connect a repository through the Iris Code GitHub App, the scanner fetches that repository's source from GitHub in order to audit it without your editor open. The source is analysed and discarded; what is stored is the report. Nothing is ever executed, and no AI model sees it.
+  **The one exception is a cloud scan, which you have to switch on.** If you connect a repository through the Iris Code GitHub App, the scanner copies that repository's code from GitHub so it can check it without your editor open. The code is checked and then deleted; only the report is kept. Your code is never run, and no AI model sees it.
 
-  Connect nothing and this does not apply: the editor and the CLI behave exactly as described above. See [Cloud overview](/cloud/overview) for what is fetched, stored and deleted.
+  If you connect nothing, this does not apply, and the editor and the CLI behave exactly as described above. See [Cloud overview](/cloud/overview) for what is fetched, stored and deleted.
 </Note>
 
 ## Languages
 
-Vue and Svelte script blocks go through the JavaScript or TypeScript analyser, and ERB through the Ruby one. The table is the list; counts are not stated in prose because they drift the moment a parser is added.
+Iris Code checks the languages below. The code inside Vue and Svelte files is checked as JavaScript or TypeScript, and ERB templates are checked as Ruby.
 
 | Language | Extensions | Worth knowing |
 |---|---|---|
@@ -108,27 +118,27 @@ Vue and Svelte script blocks go through the JavaScript or TypeScript analyser, a
 
 ## Free or Pro
 
-Free includes file scores, clickable findings, secrets detection and Gate Preview. Signing in adds recurring project actions and a separate cloud allowance. [Free allowances](/free) explains fresh work, retained results and active team capacity.
+Free includes file scores, clickable findings, secrets detection and Gate Preview. Signing in adds a monthly allowance of project actions, such as a workspace scan, and a separate allowance of cloud scans. [Free allowances](/free) explains what counts as new work, what you keep afterwards and how team limits work.
 
-Pro adds applicable local project access beyond the Free monthly constraint and continuous enforcement at push, build and CI boundaries.
+Pro removes the Free monthly limit on the local project work it covers. It also adds checks that run every time and can stop a push, a build or a CI run.
 
 <CardGroup cols={2}>
   <Card title="Free" icon="circle-check" href="/free">
     - File scores, complexity, findings, secrets and security checks
     - One-file safe fixes and refactor plans
-    - Project rules and package guard before installation
+    - Project rules for coding agents, and package checks before installation
+    - [Verification integrity](/features/verification-integrity): a warning when a change skips or deletes tests or loosens your rules
     - Schema structure and focused-file import information
     - Signed-in custom configuration, including scoring weights
-    - Fresh workspace, folder and changed-file scans within your allowance
-    - Independent dependency audits and multi-file plans within that allowance
-    - A separate allowance for explicitly connected cloud repositories
-    - Earned findings, TODOs, maps and shareable reports after exhaustion
-    - Free Teams with shared allowances and active collaborator/project capacity
+    - New workspace, folder and changed-file scans within your allowance
+    - Separate dependency audits and multi-file plans within that allowance
+    - A separate allowance for cloud repositories you choose to connect, scanned when you ask or, if you opt in, on each merge or pull request
+    - Findings, TODOs, maps and shareable reports you already earned, even after your allowance runs out
+    - Free Teams with shared allowances and limits on active collaborators and projects
   </Card>
   <Card title="Iris Code Pro" icon="bolt" href="/pro">
-    - Applicable local project work beyond Free monthly actions
-    - Git pre-push, build and CI enforcement
-    - Automatic cloud repository triggers
+    - Local project work beyond the Free monthly actions, where it applies
+    - Checks that can stop a Git push, a build or a CI run
     - A separate paid cloud allocation
     - Existing paid Git history and batch workflows
     - Paid Team seats when your team needs Pro capabilities

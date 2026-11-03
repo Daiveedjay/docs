@@ -4,7 +4,9 @@ sidebarTitle: "Slack notifications"
 description: "Send Iris Code gate results to a Slack channel. Your CI builds the message and sends it, so your file paths never touch our servers."
 ---
 
-Slack notifications send a gate result to a channel your team already reads. They help people see a failed check without opening the build log. Run the setup command to connect the channel:
+Slack notifications post the result of an Iris Code gate to a channel your team already reads, so people see a failed check without opening the build log. The message is built and sent by your own CI or machine, not by an Iris Code server.
+
+Run the setup command to connect a channel:
 
 ```bash
 iris slack setup
@@ -34,7 +36,7 @@ src/orders/reconcile.ts    complexity 17
 [ View CI run ]
 ```
 
-A red stripe runs down the left edge on failure and a green one on success, so the outcome is readable without opening the message. In CI, each file name links directly to that file at that commit.
+A red stripe runs down the left edge on failure and a green one on success, so the outcome is clear at a glance. In CI, each file name links to that file as it was in the commit being checked.
 
 **It stays quiet when the gate passes.** A message on every successful build trains people to ignore the channel. Add `--slack-on always` if you would rather have the confirmation.
 
@@ -44,9 +46,11 @@ Messages contain file names, scores, rule names and counts.
 
 ## What it does not send
 
-It does not include your code, the text of a finding, the value of a detected secret (masked or otherwise), or the line it appeared on. When more than ten files break the same rule, the message shows ten and states how many were omitted rather than silently shortening the list.
+It does not include your code, the text of a finding, the value of a detected secret (masked or otherwise), or the line it appeared on.
 
-Iris Code builds the message on your machine and posts it directly to Slack. It never passes through our servers, which is the reason it can name your files at all. If we relayed it, we would be collecting your file paths, and paths reveal product names, client names and unreleased features.
+When more than ten files break the same rule, the message shows ten and says how many were left out, rather than quietly shortening the list.
+
+Iris Code builds the message on your machine or CI runner and posts it directly to Slack. It never passes through our servers, which is why it can name your files at all. If we relayed it, we would be collecting your file paths, and paths can reveal product names, client names and unreleased features.
 
 That is also why the webhook URL cannot be set in `.irisconfig.json`. That file is committed to your repository, so anyone able to open a pull request could redirect your team's file paths to a URL of their own.
 
@@ -113,7 +117,7 @@ iris gate .
 </Step>
 </Steps>
 
-Treat the URL like a password. Anyone who has it can post to that channel. If it leaks, delete the row on the Incoming Webhooks page and add a new one; the old URL dies immediately.
+Treat the URL like a password: anyone who has it can post to that channel. If it leaks, delete its row on the Incoming Webhooks page and add a new one. The old URL stops working immediately.
 
 ## Making it look like yours
 
@@ -142,7 +146,7 @@ The name and picture on the message come from the Slack app you made, not from u
 
 ## Behaviour worth knowing
 
-**A Slack outage cannot affect your build.** If the message fails to send, Iris Code writes a single warning line to stderr and exits with the code the gate decided. A notification problem never turns a passing build red, or a failing one green.
+**A Slack outage cannot affect your build.** If the message fails to send, Iris Code prints a single warning line to the error output (stderr) and exits with the code the gate decided. A notification problem never turns a passing build red, or a failing one green.
 
 **Only Slack hosts are accepted.** Any URL that is not `https://hooks.slack.com` is refused, and refused before the scan runs so the error is immediate. The message contains your file paths, so a mistyped URL must not be able to send them elsewhere.
 

@@ -1,10 +1,12 @@
 ---
-title: "Audit triggers: merges, pull requests, and what each one costs"
+title: "Audit triggers: merges, pull requests and what each one costs"
 sidebarTitle: "Audit triggers"
-description: "Every repository chooses what it is audited on. A merge costs one audit; a pull request costs one per update. Both triggers are off by default; opt in within your cloud allowance, including Free."
+description: "Choose what starts a scan for each repository. A merge costs one audit; a pull request costs one per update. Both are off by default, and you can turn them on within your cloud allowance, including on Free."
 ---
 
-A trigger is an event that starts a cloud scan automatically, such as a change reaching the main branch. Each completed scan uses one scan from your allowance. Choose triggers for each repository to balance how quickly you see results with how many scans you use.
+A trigger is an event that starts a cloud scan automatically, such as a change reaching your main branch. Each completed scan uses one scan from your allowance.
+
+You choose triggers for each repository, balancing how quickly you see results against how many scans you use.
 
 ## The two triggers
 
@@ -19,43 +21,48 @@ A trigger is an event that starts a cloud scan automatically, such as a change r
 
 ## Why repositories start in manual mode
 
-Both triggers start off so connecting a repository does not commit you to recurring scans. The import starts one requested scan. Afterwards, you decide when to scan manually or enable automatic events. Free users can enable either trigger within the same monthly cloud allowance; scans stop when it is exhausted.
+Both triggers start off, so connecting a repository does not sign you up for repeated scans. Importing it starts one scan. After that, you decide whether to scan by hand or turn on automatic triggers.
 
-A merge fires once per change that lands. A pull request fires on every push to the branch, so a PR with eight commits pushed separately costs eight audits, and merging it costs one more.
+Free users can turn on either trigger, within the same monthly cloud allowance. Scans stop when it is used up.
+
+The two triggers cost very different amounts:
+
+- A merge trigger fires once for each change that lands on the default branch.
+- A pull request trigger fires on every push to the branch. A pull request with eight commits pushed one at a time costs eight audits, and merging it costs one more.
 
 <Warning>
-  If you are trying to spend less, **turning pull request auditing on is the wrong lever** - it is the expensive setting, typically several times the volume of merges alone. Auditing merges only is the cheapest configuration that still keeps a score current.
+  If you are trying to spend less, **turning pull request auditing on is the wrong choice**. It is the expensive setting, usually several times the volume of merges alone. Auditing merges only is the cheapest setting that still keeps a score current.
 </Warning>
 
 ## Changing them
 
-Open the repository from Projects and use the **When to audit** panel. Each row says what it costs rather than only what it does.
+Open the repository from **Projects** and use the **When to audit** panel. Each row says what it costs as well as what it does.
 
-Turning both off is a legitimate choice and the screen says so plainly: nothing is audited automatically, and the project's score changes only when you run an audit yourself.
+Turning both off is a valid choice, and the screen says plainly what it means: nothing is audited automatically, and the project's score changes only when you run an audit yourself.
 
 ## Pausing, which is different
 
-Pausing a repository stops **every** automatic audit whichever triggers are on, and leaves audits you start by hand working. Use it when you want to keep the connection and the history but stop the volume for a while.
+Pausing a repository stops **every** automatic audit, whichever triggers are on, while audits you start by hand still work. Use it to keep the connection and the history but stop scans for a while.
 
-Resuming picks up the triggers the repository already had; pausing does not reset them.
+Resuming brings back the triggers the repository already had; pausing does not reset them.
 
 ## Rapid pushes are collapsed
 
-Pushing several times in quick succession does not cost an audit each time. A queued audit for the same stream, the same pull request or the same default branch, is superseded by the newer one and is **not** counted against your allowance. Only the surviving audit meters.
+Pushing several times in quick succession does not cost an audit each time. If an audit is still waiting to run for the same pull request or the same default branch, a newer push replaces it, and the replaced audit is **not** counted against your allowance. Only the audit that actually runs is counted.
 
-The window for this is short, about twenty seconds, so it catches a rapid-fire series rather than a normal working day. Thirty pushes spread across an afternoon are thirty separate changes and cost thirty audits.
+The window for this is short, about twenty seconds, so it catches a quick burst of pushes rather than a normal working day. Thirty pushes spread across an afternoon are thirty separate changes and cost thirty audits.
 
 ## What is never charged
 
 An audit that produced no report does not count against your allowance:
 
 - One you cancelled
-- One superseded by a newer push to the same stream
-- One no scanner ever claimed, or that timed out
+- One replaced by a newer push to the same branch or pull request
+- One no scanner ever picked up, or that timed out
 - One stopped because the repository was paused, or because GitHub access ended
 
 <Note>
-  There is also a safety limit of 50 audits per repository per day. It exists to stop a misconfigured CI loop consuming a month's allowance in an afternoon, and sits well above any normal day's volume. If you hit it, something is looping.
+  There is also a safety limit of 50 audits per repository per day. It stops a misconfigured CI loop using a month's allowance in an afternoon, and sits well above any normal day. If you hit it, something is looping.
 </Note>
 
 ## Manual audits
@@ -63,5 +70,5 @@ An audit that produced no report does not count against your allowance:
 You can always run an audit by hand from the project screen, whatever the triggers say and even while the repository is paused. It costs one scan like any other.
 
 <Tip>
-  Start in manual mode while you learn your scan volume. If your cloud allowance covers it, enable merges for the repositories you want to track. Enable pull requests only where you need earlier feedback and have room for the extra scans.
+  Start in manual mode while you learn how many scans you need. If your cloud allowance covers it, turn on merges for the repositories you want to track. Turn on pull requests only where you need earlier feedback and have room for the extra scans.
 </Tip>

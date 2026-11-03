@@ -1,76 +1,88 @@
 ---
 title: "Workspace analysis: find project-wide risks and trends"
 sidebarTitle: "Workspace analysis"
-description: "Review supported files across a workspace or folder, rank hotspots, inspect findings and TODOs, and track changes over time."
+description: "Scan every supported file in a project or folder at once, see which files need attention first, and track how scores change over time."
 ---
 
-A workspace scan checks the supported files in your open project folder together. It gives you a project-wide view of health scores and findings, so you can choose where to start. Files excluded by your settings are left out of that view.
+Checking files one at a time does not tell you where a project's problems are concentrated. A workspace scan checks every supported file in your open project folder together and gives you one project-wide view of health scores and findings, so you can choose where to start.
+
+Files excluded by your settings are left out of that view. You can also scan a single folder in the same way.
 
 ## Running one
 
-**Iris Code: Scan Workspace** from the command palette, or open **Review → Workspace** and use **Scan Workspace**. It walks every supported file and gives you:
+Run **Iris Code: Scan Workspace** from the command palette, or open **Review → Workspace** and use **Scan Workspace**. It reads every supported file and gives you:
 
-- **Readiness** - the top-level score, blockers, warnings, TODO load and trend
+- **Readiness** - the overall score, blockers, warnings, how many TODOs there are and which way the score is moving
 - **The totals** - files, directories, lines, functions
 - **A language breakdown**
 - **Hotspots** - the five biggest files and the five most complex
 - **Unused packages** - declared in `package.json`, `go.mod`, `requirements.txt` or `pyproject.toml`, never imported
-- **A CVE badge** on the Dependencies section, green when the last cached dependency scan found nothing, otherwise the count and worst severity. It reads the local cache only and never goes to the network on its own. See [Dependents Table](/features/dependents-table)
+- **A CVE badge** on the Dependencies section. A CVE is a known security vulnerability in a package. The badge is green when the last saved dependency scan found nothing, and otherwise shows the count and the worst severity. It reads the saved results only and never goes to the network on its own. See [Dependents Table](/features/dependents-table)
 - **Findings** - every blocker and warning in one list
 - **TODOs** - grouped by type
 - **A file tree** you can click through
-- **Trends** - the score delta plus your three most improved and three most regressed files
+- **Trends** - the score change plus your three most improved and three most regressed files
 
 <Note>
-Saved results retain their captured scope, configuration, time and coverage. They describe that scan, not later file changes. Opening a result does not refresh it. A deliberate fresh scan can use one local project action; [Free allowances](/free) explains reuse, exhaustion and offline reads.
+A saved result is a record of one scan. It keeps the files it covered, the settings used, when it ran and what it covered, and it does not change when your files change later. Opening it does not refresh it.
+
+Starting a fresh scan can use one local project action. [Free allowances](/free) explains when a result is reused, what happens when your allowance runs out, and reading results offline.
 </Note>
 
 <Tip>
-  Results are cached, so you can leave the Workspace tab and come back without scanning again.
+  Results are saved, so you can leave the Workspace tab and come back without scanning again.
 </Tip>
 
 ## Just one folder
 
-Right-click any folder in the Explorer and pick **Iris Code: Scan This Folder**. Or hit **Scan Current Folder** in the Folder tab to scan whatever the open file lives in.
+Right-click any folder in the Explorer and pick **Iris Code: Scan This Folder**. Or select **Scan Current Folder** in the Folder tab to scan the folder that contains the open file.
 
 The **Folder** tab shows the same stats, chart, rankings and tree as the workspace, with its own Rescan and Clear.
 
 <Note>
-Basic file checks stay Free. Signed-in Free users can run fresh workspace, folder and changed-file scans within their monthly project allowance. A completed usable scan uses one action; opening its views does not use another. Pro provides applicable unmetered local work and continuous enforcement.
+Basic file checks stay Free. Signed-in Free users can run fresh workspace, folder and changed-file scans within their monthly project allowance. A completed scan that produces a usable result uses one action; opening its views does not use another. Pro adds unmetered local scans where they apply, and enforcement that stops a push or build automatically.
 </Note>
 
 ## Scanning again
 
-An unchanged captured project input can reuse its earned result without another local action. Changes to source, effective settings, scope, engine or baseline require a matching fresh input identity. A usable fresh scan counts as one project action, not one action per file. Totals, duplication and unused-package conclusions describe the captured scope rather than files changed after that scan.
+If nothing that affects a scan has changed, Iris Code can show the result you already have without using another local action. A fresh scan is needed when any of these change:
 
-**Rescan everything** deliberately bypasses reuse and starts fresh work after checking access. It can consume one action on Free when it produces a usable result. Opening a saved result, changing views or exporting it does not start that scan.
+- your source files
+- the settings in effect
+- what is being scanned
+- the Iris Code analysis engine
+- the baseline, a saved starting point used for comparison
 
-Older pre-launch editor paths also have an in-memory per-file cache. Their notification can say “Analysed 1 file, reused 3 unchanged.” That describes engine work within a scan, not the monthly counter. Those cached file results are discarded when the editor closes; earned results are stored separately and survive restart.
+A fresh scan counts as one project action, not one action per file. Totals, duplication and unused-package results describe the files as they were when the scan ran, not files changed after it.
+
+**Rescan everything** skips any saved result and starts a fresh scan once access is confirmed. On Free it can use one action when it produces a usable result. Opening a saved result, switching views or exporting it does not start that scan.
+
+Some older editor paths also keep a per-file memory of results during a session. Their notification can say "Analysed 1 file, reused 3 unchanged." That describes work inside one scan, not your monthly count. Those per-file results are discarded when the editor closes. Saved scan results are stored separately and survive a restart.
 
 <span id="issues-and-todos" />
 
 ## Findings and TODOs
 
-Both tabs fill from your most recent scan, whether that was a folder or the whole workspace. A label at the top tells you which ("Showing: folder · src"), with one click back to workspace-wide, so you're never reading folder results thinking they're the whole project.
+Both tabs fill from your most recent scan, whether that was a folder or the whole workspace. A label at the top tells you which ("Showing: folder · src"), with one click back to the whole workspace, so you always know whether you are reading folder results or project results.
 
-Each row gives you a severity dot, the file and line, and what's wrong. Click it to land there.
+Each row gives you a severity dot, the file and line, and what's wrong. Click it to go to that line.
 
-The Findings badge shows errors in red, or the total when there are none. The TODOs badge counts everything. Findings stay put until you rescan or clear.
+The Findings badge shows errors in red, or the total when there are none. The TODOs badge counts everything. Findings stay until you rescan or clear.
 
 ## Trends
 
-Open **Trends** to compare saved whole-workspace reviews. Earned reviews stay available after your allowance runs out or paid access ends. Opening a comparison does not scan current source or spend another action.
+Open **Trends** to compare saved whole-workspace scans. These saved scans stay available after your allowance runs out or paid access ends. Opening a comparison does not scan your current files or use another action.
 
-Choose two capture times to see per-file score changes. Each review keeps the settings and engine identity used when it was captured. If those differ, the comparison warns you: a score change can reflect a different standard, not just a code change. Folder and changed-file reviews are excluded from whole-workspace trends.
+Choose two scan times to see how each file's score changed. Each saved scan keeps the settings and the exact build of the Iris Code analysis engine it used. If either differs between the two, the comparison warns you: a score change can come from a different standard, not just from a code change. Folder and changed-file scans are not included in whole-workspace trends.
 
-Earned reviews are private to the account that captured them and the bound workspace context. Sign in to that account to reopen them. Previously earned results can be read offline after that account has been validated on this machine.
+Saved scans are private to the account that ran them and to that workspace. Sign in to that account to reopen them. Once that account has been confirmed online on this machine, its earlier results can be read offline.
 
-Existing rolling trend files remain supported:
+Older trend files are still supported:
 
 - They live in `.iris-snapshots/` at your project root, which is added to `.gitignore`.
-- Legacy scans update one snapshot per day. Free keeps two rolling snapshots; Pro keeps the rolling history.
-- **Clear trend files** removes those rolling snapshots and the locked baseline. It does not delete private earned reviews.
-- Locking a baseline for automatic regression enforcement remains a paid feature.
+- Older scans update one snapshot per day. Free keeps two rolling snapshots; Pro keeps the full rolling history.
+- **Clear trend files** removes those rolling snapshots and the locked baseline. It does not delete your private saved scans.
+- Locking a baseline so a regression blocks automatically remains a paid feature.
 
 ## Sharing a report
 
@@ -84,8 +96,15 @@ From the terminal:
 iris report
 ```
 
-Writes `iris-report.html` to the current directory. `--output <path>` chooses a different destination. A fresh directory scan uses project access; use `--evidence <evidence-id>` to export an owned captured result without rescanning.
+This writes `iris-report.html` to the current directory, and `--output <path>` chooses a different destination. Scanning a directory fresh uses your project access. To export a saved result without scanning again, add `--evidence <evidence-id>`, where the evidence ID identifies that saved scan.
 
 <Note>
-You can also share an earned scan as a [card or PDF](/features/shareable-report). Saved exports remain available after allowance exhaustion or paid access ends.
+You can also share a saved scan as a [card or PDF](/features/shareable-report). Saved exports remain available after your allowance runs out or paid access ends.
 </Note>
+
+## Related pages
+
+- [Review My Changes](/features/change-review)
+- [Code Map](/features/code-map)
+- [Shareable scan reports](/features/shareable-report)
+- [Free allowances](/free)

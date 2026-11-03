@@ -1,14 +1,16 @@
 ---
 title: "Quality signals"
 sidebarTitle: "Quality signals"
-description: "The handful of things dragging your project down, ranked by density rather than raw count."
+description: "The handful of recurring problems holding your project back, ranked by how common they are for its size rather than by raw count."
 ---
 
-Quality Signals help you decide which recurring problems to address first. They rank findings by how common they are for the size of your project, so a large project does not look worse simply because it has more files. The health score remains the overall summary; these signals point you towards the details.
+Quality Signals help you decide which recurring problems to fix first, such as duplicated code or leftover debug prints. They rank problems by how common they are for the size of your project, so a large project does not look worse simply because it has more files.
+
+The health score remains the overall summary. Quality Signals point you towards the details behind it.
 
 ## Each signal keeps its real units
 
-Converting everything into a single abstract figure would obscure what is actually happening, so nothing is normalised away:
+Each signal is shown in the unit that makes sense for it, rather than converted into one abstract figure that would hide what is actually happening:
 
 | Signal | Shown as |
 |---|---|
@@ -23,20 +25,20 @@ Converting everything into a single abstract figure would obscure what is actual
 
 ## Why density rather than totals
 
-Count-based signals are normalised per 1,000 lines of code before ranking. Without that step a large repository would always rank worse than a small one purely on size, which tells you nothing useful.
+Before ranking, signals counted in findings are worked out per 1,000 lines of code. Without that step, a large repository would always rank worse than a small one purely because it is bigger, which tells you nothing useful.
 
-The **Present**, **Elevated** and **High** labels describe that density. They are not a grade.
+The **Present**, **Elevated** and **High** labels describe how dense a problem is by that measure. They are not a grade.
 
-Type debt is omitted entirely on projects containing no TypeScript or JavaScript, rather than displayed as zero.
+Type debt is left out entirely on projects with no TypeScript or JavaScript, rather than shown as zero.
 
 ## Using the panel
 
-Expand **Quality Signals** in the Workspace or Folder view for the ranked list, then select a signal to open the findings behind it.
+In the Workspace or Folder view, expand **Quality Signals** to see the ranked list. Select a signal to open the findings behind it.
 
-From the terminal, `iris check <directory>` prints the top three with their real values. Single-file checks do not print them, since one file does not constitute a distribution.
+In a terminal, `iris check <directory>` prints the top three signals with their real values. Checking a single file does not print them, because one file is too small to show which problems are common.
 
 ## There is no Quality Signals gate
 
-Quality Signals cannot fail a build. Enforcement uses explicit named limits instead: `gateMaxDuplicateBlocks`, `gateMaxSecuritySmells`, `gateMaxSuppressions` and `gateMaxNamingViolations`.
+A gate is the check that can fail a push or build when your code goes over a limit you have set. Quality Signals cannot fail a build. Gates use explicit, named limits instead: `gateMaxDuplicateBlocks`, `gateMaxSecuritySmells`, `gateMaxSuppressions` and `gateMaxNamingViolations`.
 
-This is deliberate. When a gate fails it should name the specific standard that was exceeded and by how much, rather than reporting that a blended metric moved. A composite score gives no indication of what to change.
+This is deliberate. When a gate fails, it should name the exact limit that was exceeded and by how much. A blended score moving up or down does not tell you what to change.

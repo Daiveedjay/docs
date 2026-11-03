@@ -1,18 +1,29 @@
 ---
-title: "Control the agent handoff and review hook records"
+title: "Control what coding agents can use and review pre-push records"
 sidebarTitle: "Governance"
-description: "Set organisation and project controls for the Iris Code MCP server, and review pushes with no pre-push hook record."
+description: "Decide whether coding agents may use the Iris Code MCP server for your team's projects, and spot pushes that have no record of the pre-push check passing."
 ---
 
-Owners and admins can decide whether coding agents may use the Iris Code MCP server. Separately, Team evidence can record that a pre-push hook passed and show when a pushed commit has no hook record.
+This page covers two separate team controls.
+
+- **The agent handoff.** Owners and admins can decide whether coding agents, such as Claude Code or Cursor, may use Iris Code's agent tools on the team's code.
+- **Pre-push records.** The team's record can note each time the pre-push check passed, and show when a pushed commit has no such record, so a person can look into it.
 
 ## The agent handoff
 
-The agent handoff is the Iris Code MCP server. It gives your coding agent findings, file paths and short code excerpts. Your agent's own provider and data policies govern what it does with those results. Turning the handoff off refuses every repository tool, including configuration and safe fixes, with `HANDOFF_FORBIDDEN`. The refusal explains who set the restriction.
+The agent handoff is the Iris Code MCP server. MCP is a connection that lets a coding agent call tools; through it, Iris Code gives the agent findings, file paths and short excerpts of code. What the agent then does with those results is governed by its own provider's data policies.
 
-`iris_check_package` keeps answering because it checks a package name rather than handing over repository content. Package guard agent hooks and `iris rules` also keep working.
+Turning the handoff off refuses every tool that reads the repository, including configuration and safe fixes. The agent receives the error `HANDOFF_FORBIDDEN`, with an explanation of who set the restriction.
+
+A few things keep working, because they do not hand over repository content:
+
+- `iris_check_package`, which checks a package name
+- package guard agent hooks
+- `iris rules`
 
 ## Policy levels
+
+A restriction can be set at three levels. The table shows each setting and what it covers.
 
 | Level | Setting | What it covers |
 | --- | --- | --- |
@@ -22,41 +33,63 @@ The agent handoff is the Iris Code MCP server. It gives your coding agent findin
 | Project | Off for this project | An extra restriction for that registered Team project. Evidence being disabled does not remove it. |
 | Repository | `"agentHandoff": false` | Everyone using the Iris Code MCP server for this repository, including signed-out and Free users. |
 
-Open **Team settings > Agent handoff** to change organisation or project policy. Members can read it; changing it is an owner or admin action. Both tightening and loosening require confirmation. Workspace history records the actor and the old and new settings.
+To change the organisation or project setting, open **Team settings > Agent handoff**. Members can see the setting; only an owner or admin can change it. Making it stricter or looser both ask for confirmation, and the workspace history records who changed it and what it was before and after.
 
-A project can inherit the organisation policy or turn the handoff off. It cannot loosen the organisation policy. `"agentHandoff": true`, or an absent key, applies no repository restriction and cannot override a Team restriction.
+Restrictions only add up, never cancel out:
+
+- A project can follow the organisation setting or turn the handoff off. It cannot be more permissive than the organisation.
+- In a repository, `"agentHandoff": true` or leaving the key out adds no restriction. Neither one can override a Team restriction.
 
 ## When changes take effect
 
-The running VS Code extension refreshes organisation and project policies at startup, when the window regains focus, and every ten minutes while signed in and online. Each MCP tool call reads the saved policy, so changes apply within a running session after a successful refresh; already-running calls finish under their starting policy.
+The VS Code extension fetches the latest organisation and project settings when it starts, when its window regains focus, and every ten minutes while you are signed in and online.
 
-The CLI can be signed out. Offline or signed-out editors retain remembered restrictions and the existing seven-day verification rule. The repository key is read on every tool call: adding `false` takes effect on the next call. A restriction in a parent config or the requested target folder also applies.
+Each agent tool call reads the most recently saved setting. A change therefore applies inside a running agent session once the editor has fetched it. A tool call that has already started finishes under the setting it started with.
 
-All active memberships contribute policy, regardless of Pro entitlement or whether the member has an active seat. Any restricting membership wins. Invited members are not governed until they join.
+The repository setting in `.irisconfig.json` is read on every tool call, so adding `false` takes effect on the next call. A restriction in a config file higher up the folder tree, or in the folder being checked, also applies.
+
+The CLI can be used while signed out. Editors that are offline or signed out keep any restrictions they remember, under the seven-day rule described below.
+
+Every active membership counts. Policy applies whether or not the member has Pro or an active seat, and if any of a person's teams restricts the handoff, the restriction wins. Invited people are not covered until they join.
 
 ## Offline and signed-out behaviour
 
-A successful licence validation writes an environment-scoped policy cache shared by VS Code, the CLI and JetBrains in `~/.iris/governance.json`. A development host uses `governance.development.json`.
+Each time Iris Code successfully checks your licence, it saves the current policy in `~/.iris/governance.json`. VS Code, the CLI and JetBrains all share this file. A development build of the editor uses `governance.development.json` instead.
 
-Signing out retains that cache. Network failures, server errors and rate limiting keep the last confirmed policy. After seven days without successful confirmation, a machine that remembers any restriction refuses the handoff until it reconnects and validates. A successful sign-in after leaving all organisations clears the old restriction.
+When the connection fails, the saved policy keeps applying:
 
-A machine that has never seen a policy can enforce only the repository key. A different MCP server is outside these controls. The cache can be altered by someone who controls the machine. This is a policy control with an administrative record, not copy protection.
+- Signing out keeps the saved policy.
+- Network failures, server errors and rate limiting keep the last confirmed policy.
+- After seven days without a successful check, a machine that remembers any restriction refuses the handoff until it reconnects and checks again.
+- Signing in successfully after leaving all organisations clears an old restriction.
+
+These controls have limits. A machine that has never received a policy can only apply the repository setting. A different MCP server is outside these controls entirely. Someone who controls the machine can edit the saved file. This is a policy control with a record of who changed what, not copy protection.
 
 ## Pre-push hook records
 
-After the complete local check passes, the hook records `hook_passed` for the commit identifiers and branches Git supplied to the hook. A failed scan or package guard records no pass. The record contains commit identifier, branch and time; it carries no code, file paths or member identity. It is sent only with a licence and `teamProjectId` when project evidence is enabled.
+The pre-push hook is a check that runs on a developer's machine when they push. After the whole local check passes, the hook records `hook_passed` for each commit and branch that Git handed to it. A failed scan or a failed package guard check records nothing.
 
-Records use normal Team evidence retention, currently 365 days. A pruned record is no longer found. The hook records up to ten pushed refs per invocation and reports when more were supplied. An unavailable evidence endpoint does not block an otherwise passing push.
+Each record holds the commit identifier, branch and time. It contains no code, file paths or member identity. It is only sent when there is a licence, a `teamProjectId`, and project evidence is switched on.
 
-Older hooks without the hook-source marker must be reinstalled. `iris hook git status` explains when that is needed.
+Some further details:
+
+- Records are kept under the normal Team evidence retention, currently 365 days. Once a record is removed it can no longer be found.
+- The hook records up to ten pushed refs (branches or tags) each time it runs, and reports when more were pushed.
+- If the record cannot be sent, an otherwise passing push still goes ahead.
+
+Older hooks that lack the hook-source marker, which tells Iris Code the check is running for a push, must be reinstalled. `iris hook git status` tells you when that is needed.
 
 ## Verify in CI
+
+You can check in CI whether a pushed commit has a pass record:
 
 ```sh
 npx @iris-code/cli@latest hook verify . --sha "$PUSHED_COMMIT_SHA" --format json
 ```
 
-`iris hook verify` requires Pro and a Team project binding. It checks for `hook_passed` for the full 40 or 64 character commit identifier. A missing record produces a warning and attempts to record `hook_missing`, labelled **Push with no hook record**, in the Team audit log. It always exits `0`, including when a licence or network is unavailable.
+`iris hook verify` needs Pro and a repository linked to a Team project. It looks for `hook_passed` against the full 40 or 64 character commit identifier.
+
+If no record is found, it prints a warning and tries to add `hook_missing` to the Team audit log, shown as **Push with no hook record**. It always exits `0`, including when there is no licence or no network, so it never fails your build.
 
 ```yaml
 - name: Check pre-push hook record
@@ -66,7 +99,14 @@ npx @iris-code/cli@latest hook verify . --sha "$PUSHED_COMMIT_SHA" --format json
     IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-GitHub pull requests use `pull_request.head.sha` from the event file, not the merge SHA in `GITHUB_SHA`. GitHub pushes use `GITHUB_SHA`; GitLab uses `CI_COMMIT_SHA`; Bitbucket uses `BITBUCKET_COMMIT`. Other pipelines must pass `--sha`. An explicit SHA takes precedence.
+The command finds the commit to check on its own in common CI systems:
+
+- GitHub pull requests use `pull_request.head.sha` from the event file, not the merge SHA in `GITHUB_SHA`.
+- GitHub pushes use `GITHUB_SHA`.
+- GitLab uses `CI_COMMIT_SHA`.
+- Bitbucket uses `BITBUCKET_COMMIT`.
+
+Other pipelines must pass `--sha`. An explicit SHA always takes precedence.
 
 The command explains why it did not check when:
 
@@ -81,8 +121,15 @@ The command explains why it did not check when:
 
 ## Read the evidence carefully
 
-A missing record can mean `--no-verify`, an absent or older hook, disabled evidence, or a failed upload. It is a reason for a person to review the push. It does not prove someone skipped a check, and this release does not fail a build or send email or Slack alerts for it.
+A missing record has several possible causes:
 
-The records are member-writable operational evidence, not signed attestations. An active member with a licence can submit a hook record without running the hook. The receipt records that a client reported a passing hook for the pushed identifier; it does not independently prove which files were analysed.
+- the push used `--no-verify` to skip the hook
+- the hook was not installed, or is an older version
+- evidence is switched off
+- the record failed to upload
 
-Hook pass records are hidden in the audit event list by default. **Show hook passes** reveals them. They remain in CSV exports and project counts for the selected range.
+So a missing record is a reason for a person to look at the push. It does not prove that someone skipped a check. This release does not fail a build or send email or Slack alerts for it.
+
+The records are reported by members' own machines, not signed proof. An active member with a licence could send a pass record without running the hook. A record shows that a client reported a passing hook for that commit; it does not independently prove which files were checked.
+
+Hook pass records are hidden from the audit event list by default. **Show hook passes** shows them. They are always included in CSV exports and in project counts for the selected date range.

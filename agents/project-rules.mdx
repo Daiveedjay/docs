@@ -4,7 +4,9 @@ sidebarTitle: "Project rules"
 description: "Use iris rules to write the project's configured limits, naming conventions, and gate rules into the instruction files supported coding agents already read."
 ---
 
-Project rules are written instructions that tell a coding agent how your project should be built. Iris Code can generate these instructions from your configuration, so the agent sees the same standards that your scans and gates use. These instructions guide the agent; a gate provides the separate check that can stop a change.
+A coding agent does not know your project's limits, such as the longest file you allow or how files should be named, unless something tells it. Project rules are written instructions that tell a coding agent how your project should be built.
+
+Iris Code can generate these instructions from your configuration, so the agent sees the same standards that your scans and gates use. The instructions guide the agent; a gate is the separate check that can stop a change. Generating project rules is Free.
 
 ## Generating the file
 
@@ -64,14 +66,14 @@ left exactly as it was.
 
 ## What the file says
 
-Imperatives with your numbers in them, grouped into sections: size and shape, things not to write,
-file naming, suppressions, and what blocks a push. A project with a 250-line file limit and a
+Short, direct instructions with your own numbers in them, grouped into sections: size and shape,
+things not to write, file naming, suppressions, and what blocks a push. A project with a 250-line file limit and a
 kebab-case convention produces rules that say exactly that.
 
 When size or complexity limits are set, a section on refactoring an over-limit file describes the
 [refactor playbook](/refactor/agents) loop: run `iris refactor` or `iris_refactor_plan`, apply proved
 fixes first, verify after each move, and stop after the configured `maxCorrections` to show you the
-verdict and diff. It works without MCP.
+verdict and diff. It works without MCP, the connection that lets an agent call Iris Code tools directly.
 
 Only what is configured appears. Turn off magic-number detection and that rule is absent rather than stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file also tells agents to check a dependency before adding it and not to retry a blocked version. Set no naming policy and there is no naming section.
 
@@ -114,4 +116,4 @@ file that only exists on your machine helps only your agent.
 
 ## Keeping checks meaningful
 
-The generated rules tell an agent not to weaken tests, assertions, checker directives, types, error handling, suppressions or configuration to make a check pass. [Verification integrity](/features/verification-integrity) checks for new weakening against a baseline; the instruction file alone does not establish that the agent followed it.
+The generated rules tell an agent not to weaken tests, assertions, checker directives, types, error handling, suppressions or configuration to make a check pass. [Verification integrity](/features/verification-integrity) checks whether a change actually weakened any of these, by comparing it with how your files were before. The instruction file alone does not show that the agent followed it.

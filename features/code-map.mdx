@@ -38,7 +38,7 @@ Audits run before the cloud map could record a minimum show a note saying failin
 
 ## The import graph
 
-The tree shows where health is weak. **Graph** shows how files depend on each other, which is what you need before changing one: the files that import it are the ones a change can break.
+The tree shows where health is weak. **Graph** shows how files depend on each other. A file imports another when it uses code from it, so the files that import a file are the ones a change to it can break. That is what you need to know before changing it.
 
 Switch the map from **Tree** to **Graph**. The workspace scan that scores the tree also maps the imports, so there is nothing separate to build. Each line is an import. Selecting one lists the import lines it came from and opens them in the editor, and cycles are marked.
 
@@ -51,9 +51,9 @@ The graph reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Ru
 
 The same resolved graph supplies [Change Review](/features/change-review) and `iris_check` with import impact.
 
-A direct importer is a file with an import edge to the checked file, or to the package that contains it: in Go, and for a C# `using`, a Java wildcard import or a Python namespace package, the import names the package, and it reaches every file in that folder.
+A direct importer is a file that imports the checked file, or imports the package that contains it. In Go, and for a C# `using`, a Java wildcard import or a Python namespace package, the import names the package, and it reaches every file in that folder.
 
-Focusing a file in the Graph draws those importers pointing at the file. Pro also counts files that reach it through a chain, stopping at **500+** and terminating on cycles. `iris check --changed` and `--staged` include impact in their JSON reports and pretty output.
+Focusing a file in the Graph draws those importers pointing at the file. Pro also counts files that reach it indirectly, through a chain of imports. The count stops at **500+**, and following a chain stops when its imports loop back on themselves, which is called a cycle. `iris check --changed` and `--staged` include impact in their JSON reports and pretty output.
 
 These counts help choose what to re-check; they do not alter the gate.
 
@@ -67,7 +67,7 @@ Imports of external packages and built-in modules are hidden by default; **Filte
 
 ## Schema graph
 
-The **Schema** tab draws database tables, columns and declared relations from code. Schema structure, focused-table usage and exports are Free. Aggregate usage comes from an earned workspace result and stays readable without another action. See [Schema graph](/features/schema-graph) for sources and coverage.
+The **Schema** tab draws database tables, columns and declared relations from code. Schema structure, the usage of one focused table and exports are Free. Usage across all tables comes from a saved workspace scan and stays readable without another action. See [Schema graph](/features/schema-graph) for sources and coverage.
 
 ## Exporting the map
 
@@ -86,7 +86,7 @@ Mermaid and Markdown also have **Copy**, which puts the text on the clipboard re
 
 Pictures, Mermaid and Markdown end with a short "Made with Iris Code" line naming the project and the scan date. CSV has none, because an extra line breaks spreadsheet imports. The cloud map's exports also name the branch and commit, in the file name and in the picture.
 
-An export contains the selected view and its captured coverage. It does not quietly extend the scan to other files or refresh a saved result.
+An export contains the selected view and only the files that scan covered. It does not quietly extend the scan to other files or refresh a saved result.
 
 ## Scan states
 
@@ -101,9 +101,9 @@ Ignored and unsupported files are omitted in every state. The file count and the
 
 ## Free and Pro
 
-Code Map structure and focused-file connections are Free. A workspace scan can capture wider health colouring and below-threshold results within your project allowance. Those earned views remain readable after exhaustion or expiry; they keep the scope and configuration that produced them.
+The map's folder and file structure, and the import connections of the file you are focused on, are Free. A workspace scan within your project allowance adds health colours across the project and marks files below the minimum. Those saved views stay readable after your allowance runs out or paid access ends, and they keep the scope and settings of the scan that produced them.
 
-Folder and workspace import views can use the shared captured workspace result. A fresh project inspection uses the applicable allowance; reopening or exporting it does not spend another action.
+Folder and workspace import views can use the same saved workspace scan. A fresh scan uses your allowance; reopening or exporting it does not use another action.
 
 ## Cloud Code Map
 

@@ -1,163 +1,177 @@
 ---
 title: "Supported languages: TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java, Rust"
 sidebarTitle: "Language support"
-description: "Iris Code natively parses and scores TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java, and Rust with per-language function detection, import tracking, and debug-print flagging."
+description: "Iris Code reads and scores TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust, with checks tailored to how each language is written."
 keywords: ["C#", "c sharp", "csharp", "c-sharp", ".NET", "dotnet", "dotnet core", "ASP.NET", "ASP.NET Core", ".cs", ".csproj", "MSBuild", "NuGet", "LINQ", "async void", "EF Core", "Entity Framework", "xUnit", "NUnit", "MSTest", "Java", "Spring", "Spring Boot", "Maven", "Gradle", ".java", ".properties", "Javadoc", "Rust", "Cargo", "crates.io", ".rs", "unwrap", "panic", "golang", "Rails", "ERB", "Gemfile", "single-file component", "SFC", "TSX", "JSX"]
 ---
 
-Iris Code scans ten programming languages, including the script sections of Vue and Svelte components. The checks available depend on the language because each has different syntax and risks. Use this page to see what your language supports and where the scan has limits.
+Iris Code scans ten languages: TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust. Every language gets the same core checks, such as secrets, security smells and duplicate code, but each also has its own way of writing functions, imports and debug output, and its own risks.
+
+This page explains, language by language, which files Iris Code reads, what it checks for beyond the shared checks, and where it deliberately holds back because it cannot be sure. Pick your language from the tabs below.
 
 <Note>
-  **Compare scores within the same language and settings.** A TypeScript file carries deductions that simply don't exist in Go, Python, Ruby, C#, Java, or Rust: `any`, `@ts-ignore`, missing return types, non-null assertions. An 80 in Go and an 80 in TypeScript are not the same 80, and ranking a mixed codebase by score across languages will mislead you.
+  **Compare health scores only within the same language and settings.** A TypeScript file can lose points for things that do not exist in Go, Python, Ruby, C#, Java or Rust: `any`, `@ts-ignore`, missing return types and non-null assertions. An 80 in Go and an 80 in TypeScript are not the same 80, so ranking a mixed codebase by score across languages will mislead you.
 </Note>
 
 <Tabs>
   <Tab title="TypeScript & JavaScript">
-    Iris Code scans `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, and `.tsx` files with a single TS/JS parser. All six extensions are treated as the same language family and share the same rule set.
+    Iris Code scans `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts` and `.tsx` files with one reader for both languages. All six file types are treated as one family and share the same rules.
 
-    **TypeScript / JavaScript-specific features:**
+    **Checks specific to TypeScript and JavaScript:**
 
-    - **Unused import detection** - named, default, and namespace bindings that are imported but never referenced in the file are flagged as unused imports. Java also has unused import detection. Other language analysers do not flag unused imports; see [file analysis](/features/file-analysis).
-    - **TypeScript quality metrics** - `any` usages, `@ts-ignore` suppressions, non-null assertions (`!`), and exported functions missing a return type annotation are surfaced as separate counters in the File tab. See [TypeScript-specific checks](/features/file-analysis#typescript-specific-checks) for the full breakdown.
-    - **Debug prints** - `console.log`, `console.warn`, and `console.error` calls are flagged in Code Lens and in the Code Smells section.
+    - **Unused imports** - an import brings code in from another file. Any named, default or namespace import that the file never uses is reported. Java has this check too; the other languages do not report unused imports. See [file analysis](/features/file-analysis).
+    - **TypeScript type checks** - uses of `any`, `@ts-ignore` comments, non-null assertions (`!`) and exported functions with no declared return type are each counted separately in the File tab. See [TypeScript-specific checks](/features/file-analysis#typescript-specific-checks) for the full breakdown.
+    - **Debug prints** - `console.log`, `console.warn` and `console.error` calls are reported in Code Lens and in the Code Smells section.
 
     <Note>
-      **Iris Code does not format JavaScript or TypeScript.** It analyses and diagnoses source, then leaves formatting to your configured editor formatter such as Prettier or the built-in TypeScript service. This is deliberate: formatting a document is a separate ownership boundary, and Iris Code must not compete with or silently override the formatter your repository has chosen.
+      **Iris Code does not format JavaScript or TypeScript.** It reads your code and reports problems, and leaves layout to the formatter your editor uses, such as Prettier or the built-in TypeScript service. This is deliberate: formatting belongs to that tool, and Iris Code must not compete with it or quietly override the choice your repository has made.
     </Note>
   </Tab>
 
   <Tab title="Vue & Svelte">
-    Iris Code analyses `.vue` and `.svelte` single-file components by extracting their script blocks and running them through the same TS/JS analyser as an ordinary module. There is nothing to configure and no plugin to install.
+    A `.vue` or `.svelte` file is a single-file component: one file holding a component's code, its markup and its styles. Iris Code takes out the code sections and checks them exactly like an ordinary TypeScript or JavaScript file. There is nothing to configure and no plugin to install.
 
-    - **Script blocks only** - Vue `<script>` and `<script setup>`, and Svelte instance and module `<script>` blocks, are analysed. `<template>`, Svelte markup, and `<style>` are excluded from analysis and from duplicate detection, so component markup never inflates a finding count or a duplication percentage.
-    - **Original line numbers** - every finding, `iris-ignore` suppression, and duplicate range reports the line you see in your own component file. A secret on line 11 of a `.vue` file is reported at line 11.
-    - **`lang` decides the rule set** - a component whose script declares `lang="ts"` (or `lang="typescript"`) is analysed as TypeScript, so TypeScript quality metrics apply. Any other component is analysed as JavaScript. An unrecognised preprocessor (for example `lang="coffee"`) is skipped rather than mis-parsed.
-    - **Root-level scripts only** - a `<script>` tag nested inside `<template>`, `<svelte:head>`, or a Svelte `{#if}` block is rendered markup, not executable code, and is not analysed.
-    - **Framework file names are respected** - SvelteKit route files (`+page.svelte`, `+layout.svelte`, `+server.ts` and siblings) are exempt from file-naming conventions, because the framework resolves them by exact name.
-    - **Role-aware file naming** - a component still resolves to the `typescript` or `javascript` language key from its script tag for thresholds and scoring. Naming can additionally use ordered path globs, so `components/CheckoutPanel.vue` can require `PascalCase` while `composables/useCart.ts` requires `camelCase`, even though both contain TypeScript. See [File naming conventions](/configuration/file-naming).
+    - **Code sections only** - Vue `<script>` and `<script setup>` blocks, and Svelte instance and module `<script>` blocks, are checked. `<template>`, Svelte markup and `<style>` are left out of every check, including duplicate detection, so markup never adds to a finding count or a duplication percentage.
+    - **Your own line numbers** - every finding, `iris-ignore` suppression and duplicate range points at the line you see in your component file. A secret on line 11 of a `.vue` file is reported at line 11.
+    - **`lang` decides the rules** - a component whose script says `lang="ts"` (or `lang="typescript"`) is checked as TypeScript, so the TypeScript type checks apply. Any other component is checked as JavaScript. A script in a language Iris Code does not read, such as `lang="coffee"`, is skipped rather than misread.
+    - **Top-level scripts only** - a `<script>` tag inside `<template>`, `<svelte:head>` or a Svelte `{#if}` block is part of the page markup, not the component's code, and is not checked.
+    - **Framework file names are respected** - SvelteKit route files (`+page.svelte`, `+layout.svelte`, `+server.ts` and similar) are exempt from file-naming conventions, because the framework finds them by their exact name.
+    - **File naming by folder** - for thresholds and scoring, a component counts as `typescript` or `javascript` according to its script tag. File naming can also follow path patterns, applied in order, so `components/CheckoutPanel.vue` can require `PascalCase` while `composables/useCart.ts` requires `camelCase`, even though both contain TypeScript. See [File naming conventions](/configuration/file-naming).
   </Tab>
 
   <Tab title="Go">
-    Iris Code parses `.go` files with a Go-specific analyser. Language-aware behaviours include:
+    Iris Code reads `.go` files with a reader built for Go. What it does differently for Go:
 
-    - **Function detection** - both top-level functions (`func Name(`) and methods (`func (r *T) Name(`) are detected and listed with line numbers
-    - **Third-party imports** - packages are identified as third-party when their root path segment contains a dot (e.g. `golang.org/x/...`, `pkg.example.com/...`)
-    - **Debug prints** - `fmt.Print*`, `log.Print*`, `log.Fatal*`, and `log.Panic*` calls are flagged in Code Lens and in the Code Smells section; controlled by the `enableConsoleLogWarnings` toggle
-    - **No-exports warning** - Iris Code raises a warning if no capitalised (exported) function names are found in the file
-    - **Unused Go modules** - a workspace scan reads `go.mod` and flags any declared module that is never imported across `.go` files in the project
-    - **`vendor/` directory** - skipped automatically during workspace and folder scans
+    - **Functions** - both top-level functions (`func Name(`) and methods (`func (r *T) Name(`) are found and listed with their line numbers
+    - **Third-party imports** - a package counts as third-party when the first part of its path contains a dot (for example `golang.org/x/...` or `pkg.example.com/...`)
+    - **Debug prints** - `fmt.Print*`, `log.Print*`, `log.Fatal*` and `log.Panic*` calls are reported in Code Lens and in the Code Smells section; the `enableConsoleLogWarnings` setting switches this on or off
+    - **No-exports warning** - in Go, a function is visible to other packages when its name starts with a capital letter. Iris Code warns if a file has no such function
+    - **Unused Go modules** - a workspace scan reads `go.mod` and reports any listed module that no `.go` file in the project imports
+    - **`vendor/` folder** - skipped automatically during workspace and folder scans
   </Tab>
 
   <Tab title="Python">
-    Iris Code parses `.py` files with a Python-specific analyser. Language-aware behaviours include:
+    Iris Code reads `.py` files with a reader built for Python. What it does differently for Python:
 
-    - **Function detection** - all `def` declarations are detected, including top-level functions and class methods, each listed with its line number
-    - **Third-party imports** - `import pkg` and `from pkg import ...` are evaluated; stdlib modules are excluded automatically so only genuine third-party packages appear
-    - **Debug prints** - `print()` calls are flagged in Code Lens and in the Code Smells section; controlled by the `enableConsoleLogWarnings` toggle
-    - **No public functions warning** - Iris Code raises a warning if every function in the file starts with `_` (private by convention), indicating no public API is exposed
-    - **Unused Python packages** - a workspace scan reads `requirements.txt` and `pyproject.toml` and flags any declared package that is never imported across `.py` files in the project
-    - **Auto-skipped directories** - `__pycache__`, `.venv`, and `venv` directories are skipped automatically during workspace and folder scans
-    - **Parameter counting** - `self` and `cls` are excluded from the parameter count when evaluating long parameter list warnings
+    - **Functions** - every `def`, both top-level functions and class methods, is found and listed with its line number
+    - **Third-party imports** - `import pkg` and `from pkg import ...` are both read; modules from Python's standard library are left out automatically, so only real third-party packages appear
+    - **Debug prints** - `print()` calls are reported in Code Lens and in the Code Smells section; the `enableConsoleLogWarnings` setting switches this on or off
+    - **No public functions warning** - in Python, a name starting with `_` is private by convention. Iris Code warns if every function in a file starts with `_`, because nothing in it is meant for other code to use
+    - **Unused Python packages** - a workspace scan reads `requirements.txt` and `pyproject.toml` and reports any listed package that no `.py` file in the project imports
+    - **Skipped folders** - `__pycache__`, `.venv` and `venv` are skipped automatically during workspace and folder scans
+    - **Parameter counting** - `self` and `cls` are not counted when checking for long parameter lists
   </Tab>
 
   <Tab title="Ruby">
-    Ruby spreads itself across more filenames than most languages: a `Gemfile` has no extension, a Rake task uses `.rake`, and a Rails view is Ruby embedded in HTML. Iris Code recognises all three rather than only scanning `.rb`.
+    Ruby code lives in more kinds of file than most languages: a `Gemfile` has no extension, a Rake task uses `.rake`, and a Rails view is Ruby mixed into HTML. Iris Code recognises all of these, not only `.rb` files.
 
-    **Files that are analysed:**
+    **Files that are checked:**
 
     `.rb`, `.rbw`, `.rake`, `.gemspec`, `.ru`, `.thor`, `.builder`, `.jbuilder`, `.rabl`, `.arb`, `.podspec`, `.erb`, and `.rhtml`.
 
-    Extensionless files are matched by name: `Gemfile`, `Rakefile`, `Vagrantfile`, `Capfile`, `Guardfile`, `Podfile`, `Brewfile`, `Berksfile`, `Puppetfile`, `Thorfile`, `Dangerfile`, the Fastlane set (`Fastfile`, `Appfile`, `Matchfile`, `Gymfile`, `Scanfile`, `Snapfile`, `Deliverfile`, `Pluginfile`), and the `.irbrc` and `.pryrc` dotfiles.
+    Files with no extension are recognised by name: `Gemfile`, `Rakefile`, `Vagrantfile`, `Capfile`, `Guardfile`, `Podfile`, `Brewfile`, `Berksfile`, `Puppetfile`, `Thorfile`, `Dangerfile`, the Fastlane set (`Fastfile`, `Appfile`, `Matchfile`, `Gymfile`, `Scanfile`, `Snapfile`, `Deliverfile`, `Pluginfile`), and the `.irbrc` and `.pryrc` dotfiles.
 
-    **Language-aware behaviours:**
+    **What Iris Code does differently for Ruby:**
 
-    - **Method detection** - instance methods, class methods (`def self.name`), operator methods, and endless methods (`def total = items.sum`) are all detected. A method's end is resolved by tracking `do`/`end` block nesting, so a method containing blocks is measured at its real length rather than ending at the first `end`.
-    - **Heredocs, percent literals, and comments** - heredoc bodies (including squiggly `<<~`), `%w[]` and `%i[]` literals, `#` comments, and `=begin`/`=end` blocks are excluded before pattern matching, so a `puts` quoted inside a heredoc is not counted as a live debug print.
-    - **Gems and requires** - `require` and `autoload` calls are read as imports, and a `Gemfile` or `.gemspec` contributes its declared gems. Standard-library requires are excluded so only genuine third-party dependencies count towards the import threshold.
-    - **Debug prints** - `puts`, `print`, `p`, and `pp` at the start of a statement are flagged, controlled by the `enableConsoleLogWarnings` toggle.
-    - **`method_missing` without `respond_to_missing?`** - defining one without the other leaves `respond_to?` and reflection lying about what the object answers to. Iris Code flags the pair as incomplete.
-    - **God classes** - a class defining more methods than the configured limit is flagged at its `class` line, with the class name and method count.
-    - **Rails mass assignment** - parameters passed straight into a model without `require` and `permit` are flagged as an error, because the vulnerability is in what the code omits rather than in anything visible on the line.
-    - **ERB templates** - `.erb` and `.rhtml` files have their Ruby extracted from `<% %>` and `<%= %>` tags; the surrounding HTML is excluded from analysis and from duplicate detection. Findings report the line number in the template file itself, so a secret on line 14 of a view is reported at line 14.
+    - **Methods** - instance methods, class methods (`def self.name`), operator methods, and endless methods (`def total = items.sum`) are all found. Iris Code follows nested `do`/`end` blocks to find where a method really ends, so a method containing blocks is measured at its true length rather than stopping at the first `end`.
+    - **Text blocks and comments** - heredoc bodies (including squiggly `<<~`), `%w[]` and `%i[]` literals, `#` comments and `=begin`/`=end` blocks are set aside before any check runs. So a `puts` that only appears inside a heredoc's text is not counted as a real debug print.
+    - **Gems and requires** - `require` and `autoload` calls count as imports, and a `Gemfile` or `.gemspec` adds the gems it lists. Requires from Ruby's standard library are left out, so only real third-party dependencies count towards the import limit.
+    - **Debug prints** - `puts`, `print`, `p` and `pp` at the start of a statement are reported; the `enableConsoleLogWarnings` setting switches this on or off.
+    - **`method_missing` without `respond_to_missing?`** - defining one without the other means `respond_to?` and other ways of asking an object about itself give the wrong answer about which methods it handles. Iris Code reports the pair as incomplete.
+    - **God classes** - a class with more methods than the configured limit is reported at its `class` line, with the class name and method count.
+    - **Rails mass assignment** - request parameters passed straight into a model without `require` and `permit` are reported as an error. Without them, a user can set fields they should never be able to change. The risk lies in what the code leaves out, so it is easy to miss when reading the line.
+    - **ERB templates** - in `.erb` and `.rhtml` files, the Ruby inside `<% %>` and `<%= %>` tags is checked and the surrounding HTML is left out, including from duplicate detection. Findings point at the line in the template itself, so a secret on line 14 of a view is reported at line 14.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.ruby` overrides all apply to Ruby the same way they apply to every other language.
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules and per-language `languages.ruby` overrides all work for Ruby the same way they do for every other language.
 
     <Note>
-      **No unused-code detection in Ruby.** Ruby resolves methods and constants at runtime, so a constant referenced only through `send`, `const_get`, or a Rails autoload is invisible to static analysis. Iris Code reports no unused imports or unused gems for Ruby rather than reporting ones it cannot stand behind.
+      **No unused-code detection in Ruby.** Ruby looks up methods and constants while the program runs. A constant used only through `send`, `const_get` or Rails autoloading cannot be seen by reading the code. So Iris Code reports no unused imports or unused gems for Ruby, rather than reporting ones it cannot stand behind.
 
-      Dependency and CVE scanning does cover RubyGems when versions can be pinned from `Gemfile.lock`; unpinned Gemfile-only entries are reported as not checked rather than clean.
+      Dependency and known-vulnerability (CVE) scanning does cover RubyGems when `Gemfile.lock` records the exact versions. Entries listed only in the `Gemfile`, without an exact version, are reported as not checked rather than clean.
     </Note>
   </Tab>
 
   <Tab title="C#">
-    Iris Code reads `.cs` source files and `.csproj` project files. The project file is treated as a manifest rather than as code: it contributes the packages your project depends on and it is scanned for secrets, but its language version and warning level are build settings, not unnamed numbers in a method.
+    Iris Code reads `.cs` code files and `.csproj` project files. The project file is treated as a list of settings and packages rather than as code. Iris Code reads the packages your project depends on from it and scans it for secrets. Its language version and warning level are build settings, so they are not reported as unexplained numbers the way they would be inside a method.
 
-    **Language-aware behaviours:**
+    **What Iris Code does differently for C#:**
 
-    - **Method detection** - methods, constructors, expression-bodied members and local functions are detected, including constructors that chain through a `: base(...)` or `: this(...)` initialiser. A positional `record` is counted once, as a type.
-    - **Namespaces and packages** - `using`, `global using`, `using static` and aliased `using` directives are read as imports. `System.*` is excluded, because the base class library appears in every file and tells you nothing about coupling. `Microsoft.*` is counted: EF Core, ASP.NET Core and the Extensions packages are third-party dependencies like any other. A `.csproj` contributes its `PackageReference` entries; `FrameworkReference` entries that name the .NET runtime itself are excluded.
-    - **String literals** - all five C# string forms are understood before any rule runs: regular, verbatim (`@"C:\logs\"`), interpolated (`$"..."`, `$@"..."`), raw (`"""..."""`, at any delimiter length) and char literals. A Windows path or a JSON payload inside a literal cannot be mistaken for code.
-    - **Debug output** - `Console.Write*`, `Debug.Write*` and `Trace.Write*` calls are flagged in Code Lens and in the Code Smells section, controlled by the `enableConsoleLogWarnings` toggle.
-    - **`async void`** - a method that returns `void` instead of `Task` gives the caller nothing to await and nothing to catch, so a thrown exception takes the process down. Iris Code flags it as an error, and exempts event handlers (`On*`, `*Handler`, `*_Click` and siblings), where the framework requires that signature.
-    - **Catch-all exception handlers** - `catch (Exception ex)`, `catch (Exception)` and a bare `catch` are flagged. A `when (...)` filter is deliberate, targeted handling and is exempt.
-    - **LINQ chain length** - five or more LINQ operators in one statement is flagged. The count is per statement, not per line, because an idiomatic chain is written one operator per line.
-    - **Large types** - a class, record or struct carrying more methods than the configured limit, or spanning more lines than `fileLengthThreshold`, is flagged at its declaration line with its name and method count.
-    - **Nesting** - depth is measured from the method's own opening brace, so a method written in Allman style measures the same as the identical method written with the brace on the signature line.
-    - **Test projects** - C# has no filename separator for tests, so `OrdersControllerTests.cs`, `OrderSpec.cs` and anything inside a `<Project>.Tests`, `.IntegrationTests` or `.UnitTests` directory are recognised as tests. Fixture credentials and `localhost` URLs there are not reported as production findings.
-    - **Renaming** - a rename does not update type names, namespaces, or project references. Iris Code warns you when a `.cs` file is renamed.
+    - **Methods** - methods, constructors, expression-bodied members and local functions are found, including constructors that chain through a `: base(...)` or `: this(...)` initialiser. A positional `record` is counted once, as a type.
+    - **Namespaces and packages** - `using`, `global using`, `using static` and aliased `using` lines count as imports. `System.*` is left out, because .NET's own library appears in every file and says nothing about what your code depends on. `Microsoft.*` is counted: EF Core, ASP.NET Core and the Extensions packages are third-party dependencies like any other.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.csharp` overrides all apply to C# the same way they apply to every other language.
+      A `.csproj` adds its `PackageReference` entries. `FrameworkReference` entries that name the .NET runtime itself are left out.
+    - **Text in quotes** - all five ways of writing text in C# are understood before any check runs: regular, verbatim (`@"C:\logs\"`), interpolated (`$"..."`, `$@"..."`), raw (`"""..."""`, with any number of quotes) and char literals. A Windows path or a block of JSON inside quotes cannot be mistaken for code.
+    - **Debug output** - `Console.Write*`, `Debug.Write*` and `Trace.Write*` calls are reported in Code Lens and in the Code Smells section; the `enableConsoleLogWarnings` setting switches this on or off.
+    - **`async void`** - an `async` method that returns `void` instead of `Task` gives the caller nothing to wait for and no way to catch its errors, so an error inside it crashes the whole program. Iris Code reports it as an error. Event handlers (`On*`, `*Handler`, `*_Click` and similar) are exempt, because the framework requires that form.
+    - **Catch-all error handlers** - `catch (Exception ex)`, `catch (Exception)` and a bare `catch` are reported, because they catch every error, including ones the code was never meant to handle. A `when (...)` filter shows deliberate, targeted handling and is exempt.
+    - **Long LINQ chains** - five or more LINQ operators in one statement are reported. The count is per statement, not per line, because a chain is normally written one operator per line.
+    - **Large types** - a class, record or struct with more methods than the configured limit, or longer than `fileLengthThreshold` lines, is reported at its declaration line with its name and method count.
+    - **Nesting** - depth is measured from the method's own opening brace. A method with its opening brace on a line of its own (Allman style, the C# default) measures the same as the identical method with the brace at the end of its first line.
+    - **Test projects** - C# test files have no special separator in their name, so Iris Code recognises them by pattern: `OrdersControllerTests.cs`, `OrderSpec.cs` and anything inside a `<Project>.Tests`, `.IntegrationTests` or `.UnitTests` folder. Test credentials and `localhost` URLs there are not reported as problems in production code.
+    - **Renaming** - renaming a `.cs` file does not update the type names, namespaces or project references inside it, so Iris Code warns you when you rename one.
 
-    Secrets are read from `string` and `var` declarations, from property initialisers, and from project XML: `<UserSecretsId>` and MSBuild references such as `$(ApiTokenFromCi)` are the correct way to keep a credential out of the repository, and are never flagged.
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules and per-language `languages.csharp` overrides all work for C# the same way they do for every other language.
+
+    Secrets are looked for in `string` and `var` declarations, in property initialisers and in project XML. `<UserSecretsId>` and MSBuild references such as `$(ApiTokenFromCi)` are the correct way to keep a credential out of the repository, so they are never reported.
 
     <Note>
-      **No unused-code detection in C#.** Dependency injection, reflection, partial classes and source generators all reference code in ways static analysis cannot see, so Iris Code reports no unused members or unused packages for C# rather than reporting ones it cannot stand behind. NuGet dependency and CVE scanning is available through the [dependency table](/features/dependents-table); projects without `packages.lock.json` expose direct package declarations only.
+      **No unused-code detection in C#.** Dependency injection, reflection, partial classes and source generators all use code in ways that cannot be seen by reading it. So Iris Code reports no unused members or unused packages for C#, rather than reporting ones it cannot stand behind.
+
+      NuGet dependency and known-vulnerability (CVE) scanning is available through the [dependency table](/features/dependents-table). For projects without `packages.lock.json`, only the packages listed directly in the project can be checked.
     </Note>
   </Tab>
 
   <Tab title="Java">
-    Iris Code reads `.java` source files and `.properties` configuration. The properties file is treated as a manifest rather than as code: it is scanned for committed credentials, but its port numbers and log levels are settings, not unnamed numbers in a method.
+    Iris Code reads `.java` code files and `.properties` settings files. A properties file is treated as settings rather than code: it is scanned for committed credentials, but its port numbers and log levels are not reported as unexplained numbers the way they would be inside a method.
 
-    **Language-aware behaviours:**
+    **What Iris Code does differently for Java:**
 
-    - **Method detection** - methods and constructors are detected, including generic signatures, `throws` clauses, and members collapsed onto a single line. A type written entirely on one line still reports its methods, so it is not silently exempt from the length, parameter, and nesting rules.
-    - **Text blocks and unicode escapes** - both are understood before any rule runs. A text block (`"""..."""`) holding JSON does not leak its braces into the structure of the file, and a `\uXXXX` escape is decoded the way javac decodes it, before tokenising, so an escaped quote is a real string delimiter wherever it appears.
-    - **Imports** - `import` and `import static` are read as imports. `java.*` and `javax.*` are excluded, because the platform appears in nearly every file and tells you nothing about coupling. Everything else counts, including Spring and the rest of your dependency tree.
-    - **Unused import detection** - Java is one of the few languages where this verdict is safe: an import is a compile-time type alias, there is no extension-method equivalent, and javac itself warns. **The check reads Javadoc**, so an import referenced only from a `{@link Foo}` is left alone, because deleting it would break `javadoc`. Wildcard imports cannot be judged and are skipped rather than guessed at.
-    - **Debug output** - `System.out.print*` and `System.err.print*` calls are flagged in Code Lens and in the Code Smells section, controlled by the `enableConsoleLogWarnings` toggle.
-    - **Catch-all exception handlers** - `catch (Exception e)` and `catch (Throwable t)` are flagged, including the fully-qualified `java.lang.` forms and a multi-catch ending in one of them. A narrowly typed catch is deliberate handling and is not flagged. This is the same rule id C# uses, so one severity setting and one `iris-ignore` comment cover a codebase using both.
-    - **Process execution** - `Runtime.getRuntime().exec` and `ProcessBuilder` are flagged, prompting you to validate every argument. This is deliberately separate from dynamic code evaluation, which Java does not have in the sense that rule means.
-    - **Test source sets** - Gradle lets a project declare any number of test source sets, and the convention is a `Test`-suffixed name. `src/test`, `src/integTest`, `src/javaRestTest`, `src/internalClusterTest`, `src/testFixtures` and their siblings are all recognised, as are `*Tests.java`, `*TestCase.java`, and Maven's failsafe `*IT.java` convention. Fixture credentials and `localhost` URLs there are not reported as production findings.
-    - **Framework-reserved file names** - `application.properties`, `application-dev.properties`, and `messages.properties` are exempt from file-naming conventions, because Spring and `ResourceBundle` resolve them by exact filename. Renaming them would break the application.
+    - **Methods** - methods and constructors are found, including generic signatures, `throws` clauses and members squeezed onto a single line. A class written entirely on one line still has its methods found, so it does not quietly escape the length, parameter and nesting checks.
+    - **Text blocks and unicode escapes** - both are understood before any check runs. A text block (`"""..."""`) holding JSON does not have its braces mistaken for code. A `\uXXXX` escape is decoded first, the way the Java compiler (javac) decodes it, so an escaped quote really does start or end a piece of text wherever it appears.
+    - **Imports** - `import` and `import static` both count. `java.*` and `javax.*` are left out, because Java's own library appears in nearly every file and says nothing about what your code depends on. Everything else counts, including Spring and the rest of your dependencies.
+    - **Unused imports** - Java is one of the few languages where this can be judged safely. An import only gives a type a short name for use while compiling, Java has no extension methods that could use an import without naming it, and javac itself warns about unused imports too.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.java` overrides all apply to Java the same way they apply to every other language. Credentials are read from field and local declarations, from setter calls such as `setPassword("...")`, from `Properties.put` entries, and from `.properties` keys.
+      **The check reads Javadoc comments**, so an import used only in a `{@link Foo}` is left alone, because deleting it would break `javadoc`. Wildcard imports cannot be judged and are skipped rather than guessed at.
+    - **Debug output** - `System.out.print*` and `System.err.print*` calls are reported in Code Lens and in the Code Smells section; the `enableConsoleLogWarnings` setting switches this on or off.
+    - **Catch-all error handlers** - `catch (Exception e)` and `catch (Throwable t)` are reported, including the full `java.lang.` forms and a multi-catch ending in one of them. A catch for one specific error type is deliberate handling and is not reported. This is the same rule id C# uses, so one severity setting and one `iris-ignore` comment cover a codebase using both.
+    - **Running other programs** - `Runtime.getRuntime().exec` and `ProcessBuilder` start other programs, so they are reported as a prompt to check every argument passed to them. This is kept separate from the `eval` rule, because Java has no way to run a piece of text as Java code in the sense that rule means.
+    - **Test folders** - Gradle lets a project have any number of test folders (source sets), usually with names ending in `Test`. `src/test`, `src/integTest`, `src/javaRestTest`, `src/internalClusterTest`, `src/testFixtures` and similar folders are all recognised, as are `*Tests.java`, `*TestCase.java` and Maven's failsafe `*IT.java` convention. Test credentials and `localhost` URLs there are not reported as problems in production code.
+    - **File names the framework expects** - `application.properties`, `application-dev.properties` and `messages.properties` are exempt from file-naming conventions, because Spring and `ResourceBundle` look for them by their exact name. Renaming them would break the application.
 
-    A committed `spring.datasource.password` is the most common Java credential leak and has no recognisable token format, so the name-based check is what catches it.
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules and per-language `languages.java` overrides all work for Java the same way they do for every other language.
+
+    Credentials are looked for in field and local variable declarations, in setter calls such as `setPassword("...")`, in `Properties.put` entries and in `.properties` keys.
+
+    A committed `spring.datasource.password` is the most common Java credential leak. Its value has no recognisable format, so it is the check based on the setting's name that catches it.
   </Tab>
 
   <Tab title="Rust">
-    Iris Code parses `.rs` files with a Rust-specific analyser, and reads `Cargo.lock` for dependency analysis.
+    Iris Code reads `.rs` files with a reader built for Rust, and reads `Cargo.lock` to see which packages (crates) your project depends on.
 
-    **Language-aware behaviours:**
+    **What Iris Code does differently for Rust:**
 
-    - **Function detection** - free functions, associated functions, and trait implementations are detected, including `pub`, `async`, `const`, `unsafe`, and `extern "C"` forms, plus generic parameters and where clauses. A trait method declaration with no body is not counted as a function.
-    - **Lifetimes are not char literals** - `&'a str` is a reference, and a scanner treating the apostrophe as an opening quote would blank real code up to the next one. Lifetimes appear throughout non-trivial Rust, so this is the common case rather than an edge one, and it is handled before any rule runs.
-    - **Raw strings, nested comments, and raw identifiers** - raw strings at any hash depth (`r#"..."#`), byte strings, nested block comments (which Rust allows and C does not), and raw identifiers (`r#type` is an identifier, not a string) are all understood.
-    - **`unwrap` and `expect`** - flagged as unhandled error paths, prompting `?` or a match instead.
-    - **Explicit panics** - `panic!`, `todo!`, and `unimplemented!` are flagged separately from `unwrap`, because the fix differs: one is an unhandled error, the other a deliberate abort.
-    - **Inline test modules are exempt** - this has no equivalent in any other supported language. Rust puts tests inside the file under test, so the exemption is computed per `#[cfg(test)]` and `#[test]` item rather than per file. A whole-file exemption would either spare the production half too or spare nothing, and without it `unwrap` density floods every well-tested file. Fixture credentials inside a test module are exempt for the same reason.
-    - **Debug output** - `println!`, `eprintln!`, `print!`, `eprint!`, and `dbg!` are flagged, controlled by the `enableConsoleLogWarnings` toggle.
-    - **Imports** - `use` declarations are counted, including nested groups such as `use crate::{ui::{Button, Panel}, theme}`. `std`, `core`, and `alloc` are excluded as the standard library, and `crate`, `self`, and `super` as internal paths.
-    - **Test and benchmark directories** - `tests/`, `benches/`, and `examples/` are Cargo conventions and are treated as test code.
+    - **Functions** - free functions, associated functions and trait implementations are found, including `pub`, `async`, `const`, `unsafe` and `extern "C"` forms, generic parameters and where clauses. A trait method declared without a body is not counted as a function.
+    - **Lifetimes are not quotes** - in `&'a str` the apostrophe marks a lifetime, not the start of a character. Reading it as a quote would hide real code up to the next apostrophe. Lifetimes appear throughout most Rust code, so this is handled before any check runs.
+    - **Raw strings, nested comments and raw identifiers** - raw strings with any number of `#` marks (`r#"..."#`), byte strings, comments nested inside comments (which Rust allows and C does not) and raw identifiers (`r#type` is a name, not text) are all understood.
+    - **`unwrap` and `expect`** - reported because they crash the program when an error occurs instead of handling it. The usual fix is `?` or a `match`.
+    - **Explicit panics** - `panic!`, `todo!` and `unimplemented!` are reported separately from `unwrap`, because the fix differs: `unwrap` leaves an error unhandled, while these stop the program on purpose.
+    - **Tests inside the file are exempt** - Rust keeps tests in the same file as the code they test, which none of the other supported languages do. So the exemption applies to each `#[cfg(test)]` and `#[test]` item rather than to a whole file.
 
-    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules, and per-language `languages.rust` overrides all apply to Rust the same way they apply to every other language. Credentials are read from `let`, `const`, and `static` bindings and from struct literal fields, which is how Rust configuration is usually written.
+      Exempting the whole file would either let the production code off too or let nothing off. Without the exemption, `unwrap` findings would flood every well-tested file. Test credentials inside a test module are exempt for the same reason.
+    - **Debug output** - `println!`, `eprintln!`, `print!`, `eprint!` and `dbg!` are reported; the `enableConsoleLogWarnings` setting switches this on or off.
+    - **Imports** - `use` lines are counted, including nested groups such as `use crate::{ui::{Button, Panel}, theme}`. `std`, `core` and `alloc` are left out as Rust's standard library, and `crate`, `self` and `super` because they point inside your own project.
+    - **Test and benchmark folders** - `tests/`, `benches/` and `examples/` are standard Cargo folders and are treated as test code.
+
+    Secrets detection, the nine security smells, duplicate detection, `iris-ignore` suppressions, gate rules and per-language `languages.rust` overrides all work for Rust the same way they do for every other language.
+
+    Credentials are looked for in `let`, `const` and `static` bindings and in struct fields, which is how Rust settings are usually written.
 
     <Note>
-      **No unused-import detection in Rust.** A trait must be imported for its methods to be callable, and its name is then never written again: `use gpui::Styled;` is what makes `.bg(...)` compile.
+      **No unused-import detection in Rust.** A trait has to be imported before its methods can be used, and its name is then never written again: `use gpui::Styled;` is what makes `.bg(...)` compile.
 
-      That usage is invisible to static analysis and rustc does not warn about it, so Iris Code reports no unused imports for Rust rather than reporting ones it cannot stand behind. Measured against a real Rust codebase, the check produced roughly three findings per file and nearly all of them were correct code.
+      That use cannot be seen by reading the code, and the Rust compiler does not warn about it either. So Iris Code reports no unused imports for Rust, rather than reporting ones it cannot stand behind. Tried on a real Rust codebase, the check produced roughly three findings per file, and nearly all of them were correct code.
 
-      Cargo dependency and CVE scanning is available through the [dependency table](/features/dependents-table), and `Cargo.lock` gives the full resolved transitive tree.
+      Cargo dependency and known-vulnerability (CVE) scanning is available through the [dependency table](/features/dependents-table). `Cargo.lock` gives the full list of packages, including the ones your dependencies bring in.
     </Note>
   </Tab>
 </Tabs>

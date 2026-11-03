@@ -1,51 +1,46 @@
 ---
 title: "Accuracy benchmark: how Iris Code measures its own rules"
 sidebarTitle: "Accuracy benchmark"
-description: "Iris Code measures every analysis rule against a labelled corpus and reports per-rule, per-language precision and recall. No single global accuracy number - just honest, checked-in measurements and a CI tripwire that blocks accuracy regressions."
+description: "Iris Code tests every rule against code examples with known answers, and publishes how often each rule is right and how much it misses, per rule and per language. There is no single overall accuracy figure, and an automatic check stops any change that makes a measured rule less accurate."
 badge: "New"
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "false positives", "precision", "recall", "async void", "LINQ", "unwrap", "panic"]
 ---
 
-The accuracy benchmark tests Iris Code against code examples with known expected results. It checks both whether real problems are found and whether harmless code is flagged by mistake. Use it to see the evidence for a particular rule and language, rather than relying on a single overall accuracy claim.
+Before you trust a warning, it helps to know how often that kind of warning is right. The accuracy benchmark tests Iris Code against code examples where the correct answer is already known. It checks both whether real problems are found and whether harmless code is flagged by mistake.
+
+Use it to see the evidence for a particular rule in a particular language, rather than relying on a single overall accuracy claim.
 
 ## What is measured
 
-Each rule (hardcoded secrets, SQL concatenation, duplicate code, function length,
-and so on) is scored on two axes, separately for each language it supports:
+A rule is one check, such as looking for hardcoded secrets, SQL built by joining strings, duplicate code or overly long functions. Each rule is scored on two measures, separately for each language it supports:
 
 - **Precision** - of the findings a rule reports, how many are real. Low
   precision means noise: the rule flags things that are fine.
 - **Recall** - of the real issues present, how many the rule catches. Low recall
   means blind spots: the rule misses things.
 
-There is deliberately **no single "Iris Code is 97% accurate" number**. A global
-figure would average away exactly the detail that matters - a rule can be
-excellent at catching secrets and mediocre at flagging open redirects, and you
-deserve to see that per rule. The published tables are per-rule and per-language.
+There is deliberately **no single "Iris Code is 97% accurate" number**. An overall figure would hide exactly the detail that matters: a rule can be excellent at catching secrets and only average at flagging open redirects, and you should be able to see that rule by rule. The published tables are per rule and per language.
 
-The gate uses the configured `minHealthScore` threshold and optional category thresholds. An advisory finding can reduce the health score enough to fail that check. The `async-void` rule belongs to the enforcement group, but affects the gate through the score because it has no separate category threshold.
+The gate is the pass-or-fail check that can stop a push or merge. It uses the configured `minHealthScore` threshold and optional category thresholds. An advisory finding can lower the health score enough to fail that check.
+
+The `async-void` rule belongs to the enforcement group, but it affects the gate only through the score, because it has no separate category threshold.
 
 ## How it works
 
-The benchmark lives in the analysis engine itself, versioned alongside the rules
-it measures, so a rule change and its expected-result change are always one
-commit.
+The benchmark is kept inside the analysis engine, next to the rules it measures. A change to a rule and the matching change to its expected results are therefore always committed together.
 
 1. **A labelled collection of examples.** Each rule has test files, called fixtures, with a known expected result. *Positive* examples contain a problem the rule should find; *negative* examples should produce no finding. Negative examples include fake secrets, debug prints inside comments and data tables that resemble repeated code. These test whether the rule can distinguish a problem from a harmless look-alike.
-2. **A deterministic run.** The harness analyses every fixture with the shipped
-   `balanced` preset - never a machine-specific config - so the numbers are
-   reproducible. A finding matches a label when the rule id matches and the line
-   is within one line of the expected line.
+2. **A repeatable run.** The test program analyses every fixture with the shipped `balanced` preset, never with settings from one particular machine, so anyone running it gets the same numbers. A finding counts as matching the expected result when the rule id matches and the line is within one line of the expected line.
 3. **Precision and recall per rule, per language.** These are calculated from correct findings, false alarms and missed problems.
 
-Unmeasured rules are reported loudly, never hidden - a rule with no fixtures
-shows as unmeasured rather than silently counting as perfect.
+Rules that have not been measured are reported clearly, never hidden. A rule with no fixtures shows as unmeasured rather than quietly counting as perfect.
 
 ## Enforcement and advisory groups
 
-Every rule carries a group in the benchmark data: **enforcement** for the
-high-confidence rules describing a defect worth stopping a push over, **advisory**
-for signals better suited to review - TODOs, magic numbers, `console.log`.
+Every rule belongs to one of two groups in the benchmark data:
+
+- **enforcement**, for high-confidence rules describing a defect worth stopping a push over
+- **advisory**, for signals better suited to review, such as TODOs, magic numbers and `console.log`
 
 The group describes how much confidence to place in a finding. Your gate settings separately decide whether it stops a change.
 
@@ -55,9 +50,9 @@ See [gate configuration](/configuration/irisconfig) for the full set of threshol
 
 ## The regression tripwire
 
-The measured result is saved as a checked-in baseline. Iris Code's own test suite re-runs the benchmark on every change and **fails the build if any rule's precision or recall drops below its baseline**, or if a previously measured rule becomes unmeasured.
+The measured results are saved as a baseline: a stored copy of the current scores to compare against. Iris Code's own tests re-run the benchmark on every change and **fail the build if any rule's precision or recall drops below its baseline**, or if a rule that was measured becomes unmeasured.
 
-Improvements never slip in silently either - regenerating the baseline is an explicit, reviewable step, so a rule getting better shows up in a diff.
+Improvements are not slipped in quietly either. Updating the baseline is a separate step that can be reviewed, so a rule getting better shows up as a visible change.
 
 The release checks block regressions on these measured cases. They cannot prove that every possible input will be detected correctly.
 
@@ -72,32 +67,21 @@ A rule is one check, such as looking for a hardcoded secret. The same rule can r
 | **Rule-language pairs** | Rule and language combinations measured independently. Higher than measured rules, because most rules are measured in several languages. | The filled cells below |
 | **Configurable rule ids** | Ids accepted by `.irisconfig.json` for severity overrides and `iris-ignore` suppressions. A different set, and **the configuration schema is not a rule inventory**. | [.irisconfig.json reference](/configuration/irisconfig) |
 
-**Eight analysers cover ten supported languages.** Vue and Svelte `<script>` blocks are
-analysed by the JavaScript and TypeScript analysers according to their `lang` attribute,
-so they carry those languages' rules rather than rules of their own. That is why the
-table has eight columns while the product supports ten languages - both numbers are
-correct.
+**Eight analysers cover ten supported languages.** Vue and Svelte `<script>` blocks are analysed by the JavaScript and TypeScript analysers, depending on their `lang` attribute, so they use those languages' rules rather than rules of their own. That is why the table has eight columns while the product supports ten languages. Both numbers are correct.
 
-A machine-readable copy of everything below, including these definitions, is published at
-[iriscode.co/benchmark/v1/rules.json](https://www.iriscode.co/benchmark/v1/rules.json).
-It is generated from the same two files the benchmark itself reads, so it cannot disagree
-with this page.
+A machine-readable copy of everything below, including these definitions, is published at [iriscode.co/benchmark/v1/rules.json](https://www.iriscode.co/benchmark/v1/rules.json). It is generated from the same two files the benchmark itself reads, so it cannot disagree with this page.
 
 ## Current results: every measured rule
 
-**Precision** is how often a finding is correct (the opposite of a false alarm);
-**recall** is how many of the real issues the rule catches. Both groups are published,
-and so is the sample each percentage came from.
+**Precision** is how often a finding is correct (the opposite of a false alarm). **Recall** is how many of the real issues the rule catches. Both groups are published, and so is the sample each percentage came from.
 
 Read the **Cases** column before reading any percentage. It is the number of labelled fixtures behind that row, and most rules sit between one and fifteen. At those sizes a single false alarm moves precision by tens of points, so every cell below 100% carries its own counts.
 
 The imperfect cell is `sql-concatenation` in JavaScript: two correct findings and one false alarm. It caught every planted SQL-concatenation case in that sample.
 
-That cuts both ways - a row reading 100% on a single case is a much weaker claim than the
-same figure on fifteen. A `-` means the rule was not measured in that language, never
-that it scored zero. Per-language true positive, false positive and false negative counts
-are in the [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json) if
-you want the arithmetic rather than the ratio.
+Small samples cut both ways: a row reading 100% on a single case is a much weaker claim than the same figure on fifteen.
+
+A `-` means the rule was not measured in that language, never that it scored zero. The [machine-readable copy](https://www.iriscode.co/benchmark/v1/rules.json) has the counts behind each percentage, per language: correct findings (true positives), false alarms (false positives) and missed problems (false negatives).
 
 {/* >>> iris-benchmark-start <<< */}
 _Generated from the benchmark corpus in `@iris-code/core` 0.8.0. Every cell is precision / recall for that rule's own implementation in that language; `-` means not measured, and the reasons are listed under the table._
@@ -155,70 +139,45 @@ _Generated from the benchmark corpus in `@iris-code/core` 0.8.0. Every cell is p
 | `weak-hashing` | enforcement | 14 | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% | 100% / 100% |
 {/* >>> iris-benchmark-end <<< */}
 
-Where a cell is empty, that rule has no fixtures for that language. Three distinct
-reasons sit behind an empty cell, and they are not the same thing:
+Where a cell is empty, that rule has no fixtures for that language. There are three different reasons for an empty cell:
 
-- **Not applicable.** The language has no such construct. `any-usage` and
-  `missing-return-type` are TypeScript-only by definition.
-- **Not implemented.** The check does not exist for that language yet. Unused-code
-  detection is deliberately absent for Ruby, C# and Rust, because each resolves at
-  runtime or through mechanisms static analysis cannot see - so an "unused" verdict is
-  not one we can stand behind.
-- **Implemented but not measured.** The rule runs, but no fixtures pin it in that
-  language. These are reported loudly by the harness rather than hidden, and the count
-  is published above.
+- **Not applicable.** The language has nothing for the rule to check. `any-usage` and `missing-return-type` only exist for TypeScript.
+- **Not implemented.** The check does not exist for that language yet. Unused-code detection is deliberately left out for Ruby, C# and Rust. Those languages work out what code is used while the program runs, or in ways that reading the files cannot see, so an "unused" verdict would not be reliable.
+- **Implemented but not measured.** The rule runs, but no fixtures test it in that language. The test program reports these clearly rather than hiding them, and the count is published above.
 
 ## Known false positives
 
-One rule still reports a finding that is not real. It is listed here with its measured
-numbers, because a benchmark that omits its weak cells gives you no way to judge the
-strong ones.
+One rule still reports a finding that is not real. It is listed here with its measured numbers, because a benchmark that leaves out its weak results gives you no way to judge the strong ones.
 
-- **`sql-concatenation` in JavaScript: 2 correct, 1 false alarm, 0 missed, 66%
-  precision.** SQL keywords in ordinary prose joined with `+` can read as a query being
-  assembled by concatenation. The TypeScript implementation measures 100% precision on
-  the same corpus.
+- **`sql-concatenation` in JavaScript: 2 correct, 1 false alarm, 0 missed, 66% precision.** Ordinary sentences that contain SQL keywords and are joined with `+` can look like a database query being built by joining strings. The TypeScript version measures 100% precision on the same examples.
 
-  Tightening the pattern would trade a rare and harmless false alarm for the risk of missing a real injection, and this rule feeds the gate, so recall matters more than precision here. Recall has stayed at 100%: the rule has never missed a planted injection on this corpus.
+  Making the pattern stricter would swap a rare, harmless false alarm for the risk of missing a real SQL injection. This rule feeds the gate, so recall matters more than precision here. Recall has stayed at 100%: the rule has never missed a planted injection in these examples.
 
-  A proper fix needs to know that a string is SQL bound for a query call, which requires parsing rather than a narrower pattern.
+  A proper fix needs to know that a string is SQL on its way to a database call, which requires parsing the code rather than a narrower pattern.
 
-`parse-error` was listed here until core 0.4.6, at 50% precision in JavaScript. A regex
-literal such as `/{/` unbalanced the delimiter scan, so a file that parses correctly was
-reported as broken. The lexer is now regex-literal aware, and the rule measures 100%
-precision and 100% recall in all four languages that implement it.
+`parse-error` was listed here until core 0.4.6, at 50% precision in JavaScript. A regular expression such as `/{/` upset the check that brackets are balanced, so a valid file was reported as broken. The code reader now recognises regular expressions, and the rule measures 100% precision and 100% recall in all four languages that implement it.
 
 ## What is not published
 
-The corpus itself. It is 361 files of deliberately vulnerable code and
-credential-shaped strings, so publishing it would mean distributing a library of exploit
-fixtures to make a point about openness. The results and the method are here; the
-fixtures stay in the engine.
+The example files themselves. They are 361 files of deliberately vulnerable code and strings shaped like real credentials, so publishing them would mean handing out a library of attack examples. The results and the method are here; the files stay in the engine.
 
-Two rules are shared across languages on purpose rather than duplicated per
-language. Catch-all exception handling is one rule for both C# and Java: the same
-defect with the same fix, so one severity setting and one suppression comment
-cover a codebase that uses both.
+Two rules are shared across languages on purpose rather than duplicated per language. Catch-all exception handling is one rule for both C# and Java: the same defect with the same fix, so one severity setting and one suppression comment cover a codebase that uses both.
 
 The JavaScript SQL-concatenation check can mistake a sentence containing a SQL keyword for a query. Its precision cell records that false alarm directly. It is a result for JavaScript, not an average across languages.
 
 ## Known limitations
 
-We would rather state these plainly than imply the benchmark is the last word:
+The benchmark has limits:
 
-- **A corpus is not the universe of real code.** It covers each rule's common
-  shapes and known false-positive traps, not every construct in every codebase.
-- **The analysers are pattern-based.** Some false positives are structural - a
-  SQL keyword inside a prose string, a regex-like arithmetic expression - and are
-  documented rather than papered over.
-- **Line matching is within one line**, so the benchmark does not penalise
-  harmless off-by-one shifts from formatting.
+- **The examples are not all of real code.** They cover each rule's common forms and known false-alarm traps, not every way code can be written.
+- **The analysers work by matching patterns.** Some false alarms come from the code's structure, such as a SQL keyword inside a sentence, or arithmetic that looks like a regular expression. These are documented rather than hidden.
+- **Line matching allows one line either way**, so the benchmark does not penalise harmless one-line shifts caused by formatting.
 
 ## Tell us when a finding is wrong
 
-Every finding in the sidebar and Findings view has a small 👍 / 👎 control. If a rule flags something incorrectly - or nails something useful - rate it. The feedback is **count-only**: Iris Code records the rule id, the language, and your verdict, and nothing else.
+Every finding in the sidebar and Findings view has a small 👍 / 👎 control. If a rule flags something wrongly, or catches something useful, rate it. The feedback is **count-only**: Iris Code records the rule id, the language and your rating, and nothing else.
 
-No source code, file paths, or line contents ever leave your machine, and the feedback respects the analytics setting in your account. Confirmed false positives become permanent negative fixtures in this corpus, so reporting one directly hardens the rule.
+No source code, file paths or line contents ever leave your machine, and the feedback follows the analytics setting in your account. Each confirmed false alarm becomes a permanent negative example in the benchmark, so reporting one directly improves the rule.
 
 {/* >>> iris-refactor-review-start <<< */}
 

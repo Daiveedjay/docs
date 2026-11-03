@@ -1,62 +1,69 @@
 ---
-title: "Verification integrity: keep checks from getting weaker"
+title: "Verification integrity: catch changes that weaken your checks"
 sidebarTitle: "Verification integrity"
-description: "Compare changes against a saved starting point and report newly weakened tests, checkers and project rules."
+description: "Find out when a change makes your tests or rules weaker, such as a skipped or deleted test or a lowered threshold, so a coding agent cannot make checks pass by switching them off."
 ---
 
-A change can make checks pass by weakening the checks themselves. Verification integrity compares your changes with a baseline, a saved starting point, and reports each new weakening. Existing skipped tests or suppressions do not become new findings just because you run the check.
+Tests and project rules only protect your code while they stay switched on. A coding agent asked to make failing tests pass can skip a test, delete it or lower a threshold instead of fixing the code, and the run then looks green.
 
-Verification integrity is Free. Health score scans and score enforcement keep their existing access requirements.
+Verification integrity compares a change with how your files were before it and reports anything that makes your checks weaker. It is Free on every plan.
 
-## Running it
+<Frame caption="Only weakening that the change introduced is reported. A test that was already skipped before the change is not a new finding.">
+  <img className="block dark:hidden" src="/images/guides/integrity-check-light.svg" alt="Iris Code keeps a starting point, compares the change with it, and reports any check that became weaker as a warning or a blocker." width="480" />
+  <img className="hidden dark:block" src="/images/guides/integrity-check-dark.svg" alt="Iris Code keeps a starting point, compares the change with it, and reports any check that became weaker as a warning or a blocker." width="480" />
+</Frame>
 
-In a terminal, run:
+## What it catches
 
-```bash
-iris check . --integrity
-iris check . --integrity --staged
-iris check . --integrity --from main --format json
-```
+Each kind of weakening has its own rule. Some block by default, because they remove a check outright. Others warn, because a person needs to judge whether the change was reasonable.
 
-The default baseline is your last commit. `--staged` compares the Git index, the exact version prepared for a commit, against that commit. `--from` selects a different revision for a working-tree comparison.
+| Rule | What it means | Example | Default |
+| --- | --- | --- | --- |
+| `test-removed` | A test was deleted | The test "refunds a cancelled order" no longer exists | Blocks |
+| `test-disabled` | A test was switched off, or focused so its neighbours stop running | A test is marked `it.skip` | Blocks |
+| `rules-loosened` | A project threshold became more lenient | `minHealthScore` lowered from 75 to 50 | Blocks |
+| `assertions-weakened` | A test now checks fewer things | A test with three `expect` calls now has one | Warns |
+| `checker-silenced` | A comment now tells a checker to ignore a line | A new `// @ts-ignore` or `# noqa` | Warns |
+| `type-widened` | A precise type was replaced with one that accepts anything | `as any` in TypeScript | Warns |
+| `error-swallowed` | An error is now caught and ignored | An empty `catch {}` | Warns |
+| `iris-suppressed` | A new `iris-ignore` comment hides an Iris Code finding | `// iris-ignore: console-log -- debug` | Warns |
+| `code-packed` | Several statements were squeezed onto one line, a way to get under a length limit | Four statements on one line | Warns |
 
-**Review My Changes** shows integrity findings above the health score in VS Code and JetBrains. A refused score scan does not hide the Free integrity comparison. Deleted tests show their baseline path and line instead of a link to a missing file.
+A threshold is a configured limit, such as the minimum health score. Lowering one in the same change cannot hide itself: the comparison always reads your settings from the starting point, not from the change.
 
-Coding agents can call `iris_check` with `changed: true` through [MCP](/agents/mcp). Repository permissions still apply. This input compares current changes against the last commit without starting a score scan.
+## Where it runs
+
+The same comparison runs in each place you work. The starting point it compares against, called the baseline, depends on where it runs.
+
+| Where | What it compares | How to turn it on |
+| --- | --- | --- |
+| When a coding agent finishes | Your files when you sent the agent your request | `iris hook agent install --verify-on-finish` |
+| **Review My Changes** in VS Code or JetBrains | Your last commit | Run **Iris Code: Review My Changes** |
+| The terminal | Your last commit | `iris check . --integrity` |
+| Before a push | What the remote branch already has | The [Git hook](/enforcement/git-hook) (installing it needs Pro) |
+| A coding agent over MCP | Your last commit | `iris_check` with `changed: true`, through [MCP](/agents/mcp) |
+
+The agent finish check works with Claude Code, Codex, Cursor, GitHub Copilot and Gemini CLI. Windsurf does not give tools a way to act when the agent finishes, so it is not supported there.
 
 ## Acting on the results
 
-By default, removed tests, disabled tests and loosened project rules block. Fewer assertions, silenced checkers, widened types, swallowed errors and new Iris Code suppressions warn. Restore a weakened check, or explain why the change is deliberate.
+**When a coding agent finishes.** A blocking finding sends the agent back once. It is told what weakened and asked to restore the check or stop and explain the change to you. If it finishes again without fixing it, it is not sent back a second time; you see the findings instead.
 
-| Rule | What it reports |
-| --- | --- |
-| `test-removed` | A named test disappeared from the change and was not moved or covered by a Git rename |
-| `test-disabled` | A test gained a skip or focus marker |
-| `assertions-weakened` | A matched test contains fewer assertion calls |
-| `checker-silenced` | A new checker suppression appears in a real comment or supported attribute |
-| `type-widened` | A supported type escape was introduced in code |
-| `error-swallowed` | Supported error handling became empty or discarded an error |
-| `code-packed` | New statements were joined onto shared lines, measured against the baseline |
-| `iris-suppressed` | A new Iris Code suppression was added |
-| `rules-loosened` | A configured test, type, lint or Iris Code threshold became weaker |
+The agent is also told not to add a suppression itself. Deciding that a weakening is intended is your call, not the agent's.
 
-The comparison uses the baseline's resolved Iris Code configuration. Lowering `minHealthScore` in the same change cannot make that weakening pass unnoticed. Baseline severity overrides apply; lowering an override is itself a configuration finding.
+**In Review My Changes.** Findings appear in a **Verification integrity** section above the health score, each with its file and line. A deleted test shows the line it was on, since the file may no longer exist.
 
-## Packed code
+**At a push.** A blocking finding refuses the push and lists what weakened. Warnings are printed and the push goes ahead. Reinstall the Git hook after updating to 1.40.0 or later so a passing push also shows its warnings.
 
-`code-packed` warns when a file adds at least three statements joined onto shared lines. It compares new packed lines with the baseline and caps the count at the file's total increase. Moving existing packing or editing a word without increasing packing does not trigger it. Strings, comments, loop headers, inline type members and short inline markup are excluded.
-
-Set top-level `codePackedThreshold` to a positive integer to change the threshold. The default is `3` for every preset and language, including test files. The comparison reads this value from the baseline configuration. Raising it in the change is reported as `rules-loosened`.
-
-Push and CI treat this as a warning by default. Set `severityOverrides["code-packed"]` to `"error"` to make it block, or `"info"` for the quietest severity. There is no off switch; put generated files in `ignoreFiles`.
-
-At agent finish, an unallowed packing finding stops the agent once and asks it to split the lines or explain. This uses the same single correction as refactor verification. After that correction, or when the host's loop guard applies, it becomes a warning.
+To fix a finding, restore the test, assertion or setting that was weakened. If the change was deliberate, record why, as described next.
 
 ## Confirming a deliberate change
 
-**This is intended** records your reason for the current change in the editor. Editing the change invalidates that acknowledgement. It does not authorise a push or a CI run.
+Sometimes weakening a check is the right decision, for example when a flaky test is replaced by a better one. Record the reason so the finding is accepted, while staying visible to anyone reviewing the change.
 
-For hooks or CI, add a commit-message trailer with a known rule, repository-relative path and reason:
+In the editor, click **This is intended** on the finding and type a reason. This covers your local review only. It lapses if you edit the change, and it does not let a push or CI run through.
+
+For pushes and CI, add an `Iris-Allow` line to the commit message. It names the rule, the file and the reason:
 
 ```text
 Iris-Allow: test-removed tests/old.test.ts -- replaced by integration coverage
@@ -64,29 +71,71 @@ Iris-Allow: code-packed src/generated-view.ts -- reviewed compact layout
 Iris-Allow: test-disabled tests/orders.test.ts#orders > refunds -- service maintenance
 ```
 
-`code-packed` allowances apply to the whole file, without a `#test` suffix. Use **This is intended** for local editor review or the trailer above for hooks and CI.
+The part after `#` limits an allowance to one named test. `code-packed` always applies to a whole file, so it takes no `#` part. A line without a reason, or naming an unknown rule, is reported as invalid and allows nothing.
 
-Allowed findings stay visible. A supported `iris-ignore` comment with a reason can also allow a line finding; the new suppression remains a warning. A coding agent should restore the check or explain the change to you rather than add a suppression itself.
+Allowed findings stay in the report with their reason. An `iris-ignore` comment with a reason can also allow a single line, but the new comment is itself reported as `iris-suppressed`.
 
-## Hooks and baselines
+## Running it
 
-The pre-push step checks each pushed ref against its remote starting revision, including when the ref differs from your checked-out branch. A new branch uses an upstream merge base. Commit trailers are read over the same range.
+In a terminal:
 
-Agent hook installation adds a turn-start snapshot where the host supports one. Dirty files at turn start are stored outside the repository under `~/.iris/turns`, capped at 5 MiB. Other source reads are capped at 1 MiB per file and 50 MiB per comparison. Every omitted path is disclosed.
+```bash
+iris check . --integrity
+iris check . --integrity --staged
+iris check . --integrity --from main --format json
+```
 
-At finish, integrity runs even without a refactor plan. Integrity and refactor verification share one correction attempt per turn. If no turn baseline is available, integrity compares against your last commit and says so. Refactor verification retains its owned MCP baseline requirement. Windsurf / Devin has no controllable finish hook.
+The first compares your working files with your last commit. `--staged` checks exactly what you have prepared for the next commit with `git add`. `--from` compares against another branch or commit instead.
+
+The command exits with `1` when a finding blocks, `0` when nothing blocks and `2` when a flag is wrong. `--format json` adds an `integrity` report with each finding, the number that block and anything that could not be checked.
+
+## Packed code
+
+`code-packed` reports when a change joins statements onto shared lines. Squeezing code this way can bring a long file or function under its length limit without making it any simpler. File and function length already count joined statements as extra lines; this rule reports the packing itself.
+
+It warns when a file gains at least three joined statements. Only new packing counts: moving existing packed code or editing a word on a packed line does not. Strings, comments, loop headers and short inline markup are not counted.
+
+To change the threshold, set `codePackedThreshold` in `.irisconfig.json` to a whole number of 1 or more. The default is `3` for every preset and language. Raising it in the same change is reported as `rules-loosened`.
+
+```json
+{
+  "codePackedThreshold": 5,
+  "severityOverrides": { "code-packed": "error" }
+}
+```
+
+Packing warns at a push and in CI. Set `severityOverrides["code-packed"]` to `"error"` to make it block, or to `"info"` to make it quieter. It cannot be turned off; list generated files in `ignoreFiles` instead.
+
+When a coding agent finishes, packing sends it back once to split the lines or explain, even though it is only a warning. That uses the same single correction as the other findings.
+
+## Baselines and limits
+
+**One correction per turn.** An agent is sent back at most once per request. Verification integrity and [refactor verification](/refactor/verification) share that single correction, however many problems they find.
+
+**When the starting point is missing.** If the files from the start of the agent's turn are unavailable, the check compares against your last commit and says so in its message.
+
+**Size limits.** Uncommitted files saved at the start of an agent's turn are kept outside your repository, in `~/.iris/turns`, up to 5 MiB. Each file read for a comparison is capped at 1 MiB, and one comparison at 50 MiB. Anything left out is listed as not checked, never treated as clean.
+
+**Pushes.** The pre-push step checks each branch you push against what the remote branch already has. A new branch is compared with the point where it left its upstream branch. `Iris-Allow` lines are read from every commit in the push.
 
 ## What is not checked
 
-The readers support named tests across TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust. Computed test names and unproved test boundaries are disclosed. Assertion counts do not establish that a replacement assertion is equally strong.
+Test readers recognise named tests in TypeScript, JavaScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust. A test whose name is built at runtime, or whose boundaries cannot be found, is listed as not checked.
 
-Type widening has no equivalent here for JavaScript or Ruby. Java `Object` parameters are excluded because they are noisy, and Rust has no matching dynamic top type. Go and Rust error-returning calls cannot be identified without type information; their supported patterns are narrower.
+Counting assertions shows that a test checks fewer things. It cannot show that a replacement assertion is as strong as the one it replaced, so review rewritten tests yourself.
 
-Configuration readers do not execute repository code. Computed coverage thresholds, executable or YAML lint configuration, malformed files and external `extends` targets are reported as **not checked** where they cannot be resolved safely.
+Some rules cover fewer languages:
+
+- `type-widened` has nothing to check in JavaScript or Ruby, which have no type annotations. Java `Object` parameters are left out because they are too common to be useful, and Rust has no equivalent catch-all type.
+- `error-swallowed` cannot see every ignored error in Go and Rust, because recognising a call that returns an error needs type information. It checks the common patterns.
+
+Iris Code never runs your repository's code to read a setting. Coverage thresholds that are computed, lint settings written as code or YAML, files it cannot parse and configuration inherited from outside the repository are listed as not checked.
 
 ## Related pages
 
 - [Review My Changes](/features/change-review)
+- [Using refactor plans with an agent](/refactor/agents)
 - [Git hook](/enforcement/git-hook)
 - [Inline suppressions](/enforcement/suppressions)
+- [.irisconfig.json reference](/configuration/irisconfig)
 - [MCP server](/agents/mcp)

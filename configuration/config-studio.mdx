@@ -4,13 +4,15 @@ sidebarTitle: "Config Studio"
 description: "Config Studio is a visual editor in your account dashboard. Pick a preset, tune thresholds, and sync the resulting config to VS Code, JetBrains IDEs, or any VS Code fork with a diff preview."
 ---
 
-Config Studio lets you choose your project settings in a visual form rather than editing JSON by hand. It produces a `.irisconfig.json` file that your editor, command line and gates can share. Use it to choose what Iris Code checks and what your project must pass.
+Config Studio is a form on the Iris Code website for choosing your project settings, so you do not have to write JSON by hand. You pick what Iris Code checks and what your code must pass, and it produces a `.irisconfig.json` file.
 
-Open **Account ? Config** on the Iris Code website to use Config Studio.
+Your editor, the command line and your automated checks all read that same file, so everyone works to one standard. Config Studio can send the file straight to your editor, and shows you exactly what will change before anything is written.
+
+Open **Account → Config** on the Iris Code website to use Config Studio.
 
 ## What it covers
 
-Every setting that counts as a shared team standard, one section each, with a live preview of the file you will get:
+Every setting that counts as a shared team standard has a section, and a live preview shows the file you will get:
 
 | Section | Sets | Plan |
 | --- | --- | --- |
@@ -27,9 +29,9 @@ Every setting that counts as a shared team standard, one section each, with a li
 | Refactor playbook | shared suggestion, verification and correction settings; destination paths stay local. See [refactor configuration](/refactor/configuration) | Free |
 | Package guard | what happens when a coding agent or `iris install` installs a risky package. `prePush` is Pro. See [Package guard](/agents/package-guard) | Free |
 
-On the Free plan, Pro sections are shown but locked. A Free config uses its preset for everything except file naming, the package guard, agent handoff and top-level refactor policy, so a value typed into a locked field would be ignored by your editor.
+On the Free plan, Pro sections are shown but locked. A Free config takes everything from its preset except file naming, the package guard, agent handoff and top-level refactor policy. A value typed into a locked field would be ignored by your editor, so the field cannot be edited.
 
-The preview on the right is the exact `.irisconfig.json` that Copy, Download and sync hand over. On a narrow screen it sits below the editor.
+The preview on the right is the exact `.irisconfig.json` that **Copy**, **Download** and sync produce. On a narrow screen it sits below the form.
 
 <Note>
   **Sync replaces the settings the studio controls and keeps the rest of your file.**
@@ -45,23 +47,25 @@ The preview on the right is the exact `.irisconfig.json` that Copy, Download and
 
 ## Syncing to VS Code
 
-The sync flow is designed to never write silently - every sync opens a diff in VS Code first so you can review the exact changes before anything is committed to disk.
+Sync never writes silently. Every sync first opens a diff in VS Code, a side-by-side view of your current file and the new one, so you can review the exact changes before anything is saved.
 
 <Steps>
   <Step title="Open Account → Config in the browser">
     Navigate to [iriscode.co/account/config](https://www.iriscode.co/account/config) while signed in to your Iris Code account.
   </Step>
   <Step title="Choose a preset or switch to Custom mode">
-Select a preset, or Custom to start from an empty configuration. When signed in, you can change individual settings; the preset remains the base for values you leave unchanged. Saving a draft is Free. An explicit project-impact measurement is separate project work and may use one action.
+Select a preset, or Custom to start from an empty configuration. When signed in, you can change individual settings, and the preset still supplies every value you leave alone.
+
+Saving a draft is Free. Measuring how the settings would affect your project is separate project work and may use one project action.
   </Step>
   <Step title="Click 'Sync to VS Code'">
-    Hit the **Sync to VS Code** button. Iris Code generates a short-lived one-time token and opens VS Code via a deep link.
+    Click **Sync to VS Code**. Iris Code creates a short-lived, one-time token and opens VS Code through a deep link, a web link that opens an app directly.
   </Step>
   <Step title="VS Code opens a diff preview">
     VS Code opens and shows a diff preview of the exact changes that will be made to your `.irisconfig.json`.
   </Step>
   <Step title="Confirm or cancel">
-    Confirm the write to apply the changes - or cancel to leave your config exactly as it was. Nothing is written silently.
+    Confirm to apply the changes, or cancel to leave your config exactly as it was. Nothing is written without your confirmation.
   </Step>
 </Steps>
 
@@ -71,15 +75,15 @@ Select a preset, or Custom to start from an empty configuration. When signed in,
 
 ## Other editors: sync with a code
 
-The **Sync to VS Code** button opens a `vscode://` deep link, which only VS Code itself claims. JetBrains IDEs have no such scheme, and VS Code forks register their own - so in Trae, Positron, or a JetBrains IDE that link would open VS Code, or nothing at all.
+The **Sync to VS Code** button opens a `vscode://` link, which only VS Code itself responds to. JetBrains IDEs have no such link type, and VS Code forks use their own. In Trae, Positron or a JetBrains IDE, that link would open VS Code, or nothing at all.
 
-For those editors, click **Get a sync code** instead. You get a one-time code to paste into your editor, and the rest of the flow is identical - same diff, same confirmation, same write targets.
+For those editors, click **Get a sync code** instead. You get a one-time code to paste into your editor. The rest is the same: the same diff, the same confirmation and the same write targets.
 
 <Tabs>
   <Tab title="JetBrains IDEs">
     **Tools → Iris Code → Sync Config from Dashboard**, then paste the code.
 
-    Iris Code shows a real diff against your current config and writes only after you confirm. The write goes through the IDE, so it is undoable and analysis restarts automatically.
+    Iris Code shows a diff against your current config and writes only after you confirm. The IDE makes the change itself, so you can undo it, and analysis restarts automatically.
   </Tab>
   <Tab title="Trae, Positron, other forks">
     Open the command palette and run **Iris Code: Sync Config from Dashboard**, then paste the code.
@@ -96,19 +100,19 @@ For those editors, click **Get a sync code** instead. You get a one-time code to
 
 ## Write targets
 
-When you click **Sync to VS Code**, choose where the config is written:
+When you sync, choose where the config is written:
 
 <CardGroup cols={2}>
   <Card title="Workspace" icon="folder">
-    Writes `.irisconfig.json` to the project root. Available to all users - Free and Pro. Commit it and the whole team runs the same config automatically.
+    Writes `.irisconfig.json` to the project root. Available on Free and Pro. Commit it and the whole team uses the same config automatically.
   </Card>
   <Card title="Global default" icon="user" color="#f59e0b">
-Writes your personal default configuration so new projects on this machine can start with the same settings. Sign-in is required; this permission remains available after monthly action exhaustion.
+Writes your personal default configuration, so new projects on this machine start with the same settings. You need to be signed in. It still works after you have used up your monthly project actions.
   </Card>
 </CardGroup>
 
 <Tip>
-  For monorepos, sync a **Workspace** config to each package root that needs different thresholds. The extension resolves config by walking up the directory tree - the nearest `.irisconfig.json` wins.
+  In a monorepo, a repository holding several packages, sync a **Workspace** config to each package root that needs different thresholds. For each file, Iris Code uses the nearest `.irisconfig.json` in its folder or the folders above it.
 </Tip>
 
 ## Using a preset without Config Studio
@@ -123,9 +127,11 @@ All six preset IDs are: `legacy`, `balanced`, `typescript`, `strict`, `security`
 
 ## First-time setup from the CLI
 
-`iris init` creates a commented Balanced `.irisconfig.json` and the default `AGENTS.md` rules file, then refreshes Iris Code blocks if either file already exists. It also installs the pre-push hook for an active Pro licence. On Free, it names that hook step as unavailable and continues with the safe setup steps.
+`iris init` sets up a project from the terminal. It creates a `.irisconfig.json` using the Balanced preset, with comments explaining each setting, and a default `AGENTS.md` file of rules for coding agents. If either file already exists, it refreshes only the Iris Code sections in it.
 
-The command is safe to run again. It preserves an existing config and only refreshes the blocks Iris Code owns in existing rules files.
+With an active Pro licence it also installs the pre-push hook. On Free, it says that step is unavailable and carries on with the rest.
+
+The command is safe to run again. It keeps an existing config and only refreshes the sections Iris Code owns in existing rules files.
 
 ```bash
 iris init
@@ -133,17 +139,19 @@ iris init
 
 ## Free vs Pro
 
+Signing in turns on custom configuration for your account, so most people who can open the Studio can change every setting. An account without custom configuration works in preset-only mode.
+
 <Tabs>
-  <Tab title="Free">
+  <Tab title="Preset only">
     - Pick any preset from the selector
     - Preview the resulting JSON in the live preview panel
     - Sync to the **Workspace** write target
     - Configure workspace-wide `fileNaming` and `fileNamingScope`, then add ordered path rules
     - Set the [package guard](/agents/package-guard) policy, apart from `prePush`
 
-    The preset values are fixed and cannot be overridden locally - editing threshold fields in the generated file produces a yellow warning squiggle in the editor.
+    The preset values are fixed and cannot be changed locally. Editing a threshold in the generated file shows a yellow warning squiggle in the editor.
   </Tab>
-  <Tab title="Pro">
+  <Tab title="Signed in or Pro">
     - Start from any preset, or from Custom, and change any setting
     - Override individual threshold values, detection toggles, diagnostic categories, and severity overrides
     - Configure custom scoring weights and gate limits

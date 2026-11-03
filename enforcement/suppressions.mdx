@@ -5,11 +5,13 @@ description: "Silence one finding on one line without switching the rule off, an
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "Java", "Rust", "large-class", "catch-all-exception", "async-void", "linq-abuse", "method-missing", "god-class", "mass-assignment", "process-execution", "unwrap-abuse", "explicit-panic"]
 ---
 
-A suppression tells Iris Code to ignore a particular finding that you have reviewed and accepted. It is useful when a reported pattern is intentional, such as a test credential that is not a real secret. Keep suppressions narrow so other problems in the same file are still reported.
+Sometimes Iris Code reports something you have looked at and decided is fine, such as a test credential that is not a real secret. A suppression is a comment in your code that tells Iris Code to ignore that one finding, with a written reason.
+
+The rule stays switched on everywhere else, so other problems in the same file are still reported. Keep each suppression as narrow as you can.
 
 ## Writing one
 
-Put the comment on the line directly above:
+Put the comment on the line directly above the code it applies to:
 
 ```typescript
 // iris-ignore: console-log -- CLI entry point, intentional user output
@@ -26,7 +28,7 @@ Python uses `#`:
 index = random.randint(0, len(slides) - 1)
 ```
 
-For a whole file, put `iris-ignore-file` anywhere in it:
+To cover a whole file, put `iris-ignore-file` anywhere in it:
 
 ```typescript
 // iris-ignore-file: console-log -- this whole module is a debug logger
@@ -38,11 +40,11 @@ The shape is the same either way:
 // iris-ignore: <ruleId>[, <ruleId>...] -- <reason>
 ```
 
-One or more rule ids, then `--`, then a reason.
+One or more rule ids (the short names in the table below), then `--`, then a reason.
 
-## The reason isn't optional
+## A reason is required
 
-Leave the reason out, misspell the rule id, or name no rule at all, and the directive **suppresses nothing**. It gets reported as a **Bare Ignore** with its own score penalty instead.
+If you leave out the reason, misspell the rule id or name no rule at all, the comment **suppresses nothing**. Instead it is reported as a **Bare Ignore**, which costs points of its own.
 
 ```typescript
 // iris-ignore: console-log            <- no reason: suppresses nothing, costs points
@@ -50,11 +52,11 @@ Leave the reason out, misspell the rule id, or name no rule at all, and the dire
 // iris-ignore: console-log -- CLI output   <- works
 ```
 
-This is deliberate. A suppression that costs nothing and explains nothing becomes a mute button rather than a decision, and months later there is no way to tell whether the `any` was reasoned about or simply inconvenient. Penalising an undocumented one keeps the mechanism meaningful.
+This is deliberate. A suppression that costs nothing and explains nothing becomes a mute button rather than a decision. Months later, nobody can tell whether an `any` was thought through or simply inconvenient. Penalising an unexplained one keeps suppressions meaningful.
 
 ## What you can suppress
 
-Eighteen rules, which is every finding that points at a specific line:
+Every finding that points at a specific line can be suppressed. These are the 30 code-finding rules; the nine [verification integrity](#verification-integrity-allowances) rules are covered further down:
 
 | Rule id | Finding |
 |---|---|
@@ -89,21 +91,21 @@ Eighteen rules, which is every finding that points at a specific line:
 | `unwrap-abuse` | Rust: `unwrap` or `expect` outside test code |
 | `explicit-panic` | Rust: `panic!`, `todo!`, or `unimplemented!` outside test code |
 
-Findings that aren't about a line can't be suppressed: file too long, too many functions, too many imports, and parse errors. Those always count.
+Findings about a whole file rather than a line cannot be suppressed: file too long, too many functions, too many imports, and parse errors (files Iris Code could not read). Those always count.
 
 ## What it does to your score
 
-A suppressed finding stops costing points, since the score is recalculated after suppressions are applied. It does not disappear, though: it stays counted and listed in both the sidebar and CLI output, so a project accumulating suppressions is visibly doing so.
+A suppressed finding stops costing points, because the score is worked out after suppressions are applied. It does not disappear, though. It stays counted and listed in the sidebar and in the CLI output, so a project that keeps adding suppressions can see it happening.
 
-A bare ignore does the opposite: it suppresses nothing and takes points off, 2 by default, adjustable in [Scoring Weights](/configuration/scoring-weights).
+A bare ignore does the opposite: it suppresses nothing and takes points off, 2 by default. You can change that in [Scoring Weights](/configuration/scoring-weights).
 
 ## Where you see them
 
 **File tab** has a collapsible **Suppressed** section under Code Smells, with each rule, line and reason. Bare ignores show up as their own smell row.
 
-**Workspace and Folder tabs** show suppressed and bare counts plus the worst offending files. **See all** opens the full table for the last scan, filterable, with click-to-open.
+**Workspace and Folder tabs** show how many suppressions and bare ignores there are, and the files with the most. **See all** opens the full table for the last scan, which you can filter and click to open each file.
 
-**The CLI** always prints the count. `--show-suppressed` lists them:
+**The CLI** (the `iris` terminal commands) always prints the count. `--show-suppressed` lists them:
 
 ```bash
 iris check src/ --show-suppressed
@@ -112,9 +114,9 @@ iris gate --show-suppressed
 
 `--format json` includes a per-file `suppressed` array with the rule, line and reason.
 
-## Keeping a lid on it (Pro)
+## Limiting suppressions (Pro)
 
-Two fields in `.irisconfig.json`:
+Two settings in `.irisconfig.json` control how far suppressions can go:
 
 ```json
 {
@@ -125,25 +127,31 @@ Two fields in `.irisconfig.json`:
 
 | Key | What it does |
 |-----|-----------------|
-| `gateMaxSuppressions` | Caps suppressions per file. Go over it and the file fails the gate, in `iris gate`, the pre-push hook and the build hook alike. |
-| `ignoreSuppressions` | The kill switch. Set it to `true` and every directive goes inert, so suppressed findings count as live again. Useful for an audit, or when suppressions have clearly become a way around the gate rather than a record of decisions. |
+| `gateMaxSuppressions` | The most suppressions allowed in one file. A file over the limit fails the gate, in `iris gate`, the pre-push hook and the build hook alike. |
+| `ignoreSuppressions` | Set it to `true` and every suppression comment is ignored, so suppressed findings count again. Useful for an audit, or when suppressions have become a way around the gate rather than a record of decisions. |
 
-The `strict` and `security` presets already set a cap (5 and 3 per file) and a heavier bare-ignore penalty (3 and 4). The other presets leave it unset, so there's no limit until you set one.
+The `strict` and `security` presets already set a limit (5 and 3 per file) and a heavier bare-ignore penalty (3 and 4 points). The other presets leave it unset, so there is no limit until you set one.
 
 <Tip>
-  Commit `.irisconfig.json` with `gateMaxSuppressions` set and the cap applies to everyone. Without it, a file can be brought under the gate by suppression rather than by fixing anything. See [Gate thresholds](/configuration/irisconfig#gate-thresholds).
+  Commit `.irisconfig.json` with `gateMaxSuppressions` set and the limit applies to everyone. Without it, a failing file can be made to pass by suppressing findings rather than fixing anything. See [Gate thresholds](/configuration/irisconfig#gate-thresholds).
 </Tip>
 
 ## Verification integrity allowances
 
-The integrity rule IDs are `test-removed`, `test-disabled`, `assertions-weakened`, `checker-silenced`, `type-widened`, `error-swallowed`, `iris-suppressed`, `rules-loosened` and `code-packed`. A real trailing comment or block comment can carry a directive as well as a comment on the line above. Text inside a string is not a directive.
+[Verification integrity](/features/verification-integrity) reports changes that weaken your checks, such as a deleted test. Its rule IDs are `test-removed`, `test-disabled`, `assertions-weakened`, `checker-silenced`, `type-widened`, `error-swallowed`, `iris-suppressed`, `rules-loosened` and `code-packed`.
 
-A suppression targeting an integrity finding needs a reason. The finding stays visible as allowed, and the new suppression is itself reported as a warning. An agent should restore the check or explain a deliberate change to you, rather than silently add an escape.
+For these rules, the `iris-ignore` comment can sit at the end of the line itself or in a block comment, as well as on the line above. Text inside a string is never treated as a suppression.
 
-A removed file has no current line for a comment. Use a commit-message trailer for hooks or CI:
+A suppression for an integrity finding needs a reason. The finding stays visible, marked as allowed, and the new suppression comment is itself reported as a warning. An agent should restore the check or explain a deliberate change to you, rather than quietly add a way around it.
+
+A deleted file has no line left to put a comment on. For hooks and CI, add a line to the commit message instead:
 
 ```text
 Iris-Allow: test-removed tests/old.test.ts -- replaced by integration coverage
 ```
 
-The path is repository-relative. Add `#<test name>` to restrict a test allowance to one named case. `code-packed` is file-level and rejects that suffix; use **This is intended** locally or `Iris-Allow: code-packed src/view.ts -- reviewed compact layout` for hooks and CI. Unknown rules, escaping paths and missing reasons do not grant an allowance. See [verification integrity](/features/verification-integrity).
+The path is relative to the repository root. Add `#<test name>` to limit a test allowance to one named test.
+
+`code-packed` applies to a whole file and does not accept the `#` part. Use **This is intended** in the editor, or `Iris-Allow: code-packed src/view.ts -- reviewed compact layout` for hooks and CI.
+
+A line naming an unknown rule, a path outside the repository or no reason does not allow anything. See [verification integrity](/features/verification-integrity).

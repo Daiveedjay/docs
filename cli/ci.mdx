@@ -1,16 +1,16 @@
 ---
 title: "Use Iris Code in GitHub Actions, GitLab CI, and shell pipelines"
 sidebarTitle: "CI integration"
-description: "Run iris gate as a CI enforcement step in GitHub Actions, GitLab CI, or any shell pipeline. Pass your licence via IRIS_LICENCE_TOKEN and fail builds that miss the threshold."
+description: "Run iris gate as a step in GitHub Actions, GitLab CI or any shell pipeline. Pass your licence through IRIS_LICENCE_TOKEN and fail builds that miss your thresholds."
 ---
 
-Continuous integration (CI) runs automated checks when your code changes. Add the Iris Code gate to check your project against its configured thresholds alongside your other tests. It runs on your own runner, so source code stays in that environment.
+Continuous integration (CI) runs automated checks every time your code changes. Adding the Iris Code gate means each change is checked against your project's thresholds alongside your other tests, and a change that falls short fails the build.
 
-Install the CLI, store your Pro licence as a CI secret and run `iris gate`. The command returns a number, called an exit code, that tells the pipeline whether to continue.
+The gate runs on your own CI machine, called a runner, so your source code stays there. Install the CLI, store your Pro licence as a CI secret and run `iris gate`. The command returns a number, called an exit code, that tells the pipeline whether to continue.
 
 ## Exit codes
 
-Use exit codes to control pipeline behaviour. `iris gate` follows the same conventions as all other Iris Code commands:
+Your pipeline decides whether to carry on from the exit code. `iris gate` uses the same codes as every other Iris Code command:
 
 | Exit code | Meaning | Pipeline action |
 |---|---|---|
@@ -19,16 +19,18 @@ Use exit codes to control pipeline behaviour. `iris gate` follows the same conve
 | `2` | Bad arguments or invalid config | Fix the workflow step |
 | `3` | Your Iris Code licence could not be verified, so the gate did not run | Fail the build, or retry |
 
-Exit `3` means the gate **did not run**, which is not the same as it finding nothing. It is returned when a licence exists but could not be checked - the licence server unreachable, or rate limiting a repeated caller.
+Exit `3` means the gate **did not run**, which is not the same as it finding nothing. It is returned when you have a licence but it could not be checked, for example because the licence server could not be reached or it is limiting repeated requests.
 
-A gate that skipped silently and reported success would let a build through that should have been blocked, so it fails closed instead. A user with no Pro licence is a different case: that is known, so those commands skip and exit `0` and the pipeline stays green.
+A gate that quietly skipped and reported success would let through a build that should have been stopped. So when the licence cannot be checked, the build fails instead.
+
+Having no Pro licence is a different case. That is known, so those commands skip and exit `0`, and the pipeline stays green.
 
 ## Setting IRIS_LICENCE_TOKEN
 
-Add your licence key as a secret in your CI provider settings, then expose it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris Code. The CLI checks this variable before reading the credentials file, so no `iris auth login` step is needed on runners.
+Add your licence key as a secret in your CI provider's settings, then pass it as the `IRIS_LICENCE_TOKEN` environment variable in the step that runs Iris Code. The CLI checks this variable before reading the credentials file, so runners need no `iris auth login` step. See [Authentication](/cli/auth) for how the CLI signs in.
 
 <Note>
-  `iris secrets` and `iris security` both run without any authentication at all. Use them for a free CI scan that requires no licence - they work on any runner regardless of `IRIS_LICENCE_TOKEN`.
+  `iris secrets` and `iris security` need no sign-in at all. Use them for a Free CI scan that needs no licence: they work on any runner, whether or not `IRIS_LICENCE_TOKEN` is set.
 </Note>
 
 ## GitHub Actions
@@ -58,7 +60,7 @@ jobs:
   For inline PR annotations, use `iris gate . --format github` (added in v1.6.0). See the full guide at [/enforcement/github-actions](/enforcement/github-actions).
 </Note>
 
-To add free secrets and security smell scans that need no licence, include these steps independently:
+To add the Free secrets and security scans, which need no licence, include these steps separately:
 
 ```yaml
       - name: Secrets scan (free, no licence)
@@ -74,7 +76,7 @@ To add free secrets and security smell scans that need no licence, include these
 
 ## Gating on dependency CVEs
 
-Use `iris cve` (Pro) as a separate dependency gate. It runs the same scan as `iris deps` but exits `1` only when an advisory at or above the chosen severity is found, so low-severity noise never turns the pipeline red:
+A CVE is a published security advisory for a package. Use `iris cve` (Pro) as a separate gate for your dependencies. It runs the same scan as `iris deps` but exits `1` only when it finds an advisory at or above the severity you choose, so minor advisories never fail the pipeline:
 
 ```yaml
       - name: CVE gate
@@ -87,7 +89,7 @@ See the [command reference](/cli/commands#iris-cve) for severity levels and exit
 
 ## Telling the team in Slack
 
-A pipeline that only writes to the build log gets read by whoever opened the build log. Set `IRIS_SLACK_WEBHOOK` as a protected CI secret and the outcome lands in a channel instead:
+A result written only to the build log is seen only by whoever opens that log. Set `IRIS_SLACK_WEBHOOK` as a protected CI secret and the outcome is posted to a Slack channel as well:
 
 ```yaml
       - name: Iris Code gate
@@ -97,7 +99,7 @@ A pipeline that only writes to the build log gets read by whoever opened the bui
           IRIS_SLACK_WEBHOOK: ${{ secrets.IRIS_SLACK_WEBHOOK }}
 ```
 
-The message is built and sent by your own runner and never passes through Iris Code servers, so it can name the failing files. It stays quiet on a passing run unless you add `--slack-on always`, and a Slack outage can never change the exit code. See [Slack notifications](/enforcement/slack-notifications) for the full setup.
+Your own runner builds and sends the message, and it never passes through Iris Code servers, so it can name the failing files. Nothing is posted for a passing run unless you add `--slack-on always`, and a Slack outage never changes the exit code. See [Slack notifications](/enforcement/slack-notifications) for the full setup.
 
 ## GitLab CI
 
@@ -124,16 +126,16 @@ iris gate
 ```
 
 <Note>
-  `iris gate` has no threshold flag - set `minHealthScore` (and any `gateMax*` limits) in `.irisconfig.json` instead. See [.irisconfig.json](/configuration/irisconfig) for the full reference.
+  `iris gate` has no threshold flag. Set `minHealthScore`, and any `gateMax*` limits, in `.irisconfig.json` instead. See [.irisconfig.json](/configuration/irisconfig) for the full reference.
 </Note>
 
 <Tip>
-  Pair `iris gate` (Pro) with `iris secrets` (free) for layered coverage - gate blocks low-quality code, secrets scan catches leaked credentials on every push regardless of licence status.
+  Pair `iris gate` (Pro) with `iris secrets` (Free) so each covers what the other does not. The gate stops code that misses your thresholds, and the secrets scan catches leaked credentials on every push, whatever your licence status.
 </Tip>
 
 ## Check the pre-push hook record
 
-For a repository connected with `teamProjectId`, add a separate step after the gate:
+A pre-push hook is a check that runs on a developer's machine before `git push`. For a repository connected to a Team with `teamProjectId`, you can check in CI that each pushed commit went through that hook. Add a separate step after the gate:
 
 ```yaml
 - name: Check pre-push hook record
@@ -143,4 +145,4 @@ For a repository connected with `teamProjectId`, add a separate step after the g
     IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-The gate keeps its existing exit code. Hook verification always exits `0` and gives visibility through a warning and the Team audit log. It checks the PR head SHA rather than GitHub's temporary merge commit. See [Team governance](/teams/governance) for skip conditions and evidence limits.
+The gate keeps its own exit code. Hook verification always exits `0`: a missing record shows up as a warning and in the Team audit log, never as a failed build. It checks the latest commit on the pull request (the PR head SHA) rather than GitHub's temporary merge commit. See [Team governance](/teams/governance) for skip conditions and evidence limits.

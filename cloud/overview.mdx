@@ -1,10 +1,12 @@
 ---
-title: "Iris Code Cloud: audit GitHub repositories without an editor open"
+title: "Iris Code Cloud: scan GitHub repositories without an editor open"
 sidebarTitle: "Cloud overview"
-description: "Connect a GitHub repository once and Iris Code audits it on the events you choose, keeping every report pinned to the commit that produced it."
+description: "Connect a GitHub repository once and Iris Code scans it when you ask or on the events you choose, keeping every report tied to the exact commit it checked."
 ---
 
-Cloud scans check a GitHub repository even when nobody has it open in an editor. Connect a repository and choose when to scan it, such as after a change reaches the main branch. Each report records the exact version of the code it checked.
+Local checks only run when someone has the code open. Cloud scans check a GitHub repository on Iris Code's servers instead, so a project's score stays up to date even when nobody is working on it.
+
+You connect a repository, then scan it by hand or choose an event that scans it automatically, such as a change reaching the main branch. Each report records the exact version of the code it checked.
 
 <Frame caption="The source is temporary; the scan report is retained.">
   <img className="block dark:hidden" src="/images/guides/cloud-scan-light.svg" alt="Choose repositories, scan their source without running it, then discard the source and keep the report." width="480" />
@@ -13,53 +15,55 @@ Cloud scans check a GitHub repository even when nobody has it open in an editor.
 
 ## What it checks
 
-A cloud scan runs the same analysis as the editor and the CLI: health score, findings by severity, file coverage, and the dependency and CVE report. Nothing is scored differently because it ran in the cloud.
+A cloud scan runs the same analysis as the editor and the CLI: the health score, findings by severity, which files were covered, and a report on the packages your project uses and their known vulnerabilities (CVEs). Nothing is scored differently because it ran in the cloud.
 
-What differs is where the result lives. Every audit is stored against its commit SHA, so a report is a statement about one revision rather than about "now".
+What differs is where the result is kept. Every scan, also called an audit, is stored against its commit, the identifier Git gives one saved version of your code. A report therefore describes one specific version, not "the code as it is now".
 
-Each completed project report also has a [Code Map](/features/code-map) tab. It shows the repository tree and the per-file scores from that same commit.
+Each completed project report also has a [Code Map](/features/code-map) tab. It shows the repository's folder tree and the score of each file from that same commit.
 
 <Note>
-  This matters most for pull requests. A PR audit records the PR head, so reviewing a branch never overwrites your default branch's score. The two live side by side, and each says which commit it describes.
+  This matters most for pull requests. A pull request scan records the latest commit on that branch, so reviewing a branch never overwrites your default branch's score. The two sit side by side, and each says which commit it describes.
 </Note>
 
 ## What it does not do
 
-Iris Code never runs your code. A cloud scan downloads a source tarball, expands it, reads the files, and parses your dependency manifests. There is no clone, no `npm install`, no build step, and nothing from the repository is executed at any point.
+Iris Code never runs your code. A cloud scan downloads a compressed copy of the source, unpacks it, reads the files, and reads the files that list your project's packages.
 
-The extraction refuses symlinks and hardlinks, and the analysis stage has no network access.
+There is no clone, no `npm install`, no build step, and nothing from the repository is run at any point. Unpacking refuses symlinks and hardlinks (files that point to other locations), and the analysis step has no network access.
 
 ## How a repository gets connected
 
 You install the Iris Code GitHub App on the repositories you choose. See [Connecting GitHub](/cloud/connect-github) for the permissions it asks for and why.
 
-Importing a repository queues one audit immediately, so the project has a score before you have configured anything. That first audit counts against your allowance like any other.
+Importing a repository starts one scan straight away, so the project has a score before you have configured anything. That first scan counts against your allowance like any other.
 
 ## What triggers an audit afterwards
 
-New repositories start in manual mode after the requested import scan. You can opt into scans when a change lands on your default branch, a pull request updates, or both. These events use the same monthly cloud allowance as manual scans, including on Free.
+New repositories start in manual mode: after the import scan, nothing is scanned until you ask. You can choose to scan automatically when a change lands on your default branch, when a pull request is updated, or both.
 
-The two cost very different amounts, and the setting says so rather than presenting them as equivalent switches. See [Audit triggers](/cloud/triggers).
+These automatic scans use the same monthly cloud allowance as manual ones, including on Free. The two options use very different numbers of scans, and the setting says so. See [Audit triggers](/cloud/triggers).
 
 ## Reports and retention
 
-Every audit keeps its full report for **400 days**. After that the report body is removed and the audit row is kept, so the record of what ran, on which commit, and with what outcome survives, while an old link resolves to an honest "the detail is no longer retained" rather than to nothing.
+Every scan keeps its full report for **400 days**. After that, the detailed report is removed but a summary line is kept: what ran, on which commit, and with what outcome. An old link then shows that the detail is no longer kept, rather than a broken page.
 
-In your account, **Audit history** brings those audit rows together across every connected repository. It shows the repository, commit, branch, trigger, status, score and timestamp without requiring you to open each project separately. **Analytics** is the separate screen for recorded signals - workspace scans, gates, blocked pushes, and a row for each completed cloud scan - alongside your health trend.
+In your account, **Audit history** lists those summary lines across every connected repository. It shows the repository, commit, branch, what started the scan, its status, score and time, without opening each project separately.
 
-Disconnecting a repository permanently deletes its cloud reports from that account or team. A record of the deletion is kept, nothing on GitHub is changed, and you would need to connect the repository again to run any audit against it.
+**Analytics** is a separate screen for recorded activity, such as workspace scans, gates, blocked pushes and a row for each completed cloud scan, shown beside your health trend.
+
+Disconnecting a repository permanently deletes its cloud reports from that account or team. A record of the deletion is kept and nothing on GitHub is changed. To scan it again, you would need to connect it again.
 
 ## Personal and team repositories are separate
 
-A personal account and a team each have their own connected repositories, their own reports, and their own scan allowance. They never share and never merge.
+A personal account and a team each have their own connected repositories, their own reports and their own scan allowance. They are never shared or combined.
 
-Being seated in a team does not let that team's allowance audit your own repositories, and your personal subscription does not audit theirs. See [Scan allowances](/cloud/allowances).
+Holding a seat in a team does not let that team's allowance scan your own repositories, and your personal subscription does not scan theirs. See [Scan allowances](/cloud/allowances).
 
 ## What you need
 
-- **Iris Code Pro**, or a seat in a team with an active subscription or trial
+- A signed-in Iris Code account. Free personal accounts and Free Teams have a monthly cloud allowance; Pro, and teams with an active subscription or trial, have their own allocation. See [Free allowances](/free)
 - A GitHub account with permission to install an App on the repository you want audited
 
 <Tip>
-  If you only want the dashboard score to stay current, leave the defaults alone. Merges are audited, pull requests are not, and that is the cheapest configuration that keeps a project's score true.
+  To keep a project's score current at the lowest cost, scan merges to your default branch and leave pull request scans off. See [Audit triggers](/cloud/triggers).
 </Tip>

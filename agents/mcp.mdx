@@ -1,10 +1,12 @@
 ---
 title: "MCP server: give coding agents your project rules and findings"
 sidebarTitle: "MCP server"
-description: "Use iris mcp to give supported coding agents the resolved project configuration, deterministic findings, gate result, dependency risk, explanations, preview-first safe fixes, and refactor plans with verification."
+description: "Use iris mcp so a coding agent can scan your project, read its rules, check a package, apply safe fixes and verify a refactor itself, with the same results Iris Code gives you."
 ---
 
-MCP connects an AI coding agent to tools it can call while working. The Iris Code MCP server lets the agent scan your project, check a proposed package and verify a refactor without asking you to run each command. Your project and team permissions control whether the agent can access repository tools.
+A coding agent works faster and makes fewer mistakes when it can check its own work instead of waiting for you to run each command. MCP (Model Context Protocol) is a standard connection that lets an AI coding agent call tools while it works.
+
+The Iris Code MCP server gives the agent those tools: it can scan your project, read your configured rules, check a package before installing it, apply safe fixes and verify a refactor. Your project and team permissions control whether the agent can use the tools that read your repository.
 
 ## Running the server
 
@@ -24,55 +26,43 @@ iris-lsp --mcp
 
 </CodeGroup>
 
-All three run the same server. The `npx` form needs no install and is the one to use with agents that
-are themselves npm-installed. `iris-lsp --mcp` suits editors that already bundle the Iris Code
-language-server binary, and needs no Node.js.
+All three run the same server. The `npx` form needs no install and is the one to use with agents that are themselves npm-installed. `iris-lsp --mcp` suits editors that already bundle the Iris Code language-server binary, and needs no Node.js.
 
-The server writes only protocol messages to standard output, so do not wrap it in a script that
-prints anything there.
+The agent and the server talk through standard output, so the server writes only its protocol messages there. Do not wrap it in a script that prints anything to standard output.
 
 ## Which folder it analyses
 
-`--root` is the boundary: nothing outside it is read, and nothing outside it is written. Iris Code
-resolves it in this order.
+The server works inside one project folder, called its root. Nothing outside the root is read, and nothing outside it is written. Iris Code chooses the root in this order:
 
 1. **`--root`, if you pass it.** Your own explicit choice, never overridden.
-2. **The workspace your editor reports.** Clients that support MCP's `roots` capability tell the
-   server which project is open, so no flag is needed. Iris Code asks for this at startup.
-3. **The directory the client launched Iris Code in.** The fallback when neither of the above
-   applies.
+2. **The workspace your editor reports.** Clients that support MCP's `roots` capability tell the server which project is open, so no flag is needed. Iris Code asks for this at startup.
+3. **The directory the client launched Iris Code in.** The fallback when neither of the above applies.
 
-Most clients land on the right folder through step 2, which is why the commands above pass no flag.
-Leaving it off is the right default if you work in more than one project: register the server once,
-and each editor window roots itself in the project it has open.
+Most clients land on the right folder through step 2, which is why the commands above pass no flag. Leaving it off is the right default if you work in more than one project: register the server once, and each editor window uses the project it has open.
 
-Pass `--root` when you want the boundary pinned regardless of client behaviour, such as a scripted or shared setup where the launch directory is not dependable. Pin it per project, though.
+### When to pass `--root`
 
-A `--root` registered once for every workspace points every workspace at that one folder: an agent working in project B is then answered about project A, and `iris_fix_safe` writes into A. Iris Code cannot detect that for you, because a pinned root is a legitimate instruction.
+Pass `--root` when you want the folder fixed regardless of what the client does, such as a scripted or shared setup where the launch directory is not dependable. Set it per project, though.
 
-`--root .` is not a pin. It resolves to the directory the client launched the server in, which is what
-Iris Code would have used anyway, and passing it suppresses step 2. Omit the flag instead.
+A `--root` registered once for every workspace points every workspace at that one folder. An agent working in project B is then answered about project A, and `iris_fix_safe` writes into A. Iris Code cannot detect this for you, because a fixed root is a legitimate instruction.
 
-Where several workspace roots are open, Iris Code analyses the first and names the others it is not
-analysing. It does not merge them: separate roots are usually separate projects with their own
-config and their own gate, so one blended score would describe neither.
+`--root .` does not fix the folder. It resolves to the directory the client launched the server in, which is what Iris Code would have used anyway, and passing it turns off step 2. Omit the flag instead.
 
-Iris Code writes a ready line to standard error as soon as it starts, followed by the resolved folder
-and where it came from, so your client log shows what it is actually looking at. Nothing but JSON-RPC
-goes to standard output.
+### Several folders open
 
-Started in a terminal rather than from a client, the server has nobody to talk to and will simply
-wait. It says so, and prints the configuration to paste, rather than sitting there silently.
+Where several workspace roots are open, Iris Code analyses the first and names the others it is not analysing. It does not merge them: separate roots are usually separate projects with their own config and their own gate, so one blended score would describe neither.
 
-Iris Code refuses to start if the folder turns out to be a whole filesystem, your home directory, or
-a directory containing home directories. Granting an agent read and write access across any of those
-is not something a project setup needs, and it is the kind of mistake that is otherwise invisible.
+### What the server tells you at startup
+
+Iris Code writes a ready line to standard error as soon as it starts, followed by the folder it chose and where that choice came from, so your client's log shows what it is actually looking at. Nothing but JSON-RPC, the message format MCP uses, goes to standard output.
+
+Started in a terminal rather than from a client, the server has nobody to talk to and waits. It says so, and prints the configuration to paste, rather than sitting there silently.
+
+Iris Code refuses to start if the folder turns out to be a whole filesystem, your home directory, or a directory containing home directories. A project setup never needs to give an agent read and write access across any of those, and the mistake would otherwise go unnoticed.
 
 ## Client setup
 
-With the Iris Code extension installed, VS Code discovers the server through its own MCP server
-picker. Choose **Iris Code** there; no JSON entry is needed, and VS Code supplies the workspace
-boundary for each session.
+With the Iris Code extension installed, VS Code finds the server through its own MCP server picker. Choose **Iris Code** there; no JSON entry is needed, and VS Code supplies the workspace folder for each session.
 
 For every other client, register the command as an MCP server:
 
@@ -83,11 +73,9 @@ For every other client, register the command as an MCP server:
 }
 ```
 
-Claude Code, Codex, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the
-file it goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
+Claude Code, Codex, Cursor, Windsurf and Copilot agent mode all accept a command of this shape; the file it goes in differs per client. Zed can point at `iris-lsp --mcp` when the binary is installed.
 
-Naming no folder is what lets one registration cover every project you open, and it works when your
-client either reports MCP roots or starts the server in the workspace. Verified on real clients:
+Naming no folder is what lets one registration cover every project you open. It works when your client either reports MCP roots or starts the server in the workspace. Verified on real clients:
 
 | Client | How it resolves | Registration |
 |---|---|---|
@@ -97,9 +85,19 @@ client either reports MCP roots or starts the server in the workspace. Verified 
 | JetBrains AI Assistant | neither - see below | per project, via the plugin |
 | Windsurf, Copilot agent mode, Zed | not yet confirmed | check the startup line |
 
-After connecting, the startup line on standard error states the folder and where it came from, so you
-can confirm your client rather than assume. `from your editor, over MCP roots` and `from the working
-directory` both resolve correctly when that directory is the project.
+After connecting, the startup line on standard error states the folder and where it came from, so you can confirm your client rather than assume. `from your editor, over MCP roots` and `from the working directory` both resolve correctly when that directory is the project.
+
+### Keeping it up to date
+
+The bare `npx` command fetches the current release each time it runs, so agents pick up fixes without anyone editing a configuration file. Write `@latest` if you would rather that were explicit:
+
+```bash
+npx -y @iris-code/mcp@latest
+```
+
+In controlled environments, where a client must not pick up a change you have not reviewed, add an exact version from [the npm page](https://www.npmjs.com/package/@iris-code/mcp) instead.
+
+An absolute path to a local `dist/cli.js` also works, but it never updates, so prefer the `npx` form outside development.
 
 ### JetBrains IDEs
 
@@ -107,22 +105,9 @@ The Iris Code JetBrains plugin bundles `iris-lsp`, so it can provide the same se
 
 Paste it into the MCP settings for the AI assistant you use in that IDE. The plugin does not change an assistant's configuration itself.
 
-This one pins the folder, and that is not a precaution - it is required. JetBrains AI Assistant reports no MCP roots, starts stdio servers from the IDE installation directory rather than the open project, and exposes no environment variable naming the project.
+Here the fixed folder is required, not a precaution. JetBrains AI Assistant reports no MCP roots, starts servers from the IDE installation directory rather than the open project, and exposes no environment variable naming the project.
 
-A bare command there resolves to the IDE's own install folder, which is not your code. The plugin action fills in the pin so you never type a path, but it is per project: paste it into that project's settings rather than a global one, and generate it again for the next project.
-
-The bare command resolves the current release each run, so agents pick up fixes without anyone
-editing a configuration file. Write `@latest` if you would rather that were explicit:
-
-```bash
-npx -y @iris-code/mcp@latest
-```
-
-In controlled environments, where a client must not pick up a change you have not reviewed, append
-an exact version from [the npm page](https://www.npmjs.com/package/@iris-code/mcp) instead.
-
-An absolute path to a local `dist/cli.js` also works, but it never updates, so prefer the `npx` form
-outside development.
+A bare command there resolves to the IDE's own install folder, which is not your code. The plugin action fills in `--root` so you never type a path, but it is per project: paste it into that project's settings rather than a global one, and generate it again for the next project.
 
 ## Tools
 
@@ -139,127 +124,118 @@ outside development.
 | `iris_gate` | Paid enforcement; earned inspection is Free | A saved result can explain its captured gate without enforcing current files |
 | `iris_check_dependency` | Project allowance for a fresh audit | Saved audits remain readable; lookups need consent |
 
-`iris_check`, `iris_fix_safe`, `iris_refactor_plan` and `iris_verify_refactor` are Free on a single
-file. New project inspections and multi-file plans use the applicable project allowance. An earned result ID reopens captured evidence without another scan.
-When `iris_check` reports a file-size or complexity finding, it can also identify the available refactor workflow.
+An earned result is a saved scan result your account already has. Its `evidence_id` lets a tool reopen it without scanning again or using another action.
 
-Tools remain discoverable. Effective scope, governance and permission are checked when a tool runs, not when it is listed. An earned result ID identifies a retained result; it does not bypass membership or grant fresh enforcement.
+`iris_check`, `iris_fix_safe`, `iris_refactor_plan` and `iris_verify_refactor` are Free on a single file. New project scans and multi-file plans use the applicable [project allowance](/free). When `iris_check` reports a file-size or complexity finding, it can also point the agent to the refactor workflow.
+
+Every tool stays listed, so the agent can always see what exists. Whether the agent may use a tool, and on which files, is checked each time it runs, not when the list is shown. An earned result ID only reopens a saved result: it does not get around team membership or allow a fresh gate check.
 
 ## Findings
 
-`iris_check` returns every rule that fired, each anchored to a line and carrying its severity
-(`critical`, `high`, `medium` or `low`) and a stable id.
+`iris_check` returns every rule that fired, each tied to a line and carrying its severity (`critical`, `high`, `medium` or `low`) and a stable id.
 
-This is a wider list than `iris check --format github` produces in CI. That surface writes one
-error-level annotation per finding into a budget of roughly ten visible per step, so it carries
-error-severity findings only. An agent has neither limit and can act on the rest, so it receives
-them.
+This is a wider list than `iris check --format github` produces in CI. That command writes one error-level annotation per finding, and a CI step shows only about ten, so it includes error-severity findings only. An agent has neither limit and can act on the rest, so it receives them.
 
-Large results are bounded. When a scan exceeds the response cap, the lowest severities are dropped
-first and the response reports `totalFindingCount`, `returnedFindingCount`,
-`findingCountsBySeverity` and `droppedFindingCountsBySeverity`. A critical finding is never dropped
-to make room for a low one, and an agent can see that something was withheld rather than presenting
-a partial answer as complete.
+Large results are capped. When a scan exceeds the response limit, the lowest severities are dropped first, and the response reports `totalFindingCount`, `returnedFindingCount`, `findingCountsBySeverity` and `droppedFindingCountsBySeverity`.
+
+A critical finding is never dropped to make room for a low one. The agent can see that something was left out, rather than presenting a partial answer as complete.
 
 ## Explanations
 
-`iris_explain` returns the finding report plus a context bundle for each finding, so an agent can act
-on the cause rather than the label.
+`iris_explain` returns the findings plus background on each one, so an agent can fix the cause rather than react to the label.
 
-For a threshold rule, the bundle carries the measured value, the configured limit, and the overage:
-a 302-line file against a 300-line limit reports `actual: 302`, `limit: 300`, `overBy: 2`. The limit
-quoted is the one that actually applied to that file, so a per-language `languages` block or a nested
-`.irisconfig.json` in a monorepo package is reflected rather than the workspace default.
+For a rule with a numeric limit, it gives the measured value, the configured limit and how far over it the file is: a 302-line file against a 300-line limit reports `actual: 302`, `limit: 300`, `overBy: 2`.
 
-Every bundle also carries the file's imports and exports, and the other findings in the same file, so
-a fix can account for what the file is for and what else is wrong with it.
+The limit quoted is the one that actually applied to that file. A per-language `languages` block, or a nested `.irisconfig.json` in a monorepo package, is reflected rather than the workspace default.
 
-Rules without a configured number - a hardcoded secret, a security smell - carry the finding's own
-message and that same file context. Iris Code does not invent remediation prose for them.
+Each explanation also includes the file's imports and exports and the other findings in the same file, so a fix can account for what the file is for and what else is wrong with it.
+
+Rules without a configured number, such as a hardcoded secret or a security smell, come with the finding's own message and the same file background. Iris Code does not invent fix instructions for them.
 
 ## Safe fixes
 
-`iris_fix_safe` previews by default. The preview lists the exact changes it would make and returns a
-`preview_token`.
+`iris_fix_safe` shows a preview first. The preview lists the exact changes it would make and returns a `preview_token`.
 
-Writing requires `apply: true` and that token. It is single-use, expires after ten minutes, and
-authorises exactly the change set the preview showed, so Iris Code only ever applies edits that have
-already been put in front of you. A confirmation flag alone would not give you that, because the
-model sets the flag.
+Writing the changes needs `apply: true` and that token. The token works once, expires after ten minutes, and covers exactly the changes the preview showed. So Iris Code only ever applies edits that have already been put in front of you. A simple "confirm" flag would not guarantee that, because the AI model sets the flag itself.
 
-For unused JavaScript imports, removing the last binding keeps the module load as `import './a'`. Whole TypeScript value imports are left for review because the load depends on compiler settings; `import type` can be removed. See [fixes and suggestions](/refactor/reference).
+For unused JavaScript imports, removing the last imported name keeps the file loading the module, as `import './a'`. Whole TypeScript value imports are left for review because whether the module loads depends on compiler settings; `import type` can be removed. See [fixes and suggestions](/refactor/reference).
 
 Eligible fixes can span several lines: a debug statement on its own, an unused variable inside a function that is assigned a literal, a whole unused import or an unused name in an import, and two compatible imports merged into one. The [`iris fix` reference](/cli/commands#iris-fix) lists the languages and refusals for each.
 
-The same fixes are offered as a Quick Fix in VS Code and by `iris fix --safe`, from one shared planner, so the surfaces agree. `console.error` is never removed, because it reports real errors.
+The same fixes are offered as a Quick Fix in VS Code and by `iris fix --safe`, all decided in one place, so they agree. `console.error` is never removed, because it reports real errors.
 
-Refusals are per finding, with a reason, and one refusal does not block the rest. Iris Code declines
-anything it cannot prove:
+Iris Code declines anything it cannot prove safe. Each refusal applies to one finding and gives a reason; it does not block the other fixes.
 
-- A hardcoded secret is never auto-fixed. Rotating a leaked credential and moving it to an
-  environment variable is not a mechanical edit.
-- A debug print sharing its line with real code is left alone, because deleting the line would take
-  the code with it.
-- Anything needing a name or a judgement, such as extracting a magic number or shortening a long
-  function, stays the agent's work.
+- A hardcoded secret is never fixed automatically. Rotating a leaked credential and moving it to an environment variable is not a mechanical edit.
+- A debug print sharing its line with real code is left alone, because deleting the line would take the code with it.
+- Anything needing a name or a judgement, such as extracting a magic number or shortening a long function, stays the agent's work.
 
-Every applied change is followed by re-analysis, reported as a score change and a count of findings
-resolved.
+After every applied change, the file is analysed again and the result reported as a score change and a count of findings resolved.
 
 ## Long scans
 
-Code analysis runs under a fifteen-minute deadline in a separate process, so a large workspace cannot
-hang the server.
+Code analysis runs in a separate process with a fifteen-minute limit, so a large workspace cannot freeze the server.
 
-Dependency scans allow one active scan per workspace and return `SCAN_IN_PROGRESS` for a second
-request. If your client sends a progress token, the server reports phase and package counts as it
-goes, and warns at two minutes. Cancelling returns the partial results collected so far, marked as
-partial, rather than discarding them.
+Only one dependency scan runs per workspace at a time; a second request gets `SCAN_IN_PROGRESS`. If your client asks for progress updates, the server reports the current phase and package counts as it goes, and warns at two minutes. Cancelling returns the results collected so far, marked as partial, rather than discarding them.
 
 ## What the server will not do
 
-Analysis is local. Your code is not uploaded, and there is no shell-execution tool and no generic
-"run any Iris Code command" passthrough, which would route around each tool's own policy.
+Analysis happens on your machine. Your code is not uploaded. There is no tool that runs shell commands, and no general "run any Iris Code command" tool, which would get around each tool's own rules.
 
-Every requested path must resolve inside `--root`. That is checked after resolving symlinks, so a
-link pointing outside the workspace is refused rather than followed.
+Every requested path must be inside the root. This is checked after following symlinks, so a link pointing outside the workspace is refused rather than followed.
 
 Secret values are never returned, only the masked form every other Iris Code surface shows.
 
-`iris_check_dependency` and `iris_check_package` are the tools that reach the network, querying public package registries and OSV.dev. Both require `allow_network: true` on each call unless you have already allowed network lookups from the CLI, disclose what they are about to do, and fall back to a local cache.
+`iris_check_dependency` and `iris_check_package` are the only tools that use the network, querying public package registries and OSV.dev, a public database of known vulnerabilities. Both:
+
+- Need `allow_network: true` on each call, unless you have already allowed network lookups from the CLI.
+- Say what they are about to look up.
+- Fall back to a local cache.
 
 The agent's flag is never saved as your consent, and it cannot override lookups you have turned off with `iris deps --revoke-network`.
 
 ## Licensing
 
-The server resolves your licence from the same credentials the CLI uses, so signing in once with
-`iris auth login` covers the CLI, your editor and MCP. The offline grace period applies here too.
+The server reads your licence from the same credentials the CLI uses, so signing in once with `iris auth login` covers the CLI, your editor and MCP. The offline grace period applies here too.
 
-A Free licence calling a Pro tool gets an explicit refusal naming the feature and where to upgrade,
-which your assistant can relay. It is never a silent empty result.
+A Free licence calling a Pro tool gets a clear refusal naming the feature and where to upgrade, which your agent can pass on to you. It never returns an empty result without saying why.
 
 ## Organisation and repository restrictions
 
-The MCP server refuses repository tools with `HANDOFF_FORBIDDEN` when an organisation, project or committed `"agentHandoff": false` setting forbids the handoff. Tools stay listed and enforcement occurs on every call. The result names the restriction and has no upgrade link. `iris_check_package` keeps answering.
+An organisation, a project, or a committed `"agentHandoff": false` setting can stop agents using Iris Code on a repository. When one does, the server refuses repository tools with `HANDOFF_FORBIDDEN`.
 
-See [Team governance](/teams/governance) for policy scope, session refresh, signed-out caching and the limits of these controls.
+The tools stay listed, and the restriction is checked on every call. The refusal names the restriction and has no upgrade link, because upgrading does not lift it. `iris_check_package` keeps answering.
 
-[Refactor agent integration](/refactor/agents) describes deterministic plans, session baselines and opt-in finish verification.
+See [Team governance](/teams/governance) for what these restrictions cover, how often they refresh, what happens when you are signed out, and their limits.
+
+[Refactor agent integration](/refactor/agents) describes refactor plans, their saved starting points and the optional check when an agent finishes.
 
 ## iris_schema
 
-Before writing a query, migration or model change, call `iris_schema` to get the real names instead of guessing. It reads the [Schema graph](/features/schema-graph) from the server's current project root and refreshes files between calls.
+Before writing a query, migration or model change, the agent can call `iris_schema` to get the real table and column names instead of guessing. It reads the [Schema graph](/features/schema-graph) from the server's current project root and picks up file changes between calls.
 
-Parameters include `table`, `format` and `include_usage`. Structure and focused-table usage are Free. For aggregate usage, pass `evidence_id` from an owned workspace inspection. Without suitable captured evidence the tool asks for that inspection instead of silently scanning. Repository governance is checked before access, including when a client cached the tool list.
+Parameters include `table`, `format` and `include_usage`. Structure and usage for one focused table are Free. For usage across all tables, pass `evidence_id` from a saved workspace scan your account owns. Without one, the tool asks for that scan instead of quietly running it.
 
-JSON carries `schemaVersion: 1`. The result discloses capped output and unresolved references rather than guessing. Schema information does not change scores or gates.
+Repository restrictions are checked before access, even when a client cached the tool list earlier.
+
+JSON output carries `schemaVersion: 1`. The result says when output was capped or a reference could not be resolved, rather than guessing. Schema information does not change scores or gates.
 
 ## Checking verification integrity
 
-`iris_check` accepts `changed: true` for a Free comparison of the working tree against the last commit, including deleted tests and weakened configuration. It returns canonical findings in the `integrity` group and discloses unread inputs. It does not start a health score scan. Repository governance is checked first.
+`iris_check` accepts `changed: true` to compare your working files with your last commit, including deleted tests and weakened configuration. This is Free.
+
+It returns findings in the `integrity` group and lists anything it could not read. It does not run a health score scan. Repository restrictions are checked first.
 
 ```json
 { "changed": true }
 ```
 
-See [verification integrity](/features/verification-integrity) for signals, allowances and baseline rules.
+See [verification integrity](/features/verification-integrity) for what it catches, how to accept a deliberate change and which starting point it uses.
+
+## Related pages
+
+- [Using refactor plans with an agent](/refactor/agents)
+- [Package guard](/agents/package-guard)
+- [Project rules](/agents/project-rules)
+- [Verification integrity](/features/verification-integrity)
+- [Team governance](/teams/governance)

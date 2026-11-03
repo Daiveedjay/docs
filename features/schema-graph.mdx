@@ -1,23 +1,36 @@
 ---
 title: "Schema graph"
-description: "Read real database table names, columns and declared relations from your project before changing a query, migration or model."
+description: "See the database tables, columns and links declared in your code, so you use the real names before changing a query, migration or model."
 ---
 
-Schema graph draws the database tables and relations declared in your code. It helps you find the actual table and column names before changing a query or migration, without connecting to a database or running your application.
+A query or migration that uses the wrong table or column name fails, and guessing names is easy to get wrong. Schema graph draws the database tables, their columns and the links between them, as your code declares them. A migration is a file that changes the database structure step by step.
+
+It reads only your code. It does not connect to a database or run your application.
 
 <Note>
-Schema structure, exports and usage for one focused table are Free. Usage and warnings across all tables are available from an earned workspace result. A fresh project inspection uses the applicable project allowance; a saved view does not start another scan.
+The tables and columns, exports and the usage of one focused table are Free. Usage and warnings across all tables come from a saved workspace scan. A fresh project scan uses your project allowance; opening a saved view does not start another scan.
 </Note>
 
 ## Opening the graph
 
 In VS Code or JetBrains, run **Iris Code: Open Schema**, or select **Schema** in Code Map. The cloud Code Map also has a **Schema** tab for the selected completed scan. In the [Playground](/playground), **Open Schema** opens an editable Prisma sample; changes redraw in your browser and nothing you type is uploaded.
 
-Use **Find a table** (or press `/`) to search database names or model names. Select a table to inspect the files that use it, its relations, columns and declaring files, then open a source location to review the declaration. **Whole database** shows every table. The second button, named after the selected table (for example **orders + related**), shows only that table and the tables it links to, which keeps a large diagram readable; the inspector's **Show only ... and its related tables** does the same, and a note above the diagram says which table you are focused on. When a project has more than one source or database schema, **Show tables from** beside the search narrows the diagram to one of them.
+Use **Find a table** (or press `/`) to search database names or model names. Select a table to see the files that use it, its relations, its columns and the files that declare it. You can then open a source location to review the declaration.
 
-**Diagram** and **Tables** switch how the same tables are shown. **Tables** works like a database tool: a filterable list of tables on the left and, for the selected table, where each source declares it, counts of columns, references and files that use it, and tabs for its **Columns** (key, type, nullability, default and the column each one references), **Relations** (direction, cardinality, whether a database foreign key enforces it, and on-delete behaviour) and **Indexes**.
+Two buttons choose how much of the database to draw:
 
-When two sources disagree about a table, **Compare side by side** shows each source's definition in its own column, lined up row by row, with the values that differ highlighted and anything only one source declares marked. It opens from the conflict count above the diagram, the table's banner in **Tables**, and the inspector. Each difference is also written out as a sentence, for example `users.planted_extra is declared in SQL migrations but not in Prisma.`
+- **Whole database** shows every table.
+- The second button, named after the selected table (for example **orders + related**), shows only that table and the tables it links to, which keeps a large diagram readable. The inspector's **Show only ... and its related tables** does the same, and a note above the diagram says which table you are focused on.
+
+When a project has more than one source or database schema, **Show tables from** beside the search narrows the diagram to one of them.
+
+**Diagram** and **Tables** switch how the same tables are shown. **Tables** works like a database tool. A filterable list of tables sits on the left. For the selected table, it shows where each source declares it, counts of its columns, references and the files that use it, and three tabs:
+
+- **Columns**: key, type, whether it can be empty (nullability), default and the column each one references.
+- **Relations**: direction, cardinality (how many rows can link on each side), whether a database foreign key enforces it, and what happens on delete.
+- **Indexes**.
+
+A project can describe the same table in more than one place, for example in both a Prisma schema and SQL migrations. When two of these sources disagree about a table, **Compare side by side** shows each source's definition in its own column, lined up row by row, with the values that differ highlighted and anything only one source declares marked. It opens from the conflict count above the diagram, the table's banner in **Tables**, and the inspector. Each difference is also written out as a sentence, for example `users.planted_extra is declared in SQL migrations but not in Prisma.`
 
 A source only disagrees about something it can express. Diesel's `schema.rs` and Drizzle's `relations()` have no way to declare an on-delete rule or mark a database foreign key, so when a SQL migration declares `ON DELETE CASCADE` for the same link, that is not reported as a disagreement, and the diagram uses the migration's foreign key. Iris Code does not pick a side; check which definition matches your database and change the other.
 
@@ -60,13 +73,13 @@ A reference Iris Code cannot establish appears under **unresolved** with a reaso
 
 ## Usage and warnings
 
-The inspector can list files using a table and warnings from those files: a score below its configured minimum or a SQL concatenation security finding. Usage follows source-specific code evidence. Raw SQL and Rails usage is unavailable in this wave, and the inspector explains that boundary.
+The inspector can list the files that use a table, and warnings from those files: a score below its configured minimum, or a security finding for SQL built by joining text together. Usage is found from code patterns specific to each source. Raw SQL and Rails usage is unavailable in this wave, and the inspector explains that boundary.
 
-A focused table can show usage without a project action. Aggregate usage keeps the source and coverage captured by the workspace scan. A capped cloud report or agent response discloses omissions; a short list does not establish complete coverage.
+A focused table can show usage without a project action. Usage across all tables shows the files and sources as they were when the workspace scan ran. A cloud report or agent response has a size limit and says what it left out, so a short list does not prove that every use was found.
 
 ## Exporting
 
-**Export** saves PNG, SVG, JSON, Mermaid or DBML from the current view. Mermaid is diagram text suitable for GitHub; DBML is database diagram text suitable for dbdiagram.io. Both have **Copy**. Images and diagram text include Iris Code branding, and exports preserve the same Free/Pro overlay boundary as the view.
+**Export** saves PNG, SVG, JSON, Mermaid or DBML from the current view. Mermaid is diagram text suitable for GitHub; DBML is database diagram text suitable for dbdiagram.io. Both have **Copy**. Images and diagram text include Iris Code branding, and exports include only the usage and warning details that the view itself shows on your plan.
 
 ## Configuration
 

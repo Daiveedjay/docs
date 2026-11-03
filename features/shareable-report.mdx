@@ -1,21 +1,23 @@
 ---
 title: "Shareable scan reports"
-description: "Export a saved Iris Code scan as a private summary card or PDF."
+description: "Turn a saved Iris Code scan into a summary card or PDF you can share, without exposing your code."
 ---
 
-A shareable report gives someone a readable snapshot of a project's health score and checked categories. The card leaves out code, paths, secret values and vulnerable package names.
+A shareable report turns a saved scan into a picture or PDF that someone can read without opening an editor, such as a manager, a client or a pull request reviewer. It shows the project's health score and what was checked.
+
+The card leaves out code, file paths, secret values and the names of vulnerable packages, so it is safe to post. The PDF can include more detail if you choose it.
 
 ## Export a saved scan
 
 In VS Code or JetBrains, select the download icon in the Iris Code sidebar header. You can also run **Iris Code: Share Report** from the VS Code command palette or the JetBrains **Tools > Iris Code** menu, or select **Share report** on the **Workspace** tab after a scan. In the dashboard, select a completed cloud scan and use **Share report** beside its summary. The preview offers **Portrait**, **Landscape**, **Save PNG**, **Save SVG**, **Save PDF**, **Copy image** and a caption with alternative text for the image.
 
-Both Free and paid accounts can export their earned scans without running them again. A fresh project scan uses the applicable local project allowance or paid access. Read the captured time and coverage before treating a report as evidence about current files.
+Both Free and paid accounts can export scans they have already run without running them again. A fresh project scan uses your local project allowance or paid access. A report describes the files as they were at the time of the scan, so check its date and what it covered before treating it as a picture of your current files.
 
 The portrait card is 1080 by 1350 pixels; landscape is 1200 by 675. Both use embedded fonts. SVG is a vector image that stays sharp when resized, and PDF provides the supporting pages you select, with continuation pages when needed.
 
 ## Read the numbers
 
-The health score is the whole-project score already shown by the surface that ran the scan. The six card tiles count shipped code, which is the code your users run. Counts from test and example files are labelled separately.
+The health score is the same whole-project score shown where the scan ran, such as the editor or the dashboard. The six card tiles count shipped code, which is the code your users run. Counts from test and example files are labelled separately.
 
 Tests are test files. Examples are demo and sample code in folders such as `examples`, `demos`, `samples`, `playgrounds`, `integrations` or `sandbox`. Neither changes the shipped-code tiles.
 
@@ -41,11 +43,11 @@ The **PDF pages** section is always visible. Each dialog opens with **Full** sel
 
 **Where to look** groups low-scoring areas and duplicated blocks by folder. Select that page to enable **Include file names**, which adds relative file names. Cards always omit file paths and package identities. Source code and secret values stay out of all formats.
 
-Every report identifies the saved scan's date, Iris Code version and available provenance. A report made from a downloaded copy says so rather than claiming a Git commit. Score trend appears only when saved history supplies a comparison.
+Every report states the saved scan's date, the Iris Code version and, where known, where the code came from, such as a Git commit. A report made from a downloaded copy of the code says so rather than claiming a Git commit. Score trend appears only when saved history supplies a comparison.
 
 ## Export from the terminal
 
-HTML remains the default for `iris report`. Use `--evidence <evidence-id>` to export a retained result as HTML, an image or a PDF. Existing anonymous introductory cards and PDFs remain available. Requesting a fresh directory scan is separate work under [Free allowances](/free).
+`iris report` is the command for making a report in a terminal, and HTML remains its default format. Use `--evidence <evidence-id>` to export a saved result as HTML, an image or a PDF; the evidence ID identifies that saved scan. Existing anonymous introductory cards and PDFs remain available. Requesting a fresh directory scan is separate work under [Free allowances](/free).
 
 ```bash
 iris report --format png --size portrait

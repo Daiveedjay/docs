@@ -1,16 +1,24 @@
 ---
 title: "Refactor configuration"
 sidebarTitle: "Configuration"
-description: "Choose the limits, destinations and verification checks used by your refactor plans."
+description: "Choose which fixes and suggestions refactor plans offer, where moved code goes, and which checks run afterwards."
 ---
 
-Refactor settings choose the fixes and suggestions Iris Code offers and the checks it runs afterwards. Top-level settings remain Free. Signing in also enables per-language custom configuration independently of your monthly action balance; changing settings does not start a plan.
+Every project organises code differently. Refactor settings let you turn off suggestions you do not want, say where moved code should go, and choose which checks run after an edit.
+
+The shared, top-level settings are Free. Signing in also lets per-language custom settings take effect, whatever your monthly action balance. Changing settings does not start a plan.
 
 ## Configuration
 
 Use [Config Studio](/configuration/config-studio) to edit shared settings visually, or add a `refactor` block to your project's `.irisconfig.json`. Start with the defaults and change only what your project needs.
 
-For example, turn off a suggestion with `disable`, keep all work in existing files with `allowNewFiles: false`, or set where moved code belongs with `destinations`. A public API change affects code other files depend on, so approval is required by default.
+For example:
+
+- Turn off a suggestion with `disable`.
+- Keep all work in existing files with `allowNewFiles: false`.
+- Set where moved code belongs with `destinations`.
+
+A public API change affects code that other files depend on, so it needs approval by default.
 
 ## Settings reference
 
@@ -28,9 +36,16 @@ For example, turn off a suggestion with `disable`, keep all work in existing fil
 | `verify.importCycles` | `true` | Check newly introduced cycles |
 | `verify.removedExports` | `true` | Check removed imported exports and warn on API changes |
 | `verify.newFindings` | `true` | Compare finding identities and severity |
-| `maxCorrections` | `1` | Zero disables refactor retries; positive values permit at most one attempt per agent turn, shared with verification integrity |
+| `maxCorrections` | `1` | `0` turns refactor corrections off; any larger value still allows at most one correction per agent turn, shared with verification integrity |
 
-Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by key. Config Studio exposes every shared policy field and lets Pro users edit language overrides. Resetting a language field restores inherited values; local destination paths remain in the repository.
+When settings come from more than one place, such as a shared config and a language block:
+
+- A list, such as `disable`, replaces the inherited list rather than adding to it.
+- `verify`, `destinations` and `packing` combine key by key.
+
+Config Studio shows every shared setting and lets signed-in users edit language overrides. Resetting a language field there restores the inherited value. Destination paths belong to one repository, so they stay in that repository's own file.
+
+A correction is the message that sends a coding agent back to fix a problem after verification. An agent gets at most one per request you send it, whatever `maxCorrections` says; see [Agent integration](/refactor/agents#finish-verification).
 
 ```json
 {
@@ -48,7 +63,7 @@ Arrays replace inherited arrays. `verify`, `destinations` and `packing` merge by
 }
 ```
 
-On Free, the shared `refactor` settings apply, but per-language overrides are ignored with a warning. The language keys are `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java` and `rust`. Vue and Svelte use the language declared in their script.
+Without signing in, the shared `refactor` settings apply, but per-language overrides are ignored with a warning. The language keys are `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java` and `rust`. Vue and Svelte use the language declared in their script.
 
 Invalid refactor settings produce an error rather than silently using defaults. This helps you notice a setting that would otherwise appear to work.
 

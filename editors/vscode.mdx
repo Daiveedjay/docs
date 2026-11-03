@@ -4,7 +4,9 @@ sidebarTitle: "VS Code"
 description: "Install Iris Code in VS Code, sign in, and use the sidebar, Code Lens, status bar and detached panel."
 ---
 
-The VS Code extension shows Iris Code findings alongside the code you are editing. It also provides the sidebar for project scans, gates and refactor plans. Use this page to find the main controls and choose your settings. The panel starts at **Home**; **Review**, **Improve**, **Explore** and **Configure** group the tools by task. [Find your way around the panel](/editors/overview#navigating-the-extension).
+The VS Code extension shows Iris Code's findings, the problems and warnings it reports, right beside the code you are editing. Its sidebar panel is where you scan whole projects, check them against your limits and plan refactors.
+
+This page shows where the main controls are and which settings you can change. The panel opens at **Home**, and **Review**, **Improve**, **Explore** and **Configure** group the tools by task. See [Find your way around the panel](/editors/overview#navigating-the-extension).
 
 ## Getting started
 
@@ -22,13 +24,15 @@ The score, metrics and findings appear in the sidebar immediately. No configurat
 
 ## Signing in
 
-Run **Iris Code: Sign In** from the command palette. Your browser opens, you authorise, and the licence key is returned to the editor and stored in VS Code's secret storage.
+Run **Iris Code: Sign In** from the command palette. Your browser opens, you approve the sign-in, and the licence key is sent back to the editor and kept in VS Code's secure storage.
 
-That does not sign in the CLI. For hooks and CI, run `iris auth login` as well, which writes `~/.iris/credentials`.
+That does not sign in the CLI, the `iris` commands you run in a terminal. Hooks and CI use the CLI, so run `iris auth login` as well, which writes `~/.iris/credentials`.
 
 ## Code Lens
 
-Iris Code adds an inline hint above functions that exceed the configured length threshold, and next to specific debug-print patterns. The hints are language-aware, so you only see signals relevant to the file you are editing.
+Code Lens is a small line of grey text that VS Code shows above a piece of code. Iris Code uses it to point out functions longer than your configured limit, and certain leftover debug prints.
+
+The hints depend on the language, so you only see ones that apply to the file you are editing.
 
 | Language | What gets flagged |
 |---|---|
@@ -62,7 +66,7 @@ To turn them off:
 
 ## Status bar
 
-The status bar shows three live metrics for the active file: health score, line count and function count. It changes colour when the score or complexity crosses a threshold, giving you an ambient signal without having to check.
+The status bar, along the bottom of the window, shows three figures for the file you have open: health score, line count and function count. It changes colour when the score or complexity crosses a limit, so you notice without having to look.
 
 ```
 ⚠ Iris Code 64 · 379 lines · 12 fns
@@ -76,11 +80,11 @@ The status bar shows three live metrics for the active file: health score, line 
 
 ## Detached panel
 
-The sidebar is narrow. The detached panel moves Iris Code into a full editor column beside your code, which is easier when reading a long findings breakdown.
+The sidebar is narrow. The detached panel moves Iris Code into a full editor column beside your code, which is easier for reading a long list of findings.
 
 Click the **pop-out icon** in the sidebar title bar, or run **Iris Code: Open in Panel**. The same action closes it.
 
-- **Auto-refreshes** as you switch files or save.
+- **Updates automatically** as you switch files or save.
 - **Two-column layout** at 700px or wider: stats on the left, findings on the right.
 - **The sidebar shows a placeholder** while the panel is open, so the same data is never displayed twice.
 - **Findings stay clickable**, opening the exact source line.
@@ -108,16 +112,27 @@ Code Smells
 
 ## What you get
 
-Everything: the sidebar with Home, Review, Improve, Explore and Configure, plus File, Folder, Workspace, Findings and TODOs review scopes, inline diagnostics, quick fixes, the onboarding tour, the Explorer file-naming badge, every table view, the duplicate diff, Review My Changes, hook and CI installation, and dashboard config sync over the `iris-code://` deep link.
+VS Code has every Iris Code editor feature:
+
+- the sidebar with Home, Review, Improve, Explore and Configure, plus the File, Folder, Workspace, Findings and TODOs review scopes
+- inline diagnostics (underlines in the code) and quick fixes
+- the onboarding tour and the Explorer file-naming badge
+- every table view and the duplicate diff
+- Review My Changes
+- hook and CI installation
+- dashboard config sync over the `iris-code://` deep link
 
 ## Reporting a problem
 
-When an Iris Code action fails, such as a workspace scan, the error notification has two buttons. **Show details** opens the **Iris Code** output panel, where every failure is logged with the time, the action and the full error. **Report problem** opens a report form on iriscode.co with a short summary already filled in: the Iris Code and VS Code versions, your operating system, the action and the error message.
+When an Iris Code action fails, such as a workspace scan, the error notification has two buttons:
 
-Paths to your home folder and project folder are replaced with `~` and `<workspace>` before the form opens. The summary travels in the part of the link that browsers do not send to a server, so nothing reaches Iris Code until you review it, add what you were doing and press **Send report**. You can edit or delete any of it first.
+- **Show details** opens the **Iris Code** output panel, where every failure is logged with the time, the action and the full error.
+- **Report problem** opens a report form on iriscode.co with a short summary already filled in: the Iris Code and VS Code versions, your operating system, the action and the error message.
+
+Before the form opens, paths to your home folder and project folder are replaced with `~` and `<workspace>`. The summary travels in the part of the link that browsers do not send to a server. Nothing reaches Iris Code until you review it, add what you were doing and press **Send report**, and you can edit or delete any of it first.
 
 ## Settings
 
-Iris Code reads `.irisconfig.json` from your project first, then VS Code settings. Prefer the project file for anything a teammate should also get, since it travels with the repository.
+Iris Code reads `.irisconfig.json`, the project's settings file, first, and then your VS Code settings. Put anything a teammate should also get in the project file, since it is committed with the repository.
 
 See [Configuration](/configuration/irisconfig) for the fields, and [VS Code settings](/configuration/vscode-settings) for the editor-level toggles.

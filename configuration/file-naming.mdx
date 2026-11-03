@@ -1,11 +1,11 @@
 ---
 title: "File naming conventions"
-description: "Configure Free path-aware file naming checks with ordered role overrides, baseline-aware rollout, ignore globs, suggestions, and built-in exemptions."
+description: "Check that file names follow your project's conventions, with different rules for different folders, a gentle rollout for existing files, and one-click renames. Free."
 ---
 
-Most projects use more than one naming convention: components in `PascalCase`, hooks in `camelCase`, and everything else in `kebab-case`.
+Inconsistent file names make a project harder to navigate. Iris Code checks each file name against the convention you choose, suggests a corrected name, and can rename the file for you.
 
-A rule keyed on language cannot express that, since a component and a composable are both TypeScript. Naming rules are therefore keyed on **where a file lives**. Set a fallback for the workspace, then add path rules for the directories that differ.
+Most projects use more than one convention, for example components in `PascalCase`, hooks in `camelCase` and everything else in `kebab-case`. A rule based on language cannot express that, because a component and a hook are both TypeScript. So naming rules are based on **where a file lives**: you set one convention for the whole workspace, then add path rules for the folders that differ.
 
 File naming checks are Free.
 
@@ -28,48 +28,54 @@ File naming checks are Free.
 }
 ```
 
-Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris Code checks the file stem, preserves known suffixes such as `.test` and `.spec`, and suggests a replacement name.
+Valid conventions are `snake_case`, `kebab-case`, `camelCase`, and `PascalCase`. Iris Code checks the main part of the name, keeps known suffixes such as `.test` and `.spec` as they are, and suggests a replacement name.
+
+In this example, files under a `components` folder use `PascalCase`, files under `hooks` or `composables` use `camelCase`, Python files use `snake_case`, and everything else uses `kebab-case`. Files in `src/generated/` are not checked.
 
 ## How Iris Code chooses a policy
 
-For every file, Iris Code applies one deterministic precedence order:
+For every file, Iris Code decides which rule applies in the same fixed order:
 
-1. Built-in framework/generated-file exemptions and top-level `fileNaming.ignore` globs exclude the file.
-2. Every matching `fileNaming.overrides` rule is considered in declaration order; the **last matching rule wins**.
+1. Built-in framework/generated-file exemptions and top-level `fileNaming.ignore` globs (path patterns such as `src/generated/**`) exclude the file.
+2. Every matching `fileNaming.overrides` rule is considered in the order you wrote them; the **last matching rule wins**.
 3. If no path rule matches, an existing `languages.<language>.fileNaming` policy is used as a backward-compatible fallback.
 4. Otherwise the top-level `fileNaming.convention` applies.
 
-An override requires a non-empty `files` glob array and a `convention`. It may also set `scope`. Override lists are valid only in the top-level `fileNaming` object, so there is one ordered rule list rather than nested precedence systems.
+An override needs a `files` list with at least one pattern, and a `convention`. It may also set `scope`. Overrides are only accepted in the top-level `fileNaming` object, so there is one ordered list of rules rather than several that compete.
 
 ## Roll out without legacy noise
 
-`fileNamingScope` defaults to `"new-files"`.
+Turning on a naming rule in an existing project could flag hundreds of old files at once. To avoid that, `fileNamingScope` defaults to `"new-files"`, which focuses on files added from now on.
 
-- With `.iris-baseline.json`, Iris Code checks paths not present in the baseline. A renamed path counts as new.
-- Without a baseline, Iris Code checks the whole scan. It shows the first 50 violations governed by `new-files` and discloses the full count; findings from a matching rule with `scope: "all"` are never hidden by that rollout cap.
-- Set `"all"` to check every file explicitly.
+- With a `.iris-baseline.json` (a saved snapshot of the project), Iris Code checks only files that are not in that snapshot. A renamed file counts as new.
+- Without a baseline, Iris Code checks the whole scan. It shows the first 50 violations covered by `new-files` and states the full count. Findings from a matching rule with `scope: "all"` are never hidden by that limit of 50.
+- Set `"all"` to check every file.
 
-Top-level `fileNaming` supplies the workspace default, absolute ignores, and ordered path rules. `fileNamingScope` is the rollout default. A matching path rule can set `scope`; otherwise a legacy language fallback may set it; when neither does, `fileNamingScope` applies.
+Top-level `fileNaming` holds the workspace convention, the paths to always skip, and the ordered path rules. `fileNamingScope` sets the default scope. A matching path rule can set its own `scope`; if it does not, an older per-language policy may set one; if neither does, `fileNamingScope` applies.
 
 ## Built-in exemptions
 
-Iris Code always exempts:
+Some files must keep a name set by a framework or a language, so Iris Code never checks them:
 
 - Next.js reserved files under `app/` or `pages/`: `page`, `layout`, `route`, `loading`, `error`, `global-error`, `not-found`, `template`, `default`, `middleware`, `instrumentation`, `opengraph-image`, `sitemap`, `robots`, `manifest`, `_app`, `_document`, and `_error`.
-- Files whose own name is a route construct or a private file: `[id].tsx`, `[...slug].tsx`, `(group).tsx`, and `_`/`@`-prefixed files. These apply to the **file's own name only** - ordinary files inside a route-group `(app)`, private `_modals`, parallel `@slot`, or dynamic `[slug]` **folder** are still checked against the convention.
+- Files whose own name is a route construct or a private file: `[id].tsx`, `[...slug].tsx`, `(group).tsx`, and `_`/`@`-prefixed files. This applies to the **file's own name only**. Ordinary files inside a route-group `(app)`, private `_modals`, parallel `@slot`, or dynamic `[slug]` **folder** are still checked against the convention.
 - Python conventions: `__init__.py`, `__main__.py`, `conftest.py`, `setup.py`, `manage.py`, and other `__dunder__.py` files.
-- Go conventions: `main.go`, `*_test.go`, and generated `*.pb.go`. Platform suffixes such as `_windows`, `_linux`, `_darwin`, `_amd64`, and `_arm64` are preserved but removed before checking the stem.
+- Go conventions: `main.go`, `*_test.go`, and generated `*.pb.go`. Platform suffixes such as `_windows`, `_linux`, `_darwin`, `_amd64`, and `_arm64` are kept, but left out when the rest of the name is checked.
 - Type declarations, universal entry files, and hidden paths: `*.d.ts`, `index.*`, dotfiles, and dotfolders.
 - Generated or vendored paths: `vendor/`, `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, and `*.generated.*`.
 - Config-by-convention files such as `next.config.*`, `tailwind.config.*`, `postcss.config.*`, `jest.config.*`, `vitest.config.*`, `vite.config.*`, `webpack.config.*`, `rollup.config.*`, and `esbuild.*`.
 
-The top-level `ignore` array adds absolute workspace-relative exclusions to this list, even when a language fallback applies. A legacy language policy's ignore globs are additive. Windows separators are normalized before matching.
+The top-level `ignore` list adds your own paths to this list, written relative to the workspace. They are always skipped, even when a per-language policy applies. Ignore patterns in an older per-language policy are added on top. Windows backslashes are treated as forward slashes when matching.
 
 ## Diagnostics and enforcement
 
-Violations receive a yellow decoration in the VS Code Explorer and a rename hint at the top of an open file. Naming diagnostics are on by default once a policy is configured so the Problems decoration can take precedence over Git's green untracked-file color. Set `inlineDiagnostics.fileNaming` to `false` to opt out. Suppress an intentional exception with `iris-ignore-file: file-naming -- <reason>`.
+A badly named file is marked in yellow in the VS Code Explorer, and an open file shows a rename hint at the top.
 
-Pro users can set `gateMaxNamingViolations` to cap the scan-total count in hooks and CI.
+Once a policy is set, these naming warnings also appear in the Problems panel by default, so the yellow marking shows instead of Git's green colour for files it is not tracking yet. Set `inlineDiagnostics.fileNaming` to `false` to turn them off.
+
+To accept an intentional exception, add `iris-ignore-file: file-naming -- <reason>` to the file.
+
+Pro users can set `gateMaxNamingViolations` to limit the total number of naming violations allowed in a scan, so hooks and CI fail above it.
 
 ## Fixing names
 
@@ -77,7 +83,7 @@ Iris Code can rename files to the suggested convention. Review the proposed name
 
 ### Rename one file (Free)
 
-Choose the naming hint above the code, the **Quick Fix** on the finding, or the Explorer right-click action. The prompt lets you edit the suggested name. Iris Code updates TypeScript and JavaScript imports across the workspace.
+Choose the naming hint above the code, the **Quick Fix** on the finding, or the Explorer right-click action. You can edit the suggested name before confirming. Iris Code updates TypeScript and JavaScript imports across the workspace that point at the renamed file.
 
 Use the toast's **Undo** action or **Iris Code: Undo Last Rename** to restore the previous name.
 
@@ -97,9 +103,9 @@ Commit your current work before a large batch so you have a clear point to retur
 
 ## Adopting your existing convention
 
-You do not have to configure naming by hand. After a workspace scan, if no policy is set, Iris Code detects the convention your files already follow and offers to adopt it:
+You do not have to configure naming by hand. After a workspace scan, if no policy is set, Iris Code works out the convention most of your files already follow and offers to adopt it:
 
-- A persistent **Naming Insight** card in the sidebar shows the dominant convention (for example, "78% of your files use kebab-case") and recomputes on every scan, so it stays accurate as files change.
-- A one-time toast per workspace surfaces the same suggestion without nagging.
+- A **Naming Insight** card in the sidebar shows the most common convention (for example, "78% of your files use kebab-case"). It is worked out again on every scan, so it stays accurate as files change.
+- A notification makes the same suggestion once per workspace and does not repeat.
 
 Either one writes the `fileNaming` block into `.irisconfig.json` for you; the card clears once a policy exists. Iris Code only suggests a convention when your codebase clearly follows one.

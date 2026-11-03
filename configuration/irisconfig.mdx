@@ -5,12 +5,14 @@ description: "Drop a .irisconfig.json at your project root to share thresholds a
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", ".csproj", "languages.csharp", "Java", "languages.java", ".properties", "Rust", "languages.rust", "Cargo", "per-language thresholds", "golang", "Gemfile"]
 ---
 
-The `.irisconfig.json` file stores your project settings, including what to check and which thresholds code must pass. Commit it with your code so everyone uses the same standard in the editor, command line and automated checks. Iris Code uses the nearest configuration file, allowing separate packages in a large repository to have different settings.
+The `.irisconfig.json` file holds your project's Iris Code settings: what to check, and the limits (thresholds) code must meet. Commit it with your code so everyone gets the same results in the editor, on the command line and in automated checks such as CI.
+
+For each file, Iris Code uses the nearest `.irisconfig.json` in its folder or the folders above it. That lets separate packages in a large repository have different settings.
 
 <Note>
-  This page documents **configurable keys**, not a rule inventory. It mixes gate limits,
-  thresholds, scoring weights, severity overrides and suppressible rule ids, so counting
-  entries here does not give the number of rules Iris Code measures. For that, see the
+  This page lists **settings you can change**, not the rules Iris Code checks. It mixes gate
+  limits, thresholds, scoring weights, severity overrides and rule ids, so counting the
+  entries here does not give the number of rules. For that, see the
   [accuracy benchmark](/trust/accuracy-benchmark), which publishes every measured rule
   per language.
 </Note>
@@ -19,9 +21,9 @@ The `.irisconfig.json` file stores your project settings, including what to chec
   **Priority order:** nearest folder `.irisconfig.json` → workspace root `.irisconfig.json` → personal default → VS Code settings → built-in defaults
 </Note>
 
-## It explains itself
+## Comments, autocomplete and hover help
 
-`.irisconfig.json` is JSONC, so `//` comments are legal, and every config Iris Code writes is commented. The file should be readable without this page open alongside it.
+`.irisconfig.json` is JSONC, which is JSON that allows `//` comments. Every config Iris Code writes includes comments explaining each setting, so you can read the file without this page open.
 
 Generated configs also open with a `$schema` line:
 
@@ -31,17 +33,17 @@ Generated configs also open with a `$schema` line:
 }
 ```
 
-Your editor handles that on its own, so you get autocomplete on every field and a squiggle when a value is wrong, in VS Code, JetBrains, Neovim or anything else that speaks JSON Schema. No plugin needed. Keep the line if you edit the file by hand.
+That line points your editor at a description of every valid setting, called a JSON Schema. With it, you get autocomplete on every field and a squiggle when a value is wrong, in VS Code, JetBrains, Neovim or any other editor that supports JSON Schema. No plugin is needed. Keep the line if you edit the file by hand.
 
-**Hover any setting and it tells you what it does.** That text comes from the schema bundled with your installed version, not fetched from us, so it works offline, works behind a proxy, and always describes the version you're actually running rather than whatever we shipped last week.
+**Hover over any setting to see what it does.** That text comes from the schema bundled with your installed version of Iris Code, not downloaded from us. It works offline and behind a proxy, and it always describes the version you are actually running rather than the newest release.
 
 <Warning>
-  **JetBrains IDEs:** if `.irisconfig.json` reports "JSON standard does not allow comments", your IDE is holding a user-level override that cancels the file-type registration Iris Code ships. Reinstalling the plugin will not clear it. See [the fix in the installation guide](/installation#json-standard-does-not-allow-comments).
+  **JetBrains IDEs:** if `.irisconfig.json` reports "JSON standard does not allow comments", your IDE has a saved user setting that cancels the file type Iris Code registers for this file. Reinstalling the plugin will not clear it. See [the fix in the installation guide](/installation#json-standard-does-not-allow-comments).
 </Warning>
 
 ## Config presets (Free + Pro)
 
-Rather than choosing every threshold individually, start from a preset. Add `presetId`, commit it, and the team is aligned in one line.
+A preset is a ready-made set of limits. Rather than choosing every threshold yourself, start from one: add `presetId`, commit the file, and the whole team uses the same settings.
 
 ```json .irisconfig.json
 {
@@ -51,16 +53,16 @@ Rather than choosing every threshold individually, start from a preset. Add `pre
 
 Available presets: `strict`, `balanced`, `legacy`, `security`, `typescript`, `ai-assisted`.
 
-The `ai-assisted` preset uses stricter explicit limits for teams reviewing AI-assisted code at volume. It caps duplicate blocks and suppressions, but does not impose a naming convention.
+The `ai-assisted` preset sets stricter limits for teams reviewing a lot of AI-assisted code. It limits duplicate blocks and suppressions, but does not impose a naming convention.
 
-Generated configs show the active detection and gate choices with one-line comments. Team-specific items such as naming conventions, ignore lists, and language overrides remain commented examples until the project chooses them.
+Configs that Iris Code generates explain each active check and gate limit with a one-line comment. Settings that depend on your team, such as naming conventions, ignore lists and per-language settings, are included as commented-out examples until you choose them.
 
 <Tabs>
   <Tab title="Without sign-in">
-    Iris Code applies the shipped preset values as the source of truth. Without signed-in custom-configuration access, local edits to threshold fields are ignored and receive a yellow warning squiggle in the editor. The preset registry in the extension is the authority, not the file on disk.
+    Iris Code uses the preset's values exactly as shipped. Without signing in, changes you make to threshold fields in the file are ignored, and the editor marks them with a yellow warning squiggle. The preset built into Iris Code decides the values, not the file on disk.
   </Tab>
   <Tab title="Signed in">
-    The preset acts as a base layer. Signed-in Free users can override thresholds as well as paid users. Overrides remain effective after monthly project actions run out; configuration edits and saves do not spend an action.
+    The preset is the starting point, and you can change any threshold on top of it. This works for signed-in Free users as well as paid users. Your changes keep working after your monthly project actions run out, and editing or saving the config does not use an action.
   </Tab>
 </Tabs>
 
@@ -68,7 +70,7 @@ Generated configs show the active detection and gate choices with one-line comme
 
 ## Full custom configuration
 
-For complete control over every rule, write out the full config. Every key is optional - include only the ones you want to override.
+For complete control, you can write out every setting. Every key is optional, so include only the ones you want to change.
 
 ```json .irisconfig.json
 {
@@ -163,11 +165,11 @@ For complete control over every rule, write out the full config. Every key is op
 
 ### Thresholds
 
-These keys set the structural size limits that trigger warnings in the editor and sidebar.
+These keys set the size limits, such as how long a function may be, that produce warnings in the editor and sidebar.
 
 | Key | Default | What it controls |
 |-----|---------|-----------------|
-| `functionLengthThreshold` | `40` | Lines before a function is flagged. In `.jsx`/`.tsx`, JSX markup does not count toward this - a component is measured by its logic, the same way a Vue or Svelte `<template>` never counted. `fileLengthThreshold` still counts every line, so a large component is still flagged as a long file |
+| `functionLengthThreshold` | `40` | Lines before a function is flagged. In `.jsx`/`.tsx`, JSX markup does not count toward this: a component is measured by its logic, the same way a Vue or Svelte `<template>` never counted. `fileLengthThreshold` still counts every line, so a large component is still flagged as a long file |
 | `fileLengthThreshold` | `300` | Lines before a file is flagged. Statements joined onto one line count as separate lines; see [how length is counted](/features/file-analysis#how-length-is-counted) |
 | `maxFunctionsPerFile` | `10` | Max functions before the file is flagged |
 | `maxImportsPerFile` | `8` | Max third-party imports before flagging |
@@ -176,7 +178,7 @@ These keys set the structural size limits that trigger warnings in the editor an
 
 ### Detection toggles
 
-Turn individual detection categories on or off without removing findings from the sidebar entirely.
+Turn individual kinds of check on or off, without removing findings from the sidebar entirely.
 
 | Key | Default | What it controls |
 |-----|---------|-----------------|
@@ -193,36 +195,36 @@ Turn individual detection categories on or off without removing findings from th
 
 ### Display
 
-Control what Iris Code renders in the editor UI.
+Control what Iris Code shows in the editor.
 
 | Key | Default | What it controls |
 |-----|---------|-----------------|
 | `enableCodeLens` | `true` | Show inline Code Lens hints |
 | `enableStatusBar` | `true` | Show the Iris Code item in the status bar |
 | `enableInlineDiagnostics` | `false` | Master toggle for squiggles and Problems panel entries |
-| `sidebarFontSize` | `14` | Base font size in pixels (10–20) for the Iris Code sidebar and detached panel |
+| `sidebarFontSize` | `14` | Base font size in pixels (10 to 20) for the Iris Code sidebar and detached panel |
 
-The `inlineDiagnostics` object lets you opt individual categories in or out once `enableInlineDiagnostics` is `true`.
+Inline diagnostics are the squiggles under code and the entries in the Problems panel. Once `enableInlineDiagnostics` is `true`, the `inlineDiagnostics` object turns individual categories on or off.
 
 ### Gate thresholds
 
-Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspaces that exceed a gate limit fail the check.
+A gate is the pass or fail decision made when your code is checked by the CLI (the `iris` terminal commands) or the git pre-push hook. These keys set its limits. A file or workspace that goes over a limit fails the check.
 
 | Key | Tier | What it controls |
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
-| `gateBaselineMode` | Signed in | Gates existing files against their locked baseline score instead of `minHealthScore` - new files still use `minHealthScore`. Useful for stopping regressions in legacy codebases without requiring a full cleanup. |
+| `gateBaselineMode` | Signed in | Judges each existing file against its own score in your locked baseline (a saved snapshot of scores) instead of `minHealthScore`. New files still use `minHealthScore`. Useful for stopping older code getting worse without requiring a full cleanup first. |
 | `trendRegressionThreshold` | Signed in | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris Code calls out as a notable regression. |
-| `gateMaxSecrets` | Signed in | Max hardcoded secrets allowed workspace-wide - set to `0` to require a clean workspace |
+| `gateMaxSecrets` | Signed in | Max hardcoded secrets allowed workspace-wide. Set to `0` to require a clean workspace |
 | `gateMaxComplexity` | Signed in | Max complexity score per file; exceeding it fails the gate regardless of health score |
 | `gateMaxFileLength` | Signed in | Max line count per file; works alongside `fileLengthThreshold` (which controls warnings) |
 | `gateMaxSmellsPerFile` | Signed in | Max total smells in a single file (console logs, magic numbers, long param lists, unused vars/functions, TODOs) |
-| `gateMaxSecuritySmells` | Signed in | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns) - set to `0` to require a clean workspace |
-| `gateMaxSuppressions` | Signed in | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` directives) allowed in a single file - caps how much a file can silence before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
-| `gateMaxDuplicateBlocks` | Signed in | Max duplicate code blocks across the whole scan (a block spanning two files counts once) - set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
+| `gateMaxSecuritySmells` | Signed in | Max security smells allowed workspace-wide (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, and the rest of the nine patterns). Set to `0` to require a clean workspace |
+| `gateMaxSuppressions` | Signed in | Max [inline suppressions](/enforcement/suppressions) (`iris-ignore` comments) allowed in a single file, so a file cannot silence too much before the gate fails. Defaults to `5` on the `strict` preset and `3` on `security`; unset elsewhere |
+| `gateMaxDuplicateBlocks` | Signed in | Max duplicate code blocks across the whole scan (a block spanning two files counts once). Set to `0` to require a duplication-free codebase. Only counts blocks when `enableDuplicateDetection` is on |
 | `gateMaxNamingViolations` | Signed in | Maximum [file naming](/configuration/file-naming) violations across the scan. |
-| `gateMaxParseErrors` | Signed in | Maximum files Iris Code could not parse. **Unset by default, so an unreadable file is reported without failing the gate** - a real syntax error is already caught by your compiler and your build, where Iris Code adds nothing. Set to `0` to treat any unparseable file as a failure. Unparseable files are excluded from the workspace average either way, so they never drag your score down |
-| `ignoreSuppressions` | Signed in | Set to `true` to make every `iris-ignore` directive inert - suppressed findings count as live again. A team-lead kill-switch for audits or when suppressions are being overused |
+| `gateMaxParseErrors` | Signed in | Maximum files Iris Code could not read (parse). **Unset by default, so an unreadable file is reported without failing the gate.** A real syntax error is already caught by your compiler and your build, where Iris Code adds nothing. Set to `0` to treat any unreadable file as a failure. Unreadable files are left out of the workspace average either way, so they never pull your score down |
+| `ignoreSuppressions` | Signed in | Set to `true` to ignore every `iris-ignore` comment, so suppressed findings count again. A switch for team leads, for audits or when suppressions are being overused |
 
 ### Ignore rules
 
@@ -234,11 +236,13 @@ Gate thresholds are enforced by the CLI and git pre-push hook. Files or workspac
 
 ### Scoring weights
 
-`healthScoreWeights` is a Pro key that lets you override how many points each finding type subtracts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights) for the full reference and examples.
+`healthScoreWeights`, available when you are signed in, lets you override how many points each finding type subtracts from the base 100 health score. See [Scoring Weights](/configuration/scoring-weights) for the full reference and examples.
 
 ### Per-language config
 
-Mixed-language repos rarely want one threshold set for everything - a 500-line Python module and a 300-line TypeScript cap should be able to coexist. The `languages` block overrides per-file settings for `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java`, and `rust` files independently; anything not stated falls back to the base config.
+A repository that mixes languages rarely wants one set of limits for everything. For example, you may want to allow 500-line Python modules while keeping TypeScript files to 300 lines.
+
+The `languages` block changes per-file settings separately for `typescript`, `javascript`, `go`, `python`, `ruby`, `csharp`, `java`, and `rust` files. Anything you do not set there uses the main settings.
 
 `.tsx` files count as TypeScript and `.jsx` / `.mjs` / `.cjs` as JavaScript.
 
@@ -270,21 +274,23 @@ A `ruby` block also governs the extensionless Ruby files Iris Code reads, such a
 }
 ```
 
-Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, a nested language policy is a backward-compatible fallback; otherwise the top-level convention applies. Top-level ignore globs remain active throughout.
+Top-level `fileNaming`, its ordered `overrides`, and `languages.*.fileNaming` are Free. Path overrides are checked in order and the last match wins. When no path rule matches, the language's own naming policy is used if it has one, for compatibility with older configs; otherwise the top-level convention applies. Top-level ignore patterns always apply.
 
-Signed-in custom configuration includes language thresholds, `healthScoreWeights`, `severityOverrides` and gate caps. It remains effective for permitted file checks after your project allowance is exhausted. Defining a threshold does not grant paid enforcement or start a scan.
+When you are signed in, you can also set per-language thresholds, `healthScoreWeights`, `severityOverrides` and gate limits. These keep applying to the file checks you can run after your monthly project allowance is used up. Setting a threshold does not give you paid enforcement or start a scan.
 
-Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language fallback can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the complete precedence contract, baseline behavior, suggestions, ignore globs, and exemptions.
+Set top-level `fileNamingScope` to `"new-files"` (default) or `"all"`. A matching path rule can override it with `scope`; a language's naming policy can do the same when no path rule matches. See [File naming conventions](/configuration/file-naming) for the full order of rules, how the baseline is used, suggestions, ignore patterns and exemptions.
 
-Scan-total gates (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxNamingViolations`, `gateMaxParseErrors`), `presetId`, and `enable*` toggles are rejected inside a language block with a validation warning.
+Some settings only make sense for the whole project, so they are refused inside a language block with a warning: limits that count across the whole scan (`minHealthScore`, `gateMaxSecrets`, `gateMaxSecuritySmells`, `gateMaxDuplicateBlocks`, `gateMaxNamingViolations`, `gateMaxParseErrors`), `presetId`, and the `enable*` switches.
 
-Resolution happens once, inside the analysis core, so the sidebar, CLI, git hook, build hook, and CI always agree on which threshold applied. The sidebar file tab shows the applied override next to the config source (for example "Workspace config · Python override"), and `iris gate` prints the limit that actually governed each failing file plus a "Per-language overrides active" note.
+Which setting applies to a file is worked out in one shared place, so the sidebar, CLI, git hook, build hook and CI always agree. The sidebar's file tab shows the language setting in use next to where the config came from (for example "Workspace config · Python override"). `iris gate` prints the limit that applied to each failing file, plus a "Per-language overrides active" note.
 
-Unknown language keys, such as an `elixir` block written for a newer Iris Code release, produce a warning and are skipped, so a forward-looking config does not break an older installation. A per-file gate cap set only inside a language block still gates files of that language, even with no top-level cap configured.
+An unknown language key, such as an `elixir` block written for a newer Iris Code release, produces a warning and is skipped, so a newer config does not break an older installation.
+
+A per-file gate limit set only inside a language block still applies to files of that language, even when no top-level limit is set.
 
 ## Package guard (Free)
 
-The `packageGuard` block sets what the [package guard](/agents/package-guard) blocks when a coding agent, `iris install` or a push adds a package. It is a safety policy rather than a threshold, so it works on every plan and presets do not restrict it.
+A package is code written by someone else that your project uses. The `packageGuard` block sets what the [package guard](/agents/package-guard) stops when a coding agent, `iris install` or a push adds one. It is a safety policy rather than a threshold, so it works on every plan and presets do not restrict it.
 
 ```jsonc
 {
@@ -297,11 +303,15 @@ The `packageGuard` block sets what the [package guard](/agents/package-guard) bl
 }
 ```
 
-`onUnchecked` (`"warn"` or `"block"`) decides what happens to a package the guard could not check. `blockSeverity` sets the lowest advisory severity that blocks; a malicious-package report always blocks. `minimumReleaseAgeDays` blocks versions newer than that many days. Each `allow` entry needs a `reason`, or it is ignored and reported as an error. `prePush: true` adds the lockfile check to the git hook, which needs Pro.
+- `onUnchecked` (`"warn"` or `"block"`) decides what happens to a package the guard could not check.
+- `blockSeverity` sets the lowest severity of known security problem (advisory) that blocks. A report that a package is malicious always blocks.
+- `minimumReleaseAgeDays` blocks versions released fewer than that many days ago.
+- Each `allow` entry needs a `reason`, or it is ignored and reported as an error.
+- `prePush: true` adds a check of your lockfile, the file listing exact package versions, to the git hook. This needs Pro.
 
 ## Refactor policy (Free)
 
-The `refactor` block controls proposed fixes, moved-code destinations and verification checks. Top-level settings work on every plan independently of presets. Sign-in enables per-language custom settings as well; saving them does not spend a project action.
+The `refactor` block controls suggested fixes, where moved code should go and the checks run afterwards. Top-level settings work on every plan, whatever your preset. Signing in also lets you set them per language; saving them does not use a project action.
 
 ```jsonc
 {
@@ -315,11 +325,11 @@ The `refactor` block controls proposed fixes, moved-code destinations and verifi
 }
 ```
 
-A malformed `refactor` block is reported rather than replaced with defaults. [Refactor configuration](/refactor/configuration) lists every key and its default.
+A `refactor` block with mistakes in it is reported, rather than quietly replaced with defaults. [Refactor configuration](/refactor/configuration) lists every key and its default.
 
 ## Severity overrides
 
-Override the severity of any warning type on a per-project basis using the `severityOverrides` object. Each key accepts `"error"`, `"warning"`, or `"info"`.
+Severity is how serious a finding is reported as. Use the `severityOverrides` object to change it for a kind of warning in this project. Each key accepts `"error"`, `"warning"`, or `"info"`.
 
 | Warning key | Valid severities |
 |-------------|-----------------|
@@ -330,12 +340,14 @@ Override the severity of any warning type on a per-project basis using the `seve
 | `no-exports` | `error` · `warning` · `info` |
 
 <Tip>
-  Only include keys you want to override - anything omitted falls back to the preset (if set), then VS Code settings, then built-in defaults.
+  Only include keys you want to change. Anything you leave out comes from the preset (if set), then VS Code settings, then built-in defaults.
 </Tip>
 
 ## Packed code integrity (Free)
 
-`codePackedThreshold` sets the minimum number of newly joined statements in a file before [verification integrity](/features/verification-integrity#packed-code) reports `code-packed`. It defaults to `3` and accepts integers of at least `1`. Every preset and language uses the same top-level value; a `languages` block cannot override it.
+Squeezing several statements onto one line can sneak a file under a length limit. [Verification integrity](/features/verification-integrity#packed-code) reports this as `code-packed`. `codePackedThreshold` sets how many newly joined statements a file must have before that is reported.
+
+It defaults to `3` and accepts whole numbers of `1` or more. Every preset and language uses the same top-level value; a `languages` block cannot change it.
 
 ```json
 {
@@ -343,17 +355,21 @@ Override the severity of any warning type on a per-project basis using the `seve
 }
 ```
 
-The comparison reads the baseline value, so raising the threshold in a change does not weaken that change's check. The increase is itself reported as `rules-loosened`. The rule warns by default; `severityOverrides["code-packed"]: "error"` makes it block for push and CI. Use `"info"` for the quietest severity, and `ignoreFiles` for generated files.
+The check reads this value from the starting point it compares against, not from the change itself. So raising the threshold in a change does not weaken the check on that change, and the increase is itself reported as `rules-loosened`.
+
+The rule warns by default. `severityOverrides["code-packed"]: "error"` makes it block pushes and CI. Use `"info"` for the quietest severity, and `ignoreFiles` for generated files.
 
 ## Agent handoff
 
-`agentHandoff` is a Free boolean key. Set `"agentHandoff": false` to turn off the Iris Code MCP server's repository tools for everyone using that repository. It is read directly on each call, including for Free users. `true` or an absent key adds no repository restriction and cannot loosen an organisation rule. The package guard remains available.
+MCP is a connection that lets a coding agent call Iris Code's tools. `agentHandoff` is a Free `true`/`false` setting. Set `"agentHandoff": false` to turn off the Iris Code MCP tools that read this repository, for everyone using it.
+
+It is read fresh on every tool call, including for Free users. `true`, or leaving the key out, adds no restriction for the repository and cannot loosen a rule set by your organisation. The package guard stays available either way.
 
 See [Team governance](/teams/governance).
 
 ## Schema graph (Free)
 
-`schemaGraph` controls the [Schema graph](/features/schema-graph) independently of Pro presets. It is enabled by default, uses ignored-file rules, and reads raw configuration layers so a Free preset does not remove your source selection.
+`schemaGraph` controls the [Schema graph](/features/schema-graph), the diagram of your database tables. It is on by default and skips files in your ignore rules. Presets do not affect it, so a Free preset never removes the sources you chose.
 
 ```json
 {
@@ -366,4 +382,6 @@ See [Team governance](/teams/governance).
 }
 ```
 
-Omit `sources` to discover schema files automatically. An explicit list selects `prisma`, `sql`, `drizzle`, `django`, `rails` or `diesel` and project-relative `paths`. `dialect` applies only to SQL and accepts `postgres`, `mysql` or `sqlite`. Set `enabled` to `false` to disable mapping. Invalid source paths are rejected rather than read outside the project.
+Leave out `sources` and Iris Code finds your schema files automatically. To choose them yourself, list each `source` (`prisma`, `sql`, `drizzle`, `django`, `rails` or `diesel`) with its `paths`, relative to the project. `dialect` applies only to SQL and accepts `postgres`, `mysql` or `sqlite`.
+
+Set `enabled` to `false` to turn the schema graph off. Invalid source paths are refused rather than read from outside the project.

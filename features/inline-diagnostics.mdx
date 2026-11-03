@@ -1,16 +1,16 @@
 ---
 title: "Inline diagnostics: squiggles and Problems panel entries"
 sidebarTitle: "Inline diagnostics"
-description: "Put selected Iris Code findings in the editor as squiggles and in the Problems panel. Off by default, on purpose."
+description: "Show selected Iris Code findings in the editor as underlines and in the Problems panel. Off by default, on purpose."
 ---
 
-Inline diagnostics show findings beside the code, using editor underlines and the Problems panel. They help you see an issue while you are editing rather than waiting for a full project report. Each finding has a message and a location you can open.
+Inline diagnostics show findings right beside your code. The editor underlines the line with a wavy "squiggle" and lists the finding in its Problems panel, so you see an issue while you are editing instead of waiting for a full project report. Each entry has a message and a location you can open.
 
 ## What is enabled by default
 
-Inline diagnostics are off until you enable them. Once enabled, the default categories are secrets, security smells, `@ts-ignore`, unused functions and `any` usage, which usually need attention while you edit.
+Inline diagnostics are off until you switch them on. Once on, a default set of categories appears: secrets, security smells, `@ts-ignore`, unused functions and `any` usage. These are the findings that usually need attention while you edit.
 
-Structural warnings such as file length stay off. A long file is a property of your project rather than an error, and it should not appear beside a type failure with the same urgency.
+Structural warnings, such as a file being too long, stay off. A long file is a property of your project rather than a mistake on one line, and it should not sit beside a type error with the same urgency.
 
 | Category | Default | What it flags |
 | --- | --- | --- |
@@ -29,7 +29,7 @@ Structural warnings such as file length stay off. A long file is a property of y
 
 ## Turning it on
 
-Enable it globally, then pick what you want:
+Switch it on for everything in `.irisconfig.json`, then choose which categories you want:
 
 ```json
 {
@@ -43,5 +43,5 @@ Enable it globally, then pick what you want:
 ```
 
 <Note>
-  `"enableInlineDiagnostics": false` removes every squiggle and Problems panel entry while leaving all findings visible in the Iris Code sidebar. Nothing stops being detected; it stops being surfaced in the editor.
+  `"enableInlineDiagnostics": false` removes every underline and Problems panel entry, while every finding stays visible in the Iris Code sidebar. Nothing stops being detected; it just stops being shown in the editor.
 </Note>

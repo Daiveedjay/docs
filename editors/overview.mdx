@@ -4,7 +4,9 @@ sidebarTitle: "Overview"
 description: "Compare verified Iris Code support across VS Code, compatible forks, JetBrains IDEs, standalone LSP editors, and the CLI."
 ---
 
-Iris Code is available in several editors and uses the same analysis engine across them. With the same engine version and settings, your code receives the same findings and scores. The interface differs by editor; the table below shows which features have been verified in each one.
+Iris Code works in several editors, and every one uses the same analysis engine. With the same version and settings, your code gets the same findings and scores wherever you open it.
+
+What differs is the interface around those results. The table below shows which features have been checked in each editor.
 
 ## Support matrix
 
@@ -34,26 +36,27 @@ Iris Code is available in several editors and uses the same analysis engine acro
 | Explorer file-naming badge | Yes | Yes | No | No |
 | Push-blocked counter | Yes | Yes | No | No |
 
-"Forks" means Cursor, Windsurf, VSCodium, Trae and Positron. They install the same extension package as VS Code and behave the same way.
+"Forks" means Cursor, Windsurf, VSCodium, Trae and Positron: editors built from VS Code. They install the same extension package as VS Code and behave the same way.
 
-Everything in the CLI column of your mind is available everywhere: `iris check`, `iris gate`, `iris secrets`, hooks and CI run from a terminal regardless of which editor you use, and they are the same binary on every platform.
+"Other LSP editors" means editors such as Neovim and Helix, which connect to Iris Code through a shared protocol for code-checking tools called LSP, rather than through a full extension.
+
+The CLI, the `iris` commands you type in a terminal, works the same whichever editor you use. `iris check`, `iris gate`, `iris secrets`, hooks and CI all run from a terminal, and they are the same program on every platform.
 
 ## One licence, every editor
 
-Signing in once covers every host and the CLI. There is no per-editor licence, no per-editor price, and using the same licence from three editors on one machine counts as one user, not three.
+Signing in once covers every editor and the CLI. There is no per-editor licence or price, and using the same licence from three editors on one machine counts as one user, not three.
 
-VS Code and its forks store the key in the editor's own secret storage. Everything else reads `~/.iris/credentials`, written by `iris auth login`.
+VS Code and its forks keep the licence key in the editor's own secure storage. Everything else reads `~/.iris/credentials`, which `iris auth login` writes.
 
 ## Other LSP editors
 
-`iris-lsp` is a standalone language server that speaks stdio JSON-RPC and carries the whole analysis engine, which is what JetBrains support is built on. It works in Neovim, Helix and anything else that speaks LSP.
+`iris-lsp` is a standalone language server: a small program that runs the whole analysis engine and talks to your editor over LSP. JetBrains support is built on it, and it also works in Neovim, Helix and any other editor that supports LSP.
 
-Native binaries are published for six platforms with checksums, and need no Node installation. [Other LSP editors](/editors/lsp) has the download table, the Neovim and Helix configuration, and an honest account of which features do not exist outside a full extension.
+Ready-to-run programs are published for six platforms, with checksums to verify the download, and need no Node.js installation. [Other LSP editors](/editors/lsp) has the download table, the Neovim and Helix setup, and a clear account of which features are not available outside a full extension.
 
 ## Reporting a problem
 
-Because the same symptom usually has a different cause per host, say which editor and which version you are using. Report it at [iriscode.co/support](https://iriscode.co/support) or email [hello@iriscode.co](mailto:hello@iriscode.co).
-
+The same symptom usually has a different cause in each editor, so say which editor and which version you are using. Report it at [iriscode.co/support](https://iriscode.co/support) or email [hello@iriscode.co](mailto:hello@iriscode.co).
 
 ## Navigating the extension
 
@@ -67,6 +70,8 @@ VS Code, its compatible forks and JetBrains share the redesigned Iris Code panel
 | **Explore** | Open Code Map, Schema Graph, Dependency Audit and Trends. Schema Graph needs supported backend schema declarations. |
 | **Configure** | Set Configuration, Hooks & CI and Agent rules. Saving rules does not install enforcement. |
 
-Use **Search Iris Code…** to find a tool without remembering its area. The Review scope tabs are **File**, **Folder**, **Workspace**, **Findings** and **TODOs**. On short or narrow panels the scope tabs can scroll away to preserve reading room; the main navigation stays available.
+Use **Search Iris Code…** to find a tool without remembering its area. The Review scope tabs are **File**, **Folder**, **Workspace**, **Findings** and **TODOs**. On short or narrow panels the scope tabs can scroll out of view to leave room for reading; the main navigation stays available.
 
-Opening an existing result does not spend an action or scan changed source. Fresh project work checks the applicable allowance before starting. See [Free allowances](/free). The generic LSP host supplies diagnostics and actions, rather than this extension-owned navigation.
+Opening a result you already have does not use up an action or rescan changed code. Starting fresh project work checks your allowance first. See [Free allowances](/free).
+
+Other LSP editors show diagnostics and actions through the editor's own interface, not through this panel.

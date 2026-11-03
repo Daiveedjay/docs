@@ -1,10 +1,10 @@
 ---
-title: "Connecting GitHub: the Iris Code app, permissions, and revoking access"
+title: "Connecting GitHub: the Iris Code app, permissions and revoking access"
 sidebarTitle: "Connecting GitHub"
-description: "Install the Iris Code GitHub App, choose which repositories it can audit, and understand exactly what it reads and what it never sees."
+description: "Install the Iris Code GitHub App, choose which repositories it can scan, and see exactly what it can read and what it never sees."
 ---
 
-Cloud scans need to read your code, so the connection is a GitHub App you install on the repositories you choose, and it asks for the narrowest set of permissions that makes an audit possible.
+Cloud scans need to read your code, so Iris Code connects through a GitHub App: a small integration you install on GitHub and point at the repositories you choose. It asks only for the permissions a scan needs, and it can only read, never change anything.
 
 ## Installing
 
@@ -16,10 +16,10 @@ Cloud scans need to read your code, so the connection is a GitHub App you instal
     You are sent to GitHub to install the Iris Code App.
   </Step>
   <Step title="Pick the repositories">
-    Select individual repositories rather than granting access to everything, unless you genuinely want every repository auditable. You can change the selection on GitHub at any time.
+    Select individual repositories rather than granting access to all of them, unless you really want every repository to be scannable. You can change the selection on GitHub at any time.
   </Step>
   <Step title="Import a repository">
-    Back in Iris Code, choose a repository to import. One audit is queued immediately, pinned to the current head of the default branch.
+    Back in Iris Code, choose a repository to import. One audit starts straight away, on the latest commit of the default branch.
   </Step>
 </Steps>
 
@@ -33,42 +33,50 @@ Three read-only repository permissions, and nothing else:
 | **Pull requests** | Read | Know that a PR was opened or updated, and which commit is at its head |
 | **Metadata** | Read | Mandatory for every GitHub App; repository name and default branch |
 
-There is no write permission of any kind. Iris Code cannot push, comment, open a PR, change a setting, or alter a branch. It cannot read your issues, actions, secrets or members.
+There is no write permission of any kind. Iris Code cannot push, comment, open a pull request, change a setting or alter a branch. It cannot read your issues, actions, secrets or members.
 
 ## What it subscribes to
 
-- **Push** - only for the default branch. A push to any other branch is ignored outright, so feature-branch work never triggers a cloud scan
+The App asks GitHub to tell it about these events:
+
+- **Push** - only for the default branch. A push to any other branch is ignored, so work on feature branches never starts a cloud scan
 - **Pull request** - opened, reopened, and synchronised (a new commit pushed to the branch)
-- **Installation** and **Installation repositories** - so that removing access, suspending the App, or deselecting a repository stops audits straight away
+- **Installation** and **Installation repositories** - so that removing access, suspending the App or deselecting a repository stops audits straight away
 
 <Note>
-  Deselecting a repository on GitHub, suspending the App, or uninstalling it all revoke Iris Code's access immediately. Queued audits for that repository are cancelled and are not counted against your allowance.
+  Deselecting a repository on GitHub, suspending the App or uninstalling it all remove Iris Code's access immediately. Audits waiting to run for that repository are cancelled and do not count against your allowance.
 </Note>
 
 ## What leaves your machine, and what leaves GitHub
 
-For a cloud scan, source is fetched from GitHub by the scanner, analysed, and discarded. What is stored is the report: scores, finding counts, severities, file paths, and the dependency list.
+For a cloud scan, Iris Code's scanner fetches the source from GitHub, analyses it and throws it away. What is stored is the report: scores, finding counts, severities, file paths and the list of packages your project uses.
 
-This is a real difference from the editor, where analysis happens locally and nothing is uploaded. If you would rather no source was ever fetched, do not connect a repository - the editor and the CLI work exactly as before.
+This is different from the editor, where analysis happens on your machine and nothing is uploaded. If you would rather no source was ever fetched, do not connect a repository. The editor and the CLI work exactly as before.
 
 ## Reconnecting
 
-Reconnecting a repository you had disconnected starts fresh: its previous cloud reports were deleted at disconnect and are not recoverable. Audit history for a repository that merely lost access, through a revoked App or a deselection, is preserved and picks up where it left off once access returns.
+Reconnecting a repository you had disconnected starts from scratch: its earlier cloud reports were deleted when you disconnected it and cannot be recovered.
+
+Losing access is different. If a repository only lost access, because the App was revoked or the repository was deselected, its audit history is kept and carries on once access returns.
 
 ## Troubleshooting
 
 ### A repository shows 'allowance used'
 
-The account or team has used its scan allowance for the period. Automatic audits resume on their own when it resets. The GitHub connection itself is fine. See [Scan allowances](/cloud/allowances).
+The account or team has used its scan allowance for the period. Automatic audits start again on their own when it resets. The GitHub connection itself is fine. See [Scan allowances](/cloud/allowances).
 
 ### A repository shows the connection needs attention
 
-Iris Code's access to that repository ended: it was deselected on GitHub, the App was suspended or uninstalled, or the repository was renamed or moved. Reconnect from GitHub and audits resume, with history intact.
+Iris Code's access to that repository ended. Either it was deselected on GitHub, the App was suspended or uninstalled, or the repository was renamed or moved. Reconnect from GitHub and audits resume, with history intact.
 
 ### Pushes are not triggering audits
 
-Check three things, in order. That the push was to the **default branch**, since other branches are ignored. That **Audit merges** is on for that repository. And that the repository is not paused, which stops every automatic audit while leaving manual ones available.
+Check these three things, in order:
+
+1. The push was to the **default branch**, since other branches are ignored.
+2. **Audit merges** is on for that repository.
+3. The repository is not paused. Pausing stops every automatic audit, while manual ones still work.
 
 ### An audit has been queued for a long time
 
-An audit that no scanner has claimed for fifteen minutes is reported as stalled rather than as slow, because nothing is running it. Cancel it to free the commit for another attempt; a cancelled audit is not counted against your allowance.
+If no scanner has picked up an audit within fifteen minutes, it is reported as stalled rather than slow, because nothing is running it. Cancel it so the commit can be tried again. A cancelled audit does not count against your allowance.

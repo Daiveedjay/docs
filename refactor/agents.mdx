@@ -1,10 +1,14 @@
 ---
 title: "Using refactor plans with an agent"
 sidebarTitle: "Agent integration"
-description: "Connect a coding agent to refactor plans and verification, and check its work before it finishes."
+description: "Let a coding agent get a refactor plan, check its own edits, and be sent back once if a change made things worse."
 ---
 
-A coding agent can use Iris Code to get a refactor plan and check its edits afterwards. Iris Code supplies the project rules and checks the result; you or the agent still make and review the code changes.
+A coding agent asked to tidy up a large file can easily make it worse: it can break an import, remove something another file uses, or squeeze code onto fewer lines without simplifying anything.
+
+Iris Code lets the agent get a refactor plan before it starts and check its edits afterwards. Iris Code supplies the project rules and checks the result; you or the agent still make and review the code changes.
+
+There are three ways to connect them: the MCP server, terminal commands, and an optional check that runs when the agent finishes.
 
 ## MCP
 
@@ -19,13 +23,17 @@ MCP is the connection that lets a coding agent call Iris Code tools. Set it up u
 | `iris_check` | Adds `refactorPlanAvailable`, a hint and a session baseline for size or complexity failures |
 | `iris_fix_safe` | Existing preview, `preview_token` and apply flow for mechanical fixes |
 
-Planning and verifying one file are Free. A new folder or workspace plan uses one successful local project action. Applying approved same-plan fixes and verifying its owned baseline are included; changing the planning baseline or asking for a different plan is fresh work. See [Free allowances](/free).
+In plain terms: the plan tool saves a copy of the code and gives it an ID, `baseline_id`. The verify tool compares the agent's edits with that copy, or with your last commit (Git HEAD) when there is no ID, and says which it used.
 
-Every MCP server checks the current permission for the agent to use Iris Code. The server keeps its own saved starting point; an agent cannot supply a replacement copy of the original code.
+Planning and verifying one file are Free. A new folder or workspace plan uses one successful local project action. Applying that plan's approved fixes and verifying against its saved copy are included. Changing the saved starting point or asking for a different plan is new work. See [Free allowances](/free).
 
-Files in a folder where the [agent handoff](/agents/mcp#organisation-and-repository-restrictions) is off are hidden from plans and verification details. The result reports only the number withheld, as `withheldByPolicy`.
+Every MCP server checks whether the agent is currently allowed to use Iris Code. The server keeps its own saved copy of the code, so an agent cannot hand it a replacement "before" version to compare against.
+
+Files in a folder where the [agent handoff](/agents/mcp#organisation-and-repository-restrictions) is off are hidden from plans and verification details. The result shows only how many were withheld, as `withheldByPolicy`.
 
 ## CLI scanning
+
+The CLI is the set of Iris Code commands you run in a terminal. An agent can run them too:
 
 ```bash
 iris refactor src/handlers.ts
@@ -34,11 +42,19 @@ iris refactor src/handlers.ts --verify
 iris fix --safe src/handlers.ts
 ```
 
-CLI planning is read-only. A later standalone invocation verifies against Git HEAD because the planning process's memory has ended. Generated project rules describe the same loop, honour disabled IDs and work without MCP: apply proved fixes, review suggestions in order, preserve behaviour and exports, stop when the file passes, then verify and test.
+Planning from the CLI only reads your code. Each command is a separate process, and its saved copy disappears when it ends, so a later `--verify` compares against your last commit (Git HEAD) instead.
+
+The [project rules](/agents/project-rules) Iris Code generates describe the same loop and work without MCP. They respect any fixes or suggestions you have disabled, and tell the agent to:
+
+1. Apply the fixes Iris Code has proved safe.
+2. Review suggestions in order.
+3. Keep behaviour and exports unchanged.
+4. Stop when the file passes.
+5. Verify, then run tests.
 
 ## Finish verification
 
-A finish hook is an optional check that runs when an agent tries to stop. If it finds a regression against a matching live plan, it can ask the agent to correct the problem. It works alongside the package guard and does not replace your tests.
+A finish hook is an optional check that runs when an agent tries to stop. If the agent's edits made things worse compared with a plan it is still working from, the hook sends it back to correct the problem. It works alongside the package guard and does not replace your tests.
 
 ```bash
 iris hook agent install --target claude,codex --verify-on-finish
@@ -46,7 +62,9 @@ iris hook agent status
 iris hook agent uninstall --target claude,codex --verify-on-finish
 ```
 
-The CLI flag adds opt-in finish verification alongside the package guard. In either editor, **Hooks** has a separate **Enable** control with the same multi-select agent choice; it can be configured or removed independently.
+The `--verify-on-finish` flag adds this check alongside the package guard. In either editor, **Hooks** has a separate **Enable** control with the same multi-select agent choice, so you can set it up or remove it independently of the package guard.
+
+Each agent signals "stop" and "keep going" differently:
 
 | Agent | Event | Continuation |
 |---|---|---|
@@ -57,15 +75,27 @@ The CLI flag adds opt-in finish verification alongside the package guard. In eit
 | Cursor | `stop` | `followup_message` requests another turn |
 | Windsurf / Devin | Observe-only finish event | No finish hook installed; use rules, MCP or CLI |
 
-The hook verifies only a baseline ID already found in the current agent transcript and matched to a live MCP server for the same workspace. Source snapshots remain in server memory; the local registry contains connection metadata and IDs. Missing, null or compacted transcripts leave the hook inactive, with no guessed baseline or HEAD fallback.
+Windsurf can report that an agent finished but cannot send it back, so no finish hook is installed there.
 
-Only `regressed` asks the agent to continue with a correction. `not-improved` is a warning and does not block it from stopping.
+### Which plan it checks
 
-The hook allows at most one correction per agent turn, shared with [verification integrity](/features/verification-integrity), however many refactors the turn verifies. `maxCorrections: 0` turns corrections off; a larger value does not add more. After that, it asks the agent to stop and show you the verdict and changes. The agent host's own loop controls add another safeguard.
+The hook only checks a plan the agent got in its current conversation, from an Iris Code MCP server that is still running for the same workspace. It finds the plan's `baseline_id` in the agent's transcript, the record of the conversation.
 
-Cursor warnings are written to the error-output stream because its stop response has no warning field. The hook does not call an AI model or change the push or build gate.
+The saved copy of your code stays in the server's memory. The only thing written locally is a small registry of connection details and plan IDs.
 
-Codex also needs hooks enabled in its local configuration and project-hook approval. Vendor transcript formats are best-effort interfaces; explicit verification remains available when automatic matching is inactive.
+If the transcript is missing, empty or has been compacted (shortened by the agent), the hook does nothing. It does not guess a starting point or fall back to your last commit.
+
+### What happens when it finds a problem
+
+Only a `regressed` verdict sends the agent back with a correction. `not-improved` is a warning and does not stop it finishing.
+
+The agent gets at most one correction per agent turn, meaning one request you sent it. That single correction is shared with [verification integrity](/features/verification-integrity), however many refactors the turn verifies.
+
+`maxCorrections: 0` turns corrections off; a larger value does not add more. After the one correction, the hook asks the agent to stop and show you the verdict and its changes. The agent's own limits on repeated turns add another safeguard.
+
+Cursor's stop response has no field for warnings, so they are written to the error output instead. The hook does not call an AI model or change the push or build gate.
+
+Codex also needs hooks switched on in its local configuration, and the project hook approved. Agents can change how they record transcripts, so automatic matching is best effort. When it is not active, the agent can still verify explicitly.
 
 ## Related pages
 

@@ -1,66 +1,74 @@
 ---
 title: "Quick start: install Iris Code and review your first project"
 sidebarTitle: "Quick start"
-description: "Install Iris Code, inspect a file, scan the workspace, and preview its configured gate. Learn how signed-in monthly project actions work."
+description: "Install Iris Code, check a file, scan your whole project and preview which files would be blocked. Learn how signed-in monthly project actions work."
 ---
 
-This guide takes you from installation to your first file and project scans. You will see a health score and findings that explain what needs attention. Everything on this page is free and works without an account.
+This guide takes you from installing Iris Code to checking your first file and your whole project. You will see a health score, a number from 0 to 100, and a list of findings that explain what needs attention.
+
+Everything on this page is free and works without an account.
 
 <Steps>
   <Step title="Install it">
     <Tabs>
       <Tab title="VS Code and forks">
-        Press `Ctrl+Shift+X` (or `Cmd+Shift+X`), search for **Iris Code**, and click Install. The icon appears in the Activity Bar; click it to open the sidebar.
+        Press `Ctrl+Shift+X` (or `Cmd+Shift+X`), search for **Iris Code**, and click Install. Its icon appears in the Activity Bar, the strip of icons down the side of the editor; click it to open the sidebar.
 
-        The same search works in **Cursor**, **Windsurf**, **VSCodium** and **Trae**, which install the identical build from [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code). You can also [install the `.vsix` manually](/installation).
+        The same search works in **Cursor**, **Windsurf**, **VSCodium** and **Trae**, which install the identical build from [Open VSX](https://open-vsx.org/extension/davidjaja/iris-code). You can also [install the `.vsix` file manually](/installation).
       </Tab>
       <Tab title="JetBrains IDEs">
-        Install **LSP4IJ** first. Then **Settings → Plugins**, Marketplace tab, search **Iris Code**, Install.
+        Install **LSP4IJ** first, a free plugin Iris Code needs to talk to the IDE. Then open **Settings → Plugins**, go to the Marketplace tab, search for **Iris Code** and click Install.
 
-        Restart the IDE properly afterwards, not just the plugin. JetBrains registers file types at startup, and skipping the restart is the single most common reason Iris Code looks broken on day one.
+        Afterwards, restart the whole IDE, not just the plugin. JetBrains registers file types only at startup, and skipping the restart is the most common reason Iris Code looks broken on the first day.
 
-        Open the **Iris Code** tool window from the right sidebar. Works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion and Android Studio. [More detail here](/editors/jetbrains).
+        Open the **Iris Code** tool window from the right sidebar. It works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, Rider, RubyMine, CLion and Android Studio. [More detail here](/editors/jetbrains).
       </Tab>
     </Tabs>
 
     <Note>
-      One analysis engine sits behind every editor, so a file receives the same score and the same findings wherever you open it.
+      Every editor uses the same checks underneath, so a file gets the same score and the same findings wherever you open it.
     </Note>
   </Step>
 
   <Step title="Open a supported file">
-    Open a JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java or Rust file. Iris Code scores it automatically; no command is needed.
+    Open a JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java or Rust file. Iris Code scores it automatically; you do not need to run anything.
 
     Open **Review → File**. The **File tab** shows:
 
-    - **A readiness summary** - score, blockers, whether a hook is installed and score changes over time
-    - **The health score** - 0 to 100, recalculated on every save
-    - **Blockers and warnings** - each one clickable, jumping to the source line
-    - **Every function** - with its length and complexity
-    - **Code smells** - TODOs, magic numbers, debug prints, unused variables, long parameter lists
+    - **A readiness summary** - the score, the number of blockers, whether a hook is installed and how the score has changed over time
+    - **The health score** - 0 to 100, recalculated every time you save
+    - **Blockers and warnings** - click one to jump to its line in the file
+    - **Every function** - with its length and complexity, meaning how hard it is to follow
+    - **Code smells** - patterns that make mistakes more likely, such as TODOs, magic numbers, debug prints, unused variables and long parameter lists
 
     Save the file and the score updates immediately.
   </Step>
 
   <Step title="Run your free workspace scan">
-    Command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`), run **Iris Code: Scan Workspace**.
+    Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Iris Code: Scan Workspace**. The workspace is the project folder open in your editor.
 
-    Iris Code walks every supported file and populates:
+    Iris Code checks every supported file and fills in:
 
-    - **Workspace readiness** - a single score for the project, with blocker and warning counts
-    - **Hotspots** - the largest and most complex files ranked first
-    - **Findings tab** - every blocker and warning in one filterable list
-    - **TODOs tab** - every TODO, FIXME and HACK in the project
+    - **Workspace readiness** - one score for the whole project, with blocker and warning counts
+    - **Hotspots** - the largest and most complex files, ranked first
+    - **Findings tab** - every blocker and warning in one list you can filter
+    - **TODOs tab** - every TODO, FIXME and HACK comment in the project
 
-Your introductory full workspace scan stays on your machine and needs no account. Sign in for recurring monthly project actions. Completed results remain available without scanning again; see [Free allowances](/free).
+    Your first full workspace scan stays on your machine and needs no account. To run project scans every month, sign in. Results you already have stay available without scanning again; see [Free allowances](/free).
 
     <Note>
-The introductory result is a fixed snapshot. A fresh workspace or folder scan uses a local project action when your account has an allowance. Opening saved findings, TODOs, maps or reports does not spend again. Hooks, builds and CI enforcement remain paid; package guard and included same-plan verification remain Free.
+      That first result is a snapshot of the project at the moment you scanned it.
+
+      After it, each new workspace or folder scan uses one local project action, if your account has an allowance. Opening findings, TODOs, maps or reports you already have does not use another one.
+
+      - Hooks, builds and CI enforcement need a paid plan.
+      - The package guard, which checks packages before a coding agent installs them, stays Free.
+      - Verification that comes with a refactor plan you already have stays Free.
     </Note>
   </Step>
 
-  <Step title="Preview your enforcement posture">
-    At the bottom of the **File tab**, click **Preview Gate**. Iris Code runs a background scan and shows how your project scores against all six presets:
+  <Step title="Preview what would be blocked">
+    At the bottom of the **File tab**, click **Preview Gate**. Iris Code scans the project in the background and shows how it scores against all six presets. A preset is a ready-made set of standards.
 
     | Preset | Min score | Best for |
     |---|---|---|
@@ -71,22 +79,22 @@ The introductory result is a fixed snapshot. A fresh workspace or folder scan us
     | **AI-assisted** | 82 | Reviewing AI-assisted code at volume, without imposing a naming convention |
     | **Security** | 85 | Prioritising secrets and safety |
 
-    Each card shows how many files would be blocked at that threshold. **Apply** writes `presetId` into your `.irisconfig.json` without opening the file.
+    Each card shows how many files would be blocked at that minimum score. **Apply** saves your choice as `presetId` in `.irisconfig.json`, the project's settings file, without opening it.
 
     <Note>
-      Preview Gate is free and read-only. No hook is installed and no file is blocked until you enable enforcement explicitly. Pro adds the list of which files fail each preset, and by how much.
+      Preview Gate is free and changes nothing. No hook is installed and no file is blocked until you turn blocking on yourself. Pro adds the list of which files fail each preset, and by how much.
     </Note>
   </Step>
 
   <Step title="Install the CLI (optional)">
-    For scanning, gating CI, or auditing dependencies without opening an editor:
+    The CLI is the set of Iris Code commands you type in a terminal. Use it to scan, to check code in CI (the automated checks that run after a push) or to audit your packages without opening an editor:
 
     ```bash
     npm install -g @iris-code/cli
     iris --version
     ```
 
-    The CLI shares the extension's thresholds, since it runs the same engine. `iris check <file>` scores a single file, and `iris gate` is the command to use in CI.
+    The CLI runs the same checks as the extension, so it uses the same thresholds. `iris check <file>` scores a single file, and `iris gate` is the command to use in CI.
   </Step>
 </Steps>
 
@@ -94,15 +102,15 @@ The introductory result is a fixed snapshot. A fresh workspace or folder scan us
 
 <CardGroup cols={2}>
   <Card title="Block weak code" icon="shield-halved" href="/enforcement/git-hook">
-    A pre-push hook stops anything below your threshold before it reaches the remote.
+    A pre-push hook stops anything below your threshold before it reaches the shared repository.
   </Card>
   <Card title="Share your thresholds" icon="sliders" href="/configuration/irisconfig">
-    Commit one `.irisconfig.json` so the whole team analyses against the same rules.
+    Commit one `.irisconfig.json` so the whole team is checked against the same rules.
   </Card>
   <Card title="Enforce in CI" icon="terminal" href="/cli/ci">
-    Run `iris gate` in your pipeline, with inline PR annotations on GitHub.
+    Run `iris gate` in your pipeline, with comments on the affected lines of a GitHub pull request.
   </Card>
   <Card title="Try Pro" icon="bolt" href="/pro">
-An optional 14-day trial, without a card, to evaluate paid enforcement and project workflows. Signing in does not start it automatically.
+    An optional 14-day trial, with no card, to try paid blocking and project workflows. Signing in does not start it automatically.
   </Card>
 </CardGroup>

@@ -1,18 +1,20 @@
 ---
 title: "Review My Changes: check your Git changes before anyone else does"
 sidebarTitle: "Review My Changes"
-description: "Inspect staged, unstaged and untracked source changes, with named findings and captured import impact."
+description: "Check the files you have changed but not yet shared, see what a reviewer would flag, and see which other files depend on them."
 ---
 
-Before a change reaches a teammate or a pull request, Review My Changes reads every supported staged, unstaged and untracked file and reports what a reviewer would flag. Blockers first, then warnings, each one click from its source line.
+Before a change reaches a teammate or a pull request, it helps to see what a reviewer would flag. Review My Changes checks only the files you have changed: files staged for your next commit, edited files you have not staged yet, and new files Git is not tracking yet.
 
-A fresh changed-file scan uses one successful local project action from the selected personal or team context. Opening its saved findings and impact does not spend again. See [Free allowances](/free).
+It lists blockers first, then warnings, and each finding opens its source line in one click. It also shows which other files import each changed file, so you can see what else a change might affect.
+
+A fresh scan of your changed files uses one local project action from the personal or team account you have selected. Opening its saved findings and import details again does not use another. See [Free allowances](/free).
 
 ## Running it
 
-When git reports local changes, a **Git-changed files detected** strip appears above the sidebar tabs. The count only includes files Iris Code will actually read: JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust. Click the strip, or run **Iris Code: Review My Changes** from the command palette.
+When Git reports local changes, a **Git-changed files detected** strip appears above the sidebar tabs. The count only includes files Iris Code will actually read: JavaScript, TypeScript, Vue, Svelte, Go, Python, Ruby, C#, Java and Rust.
 
-It opens in its own editor tab with:
+Click the strip, or run **Iris Code: Review My Changes** from the command palette. The review opens in its own editor tab with:
 
 - a verdict at the top, "ready for review" or "needs attention", blockers first
 - filters by severity, and a search box
@@ -20,42 +22,56 @@ It opens in its own editor tab with:
 - click-to-open on every finding
 - an expandable list of files that import each changed file
 
-The Workspace tab can show the same changed-file result, and Findings and TODOs use its captured scope. Opening another view does not run a second scan.
+The Workspace tab can show the same result, and the Findings and TODOs tabs then cover the same changed files. Opening another view does not run a second scan.
 
 ## Import impact
 
-A changed file can affect code outside the diff. Change Review uses the Code Map import graph to show how many mapped files import each changed file. Expand the count to open an importer. Files in the change set still appear in each other's lists.
+A changed file can affect code outside your change, because other files may import it. Review My Changes uses the [Code Map](/features/code-map) import graph, a record of which files import which, to show how many files import each changed file. Expand the count to open one of those files. Files that are part of your change still appear in each other's lists.
 
-The focused file's direct importers are Free. Wider import impact is captured with a project scan and can include a transitive dependent count, capped at **500+**, and the distinct files outside the change set that import changed files. Impact does not change a health score, gate decision or exit code.
+For the file you are focused on, the files that import it directly are Free. A project scan can also record wider impact:
 
-In Go, and for a C# `using`, a Java wildcard import or a Python namespace package, an import names the package rather than a file. Those importers count for every file in the package's folder, and Change Review labels them **through its package**.
+- **Indirect importers**: files that reach the changed file through a chain of imports, counted up to **500+**.
+- **Outside your change**: the separate files, not part of the change, that import any changed file.
 
-Import impact uses the graph captured for that scan. An absent graph is reported as unavailable; opening a saved result does not rebuild it from later files. Very large fresh scans retain their confirmation and cancellation controls.
+Import impact is information only. It does not change a health score, a gate decision or an exit code.
 
-An unread, ignored or unsupported file is marked **Not mapped**, rather than given a zero count. The graph lists unresolved imports separately with their reasons; its counts cover resolved edges only. See [Code Map](/features/code-map) for the graph's scope and limits.
+In Go, and for a C# `using`, a Java wildcard import or a Python namespace package, an import names a package rather than a single file. Those importers count for every file in the package's folder, and Review My Changes labels them **through its package**.
+
+Import impact uses the graph recorded when that scan ran. If no graph was recorded, impact is shown as unavailable; opening a saved result does not rebuild the graph from files changed later. Very large fresh scans still ask for confirmation and can be cancelled.
+
+A file Iris Code did not read, ignores or does not support is marked **Not mapped**, rather than given a zero count. Imports Iris Code could not match to a file are listed separately with their reasons, and the counts cover matched imports only. See [Code Map](/features/code-map) for what the graph covers and its limits.
 
 ## Scoped honestly
 
-A review of eleven files is not a review of the project, and the two are kept distinct:
+A review of eleven files is not a review of the whole project, so Review My Changes does not draw project-wide conclusions from it:
 
 - **No trend snapshot is created.** A partial scan would distort your history.
-- **No unused-dependency conclusions.** That requires scanning everything that might import a package.
+- **No unused-dependency conclusions.** Deciding that a package is unused requires scanning every file that might import it.
 - **Untracked files are included**, unless `.gitignore` excludes them.
-- **A workspace inside a larger repository reviews only its own changes.** Opening one package of a monorepo never surfaces findings from a sibling package you did not touch.
+- **A workspace inside a larger repository reviews only its own changes.** Opening one package of a monorepo, a repository that holds several projects, never shows findings from a sibling package you did not touch.
 
-Fresh workspace, folder and changed-file inspections can use [Free project actions](/free). Blocking a push, build or CI job requires applicable [paid enforcement](/pro). Reporting findings and preventing an action remain separate capabilities.
+Fresh workspace, folder and changed-file scans can use [Free project actions](/free). Stopping a push, build or CI job requires the applicable [paid enforcement](/pro). Reporting a finding and preventing an action are separate features.
 
 ## Real repositories
 
-The awkward cases are handled deliberately rather than left to fail:
+Unusual repository states are handled deliberately rather than left to fail:
 
-- **No git repository:** the strip stays hidden and the command explains why rather than erroring.
+- **No Git repository:** the strip stays hidden, and the command explains why rather than showing an error.
 - **Git not installed:** reported as exactly that, rather than as a missing repository.
 - **A new repository with no commits:** staged and untracked files are still reviewed.
 - **Large untracked folders, paths with spaces or unicode, a merge in progress:** all handled.
 
 ## Verification integrity
 
-The Free integrity group appears above the health score and filters in both editors. It includes deleted tests and weakened configuration, even when no supported source file remains to score. If a score scan cannot run, integrity remains available and the view says that no score scan ran.
+Verification integrity reports changes that make your checks weaker, such as a deleted or skipped test or a lowered threshold. It is Free, and its group appears above the health score and filters in both VS Code and JetBrains.
 
-Use **This is intended** to record a reason for the current change. A subsequent edit invalidates it. This editor acknowledgement does not authorise hooks or CI; those need a reasoned commit trailer. See [verification integrity](/features/verification-integrity).
+It includes deleted tests and weakened configuration even when no supported source file is left to score. If the score scan cannot run, the integrity check still runs, and the view says that no score scan ran.
+
+If a weakening is deliberate, use **This is intended** to record a reason for the current change. Editing the change again cancels that acknowledgement. It covers only your review in the editor: Git hooks and CI need a reason written in the commit message instead. See [verification integrity](/features/verification-integrity).
+
+## Related pages
+
+- [Verification integrity](/features/verification-integrity)
+- [Code Map](/features/code-map)
+- [Workspace analysis](/features/workspace-analysis)
+- [Free allowances](/free)

@@ -1,18 +1,20 @@
 ---
 title: "Dependents table: audit npm, Go, Python, RubyGems, NuGet, Cargo, and Maven packages"
 sidebarTitle: "Dependents table"
-description: "Inspect saved dependency audits or deliberately refresh package versions and known vulnerabilities within your project allowance."
+description: "See which of your packages are out of date or have known security vulnerabilities, across several languages in one table."
 ---
 
 A dependency is a package of code written by someone else that your project uses. The Dependents Table shows whether your packages are out of date or have known security vulnerabilities. It brings packages from several languages into one view, so you do not have to check each registry separately.
 
 <Note>
-Opening an owned saved dependency audit is Free and does not repeat registry or advisory lookups. Account and workspace access are checked when online; previously confirmed owned results remain readable offline. A separate fresh audit uses one local project action on a usable result. Registry and advisory lookups still need your consent; see [Free allowances](/free).
+Opening a dependency audit you have already run is Free, and it does not look anything up online again. Your account and workspace access are checked when you are online; results that were confirmed earlier stay readable offline.
+
+Running a fresh audit uses one local project action when it produces a usable result. Looking up package versions and vulnerabilities online still needs your permission first. See [Free allowances](/free).
 </Note>
 
 ## Opening it
 
-Run **Iris Code: Open Dependents Table** from the command palette.
+Run **Iris Code: Open Dependents Table** from the command palette. The table compares each package with its public registry, the online catalogue where the package is published, and against the OSV.dev vulnerability database.
 
 ## Where it reads from
 
@@ -38,13 +40,19 @@ A manifest range like `"express": "^4.18.0"` does not tell you which version is 
 - **NuGet** - `packages.lock.json`
 - **Cargo** - `Cargo.lock`
 
-Advisories are then filtered to the version you have installed. A CVE that only affects 3.x is not reported when you are on 4.x, which keeps the list to things you can act on.
+An advisory is a published report of a vulnerability. Advisories are then filtered to the version you have installed. A CVE that only affects 3.x is not reported when you are on 4.x, which keeps the list to things you can act on.
 
-RubyGems and Cargo lockfiles include the full resolved tree; NuGet without `packages.lock.json` scans direct package declarations only, and Maven and Gradle declarations are read from the build files rather than from a resolved tree. Unpinned or conflicting versions are marked **not checked**, never assumed clean.
+How complete the list is depends on the ecosystem:
+
+- RubyGems and Cargo lockfiles include every package, including those brought in by other packages.
+- NuGet without `packages.lock.json` checks only the packages your project declares directly.
+- Maven and Gradle declarations are read from the build files, not from a full list of installed packages.
+
+A package without one exact version, or with conflicting versions, is marked **not checked**, never assumed clean.
 
 ## Monorepos
 
-Workspace members declared through npm or yarn workspaces, or in `pnpm-workspace.yaml`, are discovered automatically and their dependencies deduplicated into a single view. Internal `workspace:` / `file:` / `link:` dependencies are excluded, since they are your own packages rather than third-party ones.
+A monorepo is one repository holding several projects. Workspace members declared through npm or yarn workspaces, or in `pnpm-workspace.yaml`, are found automatically, and their dependencies are combined into a single view, with a repeated package listed once. Internal `workspace:` / `file:` / `link:` dependencies are excluded, since they are your own packages rather than third-party ones.
 
 ## What the table shows
 
@@ -62,7 +70,7 @@ A CVE is a public identifier for a known security vulnerability. Advisories desc
 
 ## Confidence labels
 
-A count of vulnerabilities is not much use on its own; what matters is which ones you can resolve. Every advisory carries a label describing how actionable it is:
+A count of vulnerabilities is not much use on its own; what matters is which ones you can fix. Every advisory carries a label saying how you can act on it:
 
 | Label | What it means |
 | --- | --- |
@@ -73,7 +81,7 @@ A count of vulnerabilities is not much use on its own; what matters is which one
 
 ## Unverifiable advisories are never shown
 
-An advisory record without a verifiable id or severity is dropped rather than displayed, and the footer discloses how many were skipped. Duplicate records describing the same underlying advisory are collapsed into a single row.
+An advisory record without an id or severity that can be checked is dropped rather than shown, and the footer says how many were skipped. Duplicate records describing the same underlying advisory are collapsed into a single row.
 
 If a lookup fails outright, through a network error or a registry outage, that package is marked **not checked** rather than assumed clean. "No vulnerabilities found" and "the check did not complete" mean different things, and the table distinguishes them.
 

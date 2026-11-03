@@ -12,17 +12,19 @@ A pre-push hook is a command that runs automatically before Git sends your chang
 
 ## Installing
 
-Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the pre-push hook and makes it executable.
+Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the pre-push hook file and makes it executable so Git can run it.
 
-On first activation in a git repository, Iris Code also offers to install it for you. Declining is remembered per workspace, so you are not asked again.
+The first time Iris Code starts in a Git repository, it also offers to install the hook for you. If you decline, that choice is remembered for the workspace and you are not asked again.
 
 ## Husky and custom hook paths
 
-Iris Code follows Git's active `core.hooksPath` rather than assuming `.git/hooks`.
+Git normally looks for hooks in `.git/hooks`, but a project can point it somewhere else with the `core.hooksPath` setting. Iris Code follows that setting, so the check goes into the file Git will actually run.
 
-In a Husky project the block goes in `.husky/pre-push`, which is the file Husky intends you to edit. Any script already there is kept. Husky v9 sets `core.hooksPath` to `.husky/_` and generates dispatcher files in it; Iris Code leaves those alone, because they are regenerated on install and an edit to them would not survive.
+Husky is a popular tool for managing Git hooks. In a Husky project the Iris Code check goes in `.husky/pre-push`, which is the file Husky intends you to edit, and any script already there is kept.
 
-Any other `core.hooksPath` receives the block in that directory's `pre-push` file. The sidebar's hook badge watches whichever file Git will actually run, so it stays accurate whatever the layout.
+Husky v9 sets `core.hooksPath` to `.husky/_` and generates its own helper files there. Iris Code leaves those alone, because Husky regenerates them on install and an edit to them would be lost.
+
+With any other `core.hooksPath`, the check goes in the `pre-push` file in that directory. The sidebar's hook badge watches whichever file Git will run, so it stays accurate whatever the layout.
 
 ## What happens on push
 
@@ -37,11 +39,11 @@ Checking workspace against threshold 70...
 Push blocked - 1 file below threshold (70)
 ```
 
-The hook resolves your project root, runs `iris check` using the bundled CLI, and either blocks with the list above or exits cleanly and allows the push.
+The hook finds your project root and runs `iris check` with the command-line tool bundled with Iris Code. If any file fails, the push is stopped and you see a list like the one above. Otherwise the push goes ahead.
 
 ## Configuring the threshold
 
-Set `minHealthScore` in `.irisconfig.json` to control the minimum acceptable score. It defaults to 70.
+The threshold is the minimum health score a file must reach. Set it with `minHealthScore` in `.irisconfig.json`. It defaults to 70.
 
 ```json
 {
@@ -49,7 +51,9 @@ Set `minHealthScore` in `.irisconfig.json` to control the minimum acceptable sco
 }
 ```
 
-On an established codebase, an absolute threshold can block a large share of the project from the first day, which usually ends with the hook being uninstalled. `gateBaselineMode` avoids that. Each existing file is judged against its own locked score, so the rule becomes "do not make this worse" rather than "fix everything first". New files still have to clear `minHealthScore`.
+On an established codebase, a fixed minimum can block a large share of the project from the first day, which usually ends with the hook being uninstalled.
+
+`gateBaselineMode` avoids that. Each existing file is judged against its own score at the time you locked a baseline, a saved snapshot of scores. The rule becomes "do not make this worse" rather than "fix everything first". New files still have to reach `minHealthScore`.
 
 ```json
 {
@@ -59,19 +63,26 @@ On an established codebase, an absolute threshold can block a large share of the
 ```
 
 <Tip>
-  An existing pre-push hook is left intact. Iris Code appends its own block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, so anything already in the file continues to run.
+  An existing pre-push hook is left in place. Iris Code adds its own block between `# >>> iris-hook-start <<<` and `# >>> iris-hook-end <<<` markers, so anything already in the file keeps running.
 </Tip>
 
 ## Analytics tracking
 
-Every hook run is recorded as a pass or fail in your account Analytics, so enforcement activity is visible over time without reading terminal history. See [iriscode.co/account/analytics](https://www.iriscode.co/account/analytics).
+Each time the hook runs, the result is recorded as a pass or fail in your account Analytics, so you can see how often it stops a push without reading terminal history. See [iriscode.co/account/analytics](https://www.iriscode.co/account/analytics).
 
 ## Uninstalling
 
-Run **Iris Code: Uninstall Git Hook**. Only the Iris Code block between the markers is removed. If that leaves nothing but a shebang, the hook file is deleted.
+Run **Iris Code: Uninstall Git Hook**. Only the Iris Code block between the markers is removed. If nothing else is left in the file apart from its first `#!` line, the hook file is deleted.
 
 ## Verification integrity
 
-The integrity step is Free even when score enforcement is unavailable. It compares each pushed ref against its remote starting revision, rather than comparing the working tree against HEAD. A new branch uses an upstream merge base; deleted refs are skipped.
+The hook also checks whether a push makes your tests or rules weaker, for example by deleting or skipping a test or lowering a threshold. This step is Free and runs even when the score check is not available to you. Installing the hook itself still needs Pro.
 
-Removed or disabled tests and loosened rules block by default. Reasoned `Iris-Allow` trailers are read from commits in the same pushed range. Existing generated Node and native hook blocks forward stdin, so this step does not require a hook-text change. See [verification integrity](/features/verification-integrity).
+It compares what you are pushing with what the remote branch already has, rather than comparing your uncommitted files with your last commit:
+
+- For a new branch, which has nothing on the remote yet, it compares with the point where your branch split off from the branch it tracks.
+- Pushing a branch deletion is not checked.
+
+Removed or switched-off tests and loosened rules stop the push by default. To accept a deliberate change, add an `Iris-Allow` line with a reason to a commit message in the push.
+
+Hooks that earlier versions of Iris Code installed already pass Git's push details to this check, so it runs without changing the hook file. Reinstall the hook after updating to 1.40.0 or later if you also want warnings shown when a push passes. See [verification integrity](/features/verification-integrity).

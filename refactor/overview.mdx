@@ -1,25 +1,29 @@
 ---
 title: "Refactor playbook"
 sidebarTitle: "Overview"
-description: "Reorganise code with a plan, small fixes and a check against a saved starting point."
+description: "Reorganise code with a plan, small fixes you can apply, and a check that the result is genuinely better."
 ---
 
-Refactoring means reorganising code to make it easier to understand and maintain while keeping what the program does the same. The Refactor Playbook gives you a plan, offers small fixes you can apply, and checks the result against a saved copy of the code.
+Refactoring means reorganising code so it is easier to understand and maintain, without changing what the program does. It is easy to get wrong: a file can look shorter while doing the same work, or a moved function can break the files that use it.
+
+The Refactor Playbook gives you a plan for the change, offers small fixes it can apply for you, and then checks your edits against a saved copy of the code from before you started. Planning and checking a single file is Free.
 
 ## Acting on the results
 
 Open **Refactor plan** from the File, Folder or Workspace tab in VS Code or a JetBrains IDE. Opening the panel does not read your code; **Get plan** starts the scan.
 
-File plans and verification are Free. A new folder or workspace plan can use the selected personal or team allowance. The earned plan retains its baseline; approved same-plan fixes and verification are included without spending another project action.
+File plans and verification are Free. A new folder or workspace plan can use one action from the selected personal or team allowance. Once you have that plan, it keeps its saved starting point, and applying its approved fixes and verifying it do not use another project action.
 
 <Frame caption="Make one change at a time, then check it before continuing.">
   <img className="block dark:hidden" src="/images/guides/refactor-flow-light.svg" alt="Get a plan and saved starting point, make one reviewed change, verify and correct problems, then run tests and the gate." width="480" />
   <img className="hidden dark:block" src="/images/guides/refactor-flow-dark.svg" alt="Get a plan and saved starting point, make one reviewed change, verify and correct problems, then run tests and the gate." width="480" />
 </Frame>
 
-**Get plan** reads the files you selected and the surrounding code it needs to understand them. It includes unsaved editor changes and looks for the layout your project already uses.
+**Get plan** reads the files you selected and the surrounding code it needs to understand them. It includes changes you have not saved yet, and looks at how your project already lays out its files.
 
-It also saves a copy in editor memory. This starting point is called the **baseline**: verification compares your later edits with it. Getting a new plan replaces that saved starting point.
+It also keeps a copy of the code in the editor's memory. This saved starting point is called the **baseline**: verification compares your later edits with it. Getting a new plan replaces it.
+
+A plan has four parts:
 
 | Part | Purpose | Output |
 |---|---|---|
@@ -42,9 +46,11 @@ After editing, choose **Verify refactor**. If it finds a problem, **Copy correct
 |---|---|---|
 | File plan and verification | Yes | Yes |
 | Top-level refactor settings | Yes | Yes |
-| Language overrides | Ignored with a warning | Applied |
+| Language overrides | Applied when signed in; ignored with a warning otherwise | Applied |
 | Folder and workspace plans in the editor | Within monthly project allowance | Included local access |
 | MCP folder and workspace plans | Within monthly project allowance | Included local access |
+
+MCP is the connection that lets a coding agent call Iris Code tools; see [Agent integration](/refactor/agents).
 
 Iris Code does not call an AI model to create or check a plan. Verification can find problems, but it cannot prove that your program still behaves exactly the same. Review the changes, run your tests and run the gate before treating the work as complete.
 

@@ -11,7 +11,7 @@ Iris Code scans supported files when you open or save them. Open the sidebar's *
 
 ## The File tab
 
-It opens with a readiness summary: the score, any blockers, whether a hook is installed, and the trend direction. Below that is the full breakdown:
+The tab starts with a short summary: the score, any blockers, which are the most serious findings, whether a Git hook is installed to check code before it is pushed, and which way the score is moving. Below that is the full breakdown:
 
 | What you see | What it means |
 |---|---|
@@ -26,7 +26,7 @@ It opens with a readiness summary: the score, any blockers, whether a hook is in
 
 ## TypeScript-specific checks
 
-Four additional signals appear in `.ts`, `.tsx`, `.js` and `.jsx` files. They are hidden entirely in Go, Python, Ruby, C#, Java, and Rust rather than shown as empty rows.
+Four extra checks appear for `.ts`, `.tsx`, `.js` and `.jsx` files. Each one points to a place where TypeScript's type checking has been bypassed or left incomplete. They are hidden entirely in Go, Python, Ruby, C#, Java, and Rust rather than shown as empty rows.
 
 | Metric | What it counts |
 |---|---|
@@ -56,7 +56,7 @@ Every finding is clickable and jumps to the exact line.
 
 ## Security smells
 
-Nine patterns, in every supported language. They count as **Blockers**, the same category as hardcoded secrets, rather than as warnings.
+Security smells are coding patterns that often lead to a security problem, such as building a database query by joining text together. Iris Code looks for nine of them in every supported language. They count as **Blockers**, the same category as hardcoded secrets, rather than as warnings.
 
 | Pattern | What it catches |
 |---|---|
@@ -78,7 +78,7 @@ All nine share one toggle, `enableSecuritySmells`.
 
 ## Warnings
 
-Five warning types, each with a threshold you set in `.irisconfig.json` and a severity you can override independently.
+Warnings flag code that has grown too large or is set up unusually. There are five types. Each has a threshold, the limit you set in `.irisconfig.json`, and a severity you can change on its own.
 
 | Type | Severity | Fires when |
 |---|---|---|

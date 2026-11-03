@@ -4,11 +4,13 @@ sidebarTitle: "GitHub Actions"
 description: "Run iris gate on pushes and pull requests, publish GitHub annotations, and fail the workflow when configured limits are exceeded."
 ---
 
-GitHub Actions runs automated checks when you push code or update a pull request. Adding the Iris Code gate checks the changes against the same standards you use locally. The result appears in GitHub, where reviewers can see which thresholds passed or failed.
+GitHub Actions is GitHub's built-in way to run automated checks, often called CI, each time you push code or update a pull request. Adding Iris Code to it checks every change against the same standards you use in your editor.
+
+The result appears in GitHub, where reviewers can see which limits passed or failed and which lines caused a problem.
 
 ## The workflow
 
-Drop this in `.github/workflows/iris.yml`:
+Add this file at `.github/workflows/iris.yml`:
 
 ```yaml
 name: Iris Code
@@ -35,10 +37,12 @@ jobs:
           licence-token: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-The action installs the CLI and runs `iris gate . --format github`. Pinning `@v1` means fixes to the invocation reach you without editing anything.
+The action installs the Iris Code CLI (the command-line tool) and runs `iris gate . --format github`. Because the file names `@v1`, fixes to how the action runs the CLI reach you without editing anything.
 
 <Tip>
-  Add `IRIS_LICENCE_TOKEN` under **Settings → Secrets and variables → Actions**. Directory scans need Pro. Without a token the step runs as Free and skips the directory check rather than failing your build, so a missing secret never turns the pipeline red for the wrong reason.
+  Add `IRIS_LICENCE_TOKEN` under **Settings → Secrets and variables → Actions**. Scanning a whole directory needs Pro.
+
+  Without a token the step runs as Free and skips the directory check instead of failing. A missing secret therefore never fails your build for the wrong reason.
 </Tip>
 
 ### Inputs
@@ -57,13 +61,15 @@ The action installs the CLI and runs `iris gate . --format github`. Pinning `@v1
 | `node-version` | `20` | Node version used to run the CLI |
 | `working-directory` | `.` | Run from here if your project is not at the repository root |
 
-The action also sets an `exit-code` output, matching the codes in the table further down.
+The action also sets an `exit-code` output, using the codes in the [exit codes](#exit-codes) table below.
 
-There is deliberately no general `threshold` input. Gate thresholds live in `.irisconfig.json`, which is committed and reviewable, so a workflow input that quietly overrode them would defeat the point of having a written policy. `command: gate` rejects `min-score` rather than accepting it and enforcing something you did not ask for. `min-score` applies to `command: check`, where the CLI supports `--min-score`.
+There is deliberately no general `threshold` input. Your limits live in `.irisconfig.json`, which is committed and can be reviewed like any other change. A workflow setting that quietly overrode them would defeat the point of having them written down.
+
+For the same reason, `command: gate` refuses `min-score` rather than accepting it and checking something you did not ask for. `min-score` only applies to `command: check`, where the CLI supports `--min-score`.
 
 ## Running the CLI directly
 
-The action is a wrapper. If you would rather see the exact commands, or pin your own CLI version, call it yourself:
+The action is a convenience around the CLI. If you would rather see the exact commands, or choose your own CLI version, run it yourself:
 
 ```yaml
       - uses: actions/setup-node@v5
@@ -79,11 +85,11 @@ The action is a wrapper. If you would rather see the exact commands, or pin your
           IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-**Iris Code: Add GitHub Actions Workflow** writes this version of the file for you, filled in with your current threshold.
+The editor command **Iris Code: Add GitHub Actions Workflow** writes this version of the file for you, filled in with your current threshold.
 
 ## Requiring a passing check before merge
 
-A failed workflow reports a problem, but it does not automatically prevent a merge. To enforce it, add the Iris Code job as a required status check in a GitHub branch protection rule or ruleset for your main branch. Run the workflow first so GitHub can list the check.
+A failed workflow reports a problem, but on its own it does not stop anyone merging. To make GitHub refuse the merge, add the Iris Code job as a required status check in a branch protection rule or ruleset for your main branch. Run the workflow once first, so GitHub has the check to list.
 
 See GitHub's [required status checks guide](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging). Use the job name shown in your workflow, such as `iris` in the example above.
 
@@ -102,13 +108,13 @@ No config file means a threshold of 70.
 
 ## Annotations on the diff
 
-`--format github` is what makes findings appear on the pull request itself, in red, on the exact line. No log-scraping, no extra action. It also writes a pass/fail table into the run's job summary.
+`--format github` makes each finding appear on the pull request itself, marked in red on the exact line, so reviewers do not have to search the run's log. It also writes a pass/fail table into the run's job summary.
 
-It works on `iris check` too, not just `iris gate`.
+It works with `iris check` as well as `iris gate`.
 
 ## Saving a machine-readable report
 
-To hang onto a machine-readable report whether the gate passed or failed, add two steps after the gate:
+To keep a JSON report that other tools can read, whether the gate passed or failed, add two steps after the gate:
 
 ```yaml
       - name: Save JSON report
@@ -124,11 +130,11 @@ To hang onto a machine-readable report whether the gate passed or failed, add tw
           path: iris-report.json
 ```
 
-`if: always()` is what makes the report available after a failed gate, which is when it is most useful.
+`if: always()` makes the steps run even after the gate fails, which is when the report is most useful.
 
 ## Slack notifications
 
-Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as failing the build. See [Slack notifications](/enforcement/slack-notifications).
+Add an `IRIS_SLACK_WEBHOOK` secret and a failed gate is also posted to a Slack channel. See [Slack notifications](/enforcement/slack-notifications).
 
 ## Exit codes
 
@@ -139,10 +145,10 @@ Add an `IRIS_SLACK_WEBHOOK` secret and the result posts to Slack as well as fail
 | `2` | Bad arguments or a broken config |
 | `3` | Your Iris Code licence could not be verified, so the gate did not run |
 
-Exit `3` is not a gate failure. It means the gate could not establish that you are entitled to run it, because the licence server was unreachable or was rate limiting a repeated caller. It stops there instead of reporting a pass it never checked. Retry the job; the code is not the problem.
+Exit code `3` is not a gate failure. It means Iris Code could not confirm your licence, because the licence server was unreachable or was turning away too many repeated requests. Rather than report a pass it never checked, the gate stops there. Retry the job; your code is not the problem.
 
-A repository with no Pro licence is a different case and still exits `0`.
+A repository with no Pro licence at all is a different case and still exits `0`.
 
 <Note>
-  Not on GitHub? **Iris Code: Add CI Pipeline Snippet** generates the equivalent for GitLab CI, Bitbucket Pipelines, an npm script, or a plain shell step. Inline annotations are GitHub-only; everywhere else the exit code does the work.
+  Not on GitHub? **Iris Code: Add CI Pipeline Snippet** generates the equivalent for GitLab CI, Bitbucket Pipelines, an npm script, or a plain shell step. Findings marked on the changed lines are GitHub-only; elsewhere the exit code decides whether the job passes.
 </Note>

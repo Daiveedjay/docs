@@ -1,22 +1,24 @@
 ---
 title: "Custom scoring weights: tune the health score for your team"
 sidebarTitle: "Scoring weights"
-description: "Control how findings affect the health score with signed-in custom healthScoreWeights settings in .irisconfig.json."
+description: "Choose how many points each kind of finding takes off the health score, using healthScoreWeights in .irisconfig.json. Available when signed in."
 ---
 
-A scoring weight is the number of points a finding takes from a file's health score. Custom weights let you make particular findings matter more or less for your project. For example, increasing the secret weight makes a detected access key reduce the score more strongly.
+Every file gets a health score out of 100, and each finding takes some points off it. A scoring weight is how many points one finding of a given kind takes off.
+
+Custom weights let you make particular findings matter more or less for your project. For example, raising the weight for secrets makes a detected access key lower the score further.
 
 <Note>
-Custom weights are available when signed in, independently of your monthly project balance. Set `healthScoreWeights` in `.irisconfig.json`, or use [Config Studio](/configuration/config-studio). The settings continue to affect permitted file checks after allowance exhaustion.
+Custom weights are available when you are signed in, and do not depend on how many monthly project actions you have left. Set `healthScoreWeights` in `.irisconfig.json`, or use [Config Studio](/configuration/config-studio). Your weights keep applying to the file checks you can run even after your monthly allowance is used up.
 </Note>
 
 ## What everything costs by default
 
-Leave a key out and you get the active preset's value for it, or the global default below if you haven't set a preset.
+If you leave a key out, Iris Code uses the value from your preset, or the default below if you have not set a preset.
 
 | Key | Default | What it penalises |
 |-----|---------|-------------------|
-| `hardcodedSecret` | `10` | Per hardcoded secret found - largest single deduction |
+| `hardcodedSecret` | `10` | Per hardcoded secret found; the largest single deduction |
 | `disabledTlsVerification` | `7` | Per disabled-TLS-verification finding |
 | `openRedirect` | `7` | Per open-redirect finding |
 | `errorWarning` | `5` | Per error-severity structural warning |
@@ -32,26 +34,26 @@ Leave a key out and you get the active preset's value for it, or the global defa
 | `unusedFunction` | `2` | Per unused function definition |
 | `insecureRandom` | `2` | Per insecure-RNG finding |
 | `debugFlagsEnabled` | `2` | Per debug-flag-enabled finding |
-| `bareSuppression` | `2` | Per bare `iris-ignore` comment - a suppression directive missing its required reason, or naming no valid rule |
+| `bareSuppression` | `2` | Per bare `iris-ignore` comment: a suppression missing its required reason, or naming no valid rule |
 | `consoleLog` | `1` | Per console/debug print statement |
 | `longParamList` | `1` | Per long parameter list finding |
 | `unusedVar` | `1` | Per unused variable |
 | `hardcodedLocalhost` | `1` | Per hardcoded-localhost-URL finding |
 
 <Note>
-  The nine security smell keys (`evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`) were added alongside [Security Smells](/features/security-smells) detection. The `bareSuppression` key was added alongside [Inline Suppressions](/enforcement/suppressions) - a valid, reasoned suppression costs nothing, but a bare one is itself a finding. The `duplicateCode` key was added alongside [Duplicate Code Detection](/features/duplicate-detection).
+  The nine security smell keys (`evalUsage`, `sqlConcatenation`, `insecureRandom`, `unsafeRegex`, `hardcodedLocalhost`, `disabledTlsVerification`, `debugFlagsEnabled`, `weakHashing`, `openRedirect`) were added alongside [Security Smells](/features/security-smells) detection. The `bareSuppression` key was added alongside [Inline Suppressions](/enforcement/suppressions): a valid suppression with a reason costs nothing, but a bare one is itself a finding. The `duplicateCode` key was added alongside [Duplicate Code Detection](/features/duplicate-detection).
 </Note>
 
 ## When to customise weights
 
-- Your team ships to a **regulated environment** and wants secrets to cost twice the default - set `"hardcodedSecret": 18`.
-- Your codebase is a **prototype** and left-in console logs are not a blocker - set `"consoleLog": 0`.
-- **TypeScript safety** is the team's top concern - bump `anyUsage` and `tsIgnore` above their preset values.
-- You want the health score to reflect only the findings you actually act on - **zero out the noise**.
+- Your team ships to a **regulated environment** and wants secrets to cost nearly twice the default: set `"hardcodedSecret": 18`.
+- Your codebase is a **prototype** and leftover console logs are not a problem: set `"consoleLog": 0`.
+- **TypeScript safety** is the team's top concern: raise `anyUsage` and `tsIgnore` above their preset values.
+- You want the health score to reflect only the findings you actually act on: set the others to `0`.
 
 ## Security-focused example
 
-Amplify the secrets penalty and make console logs carry more weight for audit-ready code:
+Make secrets cost more, and make console logs count for more, for code that has to pass an audit:
 
 ```json .irisconfig.json
 {
@@ -66,7 +68,7 @@ Amplify the secrets penalty and make console logs carry more weight for audit-re
 
 ## Softening noise for a legacy codebase
 
-Zero out findings your team has accepted as-is so the health score reflects only what you plan to fix:
+Set findings your team has accepted to `0`, so the health score reflects only what you plan to fix:
 
 ```json .irisconfig.json
 {
@@ -80,13 +82,13 @@ Zero out findings your team has accepted as-is so the health score reflects only
 ```
 
 <Warning>
-  Setting a weight to `0` means that finding type does **not** affect the health score at all - it still shows in the sidebar and still fires inline diagnostics if enabled, but it contributes nothing to the 0–100 number. Use this intentionally.
+  Setting a weight to `0` means that kind of finding does **not** affect the health score at all. It still shows in the sidebar, and still appears as an inline warning if those are turned on, but it takes nothing off the 0 to 100 score. Only do this on purpose.
 </Warning>
 
 ## Interaction with presets
 
-When a `presetId` is active, the preset's own weight values are the base. Any key you specify in `healthScoreWeights` overrides only that key - omitted keys inherit the preset's value. If you have no preset and no custom weights, the global defaults in the table above apply.
+When a `presetId` is set, the preset's own weights are the starting point. Each key you add to `healthScoreWeights` replaces only that one value, and every key you leave out keeps the preset's value. With no preset and no custom weights, the defaults in the table above apply.
 
 ## Configuring via Config Studio
 
-Open [Account → Config](https://www.iriscode.co/account/config), switch to **Custom** mode, then expand the **Custom scoring** accordion. Each weight field shows the current preset default next to the input - you only need to touch the keys you want to change. Click **Sync to VS Code** when done; only the non-default keys are written to the config file.
+Open [Account → Config](https://www.iriscode.co/account/config), switch to **Custom** mode, then expand the **Custom scoring** section. Each weight field shows the preset's value next to it, so you only need to change the keys you care about. Click **Sync to VS Code** when done; only the values you changed from the default are written to the config file.

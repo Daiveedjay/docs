@@ -1,11 +1,13 @@
 ---
 title: "Build gate: check project standards before compilation"
 sidebarTitle: "Build gate"
-description: "Run the configured Iris Code gate before the compiler starts and stop the build when project limits fail."
+description: "Run your Iris Code checks before the build starts, and stop the build when the code falls short of your project's limits."
 keywords: ["C#", "c sharp", "csharp", ".NET", "dotnet", "dotnet build", ".csproj", ".sln", "MSBuild", "Makefile", "prebuild"]
 ---
 
-A build gate checks your code before your build command runs. If the code fails your configured thresholds, the build stops and reports what needs attention. This adds a check to your existing build process without requiring an editor.
+A build gate checks your code each time you run your build command, before anything is compiled. If a file scores below the minimum your project has set, the build stops and lists what needs attention.
+
+It hooks into the build process you already have, so the check runs wherever the project is built, with or without an editor open.
 
 <Note>
   The build gate requires **Iris Code Pro**.
@@ -13,7 +15,7 @@ A build gate checks your code before your build command runs. If the code fails 
 
 ## Installing
 
-Run **Iris Code: Install Build Hook** from the command palette. Iris Code detects your project type and installs the hook. No manual edits to config files are needed.
+Run **Iris Code: Install Build Hook** from the command palette. Iris Code works out what kind of project you have and adds the check for you. You do not need to edit any files by hand.
 
 ## What it does
 
@@ -22,11 +24,11 @@ Run **Iris Code: Install Build Hook** from the command palette. Iris Code detect
     Looks for `package.json` (Node), `go.mod` (Go), `Cargo.toml` (Rust), `pyproject.toml` / `requirements.txt` (Python), `Gemfile` (Ruby), a `.csproj` / `.sln` (.NET), or `pom.xml` / `build.gradle` (Java).
   </Step>
   <Step title="Installs the hook">
-    - **Node**: adds a `prebuild` entry to `package.json`, chaining safely before any existing `prebuild` command.
-    - **Everything else**: writes an `iris-check` target into your Makefile and wires it as a prerequisite of the `build` or `all` target. Where the Makefile has to be created, its build command matches the project: `go build ./...`, `cargo build`, `dotnet build`, or `./gradlew build`, `gradle build` and `mvn test` for Java depending on which wrapper and build files are present.
+    - **Node**: adds a `prebuild` entry to `package.json`. If you already have a `prebuild` command, the Iris Code check runs first and your command still runs after it.
+    - **Everything else**: adds an `iris-check` target to your Makefile and makes the `build` or `all` target run it first. If there is no Makefile, Iris Code creates one with a build command that matches the project: `go build ./...`, `cargo build`, `dotnet build`, or, for Java, `./gradlew build`, `gradle build` or `mvn test` depending on which wrapper and build files are present.
   </Step>
   <Step title="Runs on every build">
-    If any file falls below `minHealthScore`, the build exits `1` and lists the offending files. Otherwise it proceeds normally.
+    If any file scores below `minHealthScore`, the build stops with exit code `1` and lists the files that failed. Otherwise the build carries on as normal.
   </Step>
 </Steps>
 
@@ -43,11 +45,11 @@ Checking 5 files against threshold 70...
 Build failed - 2 files below threshold (70)
 ```
 
-Every file is checked before the build fails, so the complete list appears at once rather than one problem per run.
+Every file is checked before the build stops, so you see the complete list at once rather than one problem per run.
 
 ## Configuring the threshold
 
-Set `minHealthScore` in `.irisconfig.json` to control the minimum acceptable score. It defaults to 70.
+The threshold is the minimum health score a file must reach. Set it with `minHealthScore` in `.irisconfig.json`. It defaults to 70.
 
 ```json
 {
@@ -56,13 +58,13 @@ Set `minHealthScore` in `.irisconfig.json` to control the minimum acceptable sco
 ```
 
 <Tip>
-  On Node projects, your existing `prebuild` command is preserved, and uninstalling restores the original state.
+  On Node projects, your existing `prebuild` command is kept, and uninstalling puts the file back the way it was.
 </Tip>
 
 ## Analytics tracking
 
-Every build hook run is recorded as a pass or fail in your account Analytics, so enforcement activity is visible without reading build logs. See [iriscode.co/account/analytics](https://www.iriscode.co/account/analytics).
+Each time the build gate runs, the result is recorded as a pass or fail in your account Analytics, so you can see how often it stops a build without reading build logs. See [iriscode.co/account/analytics](https://www.iriscode.co/account/analytics).
 
 ## Uninstalling
 
-Run **Iris Code: Uninstall Build Hook**. Only the Iris Code entry is removed. On Node projects, if no other `prebuild` commands remain, the key is deleted rather than left empty.
+Run **Iris Code: Uninstall Build Hook**. Only the Iris Code entry is removed. On Node projects, if no other `prebuild` commands remain, the `prebuild` key is deleted rather than left empty.

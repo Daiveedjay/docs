@@ -1,20 +1,24 @@
 ---
-title: "Gate Preview: compare project results before enabling enforcement"
+title: "Gate Preview: see how your project would score before you enforce a standard"
 sidebarTitle: "Gate Preview"
-description: "Compare the project with six built-in gate presets before writing configuration, installing a hook, or blocking a push."
+description: "Check your project against six built-in presets before you write any configuration, install a hook or block a push."
 ---
 
-A gate decides whether code meets your project standards. Gate Preview shows whether the current project would pass and which thresholds would fail, without blocking a push or build. Use it to choose realistic settings before you enforce them.
+A gate is the pass or fail decision Iris Code makes by comparing your code with your project's minimum standards. Before you start stopping pushes or builds, it helps to know how the code would do today.
+
+Gate Preview shows whether the current project would pass, and which limits it would fail, without blocking anything. Use it to pick settings your team can actually meet before you enforce them.
 
 ## Opening it
 
 Open **Improve** and choose the gate preview. You can also open **Preview Gate** from the **File tab**.
 
-When a saved project scan is selected, the preview uses that captured result. It shows the saved scope and capture time, and does not rescan current source or spend another project action. Without an earned result, the basic preview checks the current workspace against the presets, respecting your `ignoreFiles` list.
+If you select a saved project scan, the preview uses that saved result. It shows which files the scan covered and when it was taken, and it does not rescan your code or use another project action. A project action is one unit of the monthly allowance that folder and workspace scans use; see [Free project actions](/free).
+
+Without a saved result, the basic preview checks the current workspace against the presets, skipping any files in your `ignoreFiles` list.
 
 ## The six presets
 
-Ordered from most lenient to most strict:
+A preset is a ready-made set of limits. They are listed here from most lenient to most strict:
 
 | Preset | Min score | What it's for |
 | --- | --- | --- |
@@ -27,18 +31,22 @@ Ordered from most lenient to most strict:
 
 ## What the preview shows
 
-- **Scan average** - a single score across the files in the displayed scope
-- **Files analysed** - how many were included
-- **Threshold card** - which presets you already pass, and the next one you would fail
-- **Recommendation** - the strictest preset you could adopt today with nothing blocked
-- **Focus card** - one preset in detail, with controls to step through the others and an **Apply** button
-- **Preset grid** - all six at a glance, each clickable
+- **Scan average**: one score across the files in the displayed scope
+- **Files analysed**: how many files were included
+- **Threshold card**: which presets you already pass, and the next one you would fail
+- **Recommendation**: the strictest preset you could adopt today without anything being blocked
+- **Focus card**: one preset in detail, with controls to step through the others and an **Apply** button
+- **Preset grid**: all six at a glance, each clickable
 
-The focus card shows the preset, its minimum score, how many files fail, and their file details when the result is earned or you have Pro access. **Apply** writes `presetId` into `.irisconfig.json` directly, without opening the file.
+The focus card shows the preset, its minimum score and how many files fail. It also lists those files with their details when you are looking at a saved scan result or have Pro.
+
+**Apply** writes `presetId` into `.irisconfig.json` for you, without opening the file.
 
 ## Free and Pro
 
-The preview is Free. Opening earned file details does not spend another action. Enforcing a gate at push, build or CI boundaries requires applicable paid access; a preview does not install a hook or prevent a push.
+The preview is Free. Opening the file details of a scan you have already run does not use another action.
+
+Stopping code at a push, a build or a CI run needs paid access. A preview on its own does not install a hook or prevent a push.
 
 | | Free | Pro |
 | --- | --- | --- |
@@ -47,14 +55,16 @@ The preview is Free. Opening earned file details does not spend another action. 
 | Per-file drilldown with scores | From an earned scan | ✓ |
 | Hook enforcement | - | ✓ |
 
+An earned scan is a project scan you have already run and can reopen at no further cost.
+
 ## Acting on the results
 
-**On Free**, add `"presetId": "balanced"` (or whichever preset you chose) to `.irisconfig.json`. The whole team then analyses against the same thresholds. Nothing is blocked yet, but the standard is agreed and committed.
+**On Free**, add `"presetId": "balanced"` (or whichever preset you chose) to `.irisconfig.json`. Everyone on the team then gets the same results from the same limits. Nothing is blocked yet, but the standard is agreed and committed.
 
-**On Pro**, install the [git hook](/enforcement/git-hook) or the [build gate](/enforcement/build-gate) to start blocking files below your chosen threshold.
+**On Pro**, install the [git hook](/enforcement/git-hook) or the [build gate](/enforcement/build-gate) to start stopping files that score below your chosen threshold.
 
-**If a large number of files fail**, start at `legacy` or `balanced` and tighten over time rather than adopting the strictest preset immediately. A gate that fails constantly tends to get disabled.
+**If many files fail**, start at `legacy` or `balanced` and tighten over time rather than jumping to the strictest preset. A gate that fails all the time tends to get switched off.
 
 <Note>
-  Gate Preview never writes config or blocks anything on its own. Applying a preset is the only action that changes a file, and it requires an explicit click.
+  Gate Preview never writes config or blocks anything on its own. Applying a preset is the only action that changes a file, and only when you click **Apply**.
 </Note>

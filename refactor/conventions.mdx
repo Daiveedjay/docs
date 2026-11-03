@@ -4,9 +4,11 @@ sidebarTitle: "Conventions"
 description: "Understand how Iris Code uses your existing folder and naming patterns when it suggests where code should move."
 ---
 
-A convention is the way your project already organises its code, such as keeping types in a types folder. Iris Code looks for these patterns so a refactor fits your project rather than introducing a different layout.
+A convention is the way your project already organises its code, such as keeping types in a types folder. Iris Code looks for these patterns so a refactor fits your project rather than introducing a different layout. When a plan suggests moving code, the suggested destination comes from these patterns, from your own settings, or is marked as a proposal for you to review.
 
 ## Detected evidence
+
+Each pattern Iris Code looks for feeds particular suggestions:
 
 | Convention | Used by |
 |---|---|
@@ -19,9 +21,13 @@ A convention is the way your project already organises its code, such as keeping
 | Native package, namespace or module layout | Go, Python, Ruby, C#, Java and Rust moves |
 | Type location | Type moves |
 
+A barrel module is a file, such as an `index.ts`, that gathers other files' exports in one place.
+
 Iris Code only calls a layout a detected convention when at least three different files support it and more than 60% of the relevant files follow it. Exactly 60% is not enough.
 
 For example, four of five relevant files following the same layout can qualify; two of two cannot. Without enough evidence, the result says **No project convention detected** and labels the suggested location `proposal`, so you know it needs review.
+
+Each suggested location is labelled with where it came from:
 
 | Origin | Meaning |
 |---|---|
@@ -30,6 +36,8 @@ For example, four of five relevant files following the same layout can qualify; 
 | `proposal` | There is insufficient evidence; review the suggested location |
 
 ## Configuration
+
+To choose the locations yourself, set them under `refactor.destinations`. A configured location always wins over a detected one.
 
 ```json
 {
@@ -45,7 +53,7 @@ For example, four of five relevant files following the same layout can qualify; 
 }
 ```
 
-Each path starts from your project folder and must stay inside it. These locations belong to that project, so Config Studio does not include them; syncing settings keeps the values already in the destination project.
+Each path starts from your project folder and must stay inside it. These locations belong to that project, so Config Studio does not include them. Syncing settings from Config Studio keeps the values already in the project you sync to.
 
 Vue and Svelte keep their component layout. Their language settings come from the language declared in the component's script.
 

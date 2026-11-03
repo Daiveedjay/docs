@@ -1,16 +1,18 @@
 ---
-title: "Iris Code CLI: check and enforce project standards from the terminal"
+title: "Iris Code CLI: check your code from the terminal"
 sidebarTitle: "Overview"
-description: "Use @iris-code/cli to run the same deterministic checks and gates from a terminal, git hook, build script, or CI pipeline."
+description: "Use @iris-code/cli to run the same checks as the editor from a terminal, a Git hook, a build script or a CI pipeline."
 ---
 
-The command-line interface (CLI) lets you use Iris Code by typing commands in a terminal. It can scan code, check packages and run a gate without opening an editor. This makes it useful for scripts, automated checks and developers who prefer the terminal.
+The command-line interface (CLI) is a set of commands you type in a terminal. It runs the same checks as the Iris Code editor extension: it can scan code, check packages before you install them and decide whether a project meets its standards, all without opening an editor.
+
+That makes it the right tool for anything automated, such as a check before every push or a step in your build pipeline, and for developers who prefer the terminal.
 
 ## When to use which
 
-The extension is interactive. It scores files as you work and puts findings next to the code you are writing.
+The extension is interactive. It scores files as you work and shows findings next to the code you are writing.
 
-The CLI scans, prints a result and returns a status code that another tool can read. Hooks, build scripts and automated pipelines use that code to decide whether to continue.
+The CLI scans, prints a result and returns a number called an exit code. Other tools read that number to decide what to do next: a Git hook, a build script or an automated pipeline can stop when the check fails and carry on when it passes.
 
 ## Installing
 
@@ -26,14 +28,16 @@ npm install -g @iris-code/cli
 
 ## Updating
 
-`npm install -g` does not auto-update. If a command you expect is missing (`iris: unknown command: sbom`) or the CLI crashes on exit, you are almost certainly running an old global install - a new npm publish never touches whatever version is already on your PATH. Update it explicitly:
+`npm install -g` does not update itself. Publishing a new version to npm never changes the copy already installed on your machine, so you keep running the old one until you update it.
+
+An old install is the usual cause when a command you expect is missing (`iris: unknown command: sbom`) or the CLI crashes on exit. Update it explicitly:
 
 ```bash
 npm install -g @iris-code/cli@latest
 iris --version
 ```
 
-Confirm the printed version matches the [latest CLI release](https://www.iriscode.co/changelog). If you have multiple Node versions or package managers installed, `which iris` (macOS/Linux) or `Get-Command iris` (PowerShell) shows exactly which install is on your PATH.
+Confirm the printed version matches the [latest CLI release](https://www.iriscode.co/changelog). If you have several Node versions or package managers installed, `which iris` (macOS/Linux) or `Get-Command iris` (PowerShell) shows exactly which install is on your PATH.
 
 ## Quick start
 
@@ -47,67 +51,73 @@ Confirm the printed version matches the [latest CLI release](https://www.iriscod
     ```bash
     iris auth login
     ```
-    A browser window opens for OAuth sign-in. Your credentials are saved to `~/.iris/credentials` for subsequent commands.
+    A browser window opens so you can sign in. Your credentials are saved to `~/.iris/credentials` for later commands.
   </Step>
   <Step title="Scan the current directory">
     ```bash
     iris check .
     ```
-A single-file check is Free. For a deliberate whole-project inspection, run `iris check . --inspect`; it uses the selected project allowance and records a captured result. A blocking directory check or CI gate requires paid enforcement access.
+    Checking a single file is Free.
+
+    To scan the whole project once, run `iris check . --inspect`. This uses your project allowance and saves the result so you can open it again.
+
+    A directory check that blocks, or a gate in CI, needs paid enforcement access.
   </Step>
 </Steps>
 
 ## Free commands
 
-These commands are available without an Iris Code Pro licence:
+These commands work without an Iris Code Pro licence:
 
-- **`iris init`** - set a project up: asks three short questions, recommends a preset, writes `.irisconfig.json`, offers the package guard, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows
-- **`iris fix --safe <file>`** - remove findings Iris Code can prove are safe to remove, on a single file; previews by default and never writes without confirmation
-- **`iris refactor <file>`** - a refactor plan for one file, with `--verify` to compare the result with git HEAD; see the [refactor playbook](/refactor/overview)
-- **`iris check <file>`** - single-file health scan; scores and prints findings for one source file
-- **`iris graph --focus <file>`** - one file's imports and importers, from the same resolver as the [Code Map](/features/code-map)
-- **`iris install` / `iris remove`** - check packages with the [package guard](/agents/package-guard) before installing them, or check a whole cloned project before its install runs; `iris remove` removes packages with the project's package manager
-- **`iris secrets`** - scans the whole project for hardcoded secrets, API keys, and tokens; no authentication required
-- **`iris security`** - scans the whole project for security smells (eval usage, SQL injection, insecure RNG, weak hashing, and more); no authentication required
-- **`iris schema`**: read schema structure or focused-table usage; use `--evidence <evidence-id>` for captured aggregate usage
-- **`iris report`** - export an HTML health report, a PNG or SVG card, or a PDF with `--format`
-- **`iris config init` / `iris config validate`** - interactively generate `.irisconfig.json` from a preset, or validate an existing one
-- **`iris hook git status` / `iris hook build status`** - show whether the git pre-push hook and build hook are currently installed
-- **`iris hook agent install|uninstall|status`** - add the package guard hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI or Windsurf
-- **`iris slack setup|test|manifest`** - configure and test Slack notifications sent directly from your own CI
-- **`iris rules`** - write this project's configured thresholds into the file your coding agent already reads, generated from `.irisconfig.json`
-- **`iris mcp`**: connect agents to basic tools, project actions and owned results; fresh enforcement remains a separate paid capability
-- **`iris auth login|status|logout`** - manage authentication credentials
+- **`iris init`**: set a project up. It asks three short questions, recommends a preset, writes `.irisconfig.json`, offers the package guard, creates or refreshes the `AGENTS.md` rules block, and installs the pre-push hook where the licence allows.
+- **`iris fix --safe <file>`**: remove findings Iris Code can prove are safe to remove, in a single file. It previews by default and never writes without confirmation.
+- **`iris refactor <file>`**: a refactor plan for one file, with `--verify` to compare the result with your last commit (git HEAD). See the [refactor playbook](/refactor/overview).
+- **`iris check <file>`**: score one source file and print its findings.
+- **`iris graph --focus <file>`**: what one file imports and what imports it, read the same way as the [Code Map](/features/code-map).
+- **`iris install` / `iris remove`**: check packages with the [package guard](/agents/package-guard) before installing them, or check a whole cloned project before its install runs. `iris remove` removes packages with the project's package manager.
+- **`iris secrets`**: scan the whole project for hardcoded secrets, API keys and tokens. No sign-in needed.
+- **`iris security`**: scan the whole project for risky security patterns, such as `eval`, SQL built from strings, insecure random numbers and weak hashing. No sign-in needed.
+- **`iris schema`**: show your database structure, or how the code uses one table. Use `--evidence <evidence-id>` to read usage from a saved result.
+- **`iris sbom`**: export a CycloneDX 1.5 software bill of materials, a list of every package the project uses, without looking anything up online.
+- **`iris report`**: export an HTML health report, a PNG or SVG card, or a PDF with `--format`.
+- **`iris config init` / `iris config validate`**: create `.irisconfig.json` from a preset by answering questions, or check an existing one.
+- **`iris hook git status` / `iris hook build status`**: show whether the Git pre-push hook and the build hook are installed.
+- **`iris hook agent install|uninstall|status`**: add the package guard hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI or Windsurf.
+- **`iris slack setup|test|manifest`**: set up and test Slack notifications sent directly from your own CI.
+- **`iris rules`**: write this project's thresholds, taken from `.irisconfig.json`, into the file your coding agent already reads.
+- **`iris mcp`**: let a coding agent call Iris Code tools over MCP. Basic tools are Free, project scans and saved results use your project access, and fresh enforcement needs paid access.
+- **`iris auth login|status|logout`**: sign in, check your sign-in or sign out.
 
 ## Project inspection and enforcement
 
-Project inspection commands can use [Free allowances](/free); enforcement commands require applicable paid access. The commands below include both, so choose inspection or saved-result reads explicitly when you do not want to start enforcement:
+Some commands look at a whole project. An inspection scans and reports; it can use your [Free allowance](/free), the monthly amount of project scans your account can run. Enforcement fails a check so a push, build or pipeline stops, and it needs paid access.
 
-- **`iris check <dir> --inspect`**: scan a directory using project access, without running paid enforcement
-- **`iris check --staged --inspect`**: inspect only files staged in git
-- **`iris check --changed --inspect`**: inspect files changed since the last commit
-- **`iris deps`** - audit npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle dependencies for outdated versions and known CVEs, with installed versions resolved from your lockfile
-- **`iris cve`** - CVE severity gate for CI; exits `1` only when an advisory at or above a chosen severity is found
-- **`iris sbom`** - export a CycloneDX 1.5 software bill of materials without registry or advisory lookups
-- **`iris todos`** - list every `TODO`, `FIXME`, and `HACK` comment across the project
-- **`iris gate`** - the CI gate; exits `1` if `minHealthScore` or any configured `gateMax*` limit is exceeded (see [gate rules](/configuration/irisconfig))
-- **`iris graph`** without `--focus` - the whole import graph as text or JSON
-- **`iris hook git|build install|uninstall`** - install or remove git pre-push and build hooks
-- **`iris hook verify`** - warn in CI when a pushed commit has no pre-push hook record for a Team project; always exits `0`
+The commands below include both kinds. Choose an inspection, or read a saved result, when you do not want to start enforcement:
+
+- **`iris check <dir> --inspect`**: scan a directory using your project access, without running paid enforcement.
+- **`iris check --staged --inspect`**: inspect only the files you have staged with `git add`.
+- **`iris check --changed --inspect`**: inspect the files changed since the last commit.
+- **`iris deps`**: check npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle dependencies for outdated versions and known CVEs (published security advisories), using the installed versions in your lockfile.
+- **`iris cve`**: a CVE check for CI. It exits `1` only when it finds an advisory at or above the severity you choose.
+- **`iris todos`**: list every `TODO`, `FIXME` and `HACK` comment in the project.
+- **`iris gate`**: the CI gate. It exits `1` when the project misses `minHealthScore` or any configured `gateMax*` limit (see [gate rules](/configuration/irisconfig)).
+- **`iris graph`** without `--focus`: the whole import graph as text or JSON.
+- **`iris hook git|build install|uninstall`**: install or remove the Git pre-push and build hooks.
+- **`iris hook verify`**: in CI, warn when a pushed commit has no pre-push hook record for a Team project. It always exits `0`.
 
 ## Next steps
 
 <CardGroup cols={2}>
   <Card title="Authentication" icon="key" href="/cli/auth">
-    Sign in via browser OAuth or set up a licence token for non-interactive CI runners.
+    Sign in through your browser, or set up a licence token for automated CI runners.
   </Card>
   <Card title="Commands" icon="terminal" href="/cli/commands">
-    Full reference for Iris Code CLI commands, flags, and exit codes.
+    Full reference for Iris Code CLI commands, flags and exit codes.
   </Card>
   <Card title="CI Integration" icon="gear" href="/cli/ci">
-    Use `iris gate` as the gate in GitHub Actions, GitLab CI, or any shell pipeline.
+    Use `iris gate` as the gate in GitHub Actions, GitLab CI or any shell pipeline.
   </Card>
   <Card title="GitHub Actions" icon="github" href="/enforcement/github-actions">
-    Full workflow guide including branch protection rules and threshold configuration.
+    Full workflow guide, including branch protection rules and threshold configuration.
   </Card>
 </CardGroup>

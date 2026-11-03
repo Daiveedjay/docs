@@ -4,9 +4,13 @@ sidebarTitle: "Fixes and suggestions"
 description: "See which small fixes Iris Code can offer, which larger changes need review, and why some edits are left for you."
 ---
 
-A refactor plan contains two kinds of change. Mechanical fixes are small edits you can preview and apply; structural suggestions are larger changes that you or a coding agent must review and make.
+A refactor plan contains two kinds of change. Mechanical fixes are small edits, such as removing an unused import, that Iris Code can check and apply for you after you preview them. Structural suggestions are larger changes, such as moving a group of functions to a new file, that you or a coding agent must review and make.
+
+This page lists both, and explains why Iris Code leaves some edits for you.
 
 ## Mechanical fixes
+
+A fix is offered only when Iris Code can identify the complete code involved and none of the cases described below, where the edit could change what the program does, applies. In these tables, "proved" means Iris Code has identified that code exactly.
 
 | ID | Trigger | Languages | Before and after |
 |---|---|---|---|
@@ -70,6 +74,12 @@ The fix is left for you when:
 | `consolidate-state` | Many local state hooks in a component | React JSX, Vue | Local | Related state becomes a coherent state object or reducer |
 | `derive-without-effect` | A proved effect whose work is derived state | React JSX/TSX, Vue and Svelte | Local | A derived value is calculated without an effect |
 | `extract-component` | A proved child markup subtree | React JSX/TSX and Vue | Cross-file | Markup becomes a component with explicit props |
+
+The risk column describes how far a change reaches:
+
+- **Local**: the change stays inside one file.
+- **Cross-file**: other files in the project need matching changes, such as updated imports.
+- **Public API**: the change affects code that other files or projects depend on, such as an exported name.
 
 Check the risk shown on your actual suggestion. The table gives typical risks, but the effect depends on your code.
 

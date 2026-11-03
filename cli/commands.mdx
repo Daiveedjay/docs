@@ -4,7 +4,9 @@ sidebarTitle: "Commands"
 description: "Full reference for Iris Code CLI commands: iris init, iris fix, iris refactor, iris graph, iris schema, iris check, iris secrets, iris security, iris deps, iris cve, iris install, iris remove, iris sbom, iris todos, iris gate, iris slack, iris rules, iris mcp, iris report, iris hook, iris auth, and iris config."
 ---
 
-Use these terminal commands to set up Iris Code, scan code and check whether your project passes its standards. Anything marked **Pro** needs a licence; the other commands work without an account. The tables below explain each command's options and exit codes.
+These are the commands you type in a terminal to use Iris Code. They set a project up, scan code, check packages and decide whether a project meets its standards. Anything marked **Pro** needs a licence. The other commands are Free: most work without an account, and the ones that scan a whole project use the monthly allowance that comes with a free sign-in.
+
+Each command below starts with what it is for and when you would use it, followed by its options and exit codes.
 
 ## Common tasks
 
@@ -18,17 +20,25 @@ Use these terminal commands to set up Iris Code, scan code and check whether you
 
 ## Understanding command results
 
-Every **Pro** command shares one extra exit code. If a licence exists but could not be verified - the licence server unreachable, or rate limiting a repeated caller - the command exits **3** and does not run, rather than skipping and reporting success it has not earned.
+Every command returns a number when it finishes, called an exit code. A script, Git hook or CI pipeline reads it to decide whether to carry on. Each command's table below lists its own codes.
 
-Having no Pro licence is a different case: that is known, so those commands skip and exit `0`. The per-command tables below list each command's own codes.
+Every **Pro** command can also return `3`. That means you have a licence but it could not be checked, for example because the licence server could not be reached or it is limiting repeated requests. The command does not run, rather than skipping and reporting a success it has not earned.
 
-`iris init` sets a project up. After that, `iris check` gives a score and `iris gate` enforces one in CI.
+Having no Pro licence is a different case. That is known, so those commands skip and exit `0`.
+
+Some commands scan a whole project. On Free, each fresh project scan uses one action from your monthly allowance; Pro removes that monthly limit. This page calls either of these your project access. A scan's result is saved with an ID, called an evidence ID, and `--evidence <evidence-id>` opens it again without a new scan. See [Free allowances](/free).
+
+`iris init` sets a project up. After that, `iris check` gives a score, and `iris gate` checks it in CI and fails the run when it falls short.
 
 ---
 
 ### iris init
 
-Sets up a project: asks three short questions, recommends a preset, writes `.irisconfig.json`, installs the pre-push hook where the licence allows it, offers the [package guard](/agents/package-guard) for coding agents, and creates or refreshes the `AGENTS.md` rules block. **Free**, except the git hook step, which is Pro and is reported as skipped rather than failing the run.
+Sets Iris Code up in a project in one step. Run it once when you start using Iris Code in a repository.
+
+It asks three short questions, recommends a preset (a ready-made set of thresholds) and writes `.irisconfig.json`. It also installs the pre-push hook, a check that runs before `git push`, where the licence allows it, offers the [package guard](/agents/package-guard) for coding agents, and creates or refreshes the `AGENTS.md` rules block.
+
+**Free**, except the Git hook step, which is Pro and is reported as skipped rather than failing the run.
 
 | Flag | Description |
 |---|---|
@@ -39,7 +49,7 @@ Sets up a project: asks three short questions, recommends a preset, writes `.iri
 npx -y @iris-code/cli init
 ```
 
-The questions cover what kind of project this is, what matters most right now, and whether Iris Code should enforce before push or only report. The answers map to one of the shipped presets, and the recommendation is shown with its reason before anything is written. Choosing another preset from the list is always offered.
+The questions cover what kind of project this is, what matters most right now, and whether Iris Code should block a push or only report. The answers map to one of the shipped presets, and the recommendation is shown with its reason before anything is written. You can always choose another preset from the list instead.
 
 The package guard question defaults to yes when the project already shows a coding agent in use, such as a `CLAUDE.md` file or a `.cursor/` folder. With `--yes`, the guard is added only in that case.
 
@@ -53,13 +63,15 @@ Iris Code setup
   agent rules: created or refreshed Iris Code blocks
 ```
 
-Running it again is safe. An existing `.irisconfig.json` is left alone rather than overwritten, and existing rules files have only their Iris Code block refreshed. A step that cannot complete is reported and skipped; it does not stop the rest or fail the command.
+Running it again is safe. An existing `.irisconfig.json` is left alone rather than overwritten, and existing rules files have only their Iris Code block refreshed. A step that cannot complete is reported and skipped; it does not stop the other steps or fail the command.
 
 ---
 
 ### iris fix
 
-Removes findings Iris Code can prove are safe to remove. **Free** for a single file. Previews by default and never writes without confirmation.
+Removes findings Iris Code can prove are safe to remove, such as a leftover debug statement or an unused variable. Use it to clear this kind of clutter from a file without editing it by hand.
+
+**Free** for a single file. It shows a preview by default and never writes without confirmation.
 
 | Flag | Description |
 |---|---|
@@ -85,7 +97,9 @@ Five kinds of fix qualify, and each can span several lines:
 | An unused name in an import that is otherwise used | `import { used, unused } from './a'` becomes `import { used } from './a'` | JavaScript, TypeScript |
 | Two compatible imports from the same module | Two named imports from `./a` become one | JavaScript, TypeScript, Vue and Svelte scripts, Python, Rust |
 
-Everything else refuses, and refusals are reported per finding rather than per run, so one unfixable finding does not stop the provable ones. A hardcoded secret is never auto-fixed: the value has to move to the environment and the credential has to be rotated, neither of which a fixer can do.
+Anything else is refused. Refusals are reported for each finding rather than for the whole run, so one finding that cannot be fixed does not stop the ones that can.
+
+A hardcoded secret is never fixed automatically. The value has to move to the environment and the credential has to be replaced, and a fixer can do neither.
 
 A debug statement sharing its line with real code is left alone, because deleting the line would take the code with it.
 
@@ -100,13 +114,15 @@ The fixer also refuses whenever removing something could change what the program
 - Imports in Vue and Svelte components are not removed, because the template can use a name the script check cannot see.
 - Type-only TypeScript imports are not merged, and nor are Rust `use` statements that carry an attribute or doc comment.
 
-The same fixes are offered as a Quick Fix in VS Code, through **Apply mechanical fixes** in the [refactor playbook](/refactor/overview), and through `iris_fix_safe` on the [MCP server](/agents/mcp). They share one planner, so they agree on what is safe.
+The same fixes are offered as a Quick Fix in VS Code, through **Apply mechanical fixes** in the [refactor playbook](/refactor/overview), and through `iris_fix_safe` on the [MCP server](/agents/mcp). All of them use the same rules, so they agree on what is safe.
 
 ---
 
 ### iris refactor
 
-Prints a refactor plan for one file: the conventions the repository already follows, the mechanical fixes above, and ranked structural suggestions with their evidence, risk and destination. It gives a coding agent or a reviewer a concrete next step for a file that is too long or too complex. **Free**. The plan is read-only; nothing is written.
+Prints a refactor plan for one file. Use it when a file is too long or too complex and you want a concrete next step for yourself, a reviewer or a coding agent.
+
+The plan lists the conventions the repository already follows, the mechanical fixes above, and ranked suggestions for restructuring the file, each with its evidence, risk and where the code would move. **Free**. The plan only reads your code; nothing is written.
 
 | Flag | Description |
 |---|---|
@@ -125,11 +141,13 @@ iris refactor src/handlers.ts --format json
 iris refactor src/handlers.ts --verify
 ```
 
-One-file verification without `--baseline` compares with git HEAD, including any uncommitted changes you already had. Multi-file plans save a private baseline across CLI invocations. Pass its returned ID with `--verify --baseline <baseline-id>` to verify that same workflow without another local action.
+Verifying one file without `--baseline` compares it with git HEAD, your last commit, including any uncommitted changes you already had.
 
-For a multi-file plan, run `iris refactor ./src --format json` and retain its `baseline_id`. Verify with `iris refactor ./src --verify --baseline <baseline-id>`. The [MCP server](/agents/mcp) and **Verify refactor** in the editor also retain the planned baseline. See [verifying a refactor](/refactor/verification).
+A plan for several files saves a private baseline: a snapshot of the files when you planned, kept between CLI runs. Pass its returned ID with `--verify --baseline <baseline-id>` to verify that same piece of work without using another project action.
 
-Verification is advisory: a `regressed` verdict does not change the exit code.
+For a multi-file plan, run `iris refactor ./src --format json` and keep its `baseline_id`. Verify with `iris refactor ./src --verify --baseline <baseline-id>`. The [MCP server](/agents/mcp) and **Verify refactor** in the editor also keep the planned baseline. See [verifying a refactor](/refactor/verification).
+
+Verification only reports: a `regressed` verdict does not change the exit code.
 
 | Exit code | Meaning |
 |---|---|
@@ -140,7 +158,9 @@ Verification is advisory: a `regressed` verdict does not change the exit code.
 
 ### iris graph
 
-Prints the import graph drawn by [Code Map](/features/code-map), as text or JSON. Focused-file imports are Free. A fresh whole-project inspection uses the applicable project allowance. `--evidence <evidence-id>` reads a captured graph without rescanning.
+Prints the import graph, the map of which files use code from which other files, that [Code Map](/features/code-map) draws in the editor. Use `--focus` before changing a file to see what it depends on and what depends on it.
+
+Showing one focused file is Free. A fresh graph of the whole project uses your project access. `--evidence <evidence-id>` reads a saved graph without scanning again.
 
 | Flag | Description |
 |---|---|
@@ -157,7 +177,9 @@ iris graph --focus src/app.ts
 iris graph --format json
 ```
 
-It reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust, with the same resolver and the same `ignoreFiles` as the editor. An import Iris Code cannot resolve is listed with its reason, for example `missing-file` or `ambiguous-target`, and is never guessed at. Go and Java packages and C# namespaces appear as their folders, because that is what those imports name.
+It reads TypeScript, JavaScript, Vue, Svelte, Go, Python, Java, C# and Rust. It works out where each import points in the same way as the editor and skips the same `ignoreFiles`.
+
+An import Iris Code cannot trace to a file is listed with its reason, for example `missing-file` or `ambiguous-target`, and is never guessed at. Go and Java packages and C# namespaces appear as their folders, because that is what those imports name.
 
 An import graph only shows imports. Files in the same Go or Java package, C# namespace or Rust module can use each other without one, so those uses do not appear, and the text output says so when the project has such files.
 
@@ -173,7 +195,9 @@ The JSON carries `schemaVersion: 1`. The whole graph is `{ schemaVersion, root, 
 
 ### iris schema
 
-Prints the [Schema graph](/features/schema-graph) using table and column names read from declarations. Structure and focused-table usage are Free. Aggregate usage can read an earned workspace result with `--evidence <evidence-id>`; a fresh project inspection uses project access.
+Prints the [Schema graph](/features/schema-graph): your database tables, their columns and how they link, using the table and column names read from their declarations in your project. Use it to see your data model, or add `--usage` to see where the code uses a table.
+
+The structure, and usage for one focused table, are Free. Usage across all tables can come from a saved result with `--evidence <evidence-id>`; otherwise a fresh project scan uses your project access.
 
 ```bash
 iris schema . --format json
@@ -188,12 +212,18 @@ iris schema . --format dbml
 | `--table <name>` | Focus a database name, model name or canonical table ID and its neighbours |
 | `--usage` | Include usage and warnings; all-table usage uses captured project evidence or a fresh project action |
 
-JSON carries `schemaVersion: 1`. Unresolved references, conflicts and not-read statements are informational: success exits 0. Invalid arguments or unknown/ambiguous tables exit 2; a build error exits 1. Use `--evidence <evidence-id>` for owned aggregate usage without rescanning. Without an evidence ID or `--table`, the command checks project access before starting a fresh inspection.
+JSON carries `schemaVersion: 1`.
+
+References Iris Code could not resolve, disagreements between sources and statements it did not read are reported for information only, so a successful run exits 0. Invalid arguments, or a table that is unknown or matches more than one name, exit 2. A build error exits 1.
+
+Use `--evidence <evidence-id>` to read usage across all tables from a result you own without scanning again. Without an evidence ID or `--table`, the command checks your project access before starting a fresh scan.
 
 ---
 ### iris check
 
-Scores source files and prints findings. Single-file checks remain Free. `iris check . --inspect` performs a deliberate project inspection using the applicable allowance. Enforcement with directory, staged or changed inputs remains paid; inspection does not install or run a blocking hook.
+Scores source files and prints their findings. Use it on one file while you work, or on a folder to see how a whole area of the project stands.
+
+Checking a single file is Free. `iris check . --inspect` runs a one-off scan of the project using your project access. Using a directory, staged files or changed files as enforcement, a check that fails so the next step stops, still needs paid access. An inspection does not install or run a blocking hook.
 
 | Flag | Description |
 |---|---|
@@ -209,9 +239,9 @@ Scores source files and prints findings. Single-file checks remain Free. `iris c
 | `--slack-on <when>` | `failure` (default) or `always` |
 | `--slack-dry-run` | Print the Slack payload instead of posting it |
 
-Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against the score, but the suppressed count always appears in the output; `--show-suppressed` lists each one individually. JSON reports include a per-file `suppressed` array.
+Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against the score. The number suppressed always appears in the output, `--show-suppressed` lists each one, and JSON reports include a `suppressed` array for each file.
 
-Directory checks also find [duplicate code blocks](/features/duplicate-detection) across files; JSON file entries carry an additive `duplicateBlocks` array, and files excluded from duplicate comparison (too large or minified-looking) are disclosed rather than silently skipped.
+Directory checks also find [duplicate code blocks](/features/duplicate-detection) across files, and each JSON file entry includes a `duplicateBlocks` array. Files left out of the duplicate comparison, because they are too large or look minified, are listed in the output rather than skipped silently.
 
 ```bash
 # Score a single file (free)
@@ -234,7 +264,7 @@ iris check --staged
 
 ### iris secrets
 
-Scans the project for hardcoded credentials, API keys, tokens, and passwords. **Free - no authentication required.**
+Scans the project for credentials written into the code, such as API keys, tokens and passwords. Run it before you push, or in CI, so a secret is caught before it is shared. **Free - no authentication required.**
 
 | Flag | Description |
 |---|---|
@@ -258,9 +288,13 @@ iris secrets --history
 iris secrets --history --depth 0
 ```
 
-`--history` finds secrets that were committed and later removed: every file version introduced by each commit (committed `.env` files included) runs through the same two-layer detection. Findings are deduplicated per distinct secret, always masked, and show first/last sighting, the commits and files involved, and whether the secret is still in HEAD.
+`--history` finds secrets that were committed and later removed. Every file version added by each commit, committed `.env` files included, goes through the same two-layer detection as your current files.
 
-Merge-commit content is covered, and coverage limits - depth, size caps, shallow clones - are always disclosed rather than implying a clean full history. Everything runs against local git; nothing leaves the machine. Rotation is the real fix: a secret that reached history should be rotated even if it was removed later.
+Each distinct secret is reported once and always masked. The report shows when it was first and last seen, the commits and files involved, and whether the secret is still in your latest commit (HEAD).
+
+Merge commits are covered. Limits on what was checked, such as the depth, size caps and shallow clones (copies made without the full history), are always shown, so a clean result never suggests the whole history was checked when it was not.
+
+Everything runs against your local Git history; nothing leaves the machine. The real fix is to replace the credential: a secret that reached history should be rotated even if it was later removed.
 
 | Exit code | Meaning |
 |---|---|
@@ -272,7 +306,21 @@ Merge-commit content is covered, and coverage limits - depth, size caps, shallow
 
 ### iris security
 
-Scans the project for nine security anti-patterns: eval/exec usage, SQL built by string concatenation, insecure RNG, ReDoS-prone regex, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA-1), and open redirects. See [Security Smells](/features/security-smells) for the full pattern reference. **Free - no authentication required.**
+Scans the project for nine risky coding patterns that often lead to security problems. Use it alongside `iris secrets` to catch them before they ship. **Free - no authentication required.**
+
+The patterns are:
+
+- `eval` or `exec` usage, which runs text as code
+- SQL built by joining strings together
+- insecure random number generation
+- regular expressions that can be made to run extremely slowly (ReDoS)
+- hardcoded `localhost` URLs
+- disabled TLS certificate checks
+- debug flags left switched on
+- weak hashing (MD5 or SHA-1)
+- open redirects
+
+See [Security Smells](/features/security-smells) for the full pattern reference.
 
 | Flag | Description |
 |---|---|
@@ -298,13 +346,15 @@ iris security ./src --format json
 
 ### iris deps
 
-A deliberate fresh dependency audit uses one successful local project action. A valid unchanged cached audit can be reused; `--no-cache` explicitly requests fresh evidence. Opening saved data does not refresh providers.
+Checks the packages your project depends on for newer versions and known CVEs, the published security advisories in the [OSV.dev](https://osv.dev) database. Use it to see what needs updating and what has a known vulnerability.
 
-Audits the dependencies of npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects for outdated versions and known CVEs via the [OSV.dev](https://osv.dev) database. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
+It covers npm, Go, Python, RubyGems, NuGet, Cargo and Maven or Gradle projects. Nested Go, Python and Ruby projects in a monorepo are read too, and each of their packages is tagged with its folder.
 
-Installed versions are resolved from your lockfile when one is present (for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`), so the audit reflects what is actually installed rather than the manifest range, and advisories are filtered to that installed version.
+A fresh audit you choose to run uses one project action when it succeeds. A saved audit that is still valid, with nothing changed, can be reused; `--no-cache` asks for fresh results instead. Opening saved data does not look anything up again.
 
-Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are discovered and deduplicated automatically, and internal `workspace:` / `file:` / `link:` dependencies are excluded.
+When your project has a lockfile, the installed versions are read from it, for example `package-lock.json` v1-v3, `pnpm-lock.yaml`, `yarn.lock` classic and Berry, `bun.lock`, `poetry.lock`, `Pipfile.lock`, `uv.lock`, `Gemfile.lock`, `packages.lock.json` and `Cargo.lock`. The audit then reflects what is actually installed rather than the range in the manifest, and advisories are matched to that installed version.
+
+Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are found and counted once automatically, and internal `workspace:` / `file:` / `link:` dependencies are left out.
 
 | Flag | Description |
 |---|---|
@@ -324,11 +374,13 @@ iris deps
 iris deps --no-cache --format json
 ```
 
-The first network lookup asks for consent and discloses exactly what is sent: package names and versions, nothing else. Your choice is persisted in `~/.iris/preferences.json`. Run with `--revoke-network` to disable lookups later, or `--allow-network` to re-enable them. When results come from the 24-hour cache, the output prints the age of the cached scan.
+The first lookup over the network asks for your permission and shows exactly what is sent: package names and versions, nothing else. Your choice is saved in `~/.iris/preferences.json`. Run with `--revoke-network` to turn lookups off later, or `--allow-network` to turn them back on. When results come from the 24-hour cache, the output shows how old the cached scan is.
 
-No token or rate-limit setup is needed - OSV.dev lookups are unauthenticated and only the package name, ecosystem, and version are sent. Each advisory in the output carries a confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) plus the fixed-in version where one exists.
+No token or rate-limit setup is needed. OSV.dev lookups need no account, and only the package name, ecosystem and version are sent.
 
-Advisories without a verifiable id or severity are never shown - they are dropped and the skip count is disclosed in the output. Dependencies whose lookup errored are marked "not checked", never assumed clean.
+Each advisory in the output carries a confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and, where one exists, the version that fixes it.
+
+Advisories without a verifiable ID or severity are never shown. They are left out, and the output says how many were skipped. A dependency whose lookup failed is marked "not checked", never assumed clean.
 
 | Exit code | Meaning |
 |---|---|
@@ -340,9 +392,9 @@ Advisories without a verifiable id or severity are never shown - they are droppe
 
 ### iris cve
 
-**Pro.** Runs the same dependency and CVE scan as `iris deps` (sharing its 24-hour cache and network consent), but exits `1` only when a vulnerability at or above the `--severity` threshold is found.
+**Pro.** Runs the same dependency and CVE scan as `iris deps`, sharing its 24-hour cache and network permission, but exits `1` only when it finds a vulnerability at or above the `--severity` level.
 
-This is the command to use for CI gates: block merges on high or critical advisories without failing the pipeline on low-severity noise. Each matched advisory row shows its confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and the fixed-in version where one exists.
+This is the command for a CI gate: it can block merges on high or critical advisories without failing the pipeline over minor ones. Each matched advisory shows its confidence label (`fix-available`, `direct`, `transitive`, or `manual-review`) and, where one exists, the version that fixes it.
 
 | Flag | Description |
 |---|---|
@@ -371,20 +423,17 @@ iris cve --severity low
 | `1` | One or more CVEs at or above the threshold |
 | `2` | Invalid arguments or no manifest found |
 
-A package reported in the OpenSSF malicious-packages feed fails the run at every `--severity`
-threshold and is listed under its own **MALICIOUS** heading. Those reports carry no severity score
-of their own, so without this rule they ranked below `low`.
+A package reported in the OpenSSF malicious-packages feed fails the run at every `--severity` level and is listed under its own **MALICIOUS** heading. Those reports carry no severity score of their own, so without this rule they would rank below `low`.
 
 ---
 
 ### iris install
 
-**Free.** Checks each package before it is installed, then installs it with the project's own package
-manager, found from its lockfile. Known vulnerabilities, malicious-package reports, yanked,
-deprecated and prerelease versions, and brand-new releases are all checked. See the
-[package guard](/agents/package-guard) for what each verdict means.
+**Free.** Checks each package before it is installed, then installs it with the project's own package manager, found from its lockfile. Use it in place of your usual install command when you want a package checked first.
 
-With no package names it checks the whole project first: every package the lockfile would install, and the repository's own install scripts, which it shows and asks about before running the install. This is the check to run on a repository you have cloned and do not yet trust. See [Installing a whole project](/agents/package-guard#installing-a-whole-project).
+It checks for known vulnerabilities, malicious-package reports, yanked, deprecated and prerelease versions, and brand-new releases. See the [package guard](/agents/package-guard) for what each verdict means.
+
+With no package names, it checks the whole project first: every package the lockfile would install, and the repository's own install scripts, which it shows and asks about before running the install. This is the check to run on a repository you have cloned and do not yet trust. See [Installing a whole project](/agents/package-guard#installing-a-whole-project).
 
 `iris add` and `iris i` are other names for the same command.
 
@@ -417,10 +466,9 @@ iris install --check          # the whole project, install nothing
 
 ### iris remove
 
-**Free.** Removes packages with the project's own package manager: `npm uninstall`, `pip uninstall`,
-`cargo remove`, `bundle remove`, `dotnet remove package`, `go get <module>@none` and so on. Nothing is
-checked, because removing a package is never the risk the guard is for. A version is ignored, so the
-spec you passed to `iris install` works as it is. `iris uninstall` and `iris rm` do the same.
+**Free.** Removes packages with the project's own package manager: `npm uninstall`, `pip uninstall`, `cargo remove`, `bundle remove`, `dotnet remove package`, `go get <module>@none` and so on. It saves you remembering each package manager's remove command.
+
+Nothing is checked, because removing a package is never the risk the guard is for. A version is ignored, so the spec you passed to `iris install` works as it is. `iris uninstall` and `iris rm` do the same.
 
 | Flag | Description |
 |---|---|
@@ -439,13 +487,15 @@ If the package manager itself fails, its exit code is passed through.
 
 ### iris sbom
 
-**Free.** Exports a CycloneDX 1.5 software bill of materials covering npm, Go, Python, RubyGems, NuGet, Cargo, and Maven manifests in the project. Manifest export performs no registry or advisory lookup and needs no lookup-consent prompt. Reusing an account-owned saved audit checks ownership when online; previously confirmed owned results can also be read offline.
+**Free.** Exports a software bill of materials (SBOM): a list of every package your project uses, in the CycloneDX 1.5 format that security and compliance tools read. It covers npm, Go, Python, RubyGems, NuGet, Cargo and Maven manifests in the project.
 
-Each component carries the package name, the exact installed version (lockfile-resolved), a `purl`, and a `required` or `optional` scope depending on whether the dependency is direct or dev-only. If a cached `iris deps` scan exists, known vulnerabilities are folded in as CycloneDX `vulnerabilities` entries cross-referenced by `purl`.
+Exporting from your manifests looks nothing up in a registry or advisory database, so it does not ask for network permission. When it reuses a saved audit that belongs to your account, it checks online that the audit is yours; a saved result already confirmed as yours can also be read offline.
 
-Some dependencies have no version to report: a NuGet `PackageReference` with no version and no Central Package Management entry, or two projects pinning different versions of the same package. Those components are still listed, because an SBOM that quietly omits a dependency is worse than one that admits it does not know the version.
+Each component carries the package name, the exact installed version (read from the lockfile), a `purl` (a standard package identifier), and a `required` or `optional` scope depending on whether the dependency is direct or for development only. If a cached `iris deps` scan exists, its known vulnerabilities are added as CycloneDX `vulnerabilities` entries, linked to each package by its `purl`.
 
-They carry a version-less `purl` such as `pkg:nuget/CsvHelper`, no `version` field, and an `iris:version-unresolved` property naming the reason. A purl with an invented version would be well-formed, so a scanner reading it would fail to match the package without reporting a problem.
+Some dependencies have no version to report: a NuGet `PackageReference` with no version and no Central Package Management entry, or two projects pinning different versions of the same package. Those components are still listed, because an SBOM that quietly leaves out a dependency is worse than one that admits it does not know the version.
+
+They carry a `purl` without a version, such as `pkg:nuget/CsvHelper`, no `version` field, and an `iris:version-unresolved` property naming the reason. A purl with an invented version would look valid, so a scanner reading it would fail to match the package without reporting a problem.
 
 | Flag | Description |
 |---|---|
@@ -470,7 +520,9 @@ iris sbom --stdout
 
 ### iris todos
 
-Lists every `TODO`, `FIXME`, and `HACK` comment found across the project. Use `--evidence <evidence-id>` to read a captured result without rescanning, or project access for a fresh scan. This command is informational; it does not enforce thresholds.
+Lists every `TODO`, `FIXME` and `HACK` comment across the project, so you can see the unfinished work people have left notes about.
+
+Use `--evidence <evidence-id>` to read a saved result without scanning again; a fresh scan uses your project access. This command only reports: it does not check any threshold.
 
 | Flag | Description |
 |---|---|
@@ -495,9 +547,11 @@ iris todos ./src --format json
 
 ### iris gate
 
-**Pro.** Runs the full enforcement gate - every threshold configured in `.irisconfig.json`, including `gateMaxNamingViolations` - and shows each threshold against its actual value, with a PASS or FAIL for each. This is the recommended command for CI. There is no CLI flag to override thresholds; set them in `.irisconfig.json`.
+**Pro.** Checks the project against every threshold configured in `.irisconfig.json`, including `gateMaxNamingViolations`, and shows each threshold beside its actual value with a PASS or FAIL. This is the recommended command for CI, because it exits `1` when any rule fails and so stops the pipeline.
 
-Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the suppressed count always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to make all directives inert so suppressed findings count as live.
+There is no command-line flag to override thresholds; set them in `.irisconfig.json`.
+
+Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the number suppressed always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to ignore every suppression comment so suppressed findings count again.
 
 | Flag | Description |
 |---|---|
@@ -531,7 +585,7 @@ IRIS_SLACK_WEBHOOK="$SLACK_WEBHOOK_URL" iris gate .
 
 ### iris slack
 
-Sets up and tests Slack notifications for `iris check` and `iris gate`. The command is **free**. Iris Code reads the webhook only from `IRIS_SLACK_WEBHOOK` and sends messages directly from your machine or CI.
+Sets up and tests Slack notifications, so the result of `iris check` or `iris gate` is posted to a channel your team reads. The command is **Free**. Iris Code reads the webhook (the address Slack gives you for posting messages) only from `IRIS_SLACK_WEBHOOK`, and sends messages directly from your machine or CI.
 
 | Subcommand | Description |
 |---|---|
@@ -539,13 +593,13 @@ Sets up and tests Slack notifications for `iris check` and `iris gate`. The comm
 | `iris slack test` | Send a test message using `IRIS_SLACK_WEBHOOK` |
 | `iris slack manifest` | Print a link and manifest for creating a pre-configured Slack app |
 
-The complete setup, payload contents and credential rules are covered in [Slack notifications](/enforcement/slack-notifications).
+The complete setup, what each message contains and how the webhook is handled are covered in [Slack notifications](/enforcement/slack-notifications).
 
 ---
 
 ### iris rules
 
-Writes this project's configured thresholds into the file your coding agent reads, generated from `.irisconfig.json`. **Free.** Nothing is analysed, nothing is sent anywhere, and no model is involved.
+Writes this project's configured thresholds, taken from `.irisconfig.json`, into the file your coding agent already reads, so the agent knows your limits before it writes code. **Free.** Nothing is analysed, nothing is sent anywhere, and no model is involved.
 
 | Flag | Description |
 |---|---|
@@ -555,15 +609,17 @@ Writes this project's configured thresholds into the file your coding agent read
 | `--dry-run` | Print what would be written instead of writing it |
 | `--yes`, `-y` | Do not ask before updating a file that already exists |
 
-A project running two agents needs two files: Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the default shared target; Cursor and Copilot also have dedicated target files. Each file is written independently, so one damaged file is reported and skipped while the rest still update.
+A project using two agents may need two files. Claude Code reads only `CLAUDE.md`, while `AGENTS.md` is the default shared target, and Cursor and Copilot have their own target files too. Each file is written separately, so one damaged file is reported and skipped while the rest still update.
 
-The block sits between `iris-rules` markers, so regenerating updates only Iris Code's own section and never your text. Full behaviour, including what the file contains and what happens to a damaged marker, is in [Project rules](/agents/project-rules).
+The rules go between `iris-rules` markers, so regenerating updates only Iris Code's own section and never your text. Full behaviour, including what the file contains and what happens to a damaged marker, is in [Project rules](/agents/project-rules).
 
 ---
 
 ### iris mcp
 
-Runs Iris Code as an MCP server over standard input and output. Basic file checks, configuration, one-file fixes and plans, focused schema information and package guard remain Free. Fresh project inspections, dependency audits and multi-file plans use project access; earned result reads do not spend again. Fresh enforcement still requires paid access. See [MCP tools](/agents/mcp#tools).
+Runs Iris Code as an MCP server. MCP is a connection that lets a coding agent call tools, so the agent can check files and read your project's rules itself while it works. The server talks to the agent over standard input and output.
+
+Basic file checks, configuration, one-file fixes and plans, focused schema information and the package guard are Free. Fresh project scans, dependency audits and multi-file plans use your project access; reading a result you already earned does not use it again. Fresh enforcement still needs paid access. See [MCP tools](/agents/mcp#tools).
 
 | Flag | Description |
 |---|---|
@@ -578,20 +634,19 @@ npx -y @iris-code/mcp
 iris mcp
 ```
 
-Omit `--root` unless you specifically need the folder pinned. Passing it stops Iris Code asking your
-editor, so a single pinned registration shared across several projects answers every one of them
-about the folder named in the flag. `--root .` in particular pins nothing: it is the launch directory,
-which is already the fallback.
+Leave out `--root` unless you specifically need the folder pinned. Passing it stops Iris Code asking your editor, so a single pinned setup shared across several projects answers every one of them about the folder named in the flag. `--root .` in particular pins nothing: it is the launch directory, which is already the fallback.
 
 The server writes only protocol messages to standard output, so it must not be wrapped in a script that prints anything there. Editors bundling the Iris Code language-server binary can use `iris-lsp --mcp` instead, with no Node.js install.
 
-Tool-by-tool behaviour, the preview-token write gate, and the response caps are in [MCP server](/agents/mcp).
+Tool-by-tool behaviour, the preview token a fix needs before it is written, and the limits on response size are in [MCP server](/agents/mcp).
 
 ---
 
 ### iris report
 
-Exports HTML by default, or a PNG/SVG card or selected PDF pages. `--evidence <evidence-id>` exports an owned captured result without scanning current files. Existing anonymous introductory cards and PDFs remain readable. A fresh directory scan uses project access; single-file HTML remains Free.
+Exports a report of a scan that you can share with people who do not use Iris Code. It writes HTML by default, or a PNG or SVG card, or selected PDF pages.
+
+`--evidence <evidence-id>` exports a saved result you own without scanning your current files. Existing anonymous introductory cards and PDFs remain readable. A fresh directory scan uses your project access; an HTML report for a single file stays Free.
 
 | Flag | Description |
 |---|---|
@@ -604,7 +659,12 @@ Exports HTML by default, or a PNG/SVG card or selected PDF pages. `--evidence <e
 | `--pages <selection>` | PDF only: `summary`, `full` (default), or comma-separated page IDs |
 | `--include-paths` | Include relative file names when Where to look is selected |
 
-Page IDs, in output order: `summary`, `findings`, `areas`, `standard`, `trend`, `dependencies`. Summary is always included. Full includes the first four sections and an available trend; Dependencies is opt-in. Standard continuation pages keep their section number. Trend needs more than one saved scan, and Dependencies needs a saved dependency audit.
+The PDF page IDs, in output order, are `summary`, `findings`, `areas`, `standard`, `trend` and `dependencies`.
+
+- Summary is always included.
+- Full includes the first four sections, plus the trend when it is available. Dependencies is only included when you ask for it.
+- Standard continuation pages keep their section number.
+- Trend needs more than one saved scan, and Dependencies needs a saved dependency audit.
 
 ```bash
 # Export a report to the default location
@@ -620,7 +680,9 @@ iris report --format pdf --pages summary
 iris report --format pdf --pages standard,trend
 ```
 
-Full writes `iris-report.pdf`, Summary writes `iris-report-summary.pdf`, and Custom writes `iris-report-custom.pdf` unless you use `--output`. Cards are named by size, such as `iris-report-portrait.png`. A page you list in `--pages` that the scan cannot provide prints `Left out <id>: <reason>` to stderr. Full includes the score trend only when there is saved history, and does not print a notice when it leaves it out. The export still exits 0 if it succeeds. An unknown page ID, or `--pages` with HTML, PNG or SVG, exits 2.
+Full writes `iris-report.pdf`, Summary writes `iris-report-summary.pdf`, and Custom writes `iris-report-custom.pdf` unless you use `--output`. Cards are named by size, such as `iris-report-portrait.png`.
+
+A page you list in `--pages` that the scan cannot provide prints `Left out <id>: <reason>` to stderr, and the export still exits 0 if it succeeds. Full includes the score trend only when there is saved history, and prints no notice when it leaves it out. An unknown page ID, or `--pages` with HTML, PNG or SVG, exits 2.
 
 | Exit code | Meaning |
 |---|---|
@@ -631,7 +693,9 @@ Full writes `iris-report.pdf`, Summary writes `iris-report-summary.pdf`, and Cus
 
 ### iris hook
 
-Installs and removes the git pre-push hook and the build gate hook - equivalent to the VS Code command palette hook commands. The type (`git` or `build`) comes before the action. `status` and `uninstall` are **Free**, including after expiry or offline. Installing enforcement requires applicable paid access for the selected project.
+Installs and removes two checks that run automatically: the Git pre-push hook, which runs before each `git push`, and the build hook, which runs as part of your project's build. These do the same as the hook commands in the VS Code command palette. It also manages the package guard hook for coding agents.
+
+The type (`git`, `build` or `agent`) comes before the action. `status` and `uninstall` are **Free**, including after a licence expires or while offline. Installing a Git or build hook that blocks needs paid access for the selected project.
 
 | Subcommand | Description |
 |---|---|
@@ -645,9 +709,14 @@ Installs and removes the git pre-push hook and the build gate hook - equivalent 
 | `iris hook agent uninstall [path]` | Remove the package guard hook **(free)** |
 | `iris hook agent status [path]` | Show whether the package guard hook is installed **(free)** |
 
-The active pre-push hook is `.git/hooks/pre-push`, unless git's `core.hooksPath` points elsewhere. With Husky, the block goes in `.husky/pre-push` rather than Husky's generated files.
+The active pre-push hook is `.git/hooks/pre-push`, unless Git's `core.hooksPath` setting points elsewhere. With Husky, the block goes in `.husky/pre-push` rather than Husky's generated files.
 
-`iris hook agent` takes `--target` with `claude`, `cursor`, `codex`, `copilot`, `gemini`, `windsurf`, a comma-separated list of them, or `all`. Without it, install picks the agents the project already shows signs of, or Claude Code. It also takes `--yes` to skip the confirmation when a settings file already exists, `--dry-run`, and `--verify-on-finish`, which adds the optional [finish verification](/refactor/verification) hook for every agent except Windsurf.
+`iris hook agent` takes these options:
+
+- `--target` with `claude`, `cursor`, `codex`, `copilot`, `gemini`, `windsurf`, a comma-separated list of them, or `all`. Without it, install picks the agents the project already shows signs of, or Claude Code.
+- `--yes` to skip the confirmation when a settings file already exists.
+- `--dry-run`.
+- `--verify-on-finish`, which adds the optional [finish verification](/refactor/verification) hook for every agent except Windsurf.
 
 ```bash
 # Check current hook status (free)
@@ -669,7 +738,9 @@ iris hook build uninstall
 
 ### iris auth
 
-Manages authentication credentials. Every subcommand is fully interactive - there is no non-interactive flag to pass a token directly on the command line; use the `IRIS_LICENCE_TOKEN` environment variable instead for CI runners. See the [Authentication](/cli/auth) page for the full guide.
+Signs you in, shows your sign-in status and signs you out. Signing in lets the CLI use your Pro licence.
+
+Every subcommand asks its questions interactively. There is no flag to pass a token directly on the command line; on CI runners, use the `IRIS_LICENCE_TOKEN` environment variable instead. See the [Authentication](/cli/auth) page for the full guide.
 
 | Subcommand | Description |
 |---|---|
@@ -689,7 +760,7 @@ iris auth status
 
 ### iris config
 
-Generates or validates `.irisconfig.json`.
+Creates or checks `.irisconfig.json`, the file that holds your project's thresholds. Use `init` to create one from a preset, and `validate` to find mistakes in one you have edited.
 
 | Subcommand | Flag | Description |
 |---|---|---|
@@ -716,13 +787,15 @@ iris config validate
 npx @iris-code/cli@latest hook verify [path] --sha <full-commit-id> --format pretty
 ```
 
-**Pro.** Checks Team evidence for a passing pre-push hook record. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers. A missing record warns and attempts to write **Push with no hook record**. This command is the exception to the general entitlement exit-code rule: it always exits `0`, including for missing licence, invalid arguments and network failures.
+**Pro.** Run in CI for a Team project, it checks the Team's records for a passing pre-push hook run on a pushed commit. Formats: `pretty`, `json`, `github`. `--sha` is optional on supported CI providers.
 
-See [Team governance](/teams/governance) for SHA resolution and every reason a check can be skipped.
+When there is no record, it warns and tries to write a **Push with no hook record** entry. Unlike the other Pro commands, it always exits `0`, including for a missing licence, invalid arguments and network failures.
+
+See [Team governance](/teams/governance) for how the commit is found and every reason a check can be skipped.
 
 ## iris usage
 
-Reads the selected account or team allowance and locally retained results. It does not start analysis.
+Shows your account's or team's allowance and the results saved on this machine. It does not start a scan.
 
 ```bash
 iris usage status
@@ -731,14 +804,19 @@ iris usage result <evidence-id>
 iris usage recover
 ```
 
-Recovery reconciles recorded outcomes and leaves unknown work awaiting confirmation. See [Free allowances](/free) for offline access and saved-result commands.
+`recover` matches recorded actions with their outcomes, and leaves any whose outcome is still unknown waiting for confirmation. See [Free allowances](/free) for offline access and the commands for saved results.
 
-Saved `--evidence` views keep their captured project root and configuration. If you also supply a path, it must match that root; omit it to read a result from another working directory. A graph `--focus` path is resolved inside the captured root when reading saved evidence.
+A result opened with `--evidence` keeps the project folder and configuration it was scanned with. If you also give a path, it must match that folder; leave the path out to read a result from another working directory. With a saved graph, a `--focus` path is looked up inside the saved project folder.
 
 ## Verification integrity
 
-`iris check . --integrity` compares current changes against the last commit for Free. `--from <revision>` changes the baseline; `--staged` reads the exact index blobs against the last commit. Those two baseline options cannot be combined. `--format json` adds an `integrity` report with findings, the blocking count and inputs not checked.
+`iris check . --integrity` checks whether your current changes weaken your tests or rules, such as a deleted or skipped test or a lowered threshold, compared with your last commit. It is Free.
 
-Blocking integrity findings return exit 1. Clean comparisons return 0 and bad flags return 2. Score scans retain their existing access requirements. `iris gate . --from <revision>` also compares verification rules before score enforcement.
+- `--from <revision>` compares with another branch or commit instead.
+- `--staged` compares exactly what you have staged with `git add` against your last commit.
+- `--from` and `--staged` cannot be used together.
+- `--format json` adds an `integrity` report with the findings, how many block, and anything that could not be checked.
+
+A blocking finding exits 1, a clean comparison exits 0 and a bad flag exits 2. Score scans keep their usual access requirements. `iris gate . --from <revision>` also checks for weakened tests and rules against that revision before it checks scores.
 
 See [verification integrity](/features/verification-integrity).

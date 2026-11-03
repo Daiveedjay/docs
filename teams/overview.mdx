@@ -1,14 +1,22 @@
 ---
-title: "Iris Code Teams: shared standards, projects, and audit evidence"
+title: "Iris Code Teams: shared standards, projects and a record of results"
 sidebarTitle: "Teams overview"
-description: "Create a Free Team, choose active collaborators and projects, share configuration, and add paid enforcement when needed."
+description: "Create a Free Team, choose who and which projects can use it, share one set of project rules, and add paid seats when you need Pro."
 ---
 
-A team gives people a shared home for project standards and recorded results. A Free Team shares monthly local actions and cloud scans within its current collaborator and project capacity. Paid seats add applicable Pro capabilities; membership, active Free capacity and paid seats are separate.
+A team gives several people one shared place for their project rules and for a record of what Iris Code found. Everyone checks code against the same standard, and the results from editors, CI and cloud scans collect in one history.
+
+Creating a team is free. A Free Team shares a monthly allowance of local project actions and cloud scans, within a limit on how many collaborators and projects can use it. Paid seats add Pro features for the people who hold them.
+
+Three things are separate, and it helps to keep them apart:
+
+- **Membership** means you belong to the team and can see its records.
+- **Active Free capacity** decides who can spend the team's Free allowance, and on which projects.
+- **A paid seat** gives that person the Pro features that apply.
 
 ## What a team is
 
-A team is the unit that owns everything: members and their seats, connected repositories, the published standard, the audit trail, and the billing relationship.
+A team owns everything that belongs to it: its members and their seats, its connected repositories, its published standard, its record of results and its billing.
 
 You can own up to **three** teams. Most people need one.
 
@@ -20,54 +28,72 @@ You can own up to **three** teams. Most people need one.
 | **Admin** | Invite and remove members, connect repositories, publish the standard |
 | **Member** | Use everything in the team. Cannot invite, remove, or change billing |
 
-The owner cannot be demoted or removed, because a team whose only owner had been demoted could not be administered by anyone.
+The owner cannot be demoted or removed. Otherwise a team could end up with nobody able to manage it.
 
 ## Inviting people
 
-Invite by email address and choose a role. The invitation is created whether or not the email is delivered, and the screen tells you which happened rather than reporting "invitations sent" for both.
+Invite someone by email address and choose their role. The invitation is created even if the email fails to arrive, and the screen tells you which of the two happened.
 
-Pending invitations reserve collaborator capacity on Free Teams or seats on paid teams. Invitations expire after **7 days**, and revoking one releases its place. The current capacity appears in **Members**.
+A pending invitation holds a place until it is answered: collaborator capacity on a Free Team, or a seat on a paid team. Invitations expire after **7 days**, and revoking one frees its place. **Members** shows how much room you have.
 
 <Note>
-  Iris Code reports each invitation's outcome separately. A batch of five on two free seats succeeds twice and fails three times, and you are told which three, because "invitations sent" hides exactly the information you need.
+  Iris Code reports each invitation separately. If you send five invitations with two free places, two succeed and three fail, and you are told which three.
 </Note>
 
 ## What every member gets
 
-A paid seat grants applicable Pro capabilities through that team. Free active collaborators can spend the team's own monthly allowance on active projects. Neither transfers a personal allowance into the team; see [Team entitlement](/teams/entitlement).
+A paid seat gives that person the Pro features that apply, through that team. Free collaborators who are active on the team can spend the team's own monthly allowance on its active projects.
+
+Neither one moves a personal allowance into the team. See [Team entitlement](/teams/entitlement) for how team and personal access fit together.
 
 ## The shared standard
 
-A team publishes one `.irisconfig.json` standard, built and previewed in Config Studio. It is committed beside your code like any other config, so a new machine enforces it on its first push.
+A team publishes one standard: a `.irisconfig.json` file, the settings file that tells Iris Code what to check and how strictly. You build and preview it in Config Studio.
 
-Publishing does not change any repository. It sets what the team expects; the config in each repository is what actually runs, and every report names which policy version it used, so drift is visible rather than silently corrected.
+The file is committed beside your code like any other config. A new machine therefore applies the standard on its first push, with nothing extra to set up.
+
+Publishing does not change any repository. It records what the team expects, while the config file inside each repository is what actually runs. Every report names the version of the standard it used, so you can see when a repository has drifted from it. Iris Code shows the difference rather than correcting it for you.
 
 ## The audit trail
 
-Every completed audit records what ran, on which commit and branch, what it scored, how many findings were open and how many were high severity, and which policy version applied. Audits arrive from three places, and all three land in the same trail:
+The audit trail is the team's record of results. Every completed audit adds an entry with:
+
+- what ran, and on which commit and branch
+- the score
+- how many findings were open, and how many were high severity
+- which version of the standard applied
+
+Entries come from three places, and all three land in the same trail:
 
 - **The editor**, on every completed team scan
 - **CI**, from `iris gate`, when the repository sets a `teamProjectId`
 - **Cloud scans**, from connected GitHub repositories
 
-This team evidence contains counts and revisions, without source code, file names or finding text. Connected cloud repositories also have separate, detailed scan reports containing file paths and finding locations. See [cloud reports and retention](/cloud/overview#reports-and-retention).
+This record holds counts and commit identifiers only. It contains no source code, file names or finding text.
+
+Connected cloud repositories also keep their own, more detailed scan reports, which do include file paths and finding locations. See [cloud reports and retention](/cloud/overview#reports-and-retention).
 
 ## Cloud scans for a team
 
-A team has its own connected repositories and cloud allowance, entirely separate from any member's personal repositories. Free Teams share a monthly pool; paid Teams have a separate allocation that scales with seats. The [pricing page](https://iriscode.co/pricing) shows current paid plan quantities. New repositories start in manual mode; owners can opt into automatic scans within the applicable allowance. See [Scan allowances](/cloud/allowances).
+A team has its own connected repositories and its own cloud scan allowance, completely separate from any member's personal repositories.
+
+- Free Teams share one monthly pool.
+- Paid teams get a separate allocation that grows with the number of seats. The [pricing page](https://iriscode.co/pricing) shows the current paid quantities.
+
+New repositories start in manual mode, so nothing is scanned automatically until an owner opts in. Automatic scans then run within the allowance that applies. See [Scan allowances](/cloud/allowances).
 
 ## Trials
 
 A team can start a **14-day trial** with 3 seats, no card required.
 
 <Warning>
-Creating a team starts it on Free. The optional 14-day trial must be started explicitly by an eligible owner or admin; creating another team does not reset trial eligibility or refill a Free allowance. The Members and Billing screens show the current state.
+A new team always starts on Free. An eligible owner or admin has to start the optional 14-day trial on purpose. Creating another team does not make you eligible for a new trial, and does not refill a Free allowance. The Members and Billing screens show where the team stands.
 </Warning>
 
 ## Deleting a team
 
-Only the owner can, and only once the subscription has been cancelled, because deleting a team tells the billing provider nothing and a team removed mid-subscription would keep being charged for something that no longer exists.
+Only the owner can delete a team, and only after the subscription has been cancelled. Deleting a team does not tell the billing provider anything, so a team removed mid-subscription would keep being charged for something that no longer exists.
 
-Deleting removes members, invitations, connected repositories, cloud reports and the audit trail. A record of the deletion is kept. Deleting your last team returns you to your personal account.
+Deleting removes members, invitations, connected repositories, cloud reports and the audit trail. A record that the deletion happened is kept. Deleting your last team returns you to your personal account.
 
-Read [Team governance](/teams/governance) for agent handoff controls, offline behaviour and pre-push hook records.
+Read [Team governance](/teams/governance) for controls over coding agents, behaviour when offline and records of pre-push checks.

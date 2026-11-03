@@ -1,14 +1,16 @@
 ---
-title: "Authenticate the Iris Code CLI with browser or token"
+title: "Sign in to the Iris Code CLI with your browser or a token"
 sidebarTitle: "Authentication"
-description: "Sign in to Iris Code CLI via browser OAuth for local development, or use IRIS_LICENCE_TOKEN for non-interactive CI runners. Credentials stored in ~/.iris/credentials."
+description: "Sign in to the Iris Code CLI through your browser on your own machine, or use IRIS_LICENCE_TOKEN on automated CI runners. Credentials are stored in ~/.iris/credentials."
 ---
 
-Signing in lets the command line use your Iris Code Pro licence. On your own machine, run `iris auth login` and choose browser sign-in or token entry. On an automated runner, store the licence as the `IRIS_LICENCE_TOKEN` secret so the check can run without a login prompt.
+Signing in lets the command line use your Iris Code Pro licence. Without it, Pro commands skip and the Free commands still work.
+
+On your own machine, run `iris auth login` and choose to sign in through your browser or paste a licence token. On an automated runner, where nobody is there to answer a prompt, store the licence as a secret called `IRIS_LICENCE_TOKEN` so the check can run without logging in.
 
 ## The commands
 
-`iris auth login` is interactive: it asks whether you want to sign in through the browser or paste a token. It requires a terminal, and reports an error rather than hanging when it does not have one.
+`iris auth login` asks whether you want to sign in through the browser or paste a token. It needs an interactive terminal. When there is none, it reports an error rather than waiting forever for an answer.
 
 ```bash
 # Interactive sign-in (choose browser or token when prompted)
@@ -25,22 +27,22 @@ iris auth logout
 
 ## How credentials are stored
 
-Both the browser flow and the manual token entry write to `~/.iris/credentials`. The file is created with `chmod 600` so only the current user can read it.
+Both the browser sign-in and the pasted token are saved to `~/.iris/credentials`. The file is created with `chmod 600`, so only your user account can read it.
 
 <Tip>
-  Add `~/.iris/` to your global gitignore to prevent accidentally committing credentials to a repository.
+  Add `~/.iris/` to your global gitignore so the credentials can never be committed to a repository by accident.
 </Tip>
 
 ## Priority order
 
-The CLI resolves credentials in this order:
+When both are present, the CLI uses the first one it finds:
 
-1. **`IRIS_LICENCE_TOKEN` environment variable** - checked first; takes precedence over the credentials file
-2. **Credentials file at `~/.iris/credentials`** - written by `iris auth login`, whichever method (browser or manual token) you choose at the prompt
+1. **The `IRIS_LICENCE_TOKEN` environment variable**: checked first, and used instead of the credentials file.
+2. **The credentials file at `~/.iris/credentials`**: written by `iris auth login`, whichever method (browser or pasted token) you chose at the prompt.
 
 ## Using IRIS_LICENCE_TOKEN in CI
 
-The environment variable is the recommended approach for CI runners. It avoids writing any files to the runner filesystem and is revoked simply by rotating the secret in your repository settings.
+The environment variable is the recommended way to sign in on a CI runner. Nothing is written to the runner's disk, and you can cut off access by replacing the secret in your repository settings.
 
 ```bash
 # Set for current shell session
@@ -52,10 +54,10 @@ IRIS_LICENCE_TOKEN=sk_live_your_licence_key_here iris gate
 
 To use the token in a CI pipeline:
 
-1. Add your licence key as a repository secret named `IRIS_LICENCE_TOKEN` in your CI provider settings.
-2. Reference the secret as the `IRIS_LICENCE_TOKEN` environment variable in the workflow step that runs Iris Code.
-3. The CLI reads the env var automatically - no `iris auth login` step is required on the runner.
+1. Add your licence key as a repository secret named `IRIS_LICENCE_TOKEN` in your CI provider's settings.
+2. Pass that secret as the `IRIS_LICENCE_TOKEN` environment variable in the workflow step that runs Iris Code.
+3. The CLI reads the variable automatically, so the runner needs no `iris auth login` step.
 
 <Note>
-  `iris secrets` and `iris security` run without any authentication at all - both are free and require no licence. You can use either in any pipeline without setting `IRIS_LICENCE_TOKEN`.
+  `iris secrets` and `iris security` need no sign-in at all. Both are Free and need no licence, so you can run either in any pipeline without setting `IRIS_LICENCE_TOKEN`.
 </Note>

@@ -1,42 +1,46 @@
 ---
 title: "Iris Code Pro: rescan workspaces and enforce project standards"
 sidebarTitle: "Iris Code Pro"
-description: "Iris Code Pro adds continuous enforcement and applicable local project access beyond Free monthly actions. Paid cloud allocations remain separate."
+description: "Iris Code Pro adds checks that can stop a push, a build or a CI run, and removes the Free monthly limit on local project work where it applies. Paid cloud scans have their own allowance."
 ---
 
-Free includes basic file checks and recurring signed-in project actions. Pro adds continuous enforcement and applicable local project work without the Free monthly action constraint.
+The Free plan covers checking files and a monthly allowance of whole-project actions once you sign in. Pro is for when you want your standards applied every time, not only when someone remembers to look.
 
-Your account shows your current local and cloud allowances. Completed results stay available after exhaustion or expiry, and signed-in custom configuration remains effective. See [Free allowances](/free) for the boundary between a new action and opening an earned result.
+Pro adds checks that can stop a push, a build or a CI run when code falls below your standard. It also removes the Free monthly limit on local project work, where that limit applies.
+
+Your account shows your current local and cloud allowances. Results you have already completed stay available after an allowance runs out or a plan ends, and your signed-in custom settings keep working. See [Free allowances](/free) for the difference between new work and opening a result you already have.
 
 A **14-day trial** unlocks everything, and does not require a card.
 
 ## What you get
 
-Everything in Free, plus applicable local project work without the Free monthly action constraint and paid automation:
+Everything in Free, plus local project work without the Free monthly limit where it applies, and paid automation:
 
-- **Git and build hooks** enforce configured thresholds before a push or build.
-- **CI enforcement** applies the configured standard in your pipeline. Automatic cloud triggers are also available to Free accounts within their cloud allowance, after explicit opt-in.
-- **Paid cloud allocation** remains separate from local actions; see [Cloud overview](/cloud/overview) and [Scan allowances](/cloud/allowances).
+- **Git and build hooks** check your configured thresholds before a push or a build, and stop it if the code falls short. A hook is a small script that runs automatically at that moment.
+- **CI enforcement** applies the same standard in your pipeline, the automated checks that run after a push. Free accounts can also opt in to automatic cloud scans, within their cloud allowance.
+- **Paid cloud allowance** is kept separate from local actions; see [Cloud overview](/cloud/overview) and [Scan allowances](/cloud/allowances).
 - **Git history secrets scans** and **batch file naming** remain paid workflows.
-- **Package guard before push** can check changed lockfiles; the package guard before installation remains Free.
+- **Package guard before push** can check lockfiles that changed, the files that record exact package versions. The package guard before installation remains Free.
 
-Project scans, [refactor plans](/refactor/overview), Code Map and schema evidence, dependency audits, findings, TODOs and reports are also available to Free accounts within their applicable allowances. Opening earned results is Free. Signed-in custom configuration, scoring weights and Config Studio do not require an unspent project action.
+Project scans, [refactor plans](/refactor/overview), Code Map and schema results, dependency audits, findings, TODOs and reports are also available to Free accounts within their allowances. Opening results you have already earned is Free. Signed-in custom settings, scoring weights and Config Studio do not need an unused project action.
 
-The CLI and [MCP tools](/agents/mcp#tools) keep inspection, saved reads and enforcement separate. `iris check . --inspect` requests a project inspection; `iris gate` enforces a standard. Account Analytics and audit history show recorded activity and do not prove current source passed.
+The CLI and the [MCP tools](/agents/mcp#tools) keep three things apart: looking at a project, reading a saved result and stopping code that fails. MCP is the connection that lets a coding agent call Iris Code.
+
+For example, `iris check . --inspect` asks for a look at the project, while `iris gate` checks it against your standard and fails if it falls short. Account Analytics and audit history show what ran in the past; they do not prove that your current code passes.
 
 ## The trial
 
-Request a 14-day trial from your Iris Code account. Requests are reviewed before activation, so signing in does not start one automatically. Once active you have everything listed above with no card required. After 14 days the account reverts to Free unless you subscribe.
+Request a 14-day trial from your Iris Code account. Requests are reviewed before they are activated, so signing in does not start one automatically. Once it is active you have everything listed above, with no card required. After 14 days the account goes back to Free unless you subscribe.
 
 <Tip>
-  The most useful way to evaluate the trial is to install a hook and let it block a few real pushes, then check Analytics for the pass/fail counts and the score delta since activation. That gives a concrete picture of what enforcement is catching, which a feature list cannot.
+  The most useful way to judge the trial is to install a hook and let it block a few real pushes. Then check Analytics for the pass and fail counts and how your score has changed since activation. That shows what blocking actually catches in your project, which a feature list cannot.
 </Tip>
 
 ## Upgrading
 
 <Steps>
   <Step title="Open the pricing page">
-    Visit [iriscode.co/pricing](https://iriscode.co/pricing). Pricing adjusts for your region automatically.
+    Visit [iriscode.co/pricing](https://iriscode.co/pricing). Prices adjust for your region automatically.
   </Step>
   <Step title="Request the trial">
     Click **Request free trial**, sign in with Google or GitHub, and submit from your account page. Pro turns on once the request is approved and you accept the invitation.
@@ -47,21 +51,21 @@ Request a 14-day trial from your Iris Code account. Requests are reviewed before
 
 <Steps>
   <Step title="Run the command">
-    VS Code and forks: command palette, **Iris Code: Sign In**. JetBrains: **Tools → Iris Code → Sign In**.
+    VS Code and forks: open the command palette and run **Iris Code: Sign In**. JetBrains: **Tools → Iris Code → Sign In**.
   </Step>
   <Step title="Use Google or GitHub">
     Your browser opens automatically. There is no separate Iris Code password to create or remember.
   </Step>
   <Step title="Return to your editor">
-    You are redirected back automatically, with no token to copy. One sign-in covers your editors and the `iris` CLI. JetBrains IDEs refresh in place, so no restart is needed.
+    You are sent back to the editor automatically, with no code to copy. One sign-in covers your editors and the `iris` CLI. JetBrains IDEs refresh in place, so no restart is needed.
   </Step>
   <Step title="Pro features activate">
-Paid access is confirmed by the server. The sidebar updates its applicable enforcement and local-work permissions; Free actions and saved-result reads remain distinct.
+    Iris Code's server confirms your paid access. The sidebar then updates what you can run: blocking checks and local project work. Free actions and opening saved results are still counted separately.
   </Step>
 </Steps>
 
 <Note>
-  Iris Code never stores your password. Only a licence key is saved: in VS Code's encrypted secret storage, or in a local credentials file shared by JetBrains IDEs and the CLI.
+  Iris Code never stores your password. It saves only a licence key: in VS Code's encrypted secret storage, or in a local credentials file shared by JetBrains IDEs and the CLI.
 </Note>
 
 ## Your subscription
@@ -73,28 +77,34 @@ Visit [iriscode.co/account/billing](https://iriscode.co/account/billing) to:
 - cancel or reactivate a card subscription
 - update a payment method if a saved card expires
 
-Cancelling a card subscription retains Pro access until the end of the current billing period.
+If you cancel a card subscription, you keep Pro until the end of the current billing period.
 
 <Note>
-  If you are billed in Nigeria, Iris Code can open a Paystack bank-transfer checkout instead. Paystack generates a transaction-specific account number you can pay from **OPay**, **Kuda**, **Moniepoint**, **PalmPay** or your usual bank app. It expires after about 30 minutes, and a fresh one is generated for the next renewal.
+  If you are billed in Nigeria, Iris Code can open a Paystack bank-transfer checkout instead. Paystack creates an account number for that one payment, which you can pay from **OPay**, **Kuda**, **Moniepoint**, **PalmPay** or your usual bank app. It expires after about 30 minutes, and a new one is created for the next renewal.
 </Note>
 
 ## If a payment fails
 
-Paystack retries the charge automatically, and Pro access stays active for **3 days** from the first failed charge. If none of the retries land inside that window, Pro stops and the account reverts to Free.
+Paystack tries the charge again automatically, and Pro stays active for **3 days** from the first failed charge. If none of the retries succeed within that time, Pro stops and the account goes back to Free.
 
-Iris Code emails you as soon as a charge fails. That email quotes the reason your bank gave and names the date access stops, and the billing screen shows both.
+Iris Code emails you as soon as a charge fails. The email gives the reason your bank gave and the date access stops, and the billing screen shows both.
 
-The reason is worth reading before you replace anything: a card with money in it that was refused for a recurring charge is a decision by your bank rather than a problem with the card, and paying once by hand usually clears it.
+Read the reason before you replace anything. If a card with money on it was refused for a repeat charge, that was your bank's decision rather than a problem with the card, and paying once by hand usually clears it.
 
-Your licence key, settings and history survive a lapse. Paying again restores Pro on the same key with nothing to set up.
+Your licence key, settings and history survive a lapse. Paying again restores Pro on the same key, with nothing to set up.
 
 ## Working with a team
 
-Pro covers one developer. If you want the same standard held across a team, [Iris Code Teams](/teams/overview) adds a shared workspace on top: a seat gives every member Pro, one published standard your repositories are measured against, an audit trail a reviewer can read, and a separate paid cloud allowance that scales with seats. The [pricing page](https://iriscode.co/pricing) shows the current configured plan quantities.
+Pro covers one developer. To hold a whole team to the same standard, [Iris Code Teams](/teams/overview) adds a shared team account on top. A seat gives each member Pro, and the team gets:
 
-Teams is billed per seat from three seats up, and a **14-day trial** with 3 seats needs no card. See [Seats and billing](/teams/seats-and-billing).
+- one published standard your repositories are measured against
+- an audit trail, a record of what ran that a reviewer can read
+- a separate paid cloud allowance that grows with the number of seats
+
+The [pricing page](https://iriscode.co/pricing) shows the current plan quantities.
+
+Teams is billed per seat, from three seats up, and a **14-day trial** with 3 seats needs no card. See [Seats and billing](/teams/seats-and-billing).
 
 <Note>
-A paid team seat grants applicable editor and command-line capabilities for that team. Your own repositories use your personal cloud allowance separately, so joining a team does not cancel an existing personal subscription. See [Team entitlement](/teams/entitlement).
+  A paid team seat gives you the editor and command-line features that apply to that team. Your own repositories use your personal cloud allowance separately, so joining a team does not cancel an existing personal subscription. See [Team entitlement](/teams/entitlement).
 </Note>

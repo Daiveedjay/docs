@@ -1,34 +1,41 @@
 ---
 title: "Roll Iris Code out across an engineering team"
 sidebarTitle: "Rollout guide"
-description: "A rollout guide for procurement, security reviewers, team owners, and engineers adopting Iris Code Teams."
+description: "A guide for buyers, security reviewers, team owners and engineers bringing Iris Code Teams into a team: what you pay for, what data leaves your machines, and a setup order that sticks."
 ---
 
-This guide explains how to introduce Iris Code across a team. Procurement and security reviewers can check the data boundaries and access rules first; engineers can then follow the setup steps. Start by measuring your code before turning on checks that block changes.
+This guide is for bringing Iris Code into a whole team. The first half answers the questions procurement and security reviewers usually ask: what is being bought, what data leaves your machines, and who can do what. The second half gives engineers the setup steps.
+
+The main advice: measure your code first, and only then turn on checks that can stop a change.
 
 ## For procurement and security
 
 ### What is being bought
 
-Seats. One per person who needs Pro, minimum three, billed monthly on a single subscription rather than one per developer. Adding a seat mid-cycle charges the prorated difference; removing one takes effect at the next renewal, so a team can shrink without losing what it already paid for.
+You buy seats: one for each person who needs Pro, with a minimum of three. They are billed monthly on one subscription for the team, not one per developer.
 
-See [seats and billing](/teams/seats-and-billing) for the price in your region and the exact proration rules.
+- Adding a seat partway through a month charges only the share for the days that remain.
+- Removing a seat takes effect at the next renewal, so the team keeps what it has already paid for.
+
+See [seats and billing](/teams/seats-and-billing) for the price in your region and exactly how those part-month charges work.
 
 ### What leaves your machines
 
-Two answers, because there are two different things running.
+The answer depends on which part of Iris Code is running.
 
-**The editor extension, the CLI and the git hook analyse locally.** Source never leaves the machine. That is true on Free and on Pro, and it is why Iris Code can be used on a repository nobody is allowed to upload.
+**The editor extension, the CLI and the git hook check code on your own machine.** The CLI is the set of `iris` commands you type in a terminal; the git hook is a check that runs automatically when someone pushes. In all three, source code never leaves the machine. That is true on Free and on Pro, so Iris Code can be used on a repository nobody is allowed to upload.
 
-**Cloud scans are opt-in per repository and run on our infrastructure.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those. Each scan downloads the source, reads it without running it, and deletes the working copy afterwards. The stored report includes scores, file paths, finding rule names, severity and line positions, plus dependency information. It does not retain source code or code snippets.
+**Cloud scans are optional, chosen one repository at a time, and run on Iris Code's servers.** Connecting a repository installs a GitHub App with read access to the repositories you pick, and only those.
 
-If you never connect a repository, no code ever reaches us.
+Each cloud scan downloads the source, reads it without running it, and deletes its copy afterwards. The stored report includes scores, file paths, rule names, severity and line positions, plus information about the packages your project uses. It does not keep source code or code snippets.
+
+If you never connect a repository, no code ever reaches Iris Code.
 
 ### What a team's record contains
 
-Team evidence is what the team keeps: which repository was audited, at which commit and branch, what it scored, how many findings were open, how many were high severity, and which version of the standard it was measured against.
+The team's record, also called team evidence, says which repository was checked, at which commit and branch, what it scored, how many findings were open, how many were high severity, and which version of the team's standard it was measured against.
 
-It contains no source, no file paths, no snippets, no finding text, and no member rankings or individual usage telemetry. A team can see that a gate failed and on which commit. It cannot see who ran how many scans.
+It contains no source, no file paths, no snippets and no finding text. It also has no member rankings and no per-person usage figures. A team can see that a check failed and on which commit. It cannot see who ran how many scans.
 
 ### Access and roles
 
@@ -40,40 +47,44 @@ It contains no source, no file paths, no snippets, no finding text, and no membe
 
 ### The audit trail
 
-Every audit, gate run and configuration change is recorded with the server's own timestamp, filterable by type and date, and exportable as CSV or JSON. Entries are append-only: no role, including the owner, can edit or delete one, and deleting a repository's reports is itself recorded as an event.
+The audit trail is the team's log of results. Every audit, gate run and configuration change is recorded with a timestamp from Iris Code's server. You can filter it by type and date, and export it as CSV or JSON.
 
-Membership, role and billing changes are not written to that log yet. It is a record of what ran, not of who administered the team, and the page says so rather than implying a completeness it does not have.
+Entries can only be added. No role, including the owner, can edit or delete one. Deleting a repository's reports is itself recorded as an entry.
+
+Changes to membership, roles and billing are not written to this log yet. It records what ran, not who managed the team, and the page says so.
 
 ### If payment fails
 
-A failed renewal gives seven days before the team entitlement drops to read-only. Nothing is deleted, and restoring payment restores access.
+When a renewal payment fails, the team keeps its paid access for seven days. After that it becomes read-only. Nothing is deleted, and paying restores access.
 
 ## For engineers
 
-Four steps. The first two are the whole minimum; the last two are what turns a signal into something that holds.
+There are four steps. The first two are the minimum. The last two turn the results into checks that actually stop problems.
 
 ### 1. Install and sign in
 
-Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the Marketplace, or the plugin from the JetBrains Marketplace. Sign in once per machine and your seat activates.
+Install [Iris Code](https://marketplace.visualstudio.com/items?itemName=davidjaja.iris-code) from the Visual Studio Marketplace, or the plugin from the JetBrains Marketplace. Sign in once on each machine and your seat starts working.
 
-A seat gives you Pro. Every Pro surface is unlocked and there is nothing further to buy.
+A seat gives you Pro. Every Pro feature is unlocked and there is nothing more to buy.
 
 ### 2. Commit one config
 
-`.irisconfig.json` at the repository root is the standard. Committed, so the editor, the CLI, the git hook and CI all read the same thresholds and nobody's local settings decide whether a change is acceptable.
+`.irisconfig.json` at the root of the repository is the team's standard: the file that sets what Iris Code checks and how strictly. Commit it, so the editor, the CLI, the git hook and CI all read the same limits. Nobody's personal settings then decide whether a change is acceptable.
 
-Build it in the Config Studio and copy it out, or start from a preset. See [configuration](/configuration/irisconfig).
+Build it in Config Studio and copy it out, or start from a preset. See [configuration](/configuration/irisconfig).
 
 ### 3. Install the hook
 
 ```bash
 npm install -g @iris-code/cli
-iris hook install
+iris hook git install
 ```
 
-The pre-push hook runs the gate before a push leaves the machine. It is the cheapest place to catch something, because nothing has been shared yet.
+The pre-push hook runs the gate, the pass-or-fail check against your configured limits, before a push leaves the machine. It is the cheapest place to catch a problem, because nothing has been shared yet.
 
 ### 4. Add the CI check
+
+CI (continuous integration) is the automated build that runs when code reaches your repository, such as GitHub Actions. Add this workflow:
 
 ```yaml
 name: Iris Code
@@ -104,11 +115,11 @@ jobs:
           IRIS_LICENCE_TOKEN: ${{ secrets.IRIS_LICENCE_TOKEN }}
 ```
 
-`IRIS_LICENCE_TOKEN` is any team member's licence key, from **Account → License**, stored as a repository secret. The scan runs on your runner beside your build; Iris Code receives the outcome, commit, branch and aggregate counts.
+`IRIS_LICENCE_TOKEN` is any team member's licence key, found under **Account → License** and stored as a repository secret. The scan runs on your own CI machine next to your build. Iris Code receives only the outcome, the commit, the branch and overall counts.
 
-**Start with `continue-on-error: true`.** The gate records a failed run without failing the pull request, so the team can see what it would have blocked before it blocks anything. Remove that line when the numbers are ones you are willing to enforce.
+**Start with `continue-on-error: true`.** With that line, a failed gate is recorded but does not fail the pull request. The team can see what the check would have stopped before it stops anything. Remove the line once you are happy to enforce the numbers.
 
-To have those runs appear in the team's evidence, add the project's binding to the same `.irisconfig.json`:
+To have those runs appear in the team's record, add the project's link to the same `.irisconfig.json`:
 
 ```json
 {
@@ -116,21 +127,21 @@ To have those runs appear in the team's evidence, add the project's binding to t
 }
 ```
 
-Without it a CI run still gates; it simply reports to nobody.
+Without it, a CI run still passes or fails as normal. It simply does not report to the team.
 
 ## A rollout order that works
 
-Turning enforcement on everywhere on day one produces a wall of findings on code nobody wrote this quarter, and the usual outcome is that the gate gets disabled.
+Turning on blocking checks everywhere on the first day usually produces a wall of findings on old code nobody is working on, and the check then gets switched off. This order avoids that:
 
-1. **Measure first.** Install, commit the config, and leave the gate in report-only for a sprint. The score and the finding counts are the argument for the thresholds.
-2. **Set thresholds you already pass.** A gate that fails on the first run teaches people to bypass it. Set the limit at roughly where you are, then tighten.
-3. **Enforce on new code.** The hook and the CI check both act on what is being pushed now, which is the code someone can still change.
-4. **Then connect cloud scans** if you want the trend and the history without anyone remembering to run something.
+1. **Measure first.** Install, commit the config, and leave the gate reporting without blocking for a sprint. The scores and finding counts tell you what limits are realistic.
+2. **Set limits you already meet.** A check that fails on its first run teaches people to bypass it. Start roughly where you are, then tighten.
+3. **Block on new code.** The hook and the CI check both look at what is being pushed now, which is the code someone can still change.
+4. **Then connect cloud scans**, if you want a trend and history without anyone having to remember to run something.
 
 ## What to expect afterwards
 
-- **Scores move slowly.** A repository's health score is an average over its files; one good pull request will not move it much, and that is the honest behaviour rather than a flattering one.
-- **A failed gate is a rule, not an opinion.** The output names which rule failed and at what threshold, so the argument is about the threshold rather than about taste.
-- **Findings are not all defects.** A "possibly unused package" is a lead. Iris Code reports what it measured, and says when it could not check something rather than assuming it is clean.
+- **Scores move slowly.** A repository's health score is an average across its files, so one good pull request will not move it much. That is the accurate behaviour.
+- **A failed gate is a rule, not an opinion.** The output names which rule failed and at what limit, so any discussion is about the limit rather than about taste.
+- **Not every finding is a defect.** A "possibly unused package" is something to look into. Iris Code reports what it measured, and says when it could not check something rather than assuming it is fine.
 
-Read [Team governance](/teams/governance) for agent handoff controls, offline behaviour and pre-push hook records.
+Read [Team governance](/teams/governance) for controls over coding agents, behaviour when offline and records of pre-push checks.
