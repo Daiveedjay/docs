@@ -32,6 +32,10 @@ Never a package name, version, path or project, and nothing that identifies you.
 
 Signed-in users report through their account instead, and the account's analytics setting applies.
 
+For signed-in users, the editor also sends one hook check per project each week. It records whether the git hook, the build hook and the agent hook are installed, and which coding agents have the agent hook. This shows whether hooks stay in place after setup, including hooks removed by deleting the file.
+
+The weekly check contains yes-or-no values and agent names only. It never includes a path, a file name or a project name, and it follows the same account analytics setting.
+
 The CLI asks before its first dependency lookup and remembers the choice in `~/.iris/preferences.json`. Revoke consent at any time:
 
 ```bash
