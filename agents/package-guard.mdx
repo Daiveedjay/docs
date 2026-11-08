@@ -38,6 +38,40 @@ Advisories come from [OSV.dev](https://osv.dev), which includes the OpenSSF mali
 feed. Versions, publish times and deprecation notices come from the registry itself: npm, PyPI,
 crates.io, the Go module proxy, RubyGems, NuGet and Maven Central.
 
+### Missing and look-alike names
+
+An agent can invent a package name or mistype a familiar one. A confirmed public-registry
+404 now blocks a named install with `does-not-exist`. If the name resembles a popular
+package, the message suggests that name. A failed request, rate limit or offline
+lookup stays `unchecked`; it is never treated as proof that the package does not exist.
+
+For npm and PyPI, the guard compares names with a shipped list of 5,000 popular packages
+per registry. Names already on the list are exempt. An established look-alike warns
+with `lookalike`, so you can check the spelling without blocking legitimate alternatives.
+
+A look-alike blocks with `lookalike-new` when its first release is under 30 days old
+and usage is low. For npm, low usage means fewer than 1,000 downloads in the last week.
+For PyPI, it means fewer than three released versions, a usage proxy rather than a
+download count. This block applies even without `minimumReleaseAgeDays`. A package too
+new for npm to have counted any downloads counts as zero, because the registry has
+already confirmed it exists.
+
+If usage or first-release data is unavailable, the name match only warns and states
+which check did not run. Go, RubyGems, NuGet, Maven and Cargo have no look-alike check
+in this release; their result's `checks.lookalike` is false. `checks.usage` says whether
+the usage signal was available for a matching name.
+
+Go modules that match `GOPRIVATE` or `GONOPROXY`, from the environment or from
+`go env -w`, are reported as `unchecked` and are never sent to the public Go proxy, as
+the `go` command does. For a Maven artifact missing from Maven Central's search index,
+the guard checks the repository's own `maven-metadata.xml` before reporting it missing.
+
+For packages on a private registry, add a reviewed `packageGuard.allow` entry or set
+`onNotFound` to `"warn"`. Set `onLookalike` to `"warn"` to lower new look-alike blocks.
+Neither setting changes malicious-package blocking. A whole-project install reports
+these name findings without blocking on them; its existing malicious and unchecked
+policies still apply.
+
 ## Installing for coding agents
 
 The strongest layer is a hook: a small program the agent runs automatically before every shell command. It works whether or not the
@@ -72,7 +106,7 @@ In VS Code and JetBrains IDEs the picker is multi-select, with the agents the pr
 
 | Agent | `--target` | Hook file | Hook |
 | --- | --- | --- | --- |
-| Claude Code | `claude` | `.claude/settings.json` | `PreToolUse` on `Bash` |
+| Claude Code | `claude` | `.claude/settings.json` | `PreToolUse` on `Bash\|PowerShell` |
 | Cursor | `cursor` | `.cursor/hooks.json` | `beforeShellExecution` |
 | Codex | `codex` | `.codex/hooks.json` | `PreToolUse` on `Bash` |
 | GitHub Copilot | `copilot` | `.github/hooks/iris-package-guard.json` | `preToolUse` |
@@ -83,6 +117,10 @@ Each also gets a small launcher in a `hooks` folder beside its hook file, such a
 `.claude/hooks/iris-package-guard.cjs`. Existing settings are kept: Iris Code adds its own entry and
 touches nothing else, and running the install again changes nothing. A hook file that is not valid
 JSON is refused rather than rewritten.
+
+On Windows, Claude Code can run a command through its PowerShell tool as well as Bash. A Claude Code
+hook installed before this change listens for Bash only, so an install made through PowerShell is not
+checked. Run the install command again to update it; your other settings are kept.
 
 Some agents need one step of their own before a project hook runs:
 
@@ -287,6 +325,8 @@ Every field is optional.
 
 | Field | Default | Effect |
 | --- | --- | --- |
+| `onNotFound` | `"block"` | A confirmed public-registry 404 blocks a named install; choose `"warn"` for private registries |
+| `onLookalike` | `"block"` | New, barely used npm and PyPI look-alikes block; choose `"warn"` to lower this finding |
 | `onUnchecked` | `"warn"` | `"block"` stops packages the guard could not check. The default is to warn, so an offline laptop does not stop an agent working |
 | `blockSeverity` | `"high"` | Advisories at or above this severity block; lower ones warn. An advisory with no published severity warns |
 | `minimumReleaseAgeDays` | unset | Blocks versions published more recently than this. When unset, a version under three days old warns |
@@ -302,13 +342,15 @@ guard's output, naming the entry and its reason, so a bypass is never silent.
 
 The Free presets do not restrict this block: it is a safety policy, available on every plan.
 
-The [Config Studio](/configuration/config-studio) sets `onUnchecked`, `blockSeverity`,
+The [Config Studio](/configuration/config-studio) sets `onNotFound`, `onLookalike`, `onUnchecked`, `blockSeverity`,
 `minimumReleaseAgeDays` and `prePush`. The `allow` list is edited in the file itself, because its
 entries belong to one repository, and syncing from the studio keeps it.
 
 ## Network and privacy
 
-Checking a package needs the registry and OSV.dev. Only package names and versions are sent, never
+Checking a package needs the registry and OSV.dev. Matching npm names also request weekly
+downloads from `api.npmjs.org`; clean names make no extra usage request. Popular-name lists
+ship with Iris Code and are not fetched during a check. Only package names and versions are sent, never
 your code, file paths or project name. Network lookups are asked about once, by `iris install`,
 `iris hook agent install` or the editor command, and can be turned off with
 `iris install --revoke-network`.
@@ -330,8 +372,8 @@ path or anything about the project, and it sends nothing before network lookups 
 
 - It does not intercept a package-manager command you type yourself. Use `iris install`, or rely on the
   editor notice and the pre-push check.
-- It does not guess at typosquats. It reports a package as malicious when OSV's malicious-packages
-  feed does, and does not suggest a "did you mean" of its own.
+- Name similarity is a warning signal, not proof of malware. Only a published malicious-package
+  advisory produces the `malicious` verdict.
 - It does not check licences, and it does not judge what an install script does. It shows the
   repository's own scripts before they run and names the dependencies that have them.
 - A named install checks the packages the command names. A whole-project install checks the full

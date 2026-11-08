@@ -8,6 +8,27 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.41.0 - 2026-11-08
+
+The package guard now checks the package name as well as its versions, so a coding agent cannot install a package it made up or a typo of a popular one. This release uses core 0.9.0 and CLI 1.31.0; the MCP package is unchanged.
+
+<Warning>
+  Installing a package that does not exist is now blocked by default. If your project installs private packages that the public registry does not have, add them to `packageGuard.allow` with a reason, or set `packageGuard.onNotFound` to `"warn"`. If you use Claude Code on Windows, run the agent hook install again so installs made through PowerShell are checked too.
+</Warning>
+
+### Added
+
+- A package the public registry confirms does not exist is blocked. A failed lookup, such as being offline or a timeout, is reported as not checked, never as missing. Go modules that match `GOPRIVATE` or `GONOPROXY` are reported as not checked and are never sent to the public Go proxy. See [missing and look-alike names](/agents/package-guard#missing-and-look-alike-names).
+- Look-alikes of the 5,000 most popular npm and PyPI packages are caught. A new, barely used look-alike, such as `lodahs` for `lodash`, is blocked; an established package with a similar name gets a warning. Both suggest the popular name.
+- The Free `packageGuard.onNotFound` and `packageGuard.onLookalike` settings change either check from `"block"` to `"warn"`. An allow entry never lifts a report that a package is malicious. Config Studio offers both, and verification integrity reports lowering either one as loosened rules.
+- Findings sent to coding agents over MCP, and the agent finish correction, include a short fixed next step for each rule. Ordinary CLI output is unchanged.
+- With usage analytics on, Iris Code also records whether an agent finish check passed, sent the agent back, or needed a person, and which agent ran it. No file names, paths or code are sent.
+
+### Fixed
+
+- Claude Code hooks did not check installs run through its PowerShell tool on Windows. They now cover PowerShell as well as Bash; reinstall the hook to get this.
+- The VS Code extension no longer includes the JetBrains language server, which it never used, so the download is smaller.
+
 ## v1.40.0 - 2026-11-03
 
 Verification integrity compares changes with a saved starting point and reports newly weakened checks. It is Free in the editors, command-line tools, Git hooks and coding-agent workflows. This release uses core 0.8.0 and CLI 1.30.0; the MCP package is unchanged.
