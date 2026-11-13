@@ -8,6 +8,41 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.42.0 - 2026-11-13
+
+This release makes the waiting and in-progress states in the extension, the JetBrains plugin and the CLI end in something you can see, and fixes the places where they could hang or report the wrong thing. It uses core 0.9.1 and CLI 1.32.0; the MCP package is unchanged.
+
+<Note>
+  `iris deps` and `iris cve` now exit with code `4` when network lookups are turned off or you declined them. Exit `1` still means problems were found. A pipeline that treats any non-zero exit as a failure is unaffected.
+</Note>
+
+### Added
+
+- JetBrains: when the Iris Code panel stops, a **Restart Iris Code** link starts it again without reopening the tool window.
+
+### Changed
+
+- Turning network lookups off now wins everywhere. A "no" saved by the VS Code extension or the CLI keeps lookups off even when an older setting allowed them, and allowing them in VS Code also allows them for the CLI and the agent hook.
+- The git hook install question names the hook file that will be changed, and says so when that file is shared with other repositories or committed with your project.
+- Reinstalling the git hook in VS Code replaces the installed block, as the CLI and JetBrains already did. A damaged hook block is reported and left alone.
+- The package guard's pre-push step checks exactly the commits being pushed, including a branch other than the one checked out. A branch that cannot be compared is reported without skipping the others.
+- Upgrade prompts you dismissed forgive one dismissal every 30 days.
+- `refactor.maxCorrections` above 1 is reported as counting as 1. An agent gets at most one correction per turn, as before.
+- `iris-lsp --mcp` uses the workspace your editor reports, when it reports one, and requests sent before a session starts are refused.
+
+### Fixed
+
+- The git hook prompt did not appear for Pro users at startup.
+- The Trends table compared a single snapshot with itself, and its note about saved reviews was unstyled.
+- The pre-push hook's time limit now covers the whole check, including the package step.
+- A duplicate diff kept watching both files after its tab was closed.
+- A Free first project review that ran longer than an hour lost its result.
+- An MCP tool call could hang when the client never confirmed the session.
+- Editing a preset's value in the configuration editor saved the preset instead of your values.
+- Tables could show "nothing to show" before their rows arrived, and the JetBrains change review could stay on "Loading". Outside a Git repository it now shows a plain message.
+- The pre-push package step skipped lockfiles in folders with non-English characters in their names.
+- Generated configuration files no longer show a double comma in their commented examples.
+
 ## v1.41.0 - 2026-11-08
 
 The package guard now checks the package name as well as its versions, so a coding agent cannot install a package it made up or a typo of a popular one. This release uses core 0.9.0 and CLI 1.31.0; the MCP package is unchanged.
