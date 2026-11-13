@@ -38,6 +38,10 @@ The server works inside one project folder, called its root. Nothing outside the
 2. **The workspace your editor reports.** Clients that support MCP's `roots` capability tell the server which project is open, so no flag is needed. Iris Code asks for this at startup.
 3. **The directory the client launched Iris Code in.** The fallback when neither of the above applies.
 
+This order is the same however the server starts, including `iris-lsp --mcp`.
+
+If a client says it supports `roots` but does not finish starting up, Iris Code waits about three seconds for it and then uses step 3, so tool calls are answered rather than left waiting.
+
 Most clients land on the right folder through step 2, which is why the commands above pass no flag. Leaving it off is the right default if you work in more than one project: register the server once, and each editor window uses the project it has open.
 
 ### When to pass `--root`

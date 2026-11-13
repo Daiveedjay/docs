@@ -14,7 +14,7 @@ A pre-push hook is a command that runs automatically before Git sends your chang
 
 Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes the pre-push hook file and makes it executable so Git can run it.
 
-The first time Iris Code starts in a Git repository, it also offers to install the hook for you. If you decline, that choice is remembered for the workspace and you are not asked again.
+When Iris Code starts in a Git repository with a Pro licence, it also offers to install the hook for you. Choosing **Not now** is remembered for that workspace for 30 days. Closing the question without choosing only skips it until the editor next starts.
 
 ## Husky and custom hook paths
 
@@ -73,6 +73,14 @@ Each time the hook runs, the result is recorded as a pass or fail in your accoun
 ## Uninstalling
 
 Run **Iris Code: Uninstall Git Hook**. Only the Iris Code block between the markers is removed. If nothing else is left in the file apart from its first `#!` line, the hook file is deleted.
+
+If the hook file has no Iris Code block, Iris Code says so and changes nothing.
+
+### A damaged hook block
+
+The Iris Code block starts and ends with a marker line. If the file has a start marker without its end, an end without its start, or two blocks, Iris Code cannot tell where its own lines stop.
+
+In that case install and uninstall both stop and name the file, and nothing in it is changed. Remove or repair the Iris Code lines by hand, then run the command again. The editor, `iris hook git` and the JetBrains plugin all follow this rule.
 
 ## Verification integrity
 

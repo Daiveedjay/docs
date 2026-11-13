@@ -355,6 +355,10 @@ your code, file paths or project name. Network lookups are asked about once, by 
 `iris hook agent install` or the editor command, and can be turned off with
 `iris install --revoke-network`.
 
+The editor and the CLI each keep a copy of your answer. Choosing Allow or Disable with **Iris Code: Dependency Network Access** writes both copies, so it covers the CLI and the agent hook too. The editor reads both copies and a "no" in either wins, whichever came first. The CLI and the agent hook read only the CLI's copy, so `--allow-network` given after an editor "no" is honoured by them but not by the editor until you choose Allow there.
+
+Answering no at the CLI prompt is remembered, so you are not asked on every run. The first time you pass `--allow-network`, the CLI prints what is sent before it records your yes.
+
 Registry data is cached for 24 hours and advisory data for 6 hours, per user under `~/.iris/cache/` and never inside the project, so a repository cannot ship an answer with its code. Advisories are
 cached for less time than elsewhere in Iris Code because a package newly reported as malicious should
 not keep passing for a day.
@@ -365,7 +369,8 @@ are `unchecked` with that reason, and `onUnchecked` decides.
 When you are not signed in, the guard also sends an anonymous daily count of its checks: the
 ecosystem, the verdict, the surface and, for a hook, the coding agent. It never sends a package, a
 path or anything about the project, and it sends nothing before network lookups are allowed. Set
-`DO_NOT_TRACK=1` or `IRIS_TELEMETRY=off` to turn it off. See
+`DO_NOT_TRACK=1` or `IRIS_TELEMETRY=off` to turn it off. When you are signed in, the same
+variables also stop the guard's usage events. See
 [Network requests](/trust/security-and-support#network-requests).
 
 ## What this does not do

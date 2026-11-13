@@ -72,8 +72,8 @@ kebab-case convention produces rules that say exactly that.
 
 When size or complexity limits are set, a section on refactoring an over-limit file describes the
 [refactor playbook](/refactor/agents) loop: run `iris refactor` or `iris_refactor_plan`, apply proved
-fixes first, verify after each move, and stop after the configured `maxCorrections` to show you the
-verdict and diff. It works without MCP, the connection that lets an agent call Iris Code tools directly.
+fixes first, verify after each move, and stop after one correction (or none, when `maxCorrections` is 0) to
+show you the verdict and diff. It works without MCP, the connection that lets an agent call Iris Code tools directly.
 
 Only what is configured appears. Turn off magic-number detection and that rule is absent rather than stated and contradicted. When the [package guard](/agents/package-guard) hook is installed, the file also tells agents to check a dependency before adding it and not to retry a blocked version. Set no naming policy and there is no naming section.
 

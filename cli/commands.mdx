@@ -22,7 +22,9 @@ Each command below starts with what it is for and when you would use it, followe
 
 Every command returns a number when it finishes, called an exit code. A script, Git hook or CI pipeline reads it to decide whether to carry on. Each command's table below lists its own codes.
 
-Every **Pro** command can also return `3`. That means you have a licence but it could not be checked, for example because the licence server could not be reached or it is limiting repeated requests. The command does not run, rather than skipping and reporting a success it has not earned.
+Any command can also return `3`. It means the command did not run because Iris Code could not confirm access: your licence could not be checked (the licence server could not be reached or is limiting repeated requests), you need to sign in, your monthly allowance is used up, or an interrupted operation needs review first. The command stops rather than skipping and reporting a success it has not earned.
+
+`iris deps` and `iris cve` return `4` when network lookups are turned off or you declined them, so a pipeline can tell "nothing was checked" apart from `1`, "problems found".
 
 Having no Pro licence is a different case. That is known, so those commands skip and exit `0`.
 
@@ -387,6 +389,7 @@ Advisories without a verifiable ID or severity are never shown. They are left ou
 | `0` | No vulnerabilities found |
 | `1` | One or more vulnerabilities detected |
 | `2` | Invalid arguments or no manifest found |
+| `4` | Network lookups are turned off or you declined them, so nothing was checked |
 
 ---
 
@@ -422,6 +425,7 @@ iris cve --severity low
 | `0` | No CVEs at or above the threshold |
 | `1` | One or more CVEs at or above the threshold |
 | `2` | Invalid arguments or no manifest found |
+| `4` | Network lookups are turned off or you declined them, so nothing was checked |
 
 A package reported in the OpenSSF malicious-packages feed fails the run at every `--severity` level and is listed under its own **MALICIOUS** heading. Those reports carry no severity score of their own, so without this rule they would rank below `low`.
 
