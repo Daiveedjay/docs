@@ -23,6 +23,7 @@ This release makes the waiting and in-progress states in the extension, the JetB
 ### Changed
 
 - Turning network lookups off now wins everywhere. A "no" saved by the VS Code extension or the CLI keeps lookups off even when an older setting allowed them, and allowing them in VS Code also allows them for the CLI and the agent hook.
+- Once network lookups are turned off, `--allow-network` asks you to confirm in a terminal. Run from a script or by a coding agent, it leaves them off and exits `4`, so an agent cannot turn them back on for you. A machine that never turned them off, such as a fresh CI runner, is unaffected.
 - The git hook install question names the hook file that will be changed, and says so when that file is shared with other repositories or committed with your project.
 - Reinstalling the git hook in VS Code replaces the installed block, as the CLI and JetBrains already did. A damaged hook block is reported and left alone.
 - The package guard's pre-push step checks exactly the commits being pushed, including a branch other than the one checked out. A branch that cannot be compared is reported without skipping the others.

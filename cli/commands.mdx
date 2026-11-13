@@ -365,7 +365,7 @@ Monorepo workspace members (npm and yarn workspaces, `pnpm-workspace.yaml`) are 
 | `--verbose` | Show individual CVE titles and URLs |
 | `--format <fmt>` | Output format: `pretty` (default) or `json` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
-| `--allow-network` | Re-enable network lookups after a revoke |
+| `--allow-network` | Allow network lookups. After a revoke or a "no", it asks you to confirm and works only in a terminal |
 | `--revoke-network` | Disable version and advisory lookups |
 
 ```bash
@@ -376,7 +376,7 @@ iris deps
 iris deps --no-cache --format json
 ```
 
-The first lookup over the network asks for your permission and shows exactly what is sent: package names and versions, nothing else. Your choice is saved in `~/.iris/preferences.json`. Run with `--revoke-network` to turn lookups off later, or `--allow-network` to turn them back on. When results come from the 24-hour cache, the output shows how old the cached scan is.
+The first lookup over the network asks for your permission and shows exactly what is sent: package names and versions, nothing else. Your choice is saved in `~/.iris/preferences.json`. Run with `--revoke-network` to turn lookups off later, or `--allow-network` to turn them back on. Once lookups have been turned off, `--allow-network` asks you to confirm and only works in a terminal, so a script or a coding agent cannot turn them back on for you; the command exits `4` instead. When results come from the 24-hour cache, the output shows how old the cached scan is.
 
 No token or rate-limit setup is needed. OSV.dev lookups need no account, and only the package name, ecosystem and version are sent.
 
@@ -406,7 +406,7 @@ This is the command for a CI gate: it can block merges on high or critical advis
 | `--no-cache` | Skip the 24-hour local cache and re-fetch |
 | `--format <fmt>` | Output format: `pretty` (default) or `json` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
-| `--allow-network` | Re-enable network lookups after a revoke |
+| `--allow-network` | Allow network lookups. After a revoke or a "no", it asks you to confirm and works only in a terminal |
 | `--revoke-network` | Disable version and advisory lookups |
 
 ```bash
