@@ -38,20 +38,22 @@ Some commands scan a whole project. On Free, each fresh project scan uses one ac
 
 Sets Iris Code up in a project in one step. Run it once when you start using Iris Code in a repository.
 
-It asks three short questions, recommends a preset (a ready-made set of thresholds) and writes `.irisconfig.json`. It also installs the pre-push hook, a check that runs before `git push`, where the licence allows it, offers the [package guard](/agents/package-guard) for coding agents, and creates or refreshes the `AGENTS.md` rules block.
+It asks a few short questions, recommends a preset (a ready-made set of thresholds) and writes `.irisconfig.json`. It also installs the pre-push hook, a check that runs before `git push`, where the licence allows it, offers the [package guard](/agents/package-guard) for coding agents, and creates or refreshes the `AGENTS.md` rules block.
 
 **Free**, except the Git hook step, which is Pro and is reported as skipped rather than failing the run.
 
 | Flag | Description |
 |---|---|
 | `[path]` | Directory to set up (defaults to current directory) |
-| `--yes`, `-y` | Take the Balanced preset without prompting. Also the behaviour when there is no terminal to ask at |
+| `--yes`, `-y` | Take the Balanced preset and judge pushes on what they change, without prompting. Also the behaviour when there is no terminal to ask at |
 
 ```bash
 npx -y @iris-code/cli init
 ```
 
 The questions cover what kind of project this is, what matters most right now, and whether Iris Code should block a push or only report. The answers map to one of the shipped presets, and the recommendation is shown with its reason before anything is written. You can always choose another preset from the list instead.
+
+A further question asks what a push check should judge. The recommended answer, **Only what the push changes**, writes `"gateScope": "changes"`: code you do not touch never blocks a push, and a file you edit blocks only if you make it worse. **Every file, every time** writes `"all"`. The [git hook page](/enforcement/git-hook#judging-only-what-a-push-changes) explains the rules.
 
 The package guard question defaults to yes when the project already shows a coding agent in use, such as a `CLAUDE.md` file or a `.cursor/` folder. With `--yes`, the guard is added only in that case.
 
@@ -60,6 +62,7 @@ Each step reports what it did:
 ```
 Iris Code setup
   config: created .irisconfig.json with the Balanced preset
+  gate: judges only what each push changes. Code you do not touch never blocks a push, and a file you edit blocks only if you make it worse (gateScope "changes").
   git hook: skipped - Pro installs the pre-push gate; run `iris hook git install` after upgrading
   package guard: ready
   agent rules: created or refreshed Iris Code blocks
@@ -555,6 +558,8 @@ iris todos ./src --format json
 
 There is no command-line flag to override thresholds; set them in `.irisconfig.json`.
 
+With `"gateScope": "changes"`, the gate judges only what the branch changed: each changed file is compared with its version at `--from <revision>`, or at the point where the branch left its upstream. Untouched files cannot fail it. A CI checkout often has no upstream branch, or already sits at it on a push event, so pass `--from` with the base of the pull request or the commit before the push. Without an earlier commit to compare with, the gate judges every file and prints a note saying so, rather than passing a change it never compared.
+
 Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-ignore: <ruleId> -- <reason>`) do not count against gate rules, but the number suppressed always appears in the output. Set `gateMaxSuppressions` to cap suppressions per file, or `ignoreSuppressions: true` to ignore every suppression comment so suppressed findings count again.
 
 | Flag | Description |
@@ -563,6 +568,7 @@ Findings silenced by [inline suppressions](/enforcement/suppressions) (`// iris-
 | `--config <path>` | Use a specific `.irisconfig.json` |
 | `--format <fmt>` | Output format: `pretty` (default), `json`, or `github` |
 | `--output <path>` | Write JSON result to file (requires `--format json`) |
+| `--from <revision>` | The earlier commit to compare with, for verification integrity and for `"gateScope": "changes"`. Defaults to where the branch left its upstream |
 | `--show-suppressed` | List each finding suppressed by an `iris-ignore` comment, with its reason |
 | `--slack-on <when>` | `failure` (default) or `always` |
 | `--slack-dry-run` | Print the Slack payload instead of posting it |

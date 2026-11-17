@@ -213,6 +213,7 @@ A gate is the pass or fail decision made when your code is checked by the CLI (t
 | Key | Tier | What it controls |
 |-----|------|-----------------|
 | `minHealthScore` | Free + Pro | Files below this score are considered failures |
+| `gateScope` | Free + Pro | `"changes"` judges only the files a push or branch changed, each against its version in the earlier commit: an untouched file never blocks, and a changed file blocks only if it got worse. `"all"` judges every file. New setups write `"changes"`; a config without the key keeps `"all"`. Takes precedence over `gateBaselineMode`. See [Judging only what a push changes](/enforcement/git-hook#judging-only-what-a-push-changes). |
 | `gateBaselineMode` | Signed in | Judges each existing file against its own score in your locked baseline (a saved snapshot of scores) instead of `minHealthScore`. New files still use `minHealthScore`. Useful for stopping older code getting worse without requiring a full cleanup first. |
 | `trendRegressionThreshold` | Signed in | Highlights drops in the Trends table when a file falls by more than this many health-score points between snapshots. Smaller drops can still show as declining; this key controls what Iris Code calls out as a notable regression. |
 | `gateMaxSecrets` | Signed in | Max hardcoded secrets allowed workspace-wide. Set to `0` to require a clean workspace |

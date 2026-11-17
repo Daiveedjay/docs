@@ -53,7 +53,36 @@ The threshold is the minimum health score a file must reach. Set it with `minHea
 
 On an established codebase, a fixed minimum can block a large share of the project from the first day, which usually ends with the hook being uninstalled.
 
-`gateBaselineMode` avoids that. Each existing file is judged against its own score at the time you locked a baseline, a saved snapshot of scores. The rule becomes "do not make this worse" rather than "fix everything first". New files still have to reach `minHealthScore`.
+### Judging only what a push changes
+
+`gateScope` decides how much of the code the hook judges. With `"changes"`, Iris Code checks only the files a push changes, and compares each one with its version in the commit the remote already has. Code you did not touch never blocks a push.
+
+A changed file blocks the push only if the push made it worse:
+
+- its score ends below `minHealthScore` and lower than it was before;
+- it newly breaks a limit such as `gateMaxComplexity` or `gateMaxFileLength`, or was already over the limit and got worse;
+- the push adds secrets, security smells, naming violations or duplicate blocks beyond the configured limit. Ones that were already in the file do not count.
+
+A new file has to meet the normal limits. `iris init` and the editor's config generator write `"changes"` for new setups. A config without the key keeps `"all"`, which judges every file on every push, as before.
+
+Switching an existing project to `"changes"` narrows what the gate checks, so [verification integrity](/features/verification-integrity) reports it as `rules-loosened`, as it does for a lowered `minHealthScore`. This stops a coding agent narrowing the gate to get its own change through. If you are making the switch yourself, the push that carries it is blocked once; add a line with a reason to that commit's message:
+
+```
+Iris-Allow: rules-loosened .irisconfig.json -- judge pushes on what they change
+```
+
+```json
+{
+  "minHealthScore": 70,
+  "gateScope": "changes"
+}
+```
+
+When Iris Code cannot find the earlier commit, for example on the first push of a branch with no upstream, it judges every file and says why in the hook output. The build hook compares the working tree with the branch's upstream in the same way.
+
+### Comparing with a locked baseline
+
+`gateBaselineMode` is the older way to avoid blocking existing code. Each existing file is judged against its own score at the time you locked a baseline, a saved snapshot of scores. The rule becomes "do not make this worse" rather than "fix everything first". New files still have to reach `minHealthScore`.
 
 ```json
 {

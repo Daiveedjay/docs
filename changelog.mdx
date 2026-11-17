@@ -8,6 +8,30 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.43.0 - 2026-11-17
+
+This release lets the gate judge only what a change did, so a push is no longer blocked by old code you never touched. It uses core 0.10.1 and CLI 1.33.0; the MCP package is unchanged.
+
+<Note>
+  Existing projects are unaffected: a `.irisconfig.json` without `gateScope` keeps judging every file. Switching an existing project to `"changes"` is reported as `rules-loosened`, so the push that carries it needs an `Iris-Allow` line. See [Judging only what a push changes](/enforcement/git-hook#judging-only-what-a-push-changes).
+</Note>
+
+### Added
+
+- `"gateScope": "changes"`: the pre-push hook, the build hook and `iris gate` check only the files a change touched, each against its version in the earlier commit. Code you did not touch never blocks, a changed file blocks only if you make it worse, and a new file must meet the normal limits. When there is no earlier commit to compare with, every file is judged and the output says why.
+- New setups choose `"changes"` by default. `iris init` asks, with **Only what the push changes** recommended; the config generators in VS Code and JetBrains write it too.
+- Under `"changes"`, `iris gate --from <revision>` sets the earlier commit to compare with, such as the base of a pull request in CI.
+
+### Changed
+
+- Under `"changes"`, Gate Preview says it still scores every file, the hook and `iris gate` say what was judged, and project rules for agents (`iris rules`) describe the change gate.
+
+### Fixed
+
+- A push that passed could still show the "push blocked" message and add to the blocked-push count in VS Code and JetBrains.
+
+---
+
 ## v1.42.0 - 2026-11-13
 
 This release makes the waiting and in-progress states in the extension, the JetBrains plugin and the CLI end in something you can see, and fixes the places where they could hang or report the wrong thing. It uses core 0.9.1 and CLI 1.32.0; the MCP package is unchanged.
