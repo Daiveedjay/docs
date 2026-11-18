@@ -93,7 +93,7 @@
           {
             "group": "Configuration",
             "pages": [
-              "configuration/irisconfig",
+              "configuration/irisconfig", "configuration/keys",
               "configuration/file-naming",
               "configuration/config-studio",
               "configuration/scoring-weights",

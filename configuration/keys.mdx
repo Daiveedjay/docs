@@ -1,0 +1,509 @@
+---
+title: "Configuration keys: every .irisconfig.json setting"
+sidebarTitle: "All configuration keys"
+description: "Every setting you can put in .irisconfig.json, with what it does, the values it accepts, its default and the page that explains it."
+keywords: ["agentHandoff","agent handoff","codePackedThreshold","code packed threshold","complexityThreshold","complexity threshold","duplicateBlockMinTokens","duplicate block min tokens","enableCodeLens","enable code lens","enableConsoleLogWarnings","enable console log warnings","enableDuplicateDetection","enable duplicate detection","enableInlineDiagnostics","enable inline diagnostics","enableLongParamDetection","enable long param detection","enableMagicNumberDetection","enable magic number detection","enableMissingReturnTypeWarnings","enable missing return type warnings","enableSecretsDetection","enable secrets detection","enableSecuritySmells","enable security smells","enableStatusBar","enable status bar","enableTodoDetection","enable todo detection","enableUnusedDetection","enable unused detection","fileLengthThreshold","file length threshold","fileNaming","file naming","fileNamingScope","file naming scope","functionLengthThreshold","function length threshold","gateBaselineMode","gate baseline mode","gateMaxComplexity","gate max complexity","gateMaxDuplicateBlocks","gate max duplicate blocks","gateMaxFileLength","gate max file length","gateMaxNamingViolations","gate max naming violations","gateMaxParseErrors","gate max parse errors","gateMaxSecrets","gate max secrets","gateMaxSecuritySmells","gate max security smells","gateMaxSmellsPerFile","gate max smells per file","gateMaxSuppressions","gate max suppressions","gateScope","gate scope","healthScoreWeights","health score weights","ignoreFiles","ignore files","ignoreFunctions","ignore functions","ignoreSuppressions","ignore suppressions","inlineDiagnostics","inline diagnostics","languages","maxFunctionsPerFile","max functions per file","maxImportsPerFile","max imports per file","maxParameterCount","max parameter count","minHealthScore","min health score","packageGuard","package guard","presetId","preset id","refactor","schemaGraph","schema graph","severityOverrides","severity overrides","sidebarFontSize","sidebar font size","teamProjectId","team project id","testConvention","test convention","trendRegressionThreshold","trend regression threshold"]
+---
+
+This page lists every setting that `.irisconfig.json` accepts, in alphabetical order. Use it to look up a setting by name, for example `gateScope`, and then follow the link to the page that explains how to use it.
+
+The list is generated from the same schema your editor uses to check the file and show hover help, so it always matches what Iris Code accepts. Settings marked Pro on other pages, such as gate limits, are listed here too.
+
+## Settings
+
+{/* >>> iris-config-keys-start <<< */}
+
+### Agent handoff (`agentHandoff`)
+
+Set to false to turn off the Iris Code MCP server for this repository, for everyone who works on it. It cannot turn the server on where an organisation has turned it off.
+
+- Values: `true` or `false`
+- Explained in: [MCP server](/agents/mcp)
+
+### Code packed threshold (`codePackedThreshold`)
+
+Report new packing when at least this many statements are joined onto shared lines in a file. Free, for every language and preset. Raising it is reported as weakened verification. There is no off switch; use severity info or ignoreFiles for generated files.
+
+- Values: a number, at least 1
+- Default: `3`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Complexity threshold (`complexityThreshold`)
+
+Complexity score (1-10) that triggers a status bar warning.
+
+- Values: a number
+- Default: `7`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Duplicate block min tokens (`duplicateBlockMinTokens`)
+
+Minimum normalised-token run length before two stretches of code count as a duplicate block. Blocks where both sides are .jsx/.tsx files require twice this value (JSX markup is structurally repetitive).
+
+- Values: a number, at least 10
+- Default: `40`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable code lens (`enableCodeLens`)
+
+Show inline Code Lens hints above long functions.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable console log warnings (`enableConsoleLogWarnings`)
+
+Flag console.log / fmt.Print* statements left in code.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [Language support](/features/language-support)
+
+### Enable duplicate detection (`enableDuplicateDetection`)
+
+Detect duplicated code blocks within and across files using normalised token-window matching (identifier names, literals, whitespace, and comments are ignored).
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable inline diagnostics (`enableInlineDiagnostics`)
+
+Show Iris Code findings as inline diagnostics (squiggles + Problems panel). Set to false to disable all diagnostic output.
+
+- Values: `true` or `false`
+- Default: `false`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable long param detection (`enableLongParamDetection`)
+
+Flag functions that exceed the maxParameterCount threshold.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable magic number detection (`enableMagicNumberDetection`)
+
+Flag raw numeric literals with no named constant.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable missing return type warnings (`enableMissingReturnTypeWarnings`)
+
+Flag exported functions missing an explicit return type (TypeScript/JavaScript only).
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable secrets detection (`enableSecretsDetection`)
+
+Detect possible hardcoded secrets (API keys, tokens, passwords) assigned to variables.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable security smells (`enableSecuritySmells`)
+
+Detect security anti-patterns: eval/exec usage, SQL string concatenation, insecure RNG (Math.random), ReDoS-prone regexes, hardcoded localhost URLs, disabled TLS verification, debug flags, weak hashing (MD5/SHA1), and open redirect vulnerabilities.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable status bar (`enableStatusBar`)
+
+Show the Iris Code health score in the status bar.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable todo detection (`enableTodoDetection`)
+
+Collect TODO / FIXME / HACK comments and surface them in the TODOs tab.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Enable unused detection (`enableUnusedDetection`)
+
+Flag unused variables and functions within a file.
+
+- Values: `true` or `false`
+- Default: `true`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### File length threshold (`fileLengthThreshold`)
+
+Lines before a file is flagged as too long. Statements joined onto one line count as separate lines.
+
+- Values: a number
+- Default: `300`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### File naming (`fileNaming`)
+
+Free. Workspace-wide naming default, absolute ignore globs, and ordered path/role overrides. The last matching path override wins; a language policy is the fallback when no path override matches.
+
+- Values: an object
+- Explained in: [File naming conventions](/configuration/file-naming)
+- Fields:
+  - `convention`: Required.
+  - `ignore`: Additional workspace-relative glob patterns excluded from naming checks.
+  - `scope`: Optional scope override.
+  - `overrides`: Ordered workspace-relative path rules.
+
+### File naming scope (`fileNamingScope`)
+
+Free. Check only paths absent from a locked baseline, or all files. Without a baseline, new-files checks the whole scan.
+
+- Values: `"new-files"`, `"all"`
+- Default: `"new-files"`
+- Explained in: [File naming conventions](/configuration/file-naming)
+
+### Function length threshold (`functionLengthThreshold`)
+
+Lines before a function is flagged as too long. Statements joined onto one line count as separate lines.
+
+- Values: a number
+- Default: `40`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate baseline mode (`gateBaselineMode`)
+
+Pro. Gate existing files against their locked baseline score. New files still use minHealthScore.
+
+- Values: `true` or `false`
+- Default: `false`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max complexity (`gateMaxComplexity`)
+
+Gate fails if any individual file's complexity score exceeds this value.
+
+- Values: a number, at least 0, at most 100
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max duplicate blocks (`gateMaxDuplicateBlocks`)
+
+Gate fails if the total number of duplicate code blocks found across the scan exceeds this value. Pro. Only counts blocks when enableDuplicateDetection is true.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max file length (`gateMaxFileLength`)
+
+Gate fails if any individual file exceeds this number of lines. Statements joined onto one line count as separate lines.
+
+- Values: a number, at least 1
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max naming violations (`gateMaxNamingViolations`)
+
+Gate fails when the scan finds more file naming violations than this value. Pro.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max parse errors (`gateMaxParseErrors`)
+
+Gate fails when more files than this could not be parsed. Unset by default, so an unreadable file is reported without blocking - a real syntax error is already caught by your compiler. Set it to 0 to treat any unparseable file as a failure. Pro.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max secrets (`gateMaxSecrets`)
+
+Gate fails if the total number of hardcoded secrets found across the workspace exceeds this value. Set to 0 to block any secrets from passing the gate.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max security smells (`gateMaxSecuritySmells`)
+
+Gate fails if the total number of security smells (eval usage, SQL injection risk, insecure RNG, disabled TLS, weak hashing, etc.) found across the workspace exceeds this value. Only counts smells when enableSecuritySmells is true.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max smells per file (`gateMaxSmellsPerFile`)
+
+Gate fails if any individual file's total smell count (console logs, todos, nesting, unused vars, etc.) exceeds this value.
+
+- Values: a number, at least 0
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Gate max suppressions (`gateMaxSuppressions`)
+
+Gate fails if any individual file carries more than this many findings suppressed via iris-ignore comments. Pro. Keeps suppression abuse enforceable.
+
+- Values: a number, at least 0
+- Explained in: [Suppressions](/enforcement/suppressions)
+
+### Gate scope (`gateScope`)
+
+What the pre-push hook, build hook and `iris gate` judge. "changes": only files the push or branch changed, each compared with the commit before it. An untouched file never blocks, and a changed file blocks only if it got worse (a lower score below minHealthScore, a limit it newly breaks, or new secrets, smells or duplicates). New files meet the normal limits. "all": every file against every limit, the behaviour before this setting existed. New setups write "changes"; a config without the key keeps "all". When Iris Code cannot find the commit before the change, it judges every file and says so.
+
+- Values: `"changes"`, `"all"`
+- Default: `"all"`
+- Explained in: [Judging only what a push changes](/enforcement/git-hook#judging-only-what-a-push-changes)
+
+### Health score weights (`healthScoreWeights`)
+
+Pro: override the penalty subtracted from the base 100 health score for each finding type. Omitted keys fall back to the built-in defaults (or the active preset's values).
+
+- Values: an object
+- Explained in: [Scoring weights](/configuration/scoring-weights)
+- Fields:
+  - `errorWarning`: Penalty per error-severity warning.
+  - `warningWarning`: Penalty per warning-severity warning.
+  - `anyUsage`: Penalty per explicit `any` usage (TypeScript only).
+  - `tsIgnore`: Penalty per @ts-ignore comment (TypeScript only).
+  - `consoleLog`: Penalty per console/debug print finding.
+  - `deepNesting`: Penalty multiplier for the deep-nesting smell score.
+  - `longParamList`: Penalty per long-parameter-list finding.
+  - `unusedVar`: Penalty per unused variable finding.
+  - `unusedFunction`: Penalty per unused function finding.
+  - `hardcodedSecret`: Penalty per hardcoded secret finding.
+  - `evalUsage`: Penalty per eval() / exec() call (TypeScript/JS and Python).
+  - `sqlConcatenation`: Penalty per SQL query built by string concatenation.
+  - `insecureRandom`: Penalty per use of a non-cryptographic RNG (Math.random, rand.Intn, random.random).
+  - `unsafeRegex`: Penalty per ReDoS-prone regex pattern (nested quantifiers, e.g.
+  - `hardcodedLocalhost`: Penalty per hardcoded localhost URL left in production code.
+  - `disabledTlsVerification`: Penalty per instance of TLS certificate verification being disabled.
+  - `debugFlagsEnabled`: Penalty per debug flag left enabled in production code.
+  - `weakHashing`: Penalty per use of a weak hashing algorithm (MD5 or SHA1).
+  - `openRedirect`: Penalty per potential open redirect vulnerability (redirecting to unvalidated user input).
+  - `bareSuppression`: Penalty per iris-ignore comment that is missing its required reason or names an unknown rule.
+  - `duplicateCode`: Penalty per duplicate code block found in the file.
+  - `fileNaming`: Penalty when a file violates its configured language naming convention.
+
+### Ignore files (`ignoreFiles`)
+
+Glob patterns for files Iris Code should skip during workspace/folder analysis.
+
+- Values: a list
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Ignore functions (`ignoreFunctions`)
+
+Function names Iris Code should never flag (e.g. ["main", "handler"]).
+
+- Values: a list
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Ignore suppressions (`ignoreSuppressions`)
+
+Team-lead override (Pro). When true, iris-ignore comments are treated as inert: suppressed findings count as live in scoring and the gate.
+
+- Values: `true` or `false`
+- Default: `false`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Inline diagnostics (`inlineDiagnostics`)
+
+Per-category toggles for inline diagnostics. Only include keys you want to override.
+
+- Values: an object
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+- Fields:
+  - `hardcodedSecrets`: Show diagnostics for detected hardcoded secrets (requires enableSecretsDetection).
+  - `securitySmells`: Show diagnostics for security anti-patterns: eval, SQL injection, insecure RNG, ReDoS regex, disabled TLS, weak hashing, open redirects, etc.
+  - `duplicateCode`: Show diagnostics for within-file duplicated code blocks (requires enableDuplicateDetection).
+  - `fileNaming`: Show a line-one diagnostic when the file name violates its language convention.
+  - `errorWarnings`: Show diagnostics for error-severity structural warnings (e.g.
+  - `warningLevelWarnings`: Show diagnostics for warning- and info-severity structural warnings.
+  - `tsIgnore`: Show a file-level diagnostic when @ts-ignore comments are present.
+  - `unusedFunctions`: Show diagnostics for functions that are defined but never called.
+  - `anyUsage`: Show diagnostics for `any` type usages (TypeScript only).
+  - `consoleLogs`: Show diagnostics for console.log statements left in code.
+  - `magicNumbers`: Show diagnostics for magic number literals.
+  - `longParamLists`: Show diagnostics for functions with too many parameters.
+  - `unusedVars`: Show diagnostics for declared but unused variables.
+  - `todos`: Show diagnostics for TODO / FIXME / HACK comments.
+
+### Languages (`languages`)
+
+Per-language configuration. fileNaming is Free; thresholds, scoring weights, severities, and gate caps are Pro. javascript and typescript are separate keys. Vue/Svelte components use javascript unless a script block declares lang="ts". ERB templates use ruby.
+
+- Values: an object
+- Explained in: [Language support](/features/language-support)
+- Fields:
+  - `typescript`: Overrides applied to TypeScript files (.ts, .tsx, .mts, .cts) and Vue/Svelte components containing a TypeScript script block.
+  - `javascript`: Overrides applied to JavaScript files (.js, .jsx, .mjs, .cjs) and Vue/Svelte components whose script blocks do not declare TypeScript.
+  - `go`: Overrides applied to Go files (.go).
+  - `python`: Overrides applied to Python files (.py, .pyw).
+  - `ruby`: Overrides applied to Ruby, Rails, Ruby DSL, and ERB files, including extensionless Gemfile/Rakefile/Fastfile conventions.
+  - `csharp`: Overrides applied to C# source and .NET project files (.cs, .csproj).
+  - `java`: Overrides applied to Java source and Java-adjacent properties files (.java, .properties).
+  - `rust`: Overrides applied to Rust files (.rs).
+
+### Max functions per file (`maxFunctionsPerFile`)
+
+Maximum number of functions in a file before flagging.
+
+- Values: a number
+- Default: `10`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Max imports per file (`maxImportsPerFile`)
+
+Maximum number of third-party imports before flagging.
+
+- Values: a number
+- Default: `8`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Max parameter count (`maxParameterCount`)
+
+Maximum number of function parameters before flagging.
+
+- Values: a number
+- Default: `5`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Min health score (`minHealthScore`)
+
+Minimum health score threshold used by the CLI and the git pre-push hook. Files below this score cause the check to fail (exit code 1). Overridden by --min-score on the command line.
+
+- Values: a number, at least 0, at most 100
+- Default: `70`
+- Explained in: [Git hook](/enforcement/git-hook)
+
+### Package guard (`packageGuard`)
+
+The package guard: checks a package before it is installed, for coding agents (the hooks `iris hook agent install` adds for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf, and the iris_check_package MCP tool) and for people (`iris install`, and the editor notice when a manifest changes). A known-malicious package always blocks, and no allow entry lifts it. Free.
+
+- Values: an object
+- Explained in: [Package guard](/agents/package-guard)
+- Fields:
+  - `onNotFound`: Confirmed absence from the public registry blocks a named install by default.
+  - `onLookalike`: A name resembling a popular npm or PyPI package blocks when its first release is under 30 days old and usage is low.
+  - `onUnchecked`: What happens when a package cannot be checked: offline, a registry error, a git or local dependency, or a version range the guard cannot read.
+  - `blockSeverity`: Known vulnerabilities at or above this severity block the install; lower ones warn.
+  - `minimumReleaseAgeDays`: Block versions published fewer than this many days ago.
+  - `allow`: Reviewed exceptions that skip the check.
+  - `prePush`: Pro: also check packages added or changed in the lockfile before a push, as part of the Iris Code pre-push hook.
+
+### Preset id (`presetId`)
+
+Optional shipped Iris Code preset to use as the source of truth for this config. Free users can apply presets, but only Pro users can customize preset values.
+
+- Values: `"strict"`, `"balanced"`, `"legacy"`, `"security"`, `"typescript"`, `"ai-assisted"`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Refactor (`refactor`)
+
+Free. Refactor planning and verification policy. Omitted nested fields inherit the lower config layer.
+
+- Values: an object
+- Explained in: [Commands](/cli/commands)
+- Fields:
+  - `disable`: Fix and suggestion IDs to omit from plans.
+  - `destinations`: Repository-relative destinations for extracted declarations.
+  - `allowNewFiles`: Allow suggestions that create a new file.
+  - `publicApiRequiresApproval`: Require approval for suggestions that change a public API.
+  - `ranking`: Order the three risk tiers, each exactly once.
+  - `packing`: Line-packing detection policy for verification.
+  - `verify`: Optional verification checks.
+  - `maxCorrections`: Zero disables refactor retries.
+
+### Schema graph (`schemaGraph`)
+
+Free project schema graph source selection, independent of scoring presets.
+
+- Values: an object
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+- Fields:
+  - `enabled`: Enable schema graph detection and extraction for this project.
+  - `sources`: Override automatic detection with only these project-relative source files or folders.
+
+### Severity overrides (`severityOverrides`)
+
+Override the severity level for specific warning types.
+
+- Values: an object
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+- Fields:
+  - `file-too-long`: Severity for files exceeding fileLengthThreshold.
+  - `function-too-long`: Severity for functions exceeding functionLengthThreshold.
+  - `too-many-functions`: Severity for files exceeding maxFunctionsPerFile.
+  - `too-many-imports`: Severity for files exceeding maxImportsPerFile.
+  - `no-exports`: Severity when no exported identifiers are found.
+  - `method-missing`: Severity when Ruby defines method_missing without the matching respond_to_missing? contract.
+  - `mass-assignment`: Severity when Rails parameters are passed directly into model creation or update calls.
+  - `god-class`: Severity when a Ruby class carries substantially too many methods.
+  - `large-class`: Severity when a C# class or record carries too many responsibilities.
+  - `catch-all-exception`: Severity when C# catches System.Exception or uses a bare catch block.
+  - `async-void`: Severity when C# uses async void outside event-style handlers.
+  - `linq-abuse`: Severity when a C# LINQ chain becomes difficult to read or debug.
+  - `process-execution`: Severity when Java spawns an external process with Runtime.exec or ProcessBuilder.
+  - `unwrap-abuse`: Severity when Rust calls unwrap or expect outside test code, which panics on the error case.
+  - `explicit-panic`: Severity when Rust calls panic!, todo!, or unimplemented! outside test code.
+  - `hardcoded-secret`: Severity for detected hardcoded secrets (API keys, tokens, passwords).
+  - `any-usage`: Severity for explicit `any` type usages (TypeScript only).
+  - `ts-ignore`: Severity when @ts-ignore comments are present.
+  - `unused-function`: Severity for functions that are defined but never called.
+  - `unused-var`: Severity for declared but unused variables.
+  - `console-log`: Severity for console.log / fmt.Print* / print() calls left in code.
+  - `magic-number`: Severity for raw numeric literals with no named constant.
+  - `long-param-list`: Severity for functions exceeding maxParameterCount.
+  - `todo`: Severity for TODO / FIXME / HACK comments.
+  - `security-smell`: Severity for the nine security anti-pattern detectors (eval/exec, SQL concatenation, insecure RNG, ReDoS regex, hardcoded localhost, disabled TLS, debug flags, weak hashing, open redirect).
+  - `duplicate-code`: Severity for duplicated code blocks found within or across files.
+  - `file-naming`: Severity when a file name breaks its configured naming convention.
+  - `parse-error`: Severity when Iris Code cannot parse a file.
+  - `test-removed`: Baseline-relative verification integrity severity.
+  - `test-disabled`: Baseline-relative verification integrity severity.
+  - `assertions-weakened`: Baseline-relative verification integrity severity.
+  - `checker-silenced`: Baseline-relative verification integrity severity.
+  - `type-widened`: Baseline-relative verification integrity severity.
+  - `error-swallowed`: Baseline-relative verification integrity severity.
+  - `code-packed`: Baseline-relative verification integrity severity.
+  - `iris-suppressed`: Baseline-relative verification integrity severity.
+  - `rules-loosened`: Baseline-relative verification integrity severity.
+
+### Sidebar font size (`sidebarFontSize`)
+
+Base font size (px) for the Iris Code sidebar panel.
+
+- Values: a number, at least 10, at most 20
+- Default: `14`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Team project id (`teamProjectId`)
+
+Opaque Iris Code Team project binding. It records privacy-minimal audit evidence for this Team project and is not a repository URL.
+
+- Values: text
+- Explained in: [Governance](/teams/governance)
+
+### Test convention (`testConvention`)
+
+Where Iris Code looks for test files. 'colocated': foo.test.ts next to foo.ts. 'dedicated': __tests__/foo.test.ts. 'both': checks either location.
+
+- Values: `"colocated"`, `"dedicated"`, `"both"`
+- Default: `"colocated"`
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+### Trend regression threshold (`trendRegressionThreshold`)
+
+Pro. Flag snapshot deltas worse than this many health-score points in the Trends table.
+
+- Values: a number, at least 1, at most 100
+- Explained in: [.irisconfig.json](/configuration/irisconfig)
+
+{/* >>> iris-config-keys-end <<< */}
+
+## Related pages
+
+- [Configure shared project standards with .irisconfig.json](/configuration/irisconfig)
+- [Config Studio](/configuration/config-studio)
+- [Scoring weights](/configuration/scoring-weights)

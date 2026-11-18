@@ -36,7 +36,7 @@ The preview on the right is the exact `.irisconfig.json` that **Copy**, **Downlo
 <Note>
   **Sync replaces the settings the studio controls and keeps the rest of your file.**
 
-  A few settings aren't in the studio on purpose, because they describe one project or one machine rather than a shared standard: `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, `refactor.destinations`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged.
+  A few settings aren't set by the studio on purpose, because they describe one project or one machine rather than a shared standard: `gateScope`, `ignoreFiles`, `ignoreFunctions`, `testConvention`, `sidebarFontSize`, `teamProjectId`, `schemaGraph`, `refactor.destinations`, and the package guard's `allow` list, which holds one repository's reviewed exceptions. When your current file sets any of them, sync carries them over unchanged. Each still appears in its section and in search, greyed out, with why the studio leaves it alone and where to change it.
 
   They appear in the diff, and VS Code also lists them when the sync finishes.
 
