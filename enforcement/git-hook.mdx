@@ -17,6 +17,10 @@ Run **Iris Code: Install Git Hook** from the command palette. Iris Code writes t
 
 When Iris Code starts in a Git repository with a Pro licence, it also offers to install the hook for you. Choosing **Not now** is remembered for that workspace for 30 days. Closing the question without choosing only skips it until the editor next starts.
 
+### After Iris Code updates
+
+The hook runs the command-line tool from the Iris Code version that installed it, and an editor update removes that version's folder. When you open the project after an update, Iris Code points the hook at the new version. A push from a project you have not opened since still works: the hook uses the newest installed Iris Code version. If no Iris Code install is left on the machine, the push is stopped with a message saying how to fix it: open the project with Iris Code, run `iris hook git install`, or bypass once with `git push --no-verify`.
+
 ## Husky and custom hook paths
 
 Git normally looks for hooks in `.git/hooks`, but a project can point it somewhere else with the `core.hooksPath` setting. Iris Code follows that setting, so the check goes into the file Git will actually run.
@@ -119,6 +123,7 @@ The hook also checks whether a push makes your tests or rules weaker, for exampl
 It compares what you are pushing with what the remote branch already has, rather than comparing your uncommitted files with your last commit:
 
 - For a new branch, which has nothing on the remote yet, it compares with the point where your branch split off from the branch it tracks.
+- The first push to an empty remote has nothing to compare with, so it goes ahead and the hook reports integrity as not checked. There are no earlier tests or rules on the remote that it could have weakened.
 - Pushing a branch deletion is not checked.
 
 Removed or switched-off tests and loosened rules stop the push by default. To accept a deliberate change, add an `Iris-Allow` line with a reason to a commit message in the push.

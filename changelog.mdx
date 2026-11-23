@@ -8,6 +8,18 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.44.1 - 2026-11-23
+
+Two fixes for the pre-push hook. Core and the MCP package are unchanged; CLI 1.34.1 carries the second fix.
+
+### Fixed
+
+- Pushes no longer fail after Iris Code updates. The [pre-push hook](/enforcement/git-hook) named the folder of the Iris Code version that installed it, and an editor update deletes that folder, so every push from the project failed with "Cannot find module". The hook now uses the newest installed version when its own is gone, and Iris Code updates the hook to the current version when you open the project. If no Iris Code install is left, the push is stopped with a message saying how to fix it.
+- The `package.json` build check finds the current install the same way.
+- The first push to an empty remote is no longer blocked. [Verification integrity](/features/verification-integrity) compares a push with what the remote already has, and a brand-new repository has nothing there yet, so the push stopped with "No upstream merge base". It now goes ahead and reports integrity as not checked, because there are no earlier tests or rules it could have weakened. A push that has something to compare with is checked exactly as before.
+
+---
+
 ## v1.44.0 - 2026-11-23
 
 This release adds the agent guard: a coding agent is stopped before it changes a file that deserves your say, or runs a script straight from the internet. It uses core 0.11.0 and CLI 1.34.0; the MCP package is unchanged.

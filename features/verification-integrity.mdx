@@ -116,7 +116,7 @@ When a coding agent finishes, packing sends it back once to split the lines or e
 
 **Size limits.** Uncommitted files saved at the start of an agent's turn are kept outside your repository, in `~/.iris/turns`, up to 5 MiB. Each file read for a comparison is capped at 1 MiB, and one comparison at 50 MiB. Anything left out is listed as not checked, never treated as clean.
 
-**Pushes.** The pre-push step checks each branch you push against what the remote branch already has. A new branch is compared with the point where it left its upstream branch. `Iris-Allow` lines are read from every commit in the push.
+**Pushes.** The pre-push step checks each branch you push against what the remote branch already has. A new branch is compared with the point where it left its upstream branch. The first push to an empty remote has nothing to compare with, so it is reported as not checked and allowed. `Iris-Allow` lines are read from every commit in the push.
 
 ## What is not checked
 
