@@ -1,0 +1,103 @@
+---
+title: "Agent guard: stop an agent changing files it should not"
+sidebarTitle: "Agent guard"
+description: "Stop a coding agent editing .env files, CI configuration, lockfiles or Iris Code's own settings, or running a script straight from the internet, before it happens. Works through the same hook as the package guard, for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI, Windsurf and Antigravity CLI."
+---
+
+A coding agent edits files and runs commands on its own. Some files deserve a person's say first: the `.env` file that holds your passwords, the CI configuration that decides what is checked before code ships, and the lockfile your package manager owns. The free agent guard stops the agent before it changes one of these, and either blocks the change or asks you first.
+
+<Note>
+The agent guard is free. It runs in the same hook as the [package guard](/agents/package-guard), so installing one installs both.
+</Note>
+
+## What it protects
+
+The guard has five groups. Each one has an action: `block` refuses the change, `ask` asks you first, `warn` lets it through with a note, and `off` turns the group off.
+
+| Group | Covers | Default |
+| --- | --- | --- |
+| `secrets` | `.env` and `.env.*` files, and `*.pem` and `*.key` files, in any folder | `ask` |
+| `ciConfig` | `.github/workflows/**`, `.gitlab-ci.yml`, `bitbucket-pipelines.yml`, `.circleci/**`, `azure-pipelines.yml` and `Jenkinsfile` | `ask` |
+| `lockfiles` | `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `Cargo.lock`, `Gemfile.lock`, `poetry.lock`, `uv.lock`, `go.sum`, `packages.lock.json` and similar | `block` |
+| `irisConfig` | `.irisconfig.json` and the agent hook files Iris Code writes | `block` |
+| `pipeToShell` | Running a script straight from the internet, such as `curl ... \| sh` | `ask` |
+
+Example files are not secrets: `.env.example`, `.env.sample`, `.env.template` and `.env.defaults` are never protected by the `secrets` group.
+
+Lockfiles are blocked because the package manager is the right way to change them. When the guard blocks a lockfile edit, it tells the agent to run the package manager instead, and that install then goes through the package guard.
+
+The `irisConfig` group stops an agent switching off its own guard. You can still edit these files yourself; the guard only judges what an agent does.
+
+## What the agent sees
+
+When the guard blocks a change, the agent is told which file it tried to change, why the file is protected and what to do instead. It is asked not to look for another way round, and to tell you what it wanted to change.
+
+When the guard asks, your agent shows you a confirmation before the change happens. Not every agent can show one:
+
+- **Asks you first:** Claude Code, GitHub Copilot, Antigravity CLI, and Cursor for shell commands.
+- **Warns instead:** Codex, Gemini CLI, Windsurf and Cursor for file edits. The agent is told to stop and ask you before going on.
+
+## Installing
+
+Install the agent hook the same way as the package guard:
+
+```bash
+iris hook agent install
+```
+
+In VS Code, run **Iris Code: Check Packages Before Agents Install Them** from the Command Palette. In a JetBrains IDE, find the same action with Find Action. The [package guard page](/agents/package-guard#installing-for-coding-agents) lists the files written for each agent.
+
+If you installed the hook with an earlier version of Iris Code, it still checks packages but does not yet see file edits. The sidebar's **Hooks** section shows **Update available**; select **Update**, or run `iris hook agent install` again. Reinstalling replaces Iris Code's own entries and never adds a second one. Until you update, [project rules](/agents/project-rules) leave out the protected-files section, and the command tells you why.
+
+## Configuration
+
+Settings live under `agentGuard` in `.irisconfig.json`. Leave a group out to keep its default:
+
+```jsonc
+"agentGuard": {
+  "secrets": "block",
+  "pipeToShell": "block",
+  "protect": [
+    { "path": "infra/prod/**", "action": "block", "reason": "Production Terraform: change through a reviewed PR" }
+  ]
+}
+```
+
+`protect` adds your own paths. Each entry needs a `path` and a `reason`; the reason is shown to the agent so it can explain to you what it wanted to do. `action` is `block`, `ask` or `warn`, and defaults to `block`.
+
+A path is relative to the folder that holds `.irisconfig.json`. A path without a `/`, such as `secrets.yaml`, matches that name in any folder. A folder path, such as `infra/prod`, protects everything inside it.
+
+An entry without a reason, or one pointing outside the project, is ignored and reported by `iris config validate` and in the editor.
+
+Turning a group down, or removing a `protect` entry, is a change to the rules. [Verification integrity](/features/verification-integrity) reports it as loosened rules when the change reaches the finish check, a push or CI.
+
+## How a change is matched
+
+When an agent edits a file with its own edit tool, the guard receives the exact path. The path is resolved before it is matched: `src/../.env` is `.env`, a linked folder is followed, and on Windows and macOS the match ignores letter case.
+
+A shell command is different. The guard recognises the common ways a command writes a file: `>` and `>>`, `tee`, `sed -i`, `cp`, `mv`, `rm`, `truncate`, `git checkout --` and `git restore`, and in PowerShell `Set-Content`, `Out-File`, `Add-Content`, `Remove-Item`, `Copy-Item` and `Move-Item`.
+
+A program can still write a file in a way no command parser can see, such as `python -c "open('.env', 'w')"`. Shell writes are checked on a best-effort basis. Verification integrity is the check that cannot be bypassed this way: it compares the finished change, whichever way it was made.
+
+Running a script from the internet has a fixed shape, so `pipeToShell` is recognised far more reliably: `curl ... | sh`, `wget -O- ... | bash`, `bash <(curl ...)`, `sh -c "$(curl ...)"` and `iwr ... | iex`. A command that only prints such text, such as `echo "curl x | sh"`, is not matched.
+
+## When a change cannot be checked
+
+If an agent reports a file edit but the guard cannot read which file it is, the edit is reported as not checked. The agent is told to ask you first if it is changing a protected file. It is never reported as safe.
+
+## What this does not do
+
+- It does not stop an agent reading a file. Reading `.env` into the agent's context is a separate risk, and is not covered yet.
+- It does not judge files outside the project folder.
+- It does not run your code or the agent's command. It reads the command and the path, and answers.
+- It does not change what a person can do. Only an agent's actions go through the hook.
+
+## Free and Pro
+
+The agent guard and its configuration are free on every plan.
+
+## Related pages
+
+- [Package guard](/agents/package-guard)
+- [Verification integrity](/features/verification-integrity)
+- [Project rules for AI agents](/agents/project-rules)

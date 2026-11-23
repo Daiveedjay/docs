@@ -8,6 +8,29 @@ These are the release notes for the Iris Code VS Code extension, the JetBrains p
 
 ---
 
+## v1.44.0 - 2026-11-23
+
+This release adds the agent guard: a coding agent is stopped before it changes a file that deserves your say, or runs a script straight from the internet. It uses core 0.11.0 and CLI 1.34.0; the MCP package is unchanged.
+
+<Note>
+  A hook installed by an earlier version still checks packages but does not see file edits. The sidebar's **Hooks** section shows **Update available**; select **Update**, or run `iris hook agent install` again. See [Agent guard](/agents/agent-guard).
+</Note>
+
+### Added
+
+- The [agent guard](/agents/agent-guard). Before an agent edits a `.env` file or key, your CI configuration, a lockfile or Iris Code's own settings, or runs a script from the internet (`curl ... | sh`), Iris Code blocks the change or asks you first. It runs in the same hook as the package guard and is free.
+- `agentGuard` in `.irisconfig.json` sets an action per group (`block`, `ask`, `warn` or `off`), and `agentGuard.protect` adds your own paths with a reason the agent is shown.
+- Antigravity CLI is the seventh supported agent.
+- Project rules for agents (`iris rules`) gain a **Protected files** section once the hook is current.
+
+### Changed
+
+- Agents that cannot ask you before a change (Codex, Gemini CLI, Windsurf, and Cursor for file edits) are warned instead, and told to check with you first.
+- Windsurf and Devin Desktop: the hook is also written to `.devin/hooks.v1.json`, the file current Devin builds read.
+- Turning an agent guard group down, or removing a `protect` entry, is reported by [verification integrity](/features/verification-integrity) as `rules-loosened`.
+
+---
+
 ## v1.43.0 - 2026-11-17
 
 This release lets the gate judge only what a change did, so a push is no longer blocked by old code you never touched. It uses core 0.10.1 and CLI 1.33.0; the MCP package is unchanged.

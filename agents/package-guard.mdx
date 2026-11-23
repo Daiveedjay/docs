@@ -1,7 +1,7 @@
 ---
 title: "Package Guard: check a package before it is installed"
 sidebarTitle: "Package guard"
-description: "Stop a coding agent installing a known-vulnerable, malicious, yanked or brand-new package version, and get the version to use instead. Works as a hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf, an MCP tool, and the iris install command."
+description: "Stop a coding agent installing a known-vulnerable, malicious, yanked or brand-new package version, and get the version to use instead. Works as a hook for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI, Windsurf and Antigravity CLI, an MCP tool, and the iris install command."
 ---
 
 A package is code written by someone else that your project uses. A coding agent can install one before you have reviewed its name or version. The free package guard checks the requested version before installation and can stop packages with known risks.
@@ -98,20 +98,24 @@ Find Action → Iris Code: Check Packages Before Agents Install Them
 The **Hooks** section of the sidebar shows whether the hook is installed, on every plan, beside the
 git and build hooks. It reads the hook files themselves, so it stays right however the hook was
 installed. A hook with its settings entry but no launcher, or the reverse, checks nothing and is
-shown as incomplete, with a **Repair** button.
+shown as incomplete, with a **Repair** button. A hook installed by an earlier release still checks
+packages but not file edits, and is shown as **Update available**, with an **Update** button.
 
-With no `--target`, the command installs for the agents your project already shows signs of using (a `CLAUDE.md`, `GEMINI.md` or `.github/copilot-instructions.md` file, or a `.claude/`, `.cursor/`, `.codex/`, `.gemini/`, `.windsurf/` or `.devin/` folder), or Claude Code when there are none. Pass `--target` with one agent, a comma-separated list such as `--target claude,codex`, or `all`.
+With no `--target`, the command installs for the agents your project already shows signs of using (a `CLAUDE.md`, `GEMINI.md` or `.github/copilot-instructions.md` file, or a `.claude/`, `.cursor/`, `.codex/`, `.gemini/`, `.windsurf/` or `.devin/` folder, or an `.agents/hooks.json` file), or Claude Code when there are none. Pass `--target` with one agent, a comma-separated list such as `--target claude,codex`, or `all`.
 
 In VS Code and JetBrains IDEs the picker is multi-select, with the agents the project already uses ticked.
 
 | Agent | `--target` | Hook file | Hook |
 | --- | --- | --- | --- |
-| Claude Code | `claude` | `.claude/settings.json` | `PreToolUse` on `Bash\|PowerShell` |
-| Cursor | `cursor` | `.cursor/hooks.json` | `beforeShellExecution` |
-| Codex | `codex` | `.codex/hooks.json` | `PreToolUse` on `Bash` |
+| Claude Code | `claude` | `.claude/settings.json` | `PreToolUse` on `Bash\|PowerShell` and the file tools |
+| Cursor | `cursor` | `.cursor/hooks.json` | `beforeShellExecution`, and `preToolUse` on `Write` |
+| Codex | `codex` | `.codex/hooks.json` | `PreToolUse` on `Bash\|apply_patch` |
 | GitHub Copilot | `copilot` | `.github/hooks/iris-package-guard.json` | `preToolUse` |
-| Gemini CLI | `gemini` | `.gemini/settings.json` | `BeforeTool` on `run_shell_command` |
-| Windsurf | `windsurf` | `.devin/hooks.json` and `.windsurf/hooks.json` | `pre_run_command` |
+| Gemini CLI | `gemini` | `.gemini/settings.json` | `BeforeTool` on `run_shell_command`, `write_file` and `replace` |
+| Windsurf and Devin Desktop | `windsurf` | `.devin/hooks.v1.json`, plus `.devin/hooks.json` and `.windsurf/hooks.json` for older builds | `PreToolUse`, and `pre_run_command` in the older files |
+| Antigravity CLI | `antigravity` | `.agents/hooks.json` | `PreToolUse` |
+
+The file tools in these hooks are for the [agent guard](/agents/agent-guard), which shares the hook.
 
 Each also gets a small launcher in a `hooks` folder beside its hook file, such as
 `.claude/hooks/iris-package-guard.cjs`. Existing settings are kept: Iris Code adds its own entry and
@@ -390,6 +394,8 @@ variables also stop the guard's usage events. See
 - Java projects get the editor notice (`pom.xml`, `build.gradle`, `build.gradle.kts` and
   `gradle/libs.versions.toml`) and the `iris_check_package` tool, but not `iris install` or the pre-push
   step: Maven and Gradle do not commit a lockfile by default, so there is no resolved list to compare.
+- It does not judge file edits. The same hook does that as the [agent guard](/agents/agent-guard), which
+  stops an agent changing `.env` files, CI configuration, lockfiles and Iris Code's own settings.
 
 ## Free and Pro
 

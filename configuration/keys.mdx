@@ -2,7 +2,7 @@
 title: "Configuration keys: every .irisconfig.json setting"
 sidebarTitle: "All configuration keys"
 description: "Every setting you can put in .irisconfig.json, with what it does, the values it accepts, its default and the page that explains it."
-keywords: ["agentHandoff","agent handoff","codePackedThreshold","code packed threshold","complexityThreshold","complexity threshold","duplicateBlockMinTokens","duplicate block min tokens","enableCodeLens","enable code lens","enableConsoleLogWarnings","enable console log warnings","enableDuplicateDetection","enable duplicate detection","enableInlineDiagnostics","enable inline diagnostics","enableLongParamDetection","enable long param detection","enableMagicNumberDetection","enable magic number detection","enableMissingReturnTypeWarnings","enable missing return type warnings","enableSecretsDetection","enable secrets detection","enableSecuritySmells","enable security smells","enableStatusBar","enable status bar","enableTodoDetection","enable todo detection","enableUnusedDetection","enable unused detection","fileLengthThreshold","file length threshold","fileNaming","file naming","fileNamingScope","file naming scope","functionLengthThreshold","function length threshold","gateBaselineMode","gate baseline mode","gateMaxComplexity","gate max complexity","gateMaxDuplicateBlocks","gate max duplicate blocks","gateMaxFileLength","gate max file length","gateMaxNamingViolations","gate max naming violations","gateMaxParseErrors","gate max parse errors","gateMaxSecrets","gate max secrets","gateMaxSecuritySmells","gate max security smells","gateMaxSmellsPerFile","gate max smells per file","gateMaxSuppressions","gate max suppressions","gateScope","gate scope","healthScoreWeights","health score weights","ignoreFiles","ignore files","ignoreFunctions","ignore functions","ignoreSuppressions","ignore suppressions","inlineDiagnostics","inline diagnostics","languages","maxFunctionsPerFile","max functions per file","maxImportsPerFile","max imports per file","maxParameterCount","max parameter count","minHealthScore","min health score","packageGuard","package guard","presetId","preset id","refactor","schemaGraph","schema graph","severityOverrides","severity overrides","sidebarFontSize","sidebar font size","teamProjectId","team project id","testConvention","test convention","trendRegressionThreshold","trend regression threshold"]
+keywords: ["agentGuard","agent guard","agentHandoff","agent handoff","codePackedThreshold","code packed threshold","complexityThreshold","complexity threshold","duplicateBlockMinTokens","duplicate block min tokens","enableCodeLens","enable code lens","enableConsoleLogWarnings","enable console log warnings","enableDuplicateDetection","enable duplicate detection","enableInlineDiagnostics","enable inline diagnostics","enableLongParamDetection","enable long param detection","enableMagicNumberDetection","enable magic number detection","enableMissingReturnTypeWarnings","enable missing return type warnings","enableSecretsDetection","enable secrets detection","enableSecuritySmells","enable security smells","enableStatusBar","enable status bar","enableTodoDetection","enable todo detection","enableUnusedDetection","enable unused detection","fileLengthThreshold","file length threshold","fileNaming","file naming","fileNamingScope","file naming scope","functionLengthThreshold","function length threshold","gateBaselineMode","gate baseline mode","gateMaxComplexity","gate max complexity","gateMaxDuplicateBlocks","gate max duplicate blocks","gateMaxFileLength","gate max file length","gateMaxNamingViolations","gate max naming violations","gateMaxParseErrors","gate max parse errors","gateMaxSecrets","gate max secrets","gateMaxSecuritySmells","gate max security smells","gateMaxSmellsPerFile","gate max smells per file","gateMaxSuppressions","gate max suppressions","gateScope","gate scope","healthScoreWeights","health score weights","ignoreFiles","ignore files","ignoreFunctions","ignore functions","ignoreSuppressions","ignore suppressions","inlineDiagnostics","inline diagnostics","languages","maxFunctionsPerFile","max functions per file","maxImportsPerFile","max imports per file","maxParameterCount","max parameter count","minHealthScore","min health score","packageGuard","package guard","presetId","preset id","refactor","schemaGraph","schema graph","severityOverrides","severity overrides","sidebarFontSize","sidebar font size","teamProjectId","team project id","testConvention","test convention","trendRegressionThreshold","trend regression threshold"]
 ---
 
 This page lists every setting that `.irisconfig.json` accepts, in alphabetical order. Use it to look up a setting by name, for example `gateScope`, and then follow the link to the page that explains how to use it.
@@ -12,6 +12,20 @@ The list is generated from the same schema your editor uses to check the file an
 ## Settings
 
 {/* >>> iris-config-keys-start <<< */}
+
+### Agent guard (`agentGuard`)
+
+The agent guard: stops a coding agent changing protected files, or running a script straight from the internet, before it happens. It runs in the same hook as the package guard (`iris hook agent install`). "block" refuses; "ask" asks you first where the agent supports it (Claude Code, GitHub Copilot, Antigravity CLI, and Cursor shell commands) and warns elsewhere; "warn" lets it through with a note; "off" turns a group off. Edit tools are checked by exact path; shell commands are best effort, and verification integrity still catches the rest at finish and push. Free.
+
+- Values: an object
+- Explained in: [Agent guard](/agents/agent-guard)
+- Fields:
+  - `secrets`: .env, .env.* (not .env.example, .env.sample, .env.template or .env.defaults), *.pem and *.key files, in any folder.
+  - `ciConfig`: CI configuration: .github/workflows/**, .gitlab-ci.yml, bitbucket-pipelines.yml, .circleci/**, azure-pipelines.yml and Jenkinsfile.
+  - `lockfiles`: Lockfiles (package-lock.json, pnpm-lock.yaml, yarn.lock, Cargo.lock, Gemfile.lock, poetry.lock, uv.lock, go.sum, packages.lock.json and others).
+  - `irisConfig`: .irisconfig.json and the agent hook files and launchers Iris Code writes, so an agent cannot switch off its own guard.
+  - `pipeToShell`: Running a script straight from the internet without saving it first: `curl ...
+  - `protect`: This project's own protected paths, added to the groups above.
 
 ### Agent handoff (`agentHandoff`)
 
@@ -379,7 +393,7 @@ Minimum health score threshold used by the CLI and the git pre-push hook. Files 
 
 ### Package guard (`packageGuard`)
 
-The package guard: checks a package before it is installed, for coding agents (the hooks `iris hook agent install` adds for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI and Windsurf, and the iris_check_package MCP tool) and for people (`iris install`, and the editor notice when a manifest changes). A known-malicious package always blocks, and no allow entry lifts it. Free.
+The package guard: checks a package before it is installed, for coding agents (the hooks `iris hook agent install` adds for Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI, Windsurf and Antigravity CLI, and the iris_check_package MCP tool) and for people (`iris install`, and the editor notice when a manifest changes). A known-malicious package always blocks, and no allow entry lifts it. Free.
 
 - Values: an object
 - Explained in: [Package guard](/agents/package-guard)
